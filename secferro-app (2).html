@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecFerroInCloud - Menedżer Haseł</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --primary-dark: #1976D2;
+            --accent-color: #FF4081;
+            --text-color: #212121;
+            --text-secondary: #757575;
+            --divider-color: #BDBDBD;
+            --background-color: #FAFAFA;
+            --card-color: #FFFFFF;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme {
+            --primary-color: #3F51B5;
+            --primary-dark: #303F9F;
+            --accent-color: #FF4081;
+            --text-color: #FFFFFF;
+            --text-secondary: #B0BEC5;
+            --divider-color: #424242;
+            --background-color: #121212;
+            --card-color: #1E1E1E;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 16px 0;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Content */
+        main {
+            padding: 24px 0;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 24px;
+            background-color: var(--card-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .login-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--divider-color);
+            border-radius: 4px;
+            background-color: var(--card-color);
+            color: var(--text-color);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .biometric-login {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--divider-color);
+        }
+
+        .biometric-btn {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            margin: 0 8px;
+            transition: transform 0.2s;
+        }
+
+        .biometric-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Dashboard (hidden initially) */
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .search-box {
+            display: flex;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--divider-color);
+            border-right: none;
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+            background-color: var(--card-color);
+            color: var(--text-color);
+        }
+
+        .search-box button {
+            padding: 10px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+            cursor: pointer;
+        }
+
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .category-item {
+            flex: 1;
+            min-width: 120px;
+            padding: 16px;
+            background-color: var(--card-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px var(--shadow-color);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .category-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-item i {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .password-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .password-card {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 6px var(--shadow-color);
+            transition: transform 0.2s;
+        }
+
+        .password-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .card-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: color 0.2s;
+        }
+
+        .card-action-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .password-info p {
+            margin-bottom: 8px;
+        }
+
+        .password-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+
+        .password-value {
+            letter-spacing: 4px;
+        }
+
+        .strength-meter {
+            height: 4px;
+            width: 100%;
+            background-color: var(--divider-color);
+            margin-top: 8px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .strength-indicator {
+            height: 100%;
+            width: 70%;
+            background-color: #4CAF50;
+        }
+
+        .weak-password {
+            background-color: #F44336;
+        }
+
+        .medium-password {
+            background-color: #FF9800;
+        }
+
+        .strong-password {
+            background-color: #4CAF50;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--card-color);
+            color: var(--text-secondary);
+            padding: 24px 0;
+            text-align: center;
+            border-top: 1px solid var(--divider-color);
+            margin-top: 40px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 24px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--divider-color);
+        }
+
+        .tab {
+            padding: 12px 16px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .password-generator {
+            margin-top: 16px;
+        }
+
+        .generator-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .control-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slider-container {
+            flex: 1;
+            margin-left: 16px;
+        }
+
+        .slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--divider-color);
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+        }
+
+        .generated-password {
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 18px;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            text-align: center;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .generator-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Sync settings */
+        .sync-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .sync-option {
+            flex: 1;
+            min-width: 120px;
+            padding: 16px;
+            border: 1px solid var(--divider-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .sync-option:hover {
+            border-color: var(--primary-color);
+        }
+
+        .sync-option i {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .sync-option.google-drive i {
+            color: #4285F4;
+        }
+
+        .sync-option.dropbox i {
+            color: #0061FF;
+        }
+
+        .sync-option.onedrive i {
+            color: #0078D4;
+        }
+
+        .sync-option.webdav i {
+            color: #3DAB4B;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .category-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .password-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .category-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 8px 0;
+            }
+            
+            .tab.active::after {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>SecFerroInCloud</span>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Login Container -->
+        <div class="login-container" id="loginContainer">
+            <div class="login-header">
+                <h2>Witaj w SecFerroInCloud</h2>
+                <p>Zaloguj się, aby uzyskać dostęp do swoich haseł</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="Twój adres email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="masterPassword">Hasło główne</label>
+                    <input type="password" id="masterPassword" class="form-control" placeholder="Twoje hasło główne" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Zaloguj się</button>
+            </form>
+            
+            <div class="biometric-login">
+                <p>Lub zaloguj się za pomocą:</p>
+                <div>
+                    <button class="biometric-btn" title="Odcisk palca">
+                        <i class="fas fa-fingerprint"></i>
+                    </button>
+                    <button class="biometric-btn" title="Rozpoznawanie twarzy">
+                        <i class="fas fa-face-viewfinder"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard (Hidden initially) -->
+        <div class="dashboard" id="dashboard">
+            <div class="dashboard-header">
+                <h2>Twoje hasła</h2>
+                <div class="search-box">
+                    <input type="text" placeholder="Szukaj haseł...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            
+            <div class="category-list">
+                <div class="category-item">
+                    <i class="fas fa-globe"></i>
+                    <p>Strony WWW</p>
+                </div>
+                <div class="category-item">
+                    <i class="fas fa-credit-card"></i>
+                    <p>Karty</p>
+                </div>
+                <div class="category-item">
+                    <i class="fas fa-money-bill"></i>
+                    <p>Finanse</p>
+                </div>
+                <div class="category-item">
+                    <i class="fas fa-id-card"></i>
+                    <p>Identyfikacja</p>
+                </div>
+                <div class="category-item">
+                    <i class="fas fa-key"></i>
+                    <p>Bezpieczne notatki</p>
+                </div>
+            </div>
+            
+            <div class="password-list">
+                <!-- Password Card Example -->
+                <div class="password-card">
+                    <div class="card-header">
+                        <div class="service-icon">
+                            <i class="fab fa-google"></i>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn" title="Edytuj">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="card-action-btn" title="Usuń">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="password-info">
+                        <h3>Google</h3>
+                        <p>przykladowy.email@gmail.com</p>
+                        <div class="password-field">
+                            <span class="password-value">••••••••••••</span>
+                            <button class="card-action-btn" title="Pokaż hasło">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="card-action-btn" title="Kopiuj hasło">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="strength-meter">
+                            <div class="strength-indicator medium-password"></div>
+                        </div>
+                        <p class="strength-text" style="text-align: right; font-size: 12px; margin-top: 4px;">
+                            Siła: Średnia (złamanie: 2 miesiące)
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Password Card Example -->
+                <div class="password-card">
+                    <div class="card-header">
+                        <div class="service-icon">
+                            <i class="fab fa-facebook"></i>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn" title="Edytuj">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="card-action-btn" title="Usuń">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="password-info">
+                        <h3>Facebook</h3>
+                        <p>przykladowy.email@gmail.com</p>
+                        <div class="password-field">
+                            <span class="password-value">••••••••••••••••</span>
+                            <button class="card-action-btn" title="Pokaż hasło">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="card-action-btn" title="Kopiuj hasło">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="strength-meter">
+                            <div class="strength-indicator strong-password"></div>
+                        </div>
+                        <p class="strength-text" style="text-align: right; font-size: 12px; margin-top: 4px;">
+                            Siła: Silne (złamanie: 3 lata)
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Password Card Example -->
+                <div class="password-card">
+                    <div class="card-header">
+                        <div class="service-icon">
+                            <i class="fab fa-amazon"></i>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn" title="Edytuj">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="card-action-btn" title="Usuń">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="password-info">
+                        <h3>Amazon</h3>
+                        <p>przykladowy.email@gmail.com</p>
+                        <div class="password-field">
+                            <span class="password-value">••••••••</span>
+                            <button class="card-action-btn" title="Pokaż hasło">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="card-action-btn" title="Kopiuj hasło">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="strength-meter">
+                            <div class="strength-indicator weak-password" style="width: 30%;"></div>
+                        </div>
+                        <p class="strength-text" style="text-align: right; font-size: 12px; margin-top: 4px; color: #F44336;">
+                            Siła: Słabe (złamanie: 2 dni)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <div class="fab" id="addPasswordBtn">
+            <i class="fas fa-plus"></i>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 SecFerroInCloud. Wszystkie prawa zastrzeżone.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Pobierz aplikację</a>
+                <a href="#" class="footer-link">Wsparcie</a>
+                <a href="#" class="footer-link">Polityka prywatności</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal - Add Password -->
+    <div class="modal" id="addPasswordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Dodaj nowe hasło</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="details">Szczegóły</div>
+                <div class="tab" data-tab="generator">Generator haseł</div>
+                <div class="tab" data-tab="sync">Synchronizacja</div>
+            </div>
+            
+            <div class="tab-content" id="detailsTab">
+                <form>
+                    <div class="form-group">
+                        <label for="serviceName">Nazwa serwisu</label>
+                        <input type="text" id="serviceName" class="form-control" placeholder="np. Google, Facebook, Twitter">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="serviceUrl">URL (opcjonalnie)</label>
+                        <input type="url" id="serviceUrl" class="form-control" placeholder="https://przykład.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="username">Login/Email</label>
+                        <input type="text" id="username" class="form-control" placeholder="Twój login lub email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Hasło</label>
+                        <input type="password" id="password" class="form-control" placeholder="Twoje hasło">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Kategoria</label>
+                        <select id="category" class="form-control">
+                            <option value="web">Strony WWW</option>
+                            <option value="cards">Karty</option>
+                            <option value="finance">Finanse</option>
+                            <option value="identity">Identyfikacja</option>
+                            <option value="notes">Bezpieczne notatki</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">Zapisz</button>
+                </form>
+            </div>
+            
+            <div class="tab-content" id="generatorTab" style="display: none;">
+                <div class="password-generator">
+                    <div class="generated-password" id="generatedPassword">
+                        kS8!pT3@aL7bF9$zX
+                    </div>
+                    
+                    <div class="generator-controls">
+                        <div class="control-group">
+                            <label>Długość:</label>
+                            <div class="slider-container">
+                                <input type="range" min="8" max="32" value="16" class="slider" id="lengthSlider">
+                                <span id="lengthValue">16</span>
+                            </div>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="uppercaseCheck" checked>
+                            <label for="uppercaseCheck">Wielkie litery (A-Z)</label>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="lowercaseCheck" checked>
+                            <label for="lowercaseCheck">Małe litery (a-z)</label>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="numbersCheck" checked>
+                            <label for="numbersCheck">Cyfry (0-9)</label>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="symbolsCheck" checked>
+                            <label for="symbolsCheck">Symbole specjalne (!@#$%^&*)</label>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="easyToRead">
+                            <label for="easyToRead">Łatwe do odczytania (brak podobnych znaków)</label>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="easyToRemember">
+                            <label for="easyToRemember">Łatwe do zapamiętania (na bazie słów)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="generator-actions">
+                        <button class="btn" id="regenerateBtn">
+                            <i class="fas fa-sync-alt"></i> Wygeneruj nowe
+                        </button>
+                        <button class="btn btn-primary" id="usePasswordBtn">Użyj tego hasła</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="syncTab" style="display: none;">
+                <h4>Wybierz usługę synchronizacji</h4>
+                <p>Twoje dane będą automatycznie synchronizowane z wybraną usługą.</p>
+                
+                <div class="sync-options">
+                    <div class="sync-option google-drive">
+                        <i class="fab fa-google-drive"></i>
+                        <p>Google Drive</p>
+                    </div>
+                    
+                    <div class="sync-option dropbox">
+                        <i class="fab fa-dropbox"></i>
+                        <p>Dropbox</p>
+                    </div>
+                    
+                    <div class="sync-option onedrive">
+                        <i class="fab fa-microsoft"></i>
+                        <p>OneDrive</p>
+                    </div>
+                    
+                    <div class="sync-option webdav">
+                        <i class="fas fa-server"></i>
+                        <p>WebDAV/NAS</p>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="syncFrequency">Częstotliwość synchronizacji</label>
+                    <select id="syncFrequency" class="form-control">
+                        <option value="realtime">W czasie rzeczywistym</option>
+                        <option value="hourly">Co godzinę</option>
+                        <option value="daily">Raz dziennie</option>
+                        <option value="manual">Tylko ręcznie</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-primary btn-block">Zapisz ustawienia</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // DOM Elements
+        const themeToggle = document.getElementById('themeToggle');
+        const loginForm = document.getElementById('loginForm');
+        const loginContainer = document.getElementById('loginContainer');
+        const dashboard = document.getElementById('dashboard');
+        const addPasswordBtn = document.getElementById('addPasswordBtn');
+        const addPasswordModal = document.getElementById('addPasswordModal');
+        const closeBtn = document.querySelector('.close-btn');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const biometricBtns = document.querySelectorAll('.biometric-btn');
+        const passwordCards = document.querySelectorAll('.password-card');
+        const lengthSlider = document.getElementById('lengthSlider');
+        const lengthValue = document.getElementById('lengthValue');
+        const generatedPassword = document.getElementById('generatedPassword');
+        const regenerateBtn = document.getElementById('regenerateBtn');
+        const usePasswordBtn = document.getElementById('usePasswordBtn');
+        const syncOptions = document.querySelectorAll('.sync-option');
+        
+        // Theme Toggle
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            
+            // Toggle icon
+            const icon = themeToggle.querySelector('i');
+            if (icon.classList.contains('fa-moon')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+        
+        // Login Form
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Simulate login - In a real app, this would involve encryption and authentication
+            loginContainer.style.display = 'none';
+            dashboard.style.display = 'block';
+        });
+        
+        // Biometric Login
+        biometricBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Simulate biometric authentication
+                setTimeout(() => {
+                    loginContainer.style.display = 'none';
+                    dashboard.style.display = 'block';
+                }, 1000);
+            });
+        });
+        
+        // Modal Control
+        addPasswordBtn.addEventListener('click', () => {
+            addPasswordModal.style.display = 'flex';
+        });
+        
+        closeBtn.addEventListener('click', () => {
+            addPasswordModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === addPasswordModal) {
+                addPasswordModal.style.display = 'none';
+            }
+        });
+        
+        // Tab Switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Hide all tab contents
+                tabContents.forEach(content => content.style.display = 'none');
+                
+                // Show selected tab content
+                const tabId = tab.getAttribute('data-tab') + 'Tab';
+                document.getElementById(tabId).style.display = 'block';
+            });
+        });
+        
+        // Password Generator
+        lengthSlider.addEventListener('input', () => {
+            lengthValue.textContent = lengthSlider.value;
+        });
+        
+        // Generate password function
+        function generatePassword() {
+            const length = parseInt(lengthSlider.value);
+            const includeUppercase = document.getElementById('uppercaseCheck').checked;
+            const includeLowercase = document.getElementById('lowercaseCheck').checked;
+            const includeNumbers = document.getElementById('numbersCheck').checked;
+            const includeSymbols = document.getElementById('symbolsCheck').checked;
+            const easyToRead = document.getElementById('easyToRead').checked;
+            const easyToRemember = document.getElementById('easyToRemember').checked;
+            
+            let charset = '';
+            let password = '';
+            
+            // Build character set based on options
+            if (includeLowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
+            if (includeUppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if (includeNumbers) charset += '0123456789';
+            if (includeSymbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+            
+            // Remove similar characters if easy to read is checked
+            if (easyToRead) {
+                charset = charset.replace(/[0oO1lI|]/g, '');
+            }
+            
+            // Generate easy to remember password
+            if (easyToRemember) {
+                // Simple word-based password generator for demonstration
+                const words = ['secure', 'password', 'manager', 'cloud', 'ferroIt', 'safe', 'protect'];
+                const word1 = words[Math.floor(Math.random() * words.length)];
+                const word2 = words[Math.floor(Math.random() * words.length)];
+                
+                let num = Math.floor(Math.random() * 100);
+                let symbol = '';
+                
+                if (includeSymbols) {
+                    const symbols = '!@#$%^&*';
+                    symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                }
+                
+                password = word1 + (includeUppercase ? word2.charAt(0).toUpperCase() + word2.slice(1) : word2);
+                
+                if (includeNumbers) password += num;
+                if (includeSymbols) password += symbol;
+                
+                // Ensure the password is at least the specified length
+                while (password.length < length) {
+                    if (includeNumbers) {
+                        password += Math.floor(Math.random() * 10);
+                    } else if (includeLowercase) {
+                        password += 'abcdefghijklmnopqrstuvwxyz'[Math.floor(Math.random() * 26)];
+                    }
+                }
+                
+                // Truncate if longer than the specified length
+                password = password.substring(0, length);
+            } else {
+                // Generate random password
+                for (let i = 0; i < length; i++) {
+                    password += charset.charAt(Math.floor(Math.random() * charset.length));
+                }
+            }
+            
+            return password;
+        }
+        
+        // Generate initial password
+        generatedPassword.textContent = generatePassword();
+        
+        // Regenerate password button
+        regenerateBtn.addEventListener('click', () => {
+            generatedPassword.textContent = generatePassword();
+        });
+        
+        // Use password button
+        usePasswordBtn.addEventListener('click', () => {
+            document.getElementById('password').value = generatedPassword.textContent;
+            
+            // Switch to details tab
+            tabs[0].click();
+        });
+        
+        // Password cards interaction
+        passwordCards.forEach(card => {
+            const eyeBtn = card.querySelector('button[title="Pokaż hasło"]');
+            const copyBtn = card.querySelector('button[title="Kopiuj hasło"]');
+            const passwordValue = card.querySelector('.password-value');
+            
+            // Toggle password visibility
+            eyeBtn.addEventListener('click', () => {
+                if (passwordValue.textContent.includes('•')) {
+                    // Show fake password (in a real app, this would decrypt and show the actual password)
+                    passwordValue.textContent = 'ActualPassword123';
+                    eyeBtn.querySelector('i').classList.remove('fa-eye');
+                    eyeBtn.querySelector('i').classList.add('fa-eye-slash');
+                } else {
+                    // Hide password
+                    passwordValue.textContent = '••••••••••••••••';
+                    eyeBtn.querySelector('i').classList.remove('fa-eye-slash');
+                    eyeBtn.querySelector('i').classList.add('fa-eye');
+                }
+            });
+            
+            // Copy password
+            copyBtn.addEventListener('click', () => {
+                // In a real app, this would copy the actual decrypted password
+                navigator.clipboard.writeText('ActualPassword123')
+                    .then(() => {
+                        // Show brief notification
+                        const originalTitle = copyBtn.getAttribute('title');
+                        copyBtn.setAttribute('title', 'Skopiowano!');
+                        setTimeout(() => {
+                            copyBtn.setAttribute('title', originalTitle);
+                        }, 2000);
+                    });
+            });
+        });
+        
+        // Sync options selection
+        syncOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove selected class from all options
+                syncOptions.forEach(opt => opt.style.borderColor = '');
+                
+                // Mark this option as selected
+                option.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+            });
+        });
+        
+        // AES Encryption simulation (for demonstration purposes only)
+        class EncryptionService {
+            static encrypt(data, masterPassword) {
+                // This is a simulation - in a real application, we would use proper crypto libraries
+                console.log(`Encrypting data with AES-256 using master password: ${masterPassword}`);
+                return `encrypted_${btoa(data)}_${Date.now()}`;
+            }
+            
+            static decrypt(encryptedData, masterPassword) {
+                // This is a simulation - in a real application, we would use proper crypto libraries
+                console.log(`Decrypting data with master password: ${masterPassword}`);
+                const base64Data = encryptedData.split('_')[1];
+                return atob(base64Data);
+            }
+        }
+        
+        // Cloud Sync Service simulation
+        class CloudSyncService {
+            constructor(provider) {
+                this.provider = provider;
+            }
+            
+            async sync(encryptedData) {
+                console.log(`Syncing data with ${this.provider}...`);
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                console.log(`Sync with ${this.provider} complete!`);
+                return true;
+            }
+            
+            async fetch() {
+                console.log(`Fetching data from ${this.provider}...`);
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                console.log(`Fetch from ${this.provider} complete!`);
+                return 'encrypted_data_from_cloud';
+            }
+        }
+        
+        // Password Analyzer
+        class PasswordAnalyzer {
+            static analyzeStrength(password) {
+                // Basic example - in a real app, this would be more sophisticated
+                let score = 0;
+                
+                // Length contribution
+                score += Math.min(password.length * 4, 40);
+                
+                // Character variety contribution
+                if (/[A-Z]/.test(password)) score += 10;
+                if (/[a-z]/.test(password)) score += 10;
+                if (/[0-9]/.test(password)) score += 10;
+                if (/[^A-Za-z0-9]/.test(password)) score += 15;
+                
+                // Patterns reduction
+                if (/(.)\1\1/.test(password)) score -= 10; // Repeated characters
+                if (/^[A-Za-z]+$/.test(password)) score -= 15; // Letters only
+                if (/^[0-9]+$/.test(password)) score -= 20; // Numbers only
+                
+                // Common password patterns reduction
+                if (/password|123456|qwerty|admin/i.test(password)) score -= 30;
+                
+                // Calculate time to crack (very simplified estimate)
+                let crackTime = '';
+                if (score < 40) {
+                    crackTime = 'kilka minut';
+                } else if (score < 60) {
+                    crackTime = 'kilka dni';
+                } else if (score < 80) {
+                    crackTime = 'kilka miesięcy';
+                } else {
+                    crackTime = 'kilka lat';
+                }
+                
+                return {
+                    score,
+                    strength: score < 40 ? 'Słabe' : score < 60 ? 'Średnie' : score < 80 ? 'Silne' : 'Bardzo silne',
+                    crackTime
+                };
+            }
+        }
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('SecFerroInCloud - Bezpieczny menedżer haseł załadowany');
+        });
+    </script>
+</body>
+</html>
