@@ -1,106 +1,530 @@
-<html>
+<!DOCTYPE html>
+<html lang="pl">
 <head>
-    <title>Christopher - Grafik, Edytor Wideo, Linux i Android</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Christopher | anonymousik.is-a.dev</title>
+  <meta name="description" content="Portfolio - Grafik, Montażysta, Twórca muzyki, YouTube Content Creator. Sprawdź ofertę i projekty anonymousika!">
+  <meta name="theme-color" content="#16181c">
+  <link rel="icon" type="image/png" href="assets/img/root/favicon.png">
+  <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
+      background: #16181c;
+      color: #e6e6e6;
+      margin: 0;
+      min-height: 100vh;
+      scroll-behavior: smooth;
+    }
+    header {
+      background: #1d212a;
+      box-shadow: 0 3px 24px #10121533;
+      position: sticky;
+      top: 0; z-index: 10;
+    }
+    .container {
+      width: 92%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 0;
+    }
+    .brand {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #55c8ff;
+      letter-spacing: 1px;
+      text-decoration: none;
+      line-height: 1.2;
+    }
+    ul.navbar {
+      list-style: none;
+      display: flex;
+      gap: 1.2rem;
+      margin: 0; padding: 0;
+    }
+    ul.navbar li a {
+      color: #c7c7d9;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.06rem;
+      transition: color 0.15s;
+      padding: 0.2em 0.4em;
+      border-radius: 5px;
+    }
+    ul.navbar li a:hover, ul.navbar li a.active {
+      color: #55c8ff;
+      background: #23283b;
+    }
+    section {
+      margin: 2.5rem 0;
+      background: #202432;
+      border-radius: 14px;
+      box-shadow: 0 2px 16px #2327421e;
+      padding: 2.3rem 1.8rem;
+    }
+    .section-title {
+      color: #55c8ff;
+      margin-bottom: 0.7em;
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-size: 2.1rem;
+    }
+    .lead {
+      font-size: 1.18rem;
+      margin-bottom: 1rem;
+    }
+    .badges, .footer-badges {
+      margin: 1rem 0 2rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7em;
+    }
+    .badge, .footer-badges span {
+      background: #262a39;
+      color: #7edbfa;
+      border-radius: 16px;
+      padding: 0.4em 1.1em;
+      font-size: 0.98em;
+      font-weight: 500;
+      border: 1px solid #303347;
+      display: inline-block;
+    }
+    .social-links {
+      margin-top: 1rem;
+      font-size: 1.5rem;
+    }
+    .social-links a {
+      color: #55c8ff;
+      margin-right: 0.7em;
+      transition: color 0.15s;
+    }
+    .social-links a:hover { color: #a2e8ff; }
+    .dynamic-counters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.1em;
+      margin-top: 1.8em;
+    }
+    .counter-box {
+      background:#23263b;
+      padding:1.2em 2.1em 1.1em 2.1em;
+      border-radius:16px;
+      box-shadow:0 2px 12px #181a1f22;
+      text-align:center;
+      min-width: 180px;
+      margin-bottom: 0.7em;
+    }
+    .counter-box .counter-value {
+      font-size:2.3rem;
+      font-weight:700;
+      color:#7edbfa;
+      line-height:1;
+      margin-bottom:0.2em;
+    }
+    .counter-box .counter-label {
+      font-size:1em;
+      color:#b2c7e6;
+      font-weight:600;
+    }
+    .quick-nav {
+      margin:1.8em 0 0.2em 0;
+      display:flex;
+      flex-wrap:wrap;
+      gap:1.1em;
+      justify-content:center;
+    }
+    .quick-nav a {
+      background:#252a41;
+      color:#a2e8ff;
+      text-decoration:none;
+      border-radius: 18px;
+      padding: 0.45em 1.35em;
+      font-size: 1.01em;
+      font-weight: 600;
+      transition:background .15s,color .15s;
+    }
+    .quick-nav a:hover { background:#2b3149; color:#e2f6ff;}
+    .offer-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.3rem;
+      margin-top: 1.4rem;
+    }
+    .offer-box {
+      background: #23263b;
+      border-radius: 10px;
+      flex: 1 1 220px;
+      min-width: 220px;
+      max-width: 340px;
+      padding: 1.2em;
+      box-shadow: 0 2px 8px #181a1f22;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .offer-box h3 {
+      margin: 0 0 0.5em 0; color: #7edbfa; font-size: 1.08em;font-weight: 700;
+    }
+    .offer-box a {
+      color: #55c8ff;
+      margin-top: 0.5em;
+      font-size: 1.02em;
+      text-decoration: underline;
+      transition: color .14s;
+    }
+    .offer-box a:hover { color: #a2e8ff; }
+    .yt-embed {
+      margin-top: 1.5em;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px #2327421e;
+      border: 1px solid #21232d;
+      width: 100%;
+      max-width: 560px;
+      height: 315px;
+      background: #101215;
+    }
+    .card-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.3em;
+      margin-top: 1.1em;
+      justify-content: flex-start;
+    }
+    .mini-card {
+      background: #23263b;
+      border-radius: 10px;
+      min-width: 190px;
+      max-width: 260px;
+      padding: 1.1em 1.1em 1em 1.1em;
+      box-shadow: 0 2px 8px #181a1f22;
+      margin-bottom: 0.7em;
+      flex: 1 1 220px;
+    }
+    .mini-card .icon {
+      font-size: 2.2em;
+      color: #55c8ff;
+      margin-bottom: 0.25em;
+    }
+    .mini-card h3 {
+      font-size: 1.1em;
+      margin: 0 0 0.3em 0;
+      color: #a2e8ff;
+      font-weight: 700;
+    }
+    .mini-card p {
+      font-size: 0.98em;
+      color: #e0e6f5;
+      margin: 0;
+    }
+    .github-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.1em;
+      margin-top: 1.1em;
+      justify-content: flex-start;
+    }
+    .github-card {
+      background: #23263b;
+      border-radius: 10px;
+      min-width: 220px;
+      max-width: 320px;
+      padding: 1.1em 1em 1em 1em;
+      box-shadow: 0 2px 8px #181a1f22;
+      margin-bottom: 0.7em;
+      flex: 1 1 260px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: box-shadow 0.2s;
+    }
+    .github-card:hover {
+      box-shadow: 0 6px 32px #282f4e66;
+    }
+    .github-card .repo-title {
+      font-size: 1.09em;
+      color: #7edbfa;
+      font-weight: 700;
+      margin-bottom: 0.2em;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .github-card .repo-desc {
+      font-size: 0.98em;
+      color: #e0e6f5;
+      margin-bottom: 0.35em;
+    }
+    .github-card .repo-meta {
+      font-size: 0.89em;
+      color: #bfc6d9;
+      margin-bottom: 0.1em;
+      display: flex;
+      gap: 0.9em;
+      align-items: center;
+    }
+    .github-card .repo-stars {
+      color: #f9d923;
+      font-size: 1em;
+      margin-right: 0.3em;
+    }
+    @media (max-width: 900px) {
+      .dynamic-counters { flex-direction: column; align-items: flex-start; }
+      .container { width:99%; }
+    }
+    @media (max-width: 700px) {
+      section, .container { padding: 1.1rem !important; }
+      .offer-list, .card-grid, .github-list { flex-direction: column; }
+      .yt-embed { height: 225px; }
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#"><img src="logo.png" alt="Logo" width="50" height="50"> Christopher</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#about">O mnie</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#portfolio">Portfolio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#blog">Blog</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#contact">Kontakt</a>
-                    </li>
-                </ul>
-                <form class="d-flex ms-3">
-                    <input class="form-control me-2" type="search" placeholder="Szukaj" aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
-                </form>
-            </div>
-        </div>
+<header>
+  <div class="container">
+    <nav>
+      <a class="brand" href="#hero">anonymousik.is-a.dev</a>
+      <ul class="navbar">
+        <li><a href="#hero" class="active">Start</a></li>
+        <li><a href="#portfolio">Portfolio</a></li>
+        <li><a href="#offer">Oferta</a></li>
+        <li><a href="#youtube">YouTube</a></li>
+        <li><a href="#contact">Kontakt</a></li>
+      </ul>
     </nav>
-    <section id="home" class="home">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <div class="home-content">
-                        <h1>Cześć, jestem Christopher</h1>
-                        <p>Jestem grafikiem, edytorem wideo, pasjonatem systemów Linux i Android, oraz miłośnikiem prywatności i optymalizacji. Na tej stronie znajdziesz więcej informacji o mnie, moich zainteresowaniach, projektach i osiągnięciach. Zapraszam do zapoznania się z moim portfolio i blogiem, gdzie dzielę się swoimi doświadczeniami i wiedzą.</p>
-                        <a href="#portfolio" class="btn btn-primary">Zobacz moje portfolio</a>
-                        <a href="#blog" class="btn btn-secondary">Przeczytaj mój blog</a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="home-image">
-                        <img src="chris.png" alt="Christopher" class="img-fluid">
-                    </div>
-                </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- HERO / DYNAMICZNA SEKCJA POWITALNA -->
+  <section id="hero" data-aos="fade-up">
+    <h1 class="section-title">Christopher <span style="font-weight:400;color:#a2e8ff;">| anonymousik</span></h1>
+    <p class="lead">
+      Grafik, Montażysta, Twórca muzyki, YouTube Content Creator.<br>
+      Portfolio, oferta współpracy i kontakt poniżej.
+    </p>
+    <div class="badges">
+      <span class="badge">Grafik</span>
+      <span class="badge">Montażysta</span>
+      <span class="badge">Twórca muzyki</span>
+      <span class="badge">YouTube Content Creator</span>
+      <span class="badge">Portfolio</span>
+      <span class="badge">Oferta</span>
+    </div>
+    <div class="social-links">
+      <a href="mailto:kontakt@nieznanynikomu.github.io" title="E-mail"><i class="fa-solid fa-envelope"></i></a>
+      <a href="https://github.com/ferroart" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+      <a href="https://www.youtube.com/@FerroART" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+      <a href="https://nieznanynikomu.github.io/FerroART/" target="_blank" title="Portfolio"><i class="fa-solid fa-palette"></i></a>
+    </div>
+
+    <div class="dynamic-counters">
+      <div class="counter-box" data-aos="zoom-in" data-aos-delay="100">
+        <div class="counter-value"><span id="counter-portfolio">0</span>+</div>
+        <div class="counter-label">Projektów w portfolio</div>
+      </div>
+      <div class="counter-box" data-aos="zoom-in" data-aos-delay="250">
+        <div class="counter-value"><span id="counter-music">0</span>+</div>
+        <div class="counter-label">Utworów muzycznych</div>
+      </div>
+      <div class="counter-box" data-aos="zoom-in" data-aos-delay="400">
+        <div class="counter-value"><span id="counter-yt">0</span>+</div>
+        <div class="counter-label">Filmów na YouTube</div>
+      </div>
+    </div>
+
+    <div class="quick-nav">
+      <a href="#portfolio">Portfolio</a>
+      <a href="#offer">Oferta</a>
+      <a href="#youtube">YouTube</a>
+      <a href="#contact">Kontakt</a>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO (automatyczne z GitHub) -->
+  <section id="portfolio" data-aos="fade-up">
+    <h2 class="section-title">Portfolio</h2>
+    <div class="github-list" id="github-repos">
+      <div style="color:#bfc6d9;font-size:1.12em;">Ładowanie projektów z GitHub...</div>
+    </div>
+    <div class="card-grid" style="margin-top:2.1em;">
+      <div class="mini-card">
+        <div class="icon"><i class="fa-solid fa-palette"></i></div>
+        <h3>Grafika cyfrowa</h3>
+        <p>Projekty graficzne, bannery, logotypy. <br>
+          <a href="https://nieznanynikomu.github.io/FerroART/" target="_blank">Zobacz FerroART</a>
+        </p>
+      </div>
+      <div class="mini-card">
+        <div class="icon"><i class="fa-solid fa-video"></i></div>
+        <h3>Montaż wideo</h3>
+        <p>Film promocyjny, YouTube, teledyski. <br>
+          <a href="https://www.youtube.com/@FerroART" target="_blank">YouTube</a>
+        </p>
+      </div>
+      <div class="mini-card">
+        <div class="icon"><i class="fa-solid fa-music"></i></div>
+        <h3>Produkcja muzyki</h3>
+        <p>Autorskie utwory, podkłady, mix/master. <br>
+          <a href="mailto:kontakt@nieznanynikomu.github.io">Zapytaj o demo</a>
+        </p>
+      </div>
+      <div class="mini-card">
+        <div class="icon"><i class="fa-solid fa-desktop"></i></div>
+        <h3>Web / IT</h3>
+        <p>Strony internetowe, wsparcie IT, automatyzacja.<br>
+          <a href="mailto:kontakt@nieznanynikomu.github.io">Kontakt</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFERTA -->
+  <section id="offer" data-aos="fade-up">
+    <h2 class="section-title">Oferta</h2>
+    <div class="offer-list">
+      <div class="offer-box">
+        <h3>Status zlecenia</h3>
+        <a href="status.html" target="_blank">Sprawdź status swojego zlecenia</a>
+      </div>
+      <div class="offer-box">
+        <h3>Regulamin zleceń</h3>
+        <a href="regulamin.html" target="_blank">Przeczytaj regulamin FerrpIT</a>
+      </div>
+      <div class="offer-box">
+        <h3>Złóż zlecenie</h3>
+        <a href="formularz.html" target="_blank">Formularz zlecenia</a>
+      </div>
+    </div>
+    <p style="color:#89eaf6;font-size:0.97em;margin-top:1.3em;">Każde zlecenie podlega weryfikacji zgodnie z regulaminem FerrpIT.</p>
+  </section>
+
+  <!-- YOUTUBE CONTENT CREATOR -->
+  <section id="youtube" data-aos="fade-up">
+    <h2 class="section-title">YouTube Content Creator</h2>
+    <div class="card-grid">
+      <div class="mini-card">
+        <div class="icon"><i class="fab fa-youtube"></i></div>
+        <h3>FerroART</h3>
+        <p>Kanał z poradnikami, montażem i muzyką.<br>
+          <a href="https://www.youtube.com/@FerroART" target="_blank">Odwiedź kanał</a>
+        </p>
+      </div>
+      <div class="mini-card">
+        <div class="icon"><i class="fa-solid fa-film"></i></div>
+        <h3>Realizacje</h3>
+        <p>Proma, filmy, intro, efekty specjalne.<br>
+          <a href="mailto:kontakt@nieznanynikomu.github.io">Zamów realizację</a>
+        </p>
+      </div>
+    </div>
+    <div class="yt-embed">
+      <iframe width="100%" height="100%" src="https://www.youtube.com/embed?listType=user_uploads&list=FerroART"
+        title="YouTube FerroART" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+  </section>
+
+  <!-- GRAFIK, MONTAŻYSTA, TWÓRCA MUZYKI (mini sekcje) -->
+  <section id="skills" data-aos="fade-up">
+    <h2 class="section-title">Moje specjalizacje</h2>
+    <div class="card-grid">
+      <div class="mini-card">
+        <div class="icon"><i class="fa-solid fa-palette"></i></div>
+        <h3>Grafik</h3>
+        <p>Kreatywne projekty graficzne, branding, ilustracje.</p>
+      </div>
+      <div class="mini-card">
+        <div class="icon"><i class="fa-solid fa-video"></i></div>
+        <h3>Montażysta</h3>
+        <p>Montaż wideo, efekty, korekcja barw.</p>
+      </div>
+      <div class="mini-card">
+        <div class="icon"><i class="fa-solid fa-music"></i></div>
+        <h3>Twórca muzyki</h3>
+        <p>Muzyka do filmów, podkłady, jingles.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- KONTAKT -->
+  <section id="contact" data-aos="fade-up">
+    <h2 class="section-title">Kontakt</h2>
+    <ul>
+      <li>Email: <a href="mailto:kontakt@nieznanynikomu.github.io">kontakt@nieznanynikomu.github.io</a></li>
+      <li>GitHub: <a href="https://github.com/ferroart" target="_blank">@ferroart</a></li>
+      <li>Strona: <a href="https://anonymousik.is-a.dev" target="_blank">anonymousik.is-a.dev</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <div class="brand">anonymousik.is-a.dev</div>
+  <div class="footer-badges">
+    <span>Grafik</span>
+    <span>Montażysta</span>
+    <span>Twórca muzyki</span>
+    <span>YouTube Content Creator</span>
+  </div>
+  <div style="margin:0.7em 0;">
+    FerroART | Uncown &middot; 0 followers · 2 following
+  </div>
+  <div style="margin:1.1em 0 0 0;font-size:0.98em;">
+    &copy; 2025 Christopher | anonymousik.is-a.dev – Wszelkie prawa zastrzeżone.
+  </div>
+</footer>
+
+<!-- DYNAMICZNE SKRYPTY -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.8.0/countUp.umd.js"></script>
+<script>
+  // Inicjalizacja animacji on scroll
+  AOS.init({ once: true });
+  // Liczniki dynamiczne
+  window.addEventListener('DOMContentLoaded', () => {
+    new window.CountUp('counter-portfolio', 37, {duration: 2}).start();
+    new window.CountUp('counter-music', 19, {duration: 2.0}).start();
+    new window.CountUp('counter-yt', 56, {duration: 2.2}).start();
+  });
+
+  // Automatyczne portfolio GitHub (zmień user na swój login!)
+  const githubUser = "ferroart";
+  const githubList = document.getElementById('github-repos');
+  fetch(`https://api.github.com/users/${githubUser}/repos?per_page=100&sort=updated`)
+    .then(r => r.json()).then(repos => {
+      if (!Array.isArray(repos) || !repos.length) {
+        githubList.innerHTML = '<div style="color:#bfc6d9;font-size:1.1em;">Brak publicznych projektów na GitHub.</div>';
+        return;
+      }
+      githubList.innerHTML = '';
+      repos
+        .filter(repo => !repo.fork)
+        .sort((a,b) => (b.stargazers_count - a.stargazers_count))
+        .forEach(repo => {
+          const el = document.createElement('div');
+          el.className = 'github-card';
+          el.innerHTML = `
+            <a class="repo-title" href="${repo.html_url}" target="_blank">${repo.name}</a>
+            <div class="repo-desc">${repo.description ? repo.description : ''}</div>
+            <div class="repo-meta">
+              <span class="repo-stars"><i class="fa-solid fa-star"></i> ${repo.stargazers_count}</span>
+              <span>${repo.language ? repo.language : ''}</span>
+              <span style="font-size:0.9em;">${(new Date(repo.updated_at)).toLocaleDateString('pl-PL')}</span>
             </div>
-        </div>
-    </section>
-    <section id="about" class="about">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="about-image">
-                        <img src="about.png" alt="About" class="img-fluid">
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="about-content">
-                        <h2>O mnie</h2>
-                        <p>Nazywam się Christopher, dla znajomych Ferro. Jestem pasjonatem szeroko pojętej wiedzy o technologii i sztuce. Lubię tworzyć i edytować grafikę, wideo, skrypty i strony internetowe. Interesuję się również systemami operacyjnymi Linux i Android, oraz dbam o swoją prywatność i optymalizację. Wszystko wykonuję zgodnie z aktualnymi standardami i trendami.</p>
-                        <p>Moje umiejętności i doświadczenie obejmują:</p>
-                        <ul>
-                            <li>🖌️ Grafika: tworzenie i edytowanie grafiki użytkowej, takiej jak: banery, logotypy, wizytówki, broszury, ulotki, materiały promocyjne do marketingu, spersonalizowane zaproszenia listowe, spersonalizowany projekt strony internetowej lub edycja istniejącej...</li>
-                            <li>🎦 Edycja wideo: fan edycji wideo zgodnie z aktualnymi trendami w edycji wideo, a także tworzenie filmów wprowadzających, animacji statycznych i innych...</li>
-                            <li>⛎ Linux: umiejętność obsługi serwerów opartych na UNIX, konfiguracji, zarządzania, optymalizacji, rozwiązywania problemów, debugowania, zarządzania bazami danych na serwerach opartych na Linux/Windows, personalizacji ustawień platformy dostosowanych do potrzeb użytkownika, optymalizacji zużycia zasobów i możliwej diagnostyki, jeśli poziom obciążenia jest zbyt wysoki</li>
-                            <li>🤖 Android: optymalizacja systemu Android, aby maksymalnie wykorzystać wydajność, jaką może zaoferować smartfon, testowanie modyfikowanych niestandardowych romów, pisanie i edytowanie przydatnych skryptów do poprawy wydajności, poprawa wszystkich problemów, których producent nie naprawia, dogłębna analiza działania wszystkich elementów systemów operacyjnych Android i więcej...</li>
-                            <li>🔏 Miłośnik prywatności i optymalizacji: poszukiwacz zastępczych usług google, które w pełni szanują prywatność użytkownika, zabezpieczanie i optymalizacja domowej sieci</li>
-                        </ul>
-                        <a href="#contact" class="btn btn-primary">Skontaktuj się ze mną</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section id="portfolio" class="portfolio">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="portfolio-content">
-                        <h2>Moje portfolio</h2>
-                        <p>Oto niektóre z moich projektów, prac i osiągnięć, które chciałbym się z tobą podzielić. Możesz zobaczyć więcej na moim blogu lub na moim profilu GitHub.</p>
-                        <div class="owl-carousel owl-theme">
-                            <div class="item">
-                                <div class="card">
-                                    <img src="banner.png" class="card-img-top" alt="Banner">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Banner dla firmy XYZ</h5>
-                                        <p class="card-text">Stworzyłem banner reklamowy dla firmy XYZ, która oferuje usługi doradcze i szkoleniowe. Banner ma prosty i elegancki design, z logo firmy, hasłem reklamowym i informacją kontaktową. Użyłem programu Adobe Photoshop do stworzenia grafiki.</p>
-                                        <a href="#" class="btn btn-primary">Zobacz więcej</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="
+          `;
+          githubList.appendChild(el);
+        });
+    })
+catch(() => {
+      githubList.innerHTML = '<div style="color:#bfc6d9;">Nie udało się pobrać projektów z GitHub.</div>';
+    });
+</script>
+</body>
+</html>
