@@ -1,0 +1,14 @@
+            - name: Setup Apache Flex SDK
+  # You may pin to the exact commit or the version.
+  # uses: joshtynjala/setup-apache-flex-action@54219798b895d8b2557f5b9e479e28ad0763f6d5
+  uses: joshtynjala/setup-apache-flex-action@v2.1.0
+  with:
+    # Version of the Apache Flex SDK (example: 4.16.1)
+    flex-version: 
+    # Version of the Adobe AIR SDK (example: 50.0)
+    air-version: 
+    # Accept the Adobe AIR SDK License Agreement (example: true)
+    accept-air-license: 
+    # Use with an encrypted secret to optionally provide a valid adt.lic file, encoded as a Base64 string
+    air-license-base64: # optional
+          
