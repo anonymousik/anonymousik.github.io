@@ -3,528 +3,541 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Christopher | anonymousik.is-a.dev</title>
-  <meta name="description" content="Portfolio - Grafik, Montażysta, Twórca muzyki, YouTube Content Creator. Sprawdź ofertę i projekty anonymousika!">
+  <title>UNӃNOWN ͡Ͳ_ට ͡ANYONE | anonymousik.is-a.dev</title>
+  <meta name="description" content="Portfolio - Grafik, Montażysta, Twórca muzyki, YouTube Content Creator. Sprawdź ofertę i projekty UNӃNOWN ͡Ͳ_ට ͡ANYONE!">
+  <meta name="author" content="UNӃNOWN ͡Ͳ_ට ͡ANYONE | NƗӃටMƱ">
   <meta name="theme-color" content="#16181c">
+  <meta name="keywords" content="FerroART, Grafik, Montażysta, YouTube, Muzyka, Portfolio">
+  
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/img/root/favicon.png">
+  
+  <!-- CSS -->
   <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"/>
+  
   <style>
+    /* Core Styles */
+    :root {
+      --primary-color: #55c8ff;
+      --secondary-color: #7edbfa;
+      --background-dark: #16181c;
+      --background-light: #23263b;
+      --text-primary: #e6e6e6;
+      --text-secondary: #b2c7e6;
+    }
+
     body {
       font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
-      background: #16181c;
-      color: #e6e6e6;
+      background: var(--background-dark);
+      color: var(--text-primary);
       margin: 0;
       min-height: 100vh;
       scroll-behavior: smooth;
+      line-height: 1.6;
     }
-    header {
-      background: #1d212a;
-      box-shadow: 0 3px 24px #10121533;
-      position: sticky;
-      top: 0; z-index: 10;
-    }
+    
+    /* Container & Layout */
     .container {
       width: 92%;
       max-width: 1100px;
       margin: 0 auto;
+      padding: 0 1rem;
     }
+    
+    /* Header & Navigation */
+    header {
+      background: #1d212a;
+      box-shadow: 0 3px 24px rgba(16, 18, 21, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
     nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 1.2rem 0;
     }
+    
     .brand {
       font-size: 1.55rem;
       font-weight: 800;
-      color: #55c8ff;
-      letter-spacing: 1px;
+      color: var(--primary-color);
       text-decoration: none;
+      letter-spacing: 1px;
       line-height: 1.2;
+      transition: color 0.2s ease;
     }
+    
+    .brand:hover {
+      color: var(--secondary-color);
+    }
+    
     ul.navbar {
       list-style: none;
       display: flex;
       gap: 1.2rem;
-      margin: 0; padding: 0;
+      margin: 0;
+      padding: 0;
     }
+    
     ul.navbar li a {
-      color: #c7c7d9;
+      color: var(--text-secondary);
       text-decoration: none;
       font-weight: 500;
       font-size: 1.06rem;
-      transition: color 0.15s;
+      transition: color 0.15s, background 0.15s;
       padding: 0.2em 0.4em;
       border-radius: 5px;
     }
-    ul.navbar li a:hover, ul.navbar li a.active {
-      color: #55c8ff;
-      background: #23283b;
+    
+    ul.navbar li a:hover,
+    ul.navbar li a.active {
+      color: var(--primary-color);
+      background: var(--background-light);
     }
+
+    /* Section Styles */
     section {
       margin: 2.5rem 0;
-      background: #202432;
+      background: var(--background-light);
       border-radius: 14px;
-      box-shadow: 0 2px 16px #2327421e;
+      box-shadow: 0 2px 16px rgba(35, 39, 66, 0.12);
       padding: 2.3rem 1.8rem;
     }
+    
     .section-title {
-      color: #55c8ff;
+      color: var(--primary-color);
       margin-bottom: 0.7em;
       font-weight: 700;
       letter-spacing: 1px;
       font-size: 2.1rem;
+      text-align: center;
     }
-    .lead {
-      font-size: 1.18rem;
-      margin-bottom: 1rem;
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .badges, .footer-badges {
-      margin: 1rem 0 2rem 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.7em;
+
+    .fade-in {
+      animation: fadeIn 0.6s ease forwards;
     }
-    .badge, .footer-badges span {
-      background: #262a39;
-      color: #7edbfa;
-      border-radius: 16px;
-      padding: 0.4em 1.1em;
-      font-size: 0.98em;
-      font-weight: 500;
-      border: 1px solid #303347;
-      display: inline-block;
-    }
-    .social-links {
-      margin-top: 1rem;
-      font-size: 1.5rem;
-    }
-    .social-links a {
-      color: #55c8ff;
-      margin-right: 0.7em;
-      transition: color 0.15s;
-    }
-    .social-links a:hover { color: #a2e8ff; }
-    .dynamic-counters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2.1em;
-      margin-top: 1.8em;
-    }
-    .counter-box {
-      background:#23263b;
-      padding:1.2em 2.1em 1.1em 2.1em;
-      border-radius:16px;
-      box-shadow:0 2px 12px #181a1f22;
-      text-align:center;
-      min-width: 180px;
-      margin-bottom: 0.7em;
-    }
-    .counter-box .counter-value {
-      font-size:2.3rem;
-      font-weight:700;
-      color:#7edbfa;
-      line-height:1;
-      margin-bottom:0.2em;
-    }
-    .counter-box .counter-label {
-      font-size:1em;
-      color:#b2c7e6;
-      font-weight:600;
-    }
-    .quick-nav {
-      margin:1.8em 0 0.2em 0;
-      display:flex;
-      flex-wrap:wrap;
-      gap:1.1em;
-      justify-content:center;
-    }
-    .quick-nav a {
-      background:#252a41;
-      color:#a2e8ff;
-      text-decoration:none;
-      border-radius: 18px;
-      padding: 0.45em 1.35em;
-      font-size: 1.01em;
-      font-weight: 600;
-      transition:background .15s,color .15s;
-    }
-    .quick-nav a:hover { background:#2b3149; color:#e2f6ff;}
-    .offer-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.3rem;
-      margin-top: 1.4rem;
-    }
-    .offer-box {
-      background: #23263b;
-      border-radius: 10px;
-      flex: 1 1 220px;
-      min-width: 220px;
-      max-width: 340px;
-      padding: 1.2em;
-      box-shadow: 0 2px 8px #181a1f22;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .offer-box h3 {
-      margin: 0 0 0.5em 0; color: #7edbfa; font-size: 1.08em;font-weight: 700;
-    }
-    .offer-box a {
-      color: #55c8ff;
-      margin-top: 0.5em;
-      font-size: 1.02em;
-      text-decoration: underline;
-      transition: color .14s;
-    }
-    .offer-box a:hover { color: #a2e8ff; }
-    .yt-embed {
-      margin-top: 1.5em;
+    
+        /* Hero Section Styles */
+    .hero-banner {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      margin-bottom: 2rem;
       border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 2px 16px #2327421e;
-      border: 1px solid #21232d;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    }
+    
+    .hero-banner img {
       width: 100%;
-      max-width: 560px;
-      height: 315px;
-      background: #101215;
+      height: 100%;
+      object-fit: cover;
     }
-    .card-grid {
+    
+    .profile-avatar {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin: -75px auto 20px auto;
+      border-radius: 50%;
+      border: 4px solid var(--background-light);
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      background: var(--background-light);
+    }
+    
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .profile-avatar:hover img {
+      transform: scale(1.1);
+    }
+    
+    .hero-content {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Channel Description Styles */
+    .channel-description {
+      margin: 2rem auto;
+      max-width: 800px;
+      text-align: center;
+      background: #23263b;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .greeting {
+      font-size: 1.2rem;
+      color: var(--secondary-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .channel-highlight {
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: #2a2f47;
+      border-radius: 10px;
+      border: 1px solid rgba(85, 200, 255, 0.1);
+    }
+
+    .highlight-text {
+      font-size: 1.3rem;
+      color: var(--primary-color);
+      font-weight: bold;
+      margin: 0.5rem 0;
+    }
+
+    /* YouTube Section Styles */
+    .youtube-stats {
       display: flex;
       flex-wrap: wrap;
-      gap: 1.3em;
-      margin-top: 1.1em;
-      justify-content: flex-start;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 2rem 0;
     }
-    .mini-card {
+
+    .stat-box {
+      background: var(--background-light);
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+      min-width: 180px;
+      flex: 1;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease;
+    }
+
+    .stat-box:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--secondary-color);
+      margin: 0.5rem 0;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    /* Playlist Section Styles */
+    .playlist-section {
+      margin-top: 3rem;
+    }
+
+    .playlist-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--primary-color);
+    }
+
+    .playlist-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .playlist-subtitle {
+      font-size: 1.4rem;
+      color: var(--secondary-color);
+    }
+
+    .playlist-container {
+      background: var(--background-light);
+      padding: 2rem;
+      border-radius: 12px;
+      margin-top: 1.5rem;
+    }
+
+    .playlist-embed {
+      margin: 1.5rem 0;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+    }
+
+    .playlist-embed iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .playlist-description {
       background: #23263b;
-      border-radius: 10px;
-      min-width: 190px;
-      max-width: 260px;
-      padding: 1.1em 1.1em 1em 1.1em;
-      box-shadow: 0 2px 8px #181a1f22;
-      margin-bottom: 0.7em;
-      flex: 1 1 220px;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-top: 1.5rem;
     }
-    .mini-card .icon {
-      font-size: 2.2em;
-      color: #55c8ff;
-      margin-bottom: 0.25em;
+
+    /* Tags and Credits */
+    .tags {
+      font-size: 0.8rem;
+      color: var(--primary-color);
+      line-height: 1.6;
+      word-wrap: break-word;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(85, 200, 255, 0.1);
     }
-    .mini-card h3 {
-      font-size: 1.1em;
-      margin: 0 0 0.3em 0;
-      color: #a2e8ff;
-      font-weight: 700;
-    }
-    .mini-card p {
-      font-size: 0.98em;
-      color: #e0e6f5;
-      margin: 0;
-    }
-    .github-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.1em;
-      margin-top: 1.1em;
-      justify-content: flex-start;
-    }
-    .github-card {
-      background: #23263b;
-      border-radius: 10px;
-      min-width: 220px;
-      max-width: 320px;
-      padding: 1.1em 1em 1em 1em;
-      box-shadow: 0 2px 8px #181a1f22;
-      margin-bottom: 0.7em;
-      flex: 1 1 260px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: box-shadow 0.2s;
-    }
-    .github-card:hover {
-      box-shadow: 0 6px 32px #282f4e66;
-    }
-    .github-card .repo-title {
-      font-size: 1.09em;
-      color: #7edbfa;
-      font-weight: 700;
-      margin-bottom: 0.2em;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .github-card .repo-desc {
-      font-size: 0.98em;
-      color: #e0e6f5;
-      margin-bottom: 0.35em;
-    }
-    .github-card .repo-meta {
-      font-size: 0.89em;
-      color: #bfc6d9;
-      margin-bottom: 0.1em;
-      display: flex;
-      gap: 0.9em;
-      align-items: center;
-    }
-    .github-card .repo-stars {
-      color: #f9d923;
-      font-size: 1em;
-      margin-right: 0.3em;
-    }
-    @media (max-width: 900px) {
-      .dynamic-counters { flex-direction: column; align-items: flex-start; }
-      .container { width:99%; }
-    }
-    @media (max-width: 700px) {
-      section, .container { padding: 1.1rem !important; }
-      .offer-list, .card-grid, .github-list { flex-direction: column; }
-      .yt-embed { height: 225px; }
+
+    .credits {
+      text-align: center;
+      margin: 2rem 0;
+      color: var(--secondary-color);
+      font-size: 0.9rem;
+      line-height: 1.8;
     }
   </style>
 </head>
 <body>
-<header>
-  <div class="container">
-    <nav>
-      <a class="brand" href="#hero">anonymousik.is-a.dev</a>
-      <ul class="navbar">
-        <li><a href="#hero" class="active">Start</a></li>
-        <li><a href="#portfolio">Portfolio</a></li>
-        <li><a href="#offer">Oferta</a></li>
-        <li><a href="#youtube">YouTube</a></li>
-        <li><a href="#contact">Kontakt</a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
-
-<main class="container">
-
-  <!-- HERO / DYNAMICZNA SEKCJA POWITALNA -->
-  <section id="hero" data-aos="fade-up">
-    <h1 class="section-title">Christopher <span style="font-weight:400;color:#a2e8ff;">| anonymousik</span></h1>
-    <p class="lead">
-      Grafik, Montażysta, Twórca muzyki, YouTube Content Creator.<br>
-      Portfolio, oferta współpracy i kontakt poniżej.
-    </p>
-    <div class="badges">
-      <span class="badge">Grafik</span>
-      <span class="badge">Montażysta</span>
-      <span class="badge">Twórca muzyki</span>
-      <span class="badge">YouTube Content Creator</span>
-      <span class="badge">Portfolio</span>
-      <span class="badge">Oferta</span>
+  <header>
+    <div class="container">
+      <nav>
+        <a class="brand" href="#hero">anonymousik.is-a.dev</a>
+        <ul class="navbar">
+          <li><a href="#hero" class="active">Start</a></li>
+          <li><a href="#portfolio">Portfolio</a></li>
+          <li><a href="#youtube">YouTube</a></li>
+          <li><a href="#contact">Kontakt</a></li>
+        </ul>
+      </nav>
     </div>
-    <div class="social-links">
-      <a href="mailto:kontakt@nieznanynikomu.github.io" title="E-mail"><i class="fa-solid fa-envelope"></i></a>
-      <a href="https://github.com/ferroart" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
-      <a href="https://www.youtube.com/@FerroART" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-      <a href="https://nieznanynikomu.github.io/FerroART/" target="_blank" title="Portfolio"><i class="fa-solid fa-palette"></i></a>
-    </div>
+  </header>
 
-    <div class="dynamic-counters">
-      <div class="counter-box" data-aos="zoom-in" data-aos-delay="100">
-        <div class="counter-value"><span id="counter-portfolio">0</span>+</div>
-        <div class="counter-label">Projektów w portfolio</div>
+  <main class="container">
+    <!-- Hero Section -->
+    <section id="hero" data-aos="fade-up">
+      <div class="hero-banner">
+        <img src="https://yt3.googleusercontent.com/BNuFe1348yW6NFbEkt1k2B0tWbJ5NxS_VKFt-qEDysa3CBz-FqYWk6YRjG8W1FLhkT5RlBEV=w2560" 
+             alt="FerroART Banner">
       </div>
-      <div class="counter-box" data-aos="zoom-in" data-aos-delay="250">
-        <div class="counter-value"><span id="counter-music">0</span>+</div>
-        <div class="counter-label">Utworów muzycznych</div>
-      </div>
-      <div class="counter-box" data-aos="zoom-in" data-aos-delay="400">
-        <div class="counter-value"><span id="counter-yt">0</span>+</div>
-        <div class="counter-label">Filmów na YouTube</div>
-      </div>
-    </div>
+      
+      <div class="hero-content">
+        <div class="profile-avatar">
+          <img src="https://yt3.googleusercontent.com/K5Hb6RFz-YpiMv7zTv-1yHu0jGiNiEv5MAPAT-Tg89HYcPOPV0Juxu9SVfVTjOiYOFD33Ao=s176-c-k-c0x00ffffff-no-rj" 
+               alt="FerroART Avatar">
+        </div>
+        
+        <h1 class="section-title">
+          UNӃNOWN ͡Ͳ_ට ͡ANYONE
+          <span style="font-weight:400;color:#a2e8ff;">| NƗӃටMƱ</span>
+        </h1>
 
-    <div class="quick-nav">
-      <a href="#portfolio">Portfolio</a>
-      <a href="#offer">Oferta</a>
-      <a href="#youtube">YouTube</a>
-      <a href="#contact">Kontakt</a>
-    </div>
-  </section>
+        <div class="channel-description">
+          <p class="greeting">
+            Cześć!, Jestem ͜FERRꪮ ͜ ͜💀👊 Miło mi Cię poznać 😁<br>
+            Witaj w królestwie #FerroART |🎵|
+          </p>
 
-  <!-- PORTFOLIO (automatyczne z GitHub) -->
-  <section id="portfolio" data-aos="fade-up">
-    <h2 class="section-title">Portfolio</h2>
-    <div class="github-list" id="github-repos">
-      <div style="color:#bfc6d9;font-size:1.12em;">Ładowanie projektów z GitHub...</div>
-    </div>
-    <div class="card-grid" style="margin-top:2.1em;">
-      <div class="mini-card">
-        <div class="icon"><i class="fa-solid fa-palette"></i></div>
-        <h3>Grafika cyfrowa</h3>
-        <p>Projekty graficzne, bannery, logotypy. <br>
-          <a href="https://nieznanynikomu.github.io/FerroART/" target="_blank">Zobacz FerroART</a>
-        </p>
-      </div>
-      <div class="mini-card">
-        <div class="icon"><i class="fa-solid fa-video"></i></div>
-        <h3>Montaż wideo</h3>
-        <p>Film promocyjny, YouTube, teledyski. <br>
-          <a href="https://www.youtube.com/@FerroART" target="_blank">YouTube</a>
-        </p>
-      </div>
-      <div class="mini-card">
-        <div class="icon"><i class="fa-solid fa-music"></i></div>
-        <h3>Produkcja muzyki</h3>
-        <p>Autorskie utwory, podkłady, mix/master. <br>
-          <a href="mailto:kontakt@nieznanynikomu.github.io">Zapytaj o demo</a>
-        </p>
-      </div>
-      <div class="mini-card">
-        <div class="icon"><i class="fa-solid fa-desktop"></i></div>
-        <h3>Web / IT</h3>
-        <p>Strony internetowe, wsparcie IT, automatyzacja.<br>
-          <a href="mailto:kontakt@nieznanynikomu.github.io">Kontakt</a>
-        </p>
-      </div>
-    </div>
-  </section>
+          <div class="features">
+            <ul>
+              <li><i class="fas fa-music"></i> Niepowtarzalne remiksy i przeróbki znanych hitów</li>
+              <li><i class="fas fa-paint-brush"></i> Oryginalne teksty i wizualizacje |👨‍🎨|</li>
+              <li><i class="fas fa-star"></i> Remake'i, remastery i oryginalne treści</li>
+            </ul>
+          </div>
+        </div>
 
-  <!-- OFERTA -->
-  <section id="offer" data-aos="fade-up">
-    <h2 class="section-title">Oferta</h2>
-    <div class="offer-list">
-      <div class="offer-box">
-        <h3>Status zlecenia</h3>
-        <a href="status.html" target="_blank">Sprawdź status swojego zlecenia</a>
+        <div class="social-links">
+          <a href="mailto:nieznanynikomuu@gmail.com" title="E-mail">
+            <i class="fa-solid fa-envelope"></i>
+          </a>
+          <a href="https://github.com/anonymousik" target="_blank" title="GitHub">
+            <i class="fab fa-github"></i>
+          </a>
+          <a href="https://youtube.com/@FerroART" target="_blank" title="YouTube">
+            <i class="fab fa-youtube"></i>
+          </a>
+        </div>
       </div>
-      <div class="offer-box">
-        <h3>Regulamin zleceń</h3>
-        <a href="regulamin.html" target="_blank">Przeczytaj regulamin FerrpIT</a>
-      </div>
-      <div class="offer-box">
-        <h3>Złóż zlecenie</h3>
-        <a href="formularz.html" target="_blank">Formularz zlecenia</a>
-      </div>
-    </div>
-    <p style="color:#89eaf6;font-size:0.97em;margin-top:1.3em;">Każde zlecenie podlega weryfikacji zgodnie z regulaminem FerrpIT.</p>
-  </section>
+    </section>
 
-  <!-- YOUTUBE CONTENT CREATOR -->
-  <section id="youtube" data-aos="fade-up">
-    <h2 class="section-title">YouTube Content Creator</h2>
-    <div class="card-grid">
-      <div class="mini-card">
-        <div class="icon"><i class="fab fa-youtube"></i></div>
-        <h3>FerroART</h3>
-        <p>Kanał z poradnikami, montażem i muzyką.<br>
-          <a href="https://www.youtube.com/@FerroART" target="_blank">Odwiedź kanał</a>
-        </p>
+    <!-- YouTube Section -->
+    <section id="youtube" data-aos="fade-up">
+      <h2 class="section-title">YouTube Content Creator</h2>
+      
+      <div class="youtube-stats">
+        <div class="stat-box" data-aos="zoom-in" data-aos-delay="100">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-value">1.2K+</div>
+          <div class="stat-label">Subskrypcji</div>
+        </div>
+        <div class="stat-box" data-aos="zoom-in" data-aos-delay="200">
+          <div class="stat-icon"><i class="fas fa-eye"></i></div>
+          <div class="stat-value">50K+</div>
+          <div class="stat-label">Wyświetleń</div>
+        </div>
+        <div class="stat-box" data-aos="zoom-in" data-aos-delay="300">
+          <div class="stat-icon"><i class="fas fa-thumbs-up"></i></div>
+          <div class="stat-value">3.5K+</div>
+          <div class="stat-label">Polubień</div>
+        </div>
+        <div class="stat-box" data-aos="zoom-in" data-aos-delay="400">
+          <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+          <div class="stat-value">2019</div>
+          <div class="stat-label">Rok założenia</div>
+        </div>
       </div>
-      <div class="mini-card">
-        <div class="icon"><i class="fa-solid fa-film"></i></div>
-        <h3>Realizacje</h3>
-        <p>Proma, filmy, intro, efekty specjalne.<br>
-          <a href="mailto:kontakt@nieznanynikomu.github.io">Zamów realizację</a>
-        </p>
-      </div>
-    </div>
-    <div class="yt-embed">
-      <iframe width="100%" height="100%" src="https://www.youtube.com/embed?listType=user_uploads&list=FerroART"
-        title="YouTube FerroART" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    </div>
-  </section>
 
-  <!-- GRAFIK, MONTAŻYSTA, TWÓRCA MUZYKI (mini sekcje) -->
-  <section id="skills" data-aos="fade-up">
-    <h2 class="section-title">Moje specjalizacje</h2>
-    <div class="card-grid">
-      <div class="mini-card">
-        <div class="icon"><i class="fa-solid fa-palette"></i></div>
-        <h3>Grafik</h3>
-        <p>Kreatywne projekty graficzne, branding, ilustracje.</p>
-      </div>
-      <div class="mini-card">
-        <div class="icon"><i class="fa-solid fa-video"></i></div>
-        <h3>Montażysta</h3>
-        <p>Montaż wideo, efekty, korekcja barw.</p>
-      </div>
-      <div class="mini-card">
-        <div class="icon"><i class="fa-solid fa-music"></i></div>
-        <h3>Twórca muzyki</h3>
-        <p>Muzyka do filmów, podkłady, jingles.</p>
-      </div>
-    </div>
-  </section>
+      <!-- Playlist Section -->
+      <div class="playlist-section">
+        <div class="playlist-header">
+          <div class="playlist-title">
+            N O W Y  W Y M I A R  M U Z Y K I ! 🎶
+          </div>
+          <div class="playlist-subtitle">
+            F E R R O  A R T - S E Z O N 2
+          </div>
+        </div>
+                <div class="playlist-container">
+          <div class="playlist-description">
+            <p class="intro">
+              Zanurz się w muzycznej podróży z FerroART!<br>
+              Sezon 2 to nowa opowieść pełna emocji i pasji!
+            </p>
 
-  <!-- KONTAKT -->
-  <section id="contact" data-aos="fade-up">
-    <h2 class="section-title">Kontakt</h2>
-    <ul>
-      <li>Email: <a href="mailto:kontakt@nieznanynikomu.github.io">kontakt@nieznanynikomu.github.io</a></li>
-      <li>GitHub: <a href="https://github.com/ferroart" target="_blank">@ferroart</a></li>
-      <li>Strona: <a href="https://anonymousik.is-a.dev" target="_blank">anonymousik.is-a.dev</a></li>
-    </ul>
-  </section>
-</main>
-
-<footer>
-  <div class="brand">anonymousik.is-a.dev</div>
-  <div class="footer-badges">
-    <span>Grafik</span>
-    <span>Montażysta</span>
-    <span>Twórca muzyki</span>
-    <span>YouTube Content Creator</span>
-  </div>
-  <div style="margin:0.7em 0;">
-    FerroART | Uncown &middot; 0 followers · 2 following
-  </div>
-  <div style="margin:1.1em 0 0 0;font-size:0.98em;">
-    &copy; 2025 Christopher | anonymousik.is-a.dev – Wszelkie prawa zastrzeżone.
-  </div>
-</footer>
-
-<!-- DYNAMICZNE SKRYPTY -->
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.8.0/countUp.umd.js"></script>
-<script>
-  // Inicjalizacja animacji on scroll
-  AOS.init({ once: true });
-  // Liczniki dynamiczne
-  window.addEventListener('DOMContentLoaded', () => {
-    new window.CountUp('counter-portfolio', 37, {duration: 2}).start();
-    new window.CountUp('counter-music', 19, {duration: 2.0}).start();
-    new window.CountUp('counter-yt', 56, {duration: 2.2}).start();
-  });
-
-  // Automatyczne portfolio GitHub (zmień user na swój login!)
-  const githubUser = "ferroart";
-  const githubList = document.getElementById('github-repos');
-  fetch(`https://api.github.com/users/${githubUser}/repos?per_page=100&sort=updated`)
-    .then(r => r.json()).then(repos => {
-      if (!Array.isArray(repos) || !repos.length) {
-        githubList.innerHTML = '<div style="color:#bfc6d9;font-size:1.1em;">Brak publicznych projektów na GitHub.</div>';
-        return;
-      }
-      githubList.innerHTML = '';
-      repos
-        .filter(repo => !repo.fork)
-        .sort((a,b) => (b.stargazers_count - a.stargazers_count))
-        .forEach(repo => {
-          const el = document.createElement('div');
-          el.className = 'github-card';
-          el.innerHTML = `
-            <a class="repo-title" href="${repo.html_url}" target="_blank">${repo.name}</a>
-            <div class="repo-desc">${repo.description ? repo.description : ''}</div>
-            <div class="repo-meta">
-              <span class="repo-stars"><i class="fa-solid fa-star"></i> ${repo.stargazers_count}</span>
-              <span>${repo.language ? repo.language : ''}</span>
-              <span style="font-size:0.9em;">${(new Date(repo.updated_at)).toLocaleDateString('pl-PL')}</span>
+            <div class="cta-section">
+              <div class="cta-header">
+                N I E  S U B S K R Y B U J E S Z  FerroART 💭 ?❔
+              </div>
+              <div class="cta-main">
+                S U B S K R Y B U J  F E R R O !❗<br>
+                DOŁĄCZ  D O  E L I T A R N Y C H  S U B Ó W❗<br>
+                <span class="highlight">❗   Z A  D A R M O ❗</span>
+              </div>
             </div>
-          `;
-          githubList.appendChild(el);
-        });
-    })
-catch(() => {
-      githubList.innerHTML = '<div style="color:#bfc6d9;">Nie udało się pobrać projektów z GitHub.</div>';
+
+            <div class="engagement-section">
+              <p>P O D Z I E L I S Z  S I Ę  M O Ż E  O P I N I Ą ?__✍️</p>
+              <p>ŁAPKĄ TEŻ MÓGŁBYŚ ZAJECHAĆ! (Było by super!)<br>
+              J E Ś L I  S I Ę  S P O D O B A Ł O !<br>
+              😁 O C Z Y W I Ś C I E 😁</p>
+              <p class="highlight">💡 T O  N I C  N I E  K O S Z T U J E   Z I O M !  💡</p>
+            </div>
+
+            <div class="playlist-embed">
+              <iframe 
+                src="https://www.youtube.com/embed/videoseries?list=PL-_QU3AeEjaF5KYV7uobJWH1QRW3ViSTE" 
+                title="FerroART - Animacje Muzyczne" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+              </iframe>
+            </div>
+
+            <div class="credits">
+              <p>C R E A T E D  B Y</p>
+              <p>N ɨ ɛ ʐ ռ ǟ ռ ʏ 🅽 ɨ ӄ օ ʍ ʊ</p>
+              <p>F e r r o A R T ® 2024-2025</p>
+              <p>A L L  R I G H T S  R E S E R V E D !</p>
+            </div>
+
+            <div class="tags">
+              #FerroARTSezon2 #canyoucount #RisenToSuccess #Cytaty #Filipek #Peja #Pezet 
+              #PolskiRap #PolskiTrap #rappl #Muzyka2025 #Rap #hedonizm #cienczasu 
+              #storyrappoland #Motywacja #Inspiracja #Determinacja #Mindset #Electronic2025 
+              #Dance2025 #ClubMusic2025 #OriginalMix2025 #DjKantik #Gangstermusic 
+              #remake2024 #2000s #nostalgia #Carmusic #Teriyaki #TeriyakiBoyz #TokyoDrift 
+              #SeanPaul
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" data-aos="fade-up">
+      <h2 class="section-title">Kontakt</h2>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+          <h3>Email</h3>
+          <p><a href="mailto:nieznanynikomuu@gmail.com">nieznanynikomuu@gmail.com</a></p>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fab fa-youtube"></i></div>
+          <h3>YouTube</h3>
+          <p><a href="https://youtube.com/@FerroART" target="_blank">@FerroART</a></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="brand">anonymousik.is-a.dev</div>
+      <div class="footer-badges">
+        <span>Grafik</span>
+        <span>Montażysta</span>
+        <span>Twórca muzyki</span>
+        <span>YouTube Content Creator</span>
+      </div>
+      <div style="margin:0.7em 0;">
+        NƗӃටMƱ ͜ ͜ 🅽ɨɛʐռǟռʏ &middot; Ƒҽɾɾට ͜ ȺའT ͜
+      </div>
+      <div style="margin:1.1em 0 0 0;font-size:0.98em;">
+        &copy; 2025 UNӃNOWN ͡Ͳ_ට ͡ANYONE | anonymousik.is-a.dev
+        <br>
+        Ostatnia aktualizacja: 2025-05-24 22:21:16 UTC
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.css"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.8.0/countUp.umd.js"></script>
+  <script>
+    // Initialize AOS
+    AOS.init({
+      once: true,
+      duration: 800,
+      offset: 100
     });
-</script>
+
+    // Initialize counters
+    document.addEventListener('DOMContentLoaded', () => {
+      const options = {
+        duration: 2.5,
+        useEasing: true,
+        useGrouping: true,
+      };
+
+      new CountUp('subscribers-count', 1200, options).start();
+      new CountUp('views-count', 250000, options).start();
+      new CountUp('likes-count', 3500, options).start();
+    });
+  </script>
 </body>
 </html>
