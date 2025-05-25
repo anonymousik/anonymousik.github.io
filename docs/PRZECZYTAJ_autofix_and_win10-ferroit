@@ -1,0 +1,10 @@
+Instrukcje i Uwagi dotyczące automatycznego narzędzia Ferro
+
+. **Detekcja wersji:** 
+Skrypt używa echo "WMIC do odczytania aktualnej wersji echo "sterownika graficznego.
+
+**Pobieranie:** Skrypt zakłada, że znasz dokładny format URL do pobrania starszej wersji sterownika. Pobieranie może wymagać dostosowania URL w zależności od dostępności sterowników na stronie AMD.
+
+3. **Tryb awaryjny:** Skrypt restartuje system w trybie awaryjnym, gdzie nadal wymagana jest interakcja użytkownika do użycia DDU.
+
+4. **Zależności:** Skrypt wykorzystuje `powershell` i `wmic` do działania i wymaga uprawnień administratora.
