@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FerroART - Formularz Zamówienia Grafiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --primary-hover: #2980b9;
+      --error-color: #e74c3c;
+      --success-color: #28a745;
+      --background-color: #f4f4f9;
+      --container-color: #fff;
+      --text-color: #2c3e50;
+      --font-family: 'Inter', Arial, sans-serif;
+    }
+    body {
+      background-color: var(--background-color);
+      font-family: var(--font-family);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      transition: all 0.3s ease-in-out;
+    }
+    .container {
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: var(--container-color);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    }
+    h1, h2 {
+      text-align: center;
+      color: var(--primary-color);
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1.5px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      background-color: #fafafa;
+      transition: border-color 0.3s, background-color 0.3s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary-color);
+      background-color: #fff;
+      outline: none;
+    }
+    textarea {
+      resize: vertical;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.2rem;
+      color: #fff;
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    button:hover {
+      background-color: var(--primary-hover);
+      transform: scale(1.05);
+    }
+    button:disabled {
+      background-color: #b4d8f1;
+      cursor: not-allowed;
+    }
+    .form-status, .regulations {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 1rem;
+    }
+    .hidden {
+      display: none;
+      opacity: 0;
+      transform: translateX(-50%);
+    }
+    .visible {
+      display: block;
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .error-message {
+      text-align: center;
+      color: var(--error-color);
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+    .graphics-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .graphics-preview img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.3s, transform 0.3s ease-in-out;
+    }
+    .graphics-preview img.selected {
+      border-color: var(--primary-color);
+      transform: scale(1.1);
+    }
+    .confirmation-container {
+      background-color: var(--background-color);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sekcja regulaminu -->
+  <div class="container visible" id="regulationsSection">
+    <h1>Regulamin Usług FerroART</h1>
+    <div class="regulations">
+      <p>Przed złożeniem zamówienia prosimy o zapoznanie się z regulaminem.</p>
+      <p>Regulamin jest zgodny z RODO. Dane przesyłane formularzem są szyfrowane i bezpieczne.</p>
+      <p>Klient ma prawo do reklamacji w ciągu 14 dni od daty realizacji zamówienia. Reklamacje rozpatrywane są w ciągu 7 dni roboczych.</p>
+    </div>
+    <label>
+      <input type="checkbox" id="acceptRegulations" required> Potwierdzam zapoznanie się z regulaminem
+    </label>
+    <button id="proceedToForm">Przejdź do formularza</button>
+  </div>
+
+  <!-- Sekcja formularza -->
+  <div class="container hidden" id="formSection">
+    <h1>Formularz Zamówienia Grafiki</h1>
+    <p class="error-message">Wypełnienie formularza nie jest zobowiązujące – służy jedynie do przesłania zapytania ofertowego.</p>
+    <form id="orderForm">
+      <label for="name">Imię i nazwisko:</label>
+      <input type="text" id="name" name="name" required maxlength="64" placeholder="Podaj swoje imię i nazwisko">
+
+      <label for="email">Adres e-mail:</label>
+      <input type="email" id="email" name="email" required maxlength="80" placeholder="Podaj swój adres e-mail">
+
+      <label for="phone">Numer telefonu (opcjonalnie):</label>
+      <input type="tel" id="phone" name="phone" maxlength="15" placeholder="Podaj swój numer telefonu">
+
+      <label for="type">Typ grafiki:</label>
+      <select id="type" name="type" required>
+        <option value="Logo">Logo</option>
+        <option value="Baner">Baner</option>
+        <option value="Emblemat">Emblemat</option>
+        <option value="Branding">Branding firmy</option>
+      </select>
+
+      <label for="style">Wybierz preferowany styl:</label>
+      <div class="graphics-preview" id="graphicsPreview">
+        <img src="style1.jpg" alt="Minimalistyczny" data-style="Minimalistyczny">
+        <img src="style2.jpg" alt="Nowoczesny" data-style="Nowoczesny">
+        <img src="style3.jpg" alt="Elegancki" data-style="Elegancki">
+        <img src="style4.jpg" alt="Kreatywny" data-style="Kreatywny">
+      </div>
+      <input type="hidden" id="selectedStyle" name="style" required>
+
+      <label for="dimensions">Preferencje dotyczące wymiarów:</label>
+      <input type="text" id="dimensions" name="dimensions" placeholder="Podaj wymiary, np. 500x500 px">
+
+      <label for="remarks">Uwagi (opcjonalnie):</label>
+      <textarea id="remarks" name="remarks" rows="4" placeholder="Podaj dodatkowe informacje lub uwagi dotyczące zamówienia"></textarea>
+
+      <button type="button" id="previewBtn">Podsumowanie Zamówienia</button>
+    </form>
+  </div>
+
+  <!-- Sekcja podsumowania -->
+  <div class="container hidden" id="confirmationSection">
+    <h2>Podsumowanie Zamówienia</h2>
+    <p><strong>Imię i nazwisko:</strong> <span id="confirmName"></span></p>
+    <p><strong>Adres e-mail:</strong> <span id="confirmEmail"></span></p>
+    <p><strong>Numer telefonu:</strong> <span id="confirmPhone"></span></p>
+    <p><strong>Typ grafiki:</strong> <span id="confirmType"></span></p>
+    <p><strong>Preferowany styl:</strong> <span id="confirmStyle"></span></p>
+    <p><strong>Preferencje wymiarów:</strong> <span id="confirmDimensions"></span></p>
+    <p><strong>Uwagi:</strong> <span id="confirmRemarks"></span></p>
+    <button type="submit" id="sendBtn">Wyślij Zamówienie</button>
+    <button type="button" id="cancelBtn">Anuluj</button>
+  </div>
+
+  <script>
+    const regulationsSection = document.getElementById('regulationsSection');
+    const formSection = document.getElementById('formSection');
+    const confirmationSection = document.getElementById('confirmationSection');
+    const proceedToForm = document.getElementById('proceedToForm');
+    const acceptRegulations = document.getElementById('acceptRegulations');
+    const graphicsPreview = document.getElementById('graphicsPreview');
+    const selectedStyleInput = document.getElementById('selectedStyle');
+    const previewBtn = document.getElementById('previewBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const orderForm = document.getElementById('orderForm');
+
+    const confirmName = document.getElementById('confirmName');
+    const confirmEmail = document.getElementById('confirmEmail');
+    const confirmPhone = document.getElementById('confirmPhone');
+    const confirmType = document.getElementById('confirmType');
+    const confirmStyle = document.getElementById('confirmStyle');
+    const confirmDimensions = document.getElementById('confirmDimensions');
+    const confirmRemarks = document.getElementById('confirmRemarks');
+
+    proceedToForm.addEventListener('click', () => {
+      if (!acceptRegulations.checked) {
+        alert('Musisz zaakceptować regulamin.');
+        return;
+      }
+      regulationsSection.classList.add('hidden');
+      formSection.classList.remove('hidden');
+    });
+
+    graphicsPreview.addEventListener('click', (event) => {
+      if (event.target.tagName === 'IMG') {
+        const images = graphicsPreview.querySelectorAll('img');
+        images.forEach(img => img.classList.remove('selected'));
+        event.target.classList.add('selected');
+        selectedStyleInput.value = event.target.dataset.style;
+      }
+    });
+
+    previewBtn.addEventListener('click', () => {
+      confirmName.textContent = orderForm.name.value;
+      confirmEmail.textContent = orderForm.email.value;
+      confirmPhone.textContent = orderForm.phone.value || 'Nie podano';
+      confirmType.textContent = orderForm.type.value;
+      confirmStyle.textContent = orderForm.style.value || 'Nie podano';
+      confirmDimensions.textContent = orderForm.dimensions.value || 'Nie podano';
+      confirmRemarks.textContent = orderForm.remarks.value || 'Brak uwag';
+
+      formSection.classList.add('hidden');
+      confirmationSection.classList.remove('hidden');
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      confirmationSection.classList.add('hidden');
+      formSection.classList.remove('hidden');
+    });
+
+    sendBtn.addEventListener('click', async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(orderForm);
+      const jsonData = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch('https://your-api-endpoint.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(jsonData),
+        });
+
+        if (response.ok) {
+          alert('Zamówienie zostało pomyślnie wysłane!');
+        } else {
+          alert('Wystąpił problem podczas wysyłania zamówienia.');
+        }
+      } catch (error) {
+        alert(`Wystąpił błąd: ${error.message}`);
+      }
+    });
+  </script>
+</body>
+</html>
