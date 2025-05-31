@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ogłoszenia Sprzedażowe - Romet ZXT50/110cc</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .contact-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .contact-info h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .platform-section {
+            margin-bottom: 50px;
+            border: 2px solid #e8e8e8;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .platform-section:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+        
+        .platform-header {
+            padding: 20px 30px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .olx-header {
+            background: linear-gradient(45deg, #002f34, #00a5a8);
+        }
+        
+        .otomoto-header {
+            background: linear-gradient(45deg, #e4002b, #ff6b35);
+        }
+        
+        .facebook-header {
+            background: linear-gradient(45deg, #1877f2, #42a5f5);
+        }
+        
+        .platform-icon {
+            font-size: 2em;
+        }
+        
+        .listing-content {
+            padding: 30px;
+        }
+        
+        .title-section {
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #007bff;
+        }
+        
+        .title-section h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .title-text {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .content-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            margin: 15px 10px 0 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+        
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+        
+        .tips-section {
+            background: linear-gradient(45deg, #ffeaa7, #fdcb6e);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 40px;
+            border: 2px solid #fdcb6e;
+        }
+        
+        .tips-section h3 {
+            color: #2d3436;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .tip-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #e17055;
+        }
+        
+        .success-message {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .highlight {
+            background: linear-gradient(45deg, #ff7675, #fd79a8);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .platform-header {
+                font-size: 1.2em;
+                padding: 15px 20px;
+            }
+            
+            .listing-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏍️ GOTOWE OGŁOSZENIA SPRZEDAŻOWE</h1>
+            <p style="font-size: 1.2em; margin-top: 10px;">Romet ZXT50 TUNING 110cc - Profesjonalne ogłoszenia na wszystkie portale</p>
+            
+            <div class="contact-info">
+                <h3>📞 DANE KONTAKTOWE</h3>
+                <p><strong>Sprzedający:</strong> Michał Pestka</p>
+                <p><strong>Telefon:</strong> <span class="highlight">784 559 080</span></p>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- OLX SECTION -->
+            <div class="platform-section">
+                <div class="platform-header olx-header">
+                    <span class="platform-icon">🛒</span>
+                    <span>OLX - Największy zasięg w Polsce</span>
+                </div>
+                <div class="listing-content">
+                    <div class="title-section">
+                        <h4>📝 TYTUŁ OGŁOSZENIA:</h4>
+                        <div class="title-text" id="olx-title">ROMET ZXT50 TUNING 110cc | 2021 | PARAGON | NOWY PRZEGLĄD | GOTOWY DO JAZDY</div>
+                        <button class="copy-btn" onclick="copyToClipboard('olx-title')">📋 Skopiuj tytuł</button>
+                    </div>
+                    
+                    <div class="content-section">
+                        <h4 style="margin-bottom: 15px;">📄 TREŚĆ OGŁOSZENIA:</h4>
+                        <div id="olx-content">🔥 **WYJĄTKOWY ROMET ZXT50 Z SILNIKIEM 110cc!** 🔥
+
+**Dlaczego ten motorower to HIT:**
+✅ Silnik 110cc w rejestracji 50cc - LEGALNE!  
+✅ Profesjonalny tuning z paragonem  
+✅ Spalanie mniejsze niż konkurencja  
+✅ Odpalanie kopką - niezawodność 100%  
+
+**📋 DANE TECHNICZNE:**
+🏍️ Romet ZXT50, rocznik 2021  
+🛣️ Przebieg: 17 300 km  
+⚡ Silnik: 110cc (upgrade przy 13 000 km)  
+📄 Rejestracja: 50cc (prawo jazdy AM/B)  
+🔧 Przegląd: 20.07.2026  
+🛡️ OC: 19.07.2025  
+
+**🎁 DODATKI:**
+- Wzmocniony bagażnik (kufer 50L + 2 kaski)
+- Lampa LED z przodu
+- Nowy napęd (zębatki + łańcuch)
+- Gaźnik zamiast wtrysku
+- Nowa cewka wysokiego napięcia
+
+**💰 OSZCZĘDNOŚCI:**
+Nie potrzebujesz prawa jazdy kat. A1! Jeździsz na prawach kat. AM lub B, a masz moc jak 110cc!
+
+**📞 SAMSUN DZWONI - SPRAWDŹ!**
+Paragon na silnik + pełna historia serwisowa
+Olej wymieniany co 1000km
+
+**Cena: 7 200 zł (możliwa negocjacja dla poważnego kupującego)**
+
+**Kontakt: Michał Pestka - 784 559 080**</div>
+                        <button class="copy-btn" onclick="copyToClipboard('olx-content')">📋 Skopiuj treść</button>
+                        <div class="success-message" id="olx-success">✅ Skopiowano do schowka!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OTOMOTO SECTION -->
+            <div class="platform-section">
+                <div class="platform-header otomoto-header">
+                    <span class="platform-icon">🚗</span>
+                    <span>OTOMOTO - Portal dla profesjonalistów</span>
+                </div>
+                <div class="listing-content">
+                    <div class="title-section">
+                        <h4>📝 TYTUŁ OGŁOSZENIA:</h4>
+                        <div class="title-text" id="otomoto-title">Romet ZXT50 110cc | 2021 | Tuning z paragonem | Przegląd 2026 | Stan BDB</div>
+                        <button class="copy-btn" onclick="copyToClipboard('otomoto-title')">📋 Skopiuj tytuł</button>
+                    </div>
+                    
+                    <div class="content-section">
+                        <h4 style="margin-bottom: 15px;">📄 TREŚĆ OGŁOSZENIA:</h4>
+                        <div id="otomoto-content">**ROMET ZXT50 - PROFESJONALNY TUNING 110cc**
+
+**Specyfikacja techniczna:**
+- **Marka/Model:** Romet ZXT50
+- **Rocznik:** 2021
+- **Przebieg:** 17 300 km
+- **Pojemność faktyczna:** 110cc
+- **Rejestracja:** 50cc
+- **Stan techniczny:** Bardzo dobry
+
+**Historia pojazdu:**
+Motocykl kupiony nowy, przy przebiegu 13 000 km wykonano profesjonalny upgrade silnika na 110cc. Wszystkie prace udokumentowane paragonami. Regularna obsługa co 1000 km z wymianą oleju.
+
+**Wykonane modyfikacje:**
+- Silnik 110cc (paragon załączony)
+- Kompletny napęd: zębatki + łańcuch
+- System gaźnikowy (możliwość odpalania kopką)
+- Oświetlenie LED przednie
+- Wzmocniony bagażnik pod kufer 50L
+
+**Ostatnie naprawy:**
+- Wymiana cewki wysokiego napięcia
+- Naprawa instalacji elektrycznej
+- Regularna wymiana oleju
+
+**Dokumenty:**
+- Dowód rejestracyjny
+- Przegląd ważny do: 20.07.2026
+- OC ważne do: 19.07.2025
+- Paragon na silnik 110cc
+
+**Zalety tego rozwiązania:**
+- Większa moc przy zachowaniu rejestracji 50cc
+- Możliwość jazdy na prawach kat. AM/B
+- Niższe spalanie niż standardowe 110cc
+- Niezawodność gaźnika
+
+**Cena:** 7 200 zł
+
+**Kontakt:** Michał Pestka - 784 559 080
+
+Motorower idealny dla osób szukających ekonomicznego, ale dynamicznego środka transportu. Gotowy do jazdy, wszystkie formalności załatwione.</div>
+                        <button class="copy-btn" onclick="copyToClipboard('otomoto-content')">📋 Skopiuj treść</button>
+                        <div class="success-message" id="otomoto-success">✅ Skopiowano do schowka!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FACEBOOK SECTION -->
+            <div class="platform-section">
+                <div class="platform-header facebook-header">
+                    <span class="platform-icon">📘</span>
+                    <span>Facebook Marketplace - Społecznościowa sprzedaż</span>
+                </div>
+                <div class="listing-content">
+                    <div class="title-section">
+                        <h4>📝 TYTUŁ OGŁOSZENIA:</h4>
+                        <div class="title-text" id="facebook-title">Romet ZXT50 TUNING 110cc - Moc w rejestracji 50cc! Paragon, przegląd 2026</div>
+                        <button class="copy-btn" onclick="copyToClipboard('facebook-title')">📋 Skopiuj tytuł</button>
+                    </div>
+                    
+                    <div class="content-section">
+                        <h4 style="margin-bottom: 15px;">📄 TREŚĆ OGŁOSZENIA:</h4>
+                        <div id="facebook-content">🏍️ **Sprzedam mojego wiernego towarzysza!**
+
+**Romet ZXT50 z 2021 roku - ale to nie zwykły "pięćdziesiątka"!**
+
+**Co go wyróżnia:**
+🔧 Silnik 110cc (zamontowany przy 13k km)  
+📄 Rejestracja nadal 50cc - jeździsz na prawach B!  
+⛽ Pali mniej niż inne 110cc  
+🔋 Gaźnik - odpala kopką nawet przy słabej baterii  
+
+**Moja historia z tym motorem:**
+Kupiłem go nowego, po 13 tysiącach postanowiłem zwiększyć moc. Wszystko robiłem u sprawdzonego mechanika, mam paragony. Dbałem jak o oko w głowie - olej co tysiąc kilometrów, regularne przeglądy.
+
+**Co dostaniesz:**
+- Gotowy do jazdy motor (przegląd do lipca 2026!)
+- Wzmocniony bagażnik - wchodzi kufer 50L i dwa kaski
+- LED z przodu - lepsze światło
+- Wszystkie dokumenty + paragon na silnik
+- Możliwość jazdy na prawach B/AM
+
+**Dlaczego sprzedaję:**
+Zmiana sytuacji życiowej, potrzebuję szybko sprzedać.
+
+**Stan:** Bardzo dobry, 17 300 km (jeszcze trochę przybywa bo jeżdżę)
+
+**Cena:** 7 200 zł (dla szybkiej sprzedaży możliwa rozsądna negocjacja)
+
+Możesz przyjechać, obejrzeć, przetestować. Motor na pewno Cię nie zawiedzie - mnie służył bez zarzutu! 😊
+
+**Kontakt: Michał Pestka - 784 559 080**
+**Najlepiej SMS/WhatsApp**</div>
+                        <button class="copy-btn" onclick="copyToClipboard('facebook-content')">📋 Skopiuj treść</button>
+                        <div class="success-message" id="facebook-success">✅ Skopiowano do schowka!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIPS SECTION -->
+            <div class="tips-section">
+                <h3>💡 STRATEGICZNE WSKAZÓWKI SPRZEDAŻOWE</h3>
+                
+                <div class="tip-item">
+                    <strong>🎯 Optymalne czasy publikacji:</strong><br>
+                    • OLX: Piątek-niedziela 19:00-21:00<br>
+                    • OTOMOTO: Wtorek-czwartek 18:00-20:00<br>
+                    • Facebook: Weekend + udostępnienie w grupach lokalnych
+                </div>
+                
+                <div class="tip-item">
+                    <strong>📸 Kluczowe zdjęcia do dodania:</strong><br>
+                    • Motor z boku (całość)<br>
+                    • Silnik 110cc z bliska<br>
+                    • Paragon na silnik<br>
+                    • Licznik z przebiegiem<br>
+                    • Bagażnik z otwartym kufrem<br>
+                    • Dokumenty (bez danych osobowych)
+                </div>
+                
+                <div class="tip-item">
+                    <strong>💬 Najczęstsze pytania i odpowiedzi:</strong><br>
+                    • "Czy to legalne?" → "Tak, rejestracja 50cc, wszystkie dokumenty w porządku"<br>
+                    • "Ile pali?" → "Mniej niż standardowe 110cc, około 2,5L/100km"<br>
+                    • "Dlaczego gaźnik?" → "Niezawodność - odpalasz kopką nawet przy słabej baterii"
+                </div>
+                
+                <div class="tip-item">
+                    <strong>💰 Strategia negocjacyjna:</strong><br>
+                    • Cena startowa: <span class="highlight">7 200 zł</span><br>
+                    • Minimalna akceptowalna: <span class="highlight">6 300 zł</span><br>
+                    • Główny argument: "Udokumentowany tuning 110cc w rejestracji 50cc"
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent || element.innerText;
+            
+            navigator.clipboard.writeText(text).then(function() {
+                // Show success message
+                const successId = elementId.replace('-title', '-success').replace('-content', '-success');
+                const successElement = document.getElementById(successId);
+                if (successElement) {
+                    successElement.style.display = 'block';
+                    setTimeout(() => {
+                        successElement.style.display = 'none';
+                    }, 3000);
+                }
+            }).catch(function(err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    const successId = elementId.replace('-title', '-success').replace('-content', '-success');
+                    const successElement = document.getElementById(successId);
+                    if (successElement) {
+                        successElement.style.display = 'block';
+                        setTimeout(() => {
+                            successElement.style.display = 'none';
+                        }, 3000);
+                    }
+                } catch (err) {
+                    alert('Nie udało się skopiować. Zaznacz tekst ręcznie i skopiuj (Ctrl+C)');
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.platform-section');
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    section.style.transition = 'all 0.6s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>
