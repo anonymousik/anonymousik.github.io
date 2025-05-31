@@ -10,14 +10,14 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -26,20 +26,20 @@
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
             overflow: hidden;
         }
-        
+
         .header {
             background: linear-gradient(45deg, #2c3e50, #3498db);
             color: white;
             padding: 30px;
             text-align: center;
         }
-        
+
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        
+
         .contact-info {
             background: rgba(255, 255, 255, 0.1);
             padding: 15px;
@@ -47,16 +47,16 @@
             margin-top: 20px;
             backdrop-filter: blur(10px);
         }
-        
+
         .contact-info h3 {
             font-size: 1.3em;
             margin-bottom: 10px;
         }
-        
+
         .main-content {
             padding: 40px;
         }
-        
+
         .platform-section {
             margin-bottom: 50px;
             border: 2px solid #e8e8e8;
@@ -64,12 +64,12 @@
             overflow: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .platform-section:hover {
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
             transform: translateY(-5px);
         }
-        
+
         .platform-header {
             padding: 20px 30px;
             font-size: 1.5em;
@@ -79,27 +79,27 @@
             align-items: center;
             gap: 15px;
         }
-        
+
         .olx-header {
             background: linear-gradient(45deg, #002f34, #00a5a8);
         }
-        
+
         .otomoto-header {
             background: linear-gradient(45deg, #e4002b, #ff6b35);
         }
-        
+
         .facebook-header {
             background: linear-gradient(45deg, #1877f2, #42a5f5);
         }
-        
+
         .platform-icon {
             font-size: 2em;
         }
-        
+
         .listing-content {
             padding: 30px;
         }
-        
+
         .title-section {
             background: linear-gradient(45deg, #f8f9fa, #e9ecef);
             padding: 20px;
@@ -107,26 +107,26 @@
             margin-bottom: 25px;
             border-left: 5px solid #007bff;
         }
-        
+
         .title-section h4 {
             color: #2c3e50;
             margin-bottom: 10px;
             font-size: 1.2em;
         }
-        
+
         .title-text {
             font-size: 1.1em;
             font-weight: bold;
             color: #e74c3c;
         }
-        
+
         .content-section {
             background: #f8f9fa;
             padding: 25px;
             border-radius: 10px;
             border: 1px solid #dee2e6;
         }
-        
+
         .copy-btn {
             background: linear-gradient(45deg, #28a745, #20c997);
             color: white;
@@ -140,16 +140,16 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
-        
+
         .copy-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
         }
-        
+
         .copy-btn:active {
             transform: translateY(0);
         }
-        
+
         .tips-section {
             background: linear-gradient(45deg, #ffeaa7, #fdcb6e);
             padding: 25px;
@@ -157,13 +157,13 @@
             margin-top: 40px;
             border: 2px solid #fdcb6e;
         }
-        
+
         .tips-section h3 {
             color: #2d3436;
             margin-bottom: 15px;
             font-size: 1.4em;
         }
-        
+
         .tip-item {
             background: rgba(255, 255, 255, 0.8);
             padding: 15px;
@@ -171,7 +171,7 @@
             border-radius: 8px;
             border-left: 4px solid #e17055;
         }
-        
+
         .success-message {
             background: linear-gradient(45deg, #00b894, #00cec9);
             color: white;
@@ -182,12 +182,12 @@
             display: none;
             animation: slideIn 0.5s ease;
         }
-        
+
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .highlight {
             background: linear-gradient(45deg, #ff7675, #fd79a8);
             color: white;
@@ -195,38 +195,121 @@
             border-radius: 5px;
             font-weight: bold;
         }
-        
+
         .emoji {
             font-size: 1.2em;
             margin-right: 8px;
         }
-        
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
                 border-radius: 15px;
             }
-            
+
             .header h1 {
                 font-size: 2em;
             }
-            
+
             .main-content {
                 padding: 20px;
             }
-            
+
             .platform-header {
                 font-size: 1.2em;
                 padding: 15px 20px;
             }
-            
+
             .listing-content {
                 padding: 20px;
             }
         }
+        .trial-expired-banner {
+            width: 100%;
+            background: linear-gradient(90deg, #ff1744, #ff9100, #ffd600);
+            color: #1a1a1a;
+            font-size: 2.2em;
+            font-weight: bold;
+            text-align: center;
+            padding: 32px 10px 25px 10px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 8px #fff, 0 4px 32px #0008;
+            border-bottom: 6px solid #d32f2f;
+            z-index: 9999;
+            position: relative;
+            margin-bottom: 24px;
+            line-height: 1.25em;
+            word-break: break-word;
+        }
+        @media (max-width: 700px) {
+            .trial-expired-banner {
+                font-size: 1.2em;
+                padding: 14px 3px 10px 3px;
+            }
+        }
+        /* Password overlay */
+        #password-protect-overlay {
+            position: fixed;
+            z-index: 10000;
+            inset: 0;
+            background: rgba(255,255,255,0.97);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        #password-protect-overlay-inner {
+            background:#fffbe7;
+            border:3px solid #d32f2f;
+            border-radius:18px;
+            padding:40px 28px;
+            box-shadow:0 8px 40px #d32f2f33;
+            max-width:95vw;
+            text-align:center;
+        }
+        #ferro-password-input {
+            font-size:1.2em;
+            padding:12px 18px;
+            border-radius:8px;
+            border:2px solid #d32f2f;
+            margin-bottom:18px;
+            width:100%;
+            max-width:330px;
+        }
+        #ferro-password-error {
+            color:#c00;
+            font-weight:bold;
+            margin-top:12px;
+            display:none;
+        }
+        #ferro-password-btn {
+            font-size:1.1em;
+            padding:11px 28px;
+            border-radius:8px;
+            background:#d32f2f;
+            color:#fff;
+            font-weight:bold;
+            cursor:pointer;
+            border:none;
+        }
     </style>
 </head>
 <body>
+<div id="password-protect-overlay">
+  <div id="password-protect-overlay-inner">
+    <div style="font-size:2em;font-weight:bold;color:#d32f2f;margin-bottom:20px;">
+      🔒 WPROWADŹ HASŁO DOSTĘPU
+    </div>
+    <input id="ferro-password-input" type="password" placeholder="Wpisz hasło..." autofocus>
+    <br>
+    <button id="ferro-password-btn" onclick="checkFerroPassword()">Otwórz</button>
+    <div id="ferro-password-error">Niepoprawne hasło!</div>
+  </div>
+</div>
+<div class="trial-expired-banner">
+  KONIEC OKRESU PRÓBNEGO Ferro! WPROWADŹ HASŁO DOSTĘPU ABY UZYSKAĆ POZWOLENIE! <br>
+  -•°`°•Ƒ°`°•ҽ°`°•ɾɾ•°`°•ට ͜                 -U🅽ӄꈤටwꈤ ͜!(Ͳ_ට)! ͜Ⱥ🅽ʏටꈤE- -•°`°•-Ⱥ-•°`°•-འ°•°`°•-Ͳ ͜
+</div>
     <div class="container">
         <div class="header">
             <h1>🏍️ GOTOWE OGŁOSZENIA SPRZEDAŻOWE</h1>
@@ -448,6 +531,40 @@ Możesz przyjechać, obejrzeć, przetestować. Motor na pewno Cię nie zawiedzie
     </div>
 
     <script>
+        // --- HASŁO NA DOSTĘP ---
+        function checkFerroPassword() {
+            const input = document.getElementById('ferro-password-input');
+            const error = document.getElementById('ferro-password-error');
+            if (input.value === 'JESTEM_FERRO_LUBIE_PLACKI') {
+                document.getElementById('password-protect-overlay').style.display = 'none';
+                input.value = '';
+                error.style.display = 'none';
+            } else {
+                error.style.display = 'block';
+                input.value = '';
+                input.focus();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('ferro-password-input');
+            input.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') checkFerroPassword();
+            });
+
+            // Animacje platform-section
+            const sections = document.querySelectorAll('.platform-section');
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    section.style.transition = 'all 0.6s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+
+        // --- KOPIOWANIE ---
         function copyToClipboard(elementId) {
             const element = document.getElementById(elementId);
             const text = element.textContent || element.innerText;
@@ -485,20 +602,6 @@ Możesz przyjechać, obejrzeć, przetestować. Motor na pewno Cię nie zawiedzie
                 document.body.removeChild(textArea);
             });
         }
-
-        // Add some interactive animations
-        document.addEventListener('DOMContentLoaded', function() {
-            const sections = document.querySelectorAll('.platform-section');
-            sections.forEach((section, index) => {
-                section.style.opacity = '0';
-                section.style.transform = 'translateY(30px)';
-                setTimeout(() => {
-                    section.style.transition = 'all 0.6s ease';
-                    section.style.opacity = '1';
-                    section.style.transform = 'translateY(0)';
-                }, index * 200);
-            });
-        });
     </script>
 </body>
 </html>
