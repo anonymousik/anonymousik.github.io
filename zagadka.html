@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOD ZAGŁADY - ROZWIĄZANIE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(45deg, #000000, #1a1a1a, #000000);
+            background-size: 400% 400%;
+            animation: gradientShift 3s ease infinite;
+            color: #00ff00;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 50px #00ff00;
+            animation: pulse 2s ease-in-out infinite;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 50px #00ff00; }
+            50% { box-shadow: 0 0 100px #00ff00, 0 0 150px #00ff00; }
+            100% { box-shadow: 0 0 50px #00ff00; }
+        }
+
+        .phase1 {
+            display: block;
+        }
+
+        .phase2 {
+            display: none;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px #00ff00;
+            animation: textGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            from { text-shadow: 0 0 20px #00ff00; }
+            to { text-shadow: 0 0 40px #00ff00, 0 0 60px #00ff00; }
+        }
+
+        .input-container {
+            margin: 30px 0;
+        }
+
+        input {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 15px 25px;
+            font-size: 1.5em;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            border-radius: 5px;
+            width: 300px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            box-shadow: 0 0 30px #00ff00;
+            transform: scale(1.05);
+        }
+
+        input::placeholder {
+            color: #006600;
+        }
+
+        button {
+            background: linear-gradient(45deg, #00ff00, #008800);
+            border: none;
+            color: #000000;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px #00ff00;
+        }
+
+        .error {
+            color: #ff0000;
+            font-size: 1.2em;
+            margin-top: 20px;
+            text-shadow: 0 0 10px #ff0000;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .congratulations {
+            font-size: 4em;
+            color: #00ff00;
+            text-shadow: 0 0 50px #00ff00;
+            animation: congratsGlow 2s ease-in-out infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes congratsGlow {
+            0% { 
+                transform: scale(1);
+                text-shadow: 0 0 50px #00ff00;
+            }
+            50% { 
+                transform: scale(1.1);
+                text-shadow: 0 0 100px #00ff00, 0 0 150px #00ff00;
+            }
+            100% { 
+                transform: scale(1);
+                text-shadow: 0 0 50px #00ff00;
+            }
+        }
+
+        .phase2-text {
+            font-size: 3em;
+            color: #ff0000;
+            text-shadow: 0 0 30px #ff0000;
+            animation: dangerGlow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes dangerGlow {
+            from { 
+                color: #ff0000;
+                text-shadow: 0 0 30px #ff0000;
+            }
+            to { 
+                color: #ff4444;
+                text-shadow: 0 0 60px #ff0000, 0 0 90px #ff0000;
+            }
+        }
+
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-rain"></div>
+    
+    <div class="container">
+        <div class="phase1" id="phase1">
+            <h1>🔥 KOD ZAGŁADY 🔥</h1>
+            <p style="font-size: 1.2em; margin-bottom: 30px;">
+                WPROWADŹ LICZBĘ ZAGŁADY
+            </p>
+            <div class="input-container">
+                <input type="number" id="codeInput" placeholder="WPISZ KOD..." maxlength="10">
+                <br>
+                <button onclick="checkCode()">AKTYWUJ SYSTEM</button>
+            </div>
+            <div id="errorMessage" class="error hidden"></div>
+        </div>
+
+        <div class="phase2 hidden" id="phase2">
+            <div class="congratulations">GRATULUJĘ!</div>
+            <div class="phase2-text">GOTOWY NA CZĘŚĆ 2?</div>
+        </div>
+    </div>
+
+    <script>
+        const correctCode = 5229;
+        let attempts = 0;
+        
+        // Matrix rain effect
+        function createMatrixRain() {
+            const canvas = document.createElement('canvas');
+            canvas.className = 'matrix-rain';
+            document.body.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const letters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const fontSize = 14;
+            const columns = canvas.width / fontSize;
+            const drops = Array(Math.floor(columns)).fill(1);
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#00ff00';
+                ctx.font = fontSize + 'px monospace';
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const text = letters[Math.floor(Math.random() * letters.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+            
+            setInterval(draw, 50);
+        }
+        
+        // Anonymous voice synthesis
+        function speakAnonymous(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.7;
+            utterance.pitch = 0.3;
+            utterance.volume = 0.8;
+            
+            // Try to get a deep, robotic voice
+            const voices = speechSynthesis.getVoices();
+            const deepVoice = voices.find(voice => 
+                voice.name.includes('Google') || 
+                voice.name.includes('Microsoft') || 
+                voice.lang === 'pl-PL'
+            );
+            
+            if (deepVoice) {
+                utterance.voice = deepVoice;
+            }
+            
+            speechSynthesis.speak(utterance);
+        }
+        
+        function checkCode() {
+            const input = document.getElementById('codeInput');
+            const enteredCode = parseInt(input.value);
+            const errorDiv = document.getElementById('errorMessage');
+            
+            attempts++;
+            
+            if (enteredCode === correctCode) {
+                // Success - show phase 2
+                document.getElementById('phase1').classList.add('hidden');
+                document.getElementById('phase2').classList.remove('hidden');
+                
+                // Change background to red
+                document.body.style.background = 'linear-gradient(45deg, #330000, #660000, #330000)';
+                
+                // Speak with Anonymous voice
+                setTimeout(() => {
+                    speakAnonymous("Gratulacje. Przeszedłeś pierwszy test. Teraz rozpoczyna się prawdziwe wyzwanie. Czy jesteś gotowy na część drugą? Twój umysł zostanie wystawiony na próbę. Nie ma już odwrotu.");
+                }, 1000);
+                
+            } else {
+                // Wrong code
+                errorDiv.classList.remove('hidden');
+                
+                if (attempts <= 3) {
+                    errorDiv.textContent = `❌ BŁĘDNY KOD! PRÓBA ${attempts}/3`;
+                } else if (attempts <= 5) {
+                    errorDiv.textContent = `🔥 SYSTEM SIE BRONI! PRÓBA ${attempts}`;
+                } else {
+                    errorDiv.textContent = `💀 UMYSŁ SŁABNIE... PRÓBA ${attempts}`;
+                }
+                
+                // Shake effect
+                input.style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    input.style.animation = '';
+                }, 500);
+                
+                // Clear input
+                input.value = '';
+            }
+        }
+        
+        // Enter key support
+        document.getElementById('codeInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkCode();
+            }
+        });
+        
+        // Initialize matrix rain
+        createMatrixRain();
+        
+        // Load voices
+        speechSynthesis.getVoices();
+        speechSynthesis.onvoiceschanged = () => {
+            speechSynthesis.getVoices();
+        };
+    </script>
+</body>
+</html>
