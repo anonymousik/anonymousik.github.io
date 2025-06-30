@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecFerro Battery Monitor Pro - Deployment System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
+            color: #00ff00;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .security-level {
+            color: #ff0000;
+            font-weight: bold;
+            font-size: 1.2em;
+            animation: blink 1s infinite;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: rgba(0, 20, 40, 0.9);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+
+        .panel h3 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #001122, #003366);
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: linear-gradient(45deg, #003366, #0066cc);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            transform: scale(1.05);
+        }
+
+        .btn-danger {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #330000, #660000);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+
+        .console {
+            background: #000;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        .console-line {
+            margin: 2px 0;
+            animation: typewriter 0.5s;
+        }
+
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffff00; }
+        .info { color: #00ffff; }
+
+        .progress-bar {
+            background: #333;
+            border-radius: 10px;
+            padding: 3px;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #00ff00, #00aa00);
+            height: 20px;
+            border-radius: 7px;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .file-structure {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .folder, .file {
+            margin: 2px 0;
+            padding: 2px 5px;
+            cursor: pointer;
+        }
+
+        .folder {
+            color: #ffff00;
+            font-weight: bold;
+        }
+
+        .file {
+            color: #00ffff;
+            margin-left: 20px;
+        }
+
+        .folder:hover, .file:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .status-card {
+            background: rgba(0, 40, 80, 0.7);
+            border: 1px solid #00ffff;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .status-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .config-section {
+            margin: 20px 0;
+        }
+
+        .input-group {
+            margin: 10px 0;
+        }
+
+        .input-group label {
+            display: block;
+            color: #00ffff;
+            margin-bottom: 5px;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ff00;
+            border-radius: 3px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @keyframes typewriter {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .encryption-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+
+        .update-section {
+            background: rgba(40, 0, 0, 0.9);
+            border: 2px solid #ff6600;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .update-section h3 {
+            color: #ff6600;
+            text-shadow: 0 0 5px #ff6600;
+        }
+
+        .deployment-map {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deployment-step {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 50, 100, 0.3);
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .deployment-step.active {
+            background: rgba(0, 255, 0, 0.2);
+            border-left: 4px solid #00ff00;
+        }
+
+        .deployment-step.completed {
+            background: rgba(0, 100, 0, 0.3);
+            opacity: 0.7;
+        }
+
+        .step-number {
+            background: #00ff00;
+            color: #000;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrix"></canvas>
+    
+    <div class="encryption-indicator">
+        🔒 AES-256 AKTYWNE | FERRUŚ-SECURE
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>⚡ BATTERY MONITOR PRO ⚡</h1>
+            <div class="security-level">KLASYFIKACJA: ALPHA-7 | SECFERRO DIVISION</div>
+            <p>Zaawansowany System Wdrożenia z Zabezpieczeniami Wojskowymi</p>
+        </div>
+
+        <div class="main-grid">
+            <!-- Panel Komendy Głównej -->
+            <div class="panel">
+                <h3>🎯 CENTRUM KONTROLI MISJI</h3>
+                <button class="btn" onclick="initializeProject()">📦 INICJALIZUJ PROJEKT</button>
+                <button class="btn" onclick="setupEnvironment()">🔧 PRZYGOTUJ ŚRODOWISKO</button>
+                <button class="btn" onclick="buildProject()">🏗️ KOMPILUJ SYSTEM</button>
+                <button class="btn" onclick="deployProject()">🚀 WDRAŻAJ</button>
+                <button class="btn btn-danger" onclick="secureWipe()">🔥 BEZPIECZNE USUNIĘCIE</button>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="mainProgress" style="width: 0%">0%</div>
+                </div>
+            </div>
+
+            <!-- Panel Monitorowania -->
+            <div class="panel">
+                <h3>📊 MONITORING SYSTEMU</h3>
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div>STATUS SYSTEMU</div>
+                        <div class="status-value success" id="systemStatus">GOTOWY</div>
+                    </div>
+                    <div class="status-card">
+                        <div>BEZPIECZEŃSTWO</div>
+                        <div class="status-value success" id="securityStatus">AKTYWNE</div>
+                    </div>
+                    <div class="status-card">
+                        <div>PLIKI</div>
+                        <div class="status-value info" id="fileCount">0</div>
+                    </div>
+                    <div class="status-card">
+                        <div>DEPLOY</div>
+                        <div class="status-value warning" id="deployStatus">OCZEKUJE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sekcja Aktualizacji -->
+        <div class="update-section">
+            <h3>🔄 SYSTEM AKTUALIZACJI FERRUŚ</h3>
+            <div class="config-section">
+                <div class="input-group">
+                    <label>Typ Aktualizacji:</label>
+                    <select id="updateType">
+                        <option value="security">Patch Bezpieczeństwa</option>
+                        <option value="feature">Nowa Funkcjonalność</option>
+                        <option value="bugfix">Naprawa Błędów</option>
+                        <option value="performance">Optymalizacja</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Opis Aktualizacji:</label>
+                    <input type="text" id="updateDescription" placeholder="np. Wzmocnienie szyfrowania AES-256">
+                </div>
+                <button class="btn" onclick="prepareUpdate()">📝 PRZYGOTUJ AKTUALIZACJĘ</button>
+                <button class="btn" onclick="deployUpdate()">⚡ WDRÓŻ AKTUALIZACJĘ</button>
+            </div>
+        </div>
+
+        <!-- Mapa Wdrożenia -->
+        <div class="deployment-map">
+            <h3>🗺️ MAPA WDROŻENIA TAKTYCZNEGO</h3>
+            <div id="deploymentSteps">
+                <div class="deployment-step" data-step="1">
+                    <div class="step-number">1</div>
+                    <div>Inicjalizacja struktury projektu</div>
+                </div>
+                <div class="deployment-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div>Konfiguracja środowiska React + Capacitor</div>
+                </div>
+                <div class="deployment-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div>Generowanie plików konfiguracyjnych</div>
+                </div>
+                <div class="deployment-step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div>Implementacja komponentów natywnych</div>
+                </div>
+                <div class="deployment-step" data-step="5">
+                    <div class="step-number">5</div>
+                    <div>Konfiguracja zabezpieczeń Android</div>
+                </div>
+                <div class="deployment-step" data-step="6">
+                    <div class="step-number">6</div>
+                    <div>Kompilacja i generowanie APK</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Struktura Plików -->
+        <div class="panel">
+            <h3>📁 STRUKTURA SYSTEMU PLIKÓW</h3>
+            <div class="file-structure" id="fileStructure">
+                <div class="folder" onclick="toggleFolder(this)">📁 battery-monitor-pro/</div>
+                <div class="file">📄 package.json</div>
+                <div class="file">📄 capacitor.config.ts</div>
+                <div class="file">📄 build.sh</div>
+                <div class="folder" onclick="toggleFolder(this)">📁 src/</div>
+                <div class="file">📄 App.tsx</div>
+                <div class="folder" onclick="toggleFolder(this)">📁 hooks/</div>
+                <div class="file">📄 useBatteryNative.ts</div>
+                <div class="folder" onclick="toggleFolder(this)">📁 components/</div>
+                <div class="file">📄 NativeBatteryMonitor.tsx</div>
+                <div class="folder" onclick="toggleFolder(this)">📁 android/</div>
+                <div class="folder" onclick="toggleFolder(this)">📁 app/src/main/</div>
+                <div class="file">📄 AndroidManifest.xml</div>
+            </div>
+        </div>
+
+        <!-- Konsola -->
+        <div class="panel">
+            <h3>💻 KONSOLA OPERACYJNA FERRUŚ</h3>
+            <div class="console" id="console">
+                <div class="console-line success">[FERRUŚ-INIT] System gotowy do działania...</div>
+                <div class="console-line info">[SECURITY] Wszystkie protokoły zabezpieczeń aktywne</div>
+                <div class="console-line warning">[ALERT] Oczekiwanie na rozkazy operacyjne</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Matrix animation
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const matrix = "FERRUŚ0123456789ABCDEF";
+        const matrixChars = matrix.split("");
+        const fontSize = 10;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        for(let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff00';
+            ctx.font = fontSize + 'px courier';
+            
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 35);
+
+        // Project structure data
+        const projectStructure = {
+            'package.json': `{
+  "name": "battery-monitor-pro",
+  "version": "1.0.0",
+  "description": "Advanced Battery Monitor with Security Features",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "android:add": "npx cap add android",
+    "android:build": "npm run build && npx cap copy && npx cap sync",
+    "android:dev": "npm run android:build && npx cap open android",
+    "android:release": "npm run build && npx cap copy && npx cap sync && cd android && ./gradlew assembleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "^5.5.1",
+    "@capacitor/app": "^5.0.6",
+    "@capacitor/core": "^5.5.1",
+    "@capacitor/device": "^5.0.6",
+    "@capacitor/filesystem": "^5.1.4",
+    "@capacitor/haptics": "^5.0.6",
+    "@capacitor/local-notifications": "^5.0.6",
+    "@capacitor/status-bar": "^5.0.6",
+    "@ionic-native/battery-status": "^5.36.0",
+    "@ionic/react": "^7.5.0",
+    "@ionic/react-router": "^7.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router": "^6.8.0",
+    "react-router-dom": "^6.8.0",
+    "tailwindcss": "^3.3.0",
+    "lucide-react": "^0.263.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^5.5.1",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "typescript": "^4.9.3",
+    "vite": "^4.4.5"
+  }
+}`,
+            'capacitor.config.ts': `import { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.ferro.batterymonitor',
+  appName: 'Battery Monitor Pro',
+  webDir: 'dist',
+  server: {
+    androidScheme: 'https'
+  },
+  android: {
+    allowMixedContent: true,
+    captureInput: true,
+    webContentsDebuggingEnabled: true
+  },
+  plugins: {
+    LocalNotifications: {
+      smallIcon: "ic_stat_icon_config_sample",
+      iconColor: "#488AFF",
+      sound: "beep.wav"
+    },
+    SplashScreen: {
+      launchShowDuration: 2000,
+      backgroundColor: "#1a1a1a",
+      showSpinner: false
+    }
+  }
+};
+
+export default config;`,
+            'build.sh': `#!/bin/bash
+
+echo "🔧 Building Battery Monitor Pro APK..."
+
+# Install dependencies
+npm install
+
+# Build React app
+echo "📦 Building React application..."
+npm run build
+
+# Initialize Capacitor (if not done)
+if [ ! -d "android" ]; then
+    echo "🤖 Adding Android platform..."
+    npx cap add android
+fi
+
+# Copy web assets and sync
+echo "🔄 Syncing with Android..."
+npx cap copy
+npx cap sync
+
+# Build APK
+echo "🏗️  Building APK..."
+cd android
+./gradlew assembleDebug
+
+# Copy APK to root
+cp app/build/outputs/apk/debug/app-debug.apk ../battery-monitor-pro.apk
+
+echo "✅ APK created successfully: battery-monitor-pro.apk"
+echo "📱 Install with: adb install battery-monitor-pro.apk"`
+        };
+
+        let currentStep = 0;
+        let projectFiles = [];
+
+        function log(message, type = 'info') {
+            const console = document.getElementById('console');
+            const timestamp = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            line.textContent = `[${timestamp}] ${message}`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function updateProgress(percentage) {
+            const progressBar = document.getElementById('mainProgress');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+        }
+
+        function updateStatus(element, status, className = 'success') {
+            document.getElementById(element).textContent = status;
+            document.getElementById(element).className = `status-value ${className}`;
+        }
+
+        function activateStep(stepNumber) {
+            const steps = document.querySelectorAll('.deployment-step');
+            steps.forEach((step, index) => {
+                if (index < stepNumber) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                } else if (index === stepNumber) {
+                    step.classList.add('active');
+      
