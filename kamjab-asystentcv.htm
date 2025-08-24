@@ -1,337 +1,284 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kreator CV Kamila Jabłońskiego - zabezpieczona wersja</title>
+<title>Kreator CV Kamila Jabłońskiego z Logowaniem</title>
 <style>
-  body {
-    font-family: Arial, sans-serif; background: #f0f4f8; margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+  body { margin:0; font-family: Arial, sans-serif; background: #f0f4f8; }
+  #loginContainer, #appContainer {
+    max-width: 900px; margin: 40px auto; background: white; border-radius: 10px; box-shadow: 0 0 15px #aaccee;
+    padding: 25px 30px;
   }
-  header, footer {
-    background: #1a3c72; color: #fff; padding: 12px 20px; text-align: center;
-    font-weight: bold; font-family: 'Courier New', monospace;
-  }
-  main {
-    flex: 1; max-width: 900px; margin: auto; width: 95%;
-    padding: 20px; box-sizing: border-box;
-  }
-  h1, h2 {
-    color: #1a3c72; margin-top: 0;
-  }
-  label {
-    display: block; margin-top: 12px; font-weight: bold;
-  }
+  #appContainer { display: none; }
+
+  h1, h2 { color: #1a3c72; margin-bottom: 12px; }
+  label { display: block; margin-top: 15px; font-weight: bold; }
   input[type=text], input[type=tel], input[type=email], input[type=password], textarea, select {
-    width: 100%; padding: 8px; margin-top: 6px; border-radius: 5px;
-    border: 1px solid #aaa; font-size: 1rem; resize: vertical;
-    box-sizing: border-box;
+    width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #aaa; font-size: 1rem; resize: vertical; box-sizing: border-box;
   }
   textarea { min-height: 80px; }
-  .section {
-    background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px #bfd3ef; margin-bottom: 25px;
-  }
   button {
-    background-color: #1a3c72; color: white; border: none; border-radius: 5px;
-    padding: 12px 20px; margin-top: 15px; cursor: pointer; font-size: 1rem;
-    transition: background-color 0.3s ease;
+    background-color: #1a3c72; color: white; border: none; border-radius: 6px; padding: 12px 22px; cursor: pointer; font-size: 1.1rem;
+    margin-top:20px;
   }
-  button:hover {
-    background-color: #14509f;
-  }
+  button:hover { background-color: #14509f; }
   #cvPreview {
-    background: #fff; border-radius: 8px; padding: 20px;
-    box-shadow: 0 0 12px #7a9bdc; font-family: 'Courier New', monospace;
-    white-space: pre-wrap; margin-top: 20px; min-height: 280px;
+    background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 0 18px #7a9bdc;
+    font-family: 'Georgia', serif; white-space: pre-wrap; margin-top: 20px; min-height: 280px;
+    color: #222;
   }
   .info-tip {
-    background-color: #e1e9fc; border-left: 6px solid #1a3c72;
-    padding: 10px 15px; margin-top: 6px; border-radius: 4px;
-    font-size: 0.9rem; color: #1a3c72;
+    background-color: #dceeff; border-left: 6px solid #1a3c72; padding: 10px 15px; margin-top: 6px; border-radius: 5px;
+    font-size: 0.9rem; color: #124482;
   }
-  .char-count {
-    font-size: 0.8rem; color: #666; float: right;
-  }
-  .flex {
-    display: flex; gap: 20px; flex-wrap: wrap;
-  }
-  .flex > div {
-    flex: 1 1 250px; min-width: 250px;
-  }
-  .checkbox-group label {
-    font-weight: normal;
-  }
-  .risk-score {
-    font-weight: 700; font-size: 1.1rem; color: #d9534f; margin-top: 10px;
-  }
-  #loginPanel, #mainContent {
-    max-width: 500px; margin: 40px auto; padding: 20px; background: white; box-shadow: 0 0 15px #aaccee;
-    border-radius: 10px;
-  }
-  #mainContent {
-    display: none;
-  }
+  .char-count { font-size: 0.8rem; color: #666; float: right; }
+  .flex { display: flex; gap: 16px; flex-wrap: wrap; }
+  .flex > div { flex: 1 1 260px; min-width: 260px; }
+  .checkbox-group label { font-weight: normal; display: block; margin: 5px 0; }
   footer {
-    font-size: 0.85rem;
+    text-align: center; font-family: 'Courier New', monospace; margin-top: 60px; padding: 20px 0;
+    font-size: 0.85rem; color: #555;
+    user-select: none;
   }
-  @media screen and (max-width: 600px) {
-    .flex {
-      flex-direction: column;
-    }
-    .flex > div {
-      min-width: 100%;
-    }
+  @media screen and (max-width: 640px) {
+    .flex { flex-direction: column; }
+    .flex > div { min-width: 100%; }
   }
+  /* Login Styling */
+  #loginContainer h2 { margin-bottom: 20px; }
+  #loginForm label { margin-top: 10px; }
+  #loginError {color: #d9534f; margin-top: 8px; font-weight: bold;}
 </style>
 </head>
 <body>
 
-<header>
-  Kreator CV Kamila Jabłońskiego
-</header>
-
-<div id="loginPanel">
+<div id="loginContainer">
   <h2>Panel logowania</h2>
-  <label for="loginUser">Login:</label>
-  <input type="text" id="loginUser" autocomplete="username" />
-  <label for="loginPass">Hasło:</label>
-  <input type="password" id="loginPass" autocomplete="current-password" />
-  <button id="loginBtn">Zaloguj się</button>
-  <p id="loginError" style="color: red; display: none; margin-top: 10px;">Nieprawidłowy login lub hasło</p>
+  <form id="loginForm">
+    <label for="loginUser">Login:</label>
+    <input type="text" id="loginUser" autocomplete="username" required />
+    <label for="loginPass">Hasło:</label>
+    <input type="password" id="loginPass" autocomplete="current-password" required />
+    <button type="submit">Zaloguj się</button>
+    <div id="loginError" aria-live="polite"></div>
+  </form>
 </div>
 
-<main id="mainContent" aria-live="polite">
-  <p>Wypełnij pola, aby stworzyć CV budujące zaufanie i spełniające wymogi RODO i rekrutacyjne.</p>
+<div id="appContainer" aria-live="polite">
+  <h1>Kreator CV Kamila Jabłońskiego</h1>
+  <p>Stwórz profesjonalne CV, minimalizując ryzyko wykrycia AI. Podsumowanie i narzędzia w jednym miejscu.</p>
 
-  <div class="section" id="personalSection">
+  <div class="section" id="personalSection" aria-label="Dane osobowe i kontaktowe">
     <h2>Dane osobowe i kontaktowe</h2>
     <div class="flex">
       <div>
         <label for="name">Imię i nazwisko</label>
-        <input type="text" id="name" maxlength="50" value="Kamil Jabłoński" />
+        <input type="text" id="name" maxlength="50" value="Kamil Jabłoński" aria-required="true" aria-describedby="nameCount" />
         <span class="char-count" id="nameCount">50 znaków max</span>
       </div>
       <div>
         <label for="location">Miejsce zamieszkania</label>
-        <input type="text" id="location" maxlength="50" value="Niemcza" />
+        <input type="text" id="location" maxlength="50" value="Niemcza" aria-describedby="locationCount" />
         <span class="char-count" id="locationCount">50 znaków max</span>
       </div>
     </div>
     <div class="flex">
       <div>
         <label for="phone">Telefon</label>
-        <input type="tel" id="phone" maxlength="15" placeholder="+48 502 767 157" value="+48 502 767 157" />
+        <input type="tel" id="phone" maxlength="15" placeholder="+48 502 767 157" value="+48 502 767 157" aria-describedby="phoneCount" />
         <span class="char-count" id="phoneCount">15 znaków max</span>
         <div class="info-tip">Podaj numer w formacie +48 123 456 789</div>
       </div>
       <div>
         <label for="email">E-mail</label>
-        <input type="email" id="email" maxlength="50" placeholder="adres@mail.com" value="Kam.Jab@yahoo.com" />
+        <input type="email" id="email" maxlength="50" placeholder="adres@mail.com" value="Kam.Jab@yahoo.com" aria-describedby="emailCount" />
         <span class="char-count" id="emailCount">50 znaków max</span>
         <div class="info-tip">Podaj poprawny adres e-mail</div>
       </div>
     </div>
   </div>
 
-  <div class="section" id="summarySection">
+  <div class="section" id="summarySection" aria-label="Podsumowanie zawodowe">
     <h2>Podsumowanie zawodowe (max 300 znaków)</h2>
-    <textarea id="summary" maxlength="300">Gwarantuję sumienność i pełne zaangażowanie. Jestem mieszkańcem Niemczy, gotowy od zaraz podjąć pracę fizyczną i szybko wdrożyć się w nowe obowiązki. Szanuję swój czas i czas pracodawcy, dlatego punktualność i rzetelność to dla mnie podstawa.</textarea>
+    <textarea id="summary" maxlength="300" aria-describedby="summaryCount">Gwarantuję sumienność i pełne zaangażowanie. Jestem mieszkańcem Niemczy, gotowy od zaraz podjąć pracę fizyczną i szybko wdrożyć się w nowe obowiązki. Szanuję swój czas i czas pracodawcy, dlatego punktualność i rzetelność to dla mnie podstawa.</textarea>
     <span class="char-count" id="summaryCount">300 znaków max</span>
     <div class="info-tip">Użyj mocnych, zobowiązujących określeń, np. „Gwarantuję”, „punktualność” i „rzetelność”.</div>
   </div>
 
-  <div class="section" id="strengthsSection">
+  <div class="section" id="strengthsSection" aria-label="Moje Atuty">
     <h2>Moje Atuty (zaznacz i dopisz inne)</h2>
-    <div class="checkbox-group">
+    <div class="checkbox-group" role="group" aria-labelledby="strengthsLabel">
       <label><input type="checkbox" class="strength" value="Gotowość do pracy od zaraz, również w systemie zmianowym i weekendy." checked> Gotowość i dostępność</label>
       <label><input type="checkbox" class="strength" value="Posiadam czynne prawo jazdy kat. B i własny transport, co gwarantuje niezawodność i punktualność." checked> Mobilność</label>
       <label><input type="checkbox" class="strength" value="Doskonała kondycja fizyczna pozwala mi wykonywać zadania wymagające siły i wytrzymałości." checked> Siła i wytrzymałość</label>
       <label><input type="checkbox" class="strength" value="Szybko się uczę i dążę do samodzielności." checked> Szybkie uczenie się</label>
     </div>
     <label for="otherStrengths">Inne atuty (opcjonalnie)</label>
-    <textarea id="otherStrengths" maxlength="200" placeholder="Np. zaangażowanie, punktualność, dyspozycyjność"></textarea>
+    <textarea id="otherStrengths" maxlength="200" placeholder="Np. zaangażowanie, punktualność, dyspozycyjność" aria-describedby="otherStrengthsCount"></textarea>
     <span class="char-count" id="otherStrengthsCount">200 znaków max</span>
   </div>
 
-  <div class="section" id="experienceSection">
+  <div class="section" id="experienceSection" aria-label="Doświadczenie zawodowe">
     <h2>Doświadczenie zawodowe (opcjonalne)</h2>
-    <textarea id="experience" maxlength="500" placeholder="Opisz swoje doświadczenie lub pozostaw puste."></textarea>
+    <textarea id="experience" maxlength="500" placeholder="Opisz swoje doświadczenie lub pozostaw puste, jeśli brak." aria-describedby="experienceCount"></textarea>
     <span class="char-count" id="experienceCount">500 znaków max</span>
   </div>
 
-  <div class="section" id="educationSection">
+  <div class="section" id="educationSection" aria-label="Wykształcenie">
     <h2>Wykształcenie (opcjonalne)</h2>
-    <textarea id="education" maxlength="300" placeholder="Wpisz swoje wykształcenie lub pozostaw puste."></textarea>
+    <textarea id="education" maxlength="300" placeholder="Wpisz swoje wykształcenie lub pozostaw puste." aria-describedby="educationCount"></textarea>
     <span class="char-count" id="educationCount">300 znaków max</span>
   </div>
 
-  <div class="section" id="referencesSection">
+  <div class="section" id="referencesSection" aria-label="Referencje">
     <h2>Referencje (opcjonalne)</h2>
-    <textarea id="references" maxlength="300" placeholder="Dane osób polecających lub wpisz 'Dostępne na życzenie'"></textarea>
+    <textarea id="references" maxlength="300" placeholder="Dane osób polecających lub wpisz 'Dostępne na życzenie'" aria-describedby="referencesCount"></textarea>
     <span class="char-count" id="referencesCount">300 znaków max</span>
   </div>
 
-  <div class="section" id="foundationSection">
+  <div class="section" id="foundationSection" aria-label="Fundament mojej pracy">
     <h2>Fundament mojej pracy</h2>
-    <textarea id="foundation" maxlength="400">Na mnie można polegać. Zawsze kończę to, co zacząłem. Działam w sposób transparentny i zgodny z zasadami. Dobrze radzę sobie z powtarzalnymi zadaniami i utrzymuję koncentrację.</textarea>
+    <textarea id="foundation" maxlength="400" aria-describedby="foundationCount">Na mnie można polegać. Zawsze kończę to, co zacząłem. Działam w sposób transparentny i zgodny z zasadami. Dobrze radzę sobie z powtarzalnymi zadaniami i utrzymuję koncentrację.</textarea>
     <span class="char-count" id="foundationCount">400 znaków max</span>
     <div class="info-tip">Podkreśl swoje wartości i postawę, która daje gwarancję pracodawcy.</div>
   </div>
 
-  <div class="section" id="rodoSection">
+  <div class="section" id="rodoSection" aria-label="Klauzula RODO">
     <h2>Klauzula RODO</h2>
-    <textarea id="rodoClause" rows="4" maxlength="700">Wyrażam zgodę na przetwarzanie moich danych osobowych przez [nazwa firmy] w celu prowadzenia rekrutacji na aplikowane przeze mnie stanowisko zgodnie z ustawą z dnia 10 maja 2018 r. o ochronie danych osobowych (Dz. U. 2018, poz. 1000) oraz Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 (RODO).</textarea>
+    <textarea id="rodoClause" rows="4" maxlength="700" aria-describedby="rodoClauseCount">Wyrażam zgodę na przetwarzanie moich danych osobowych przez [nazwa firmy] w celu prowadzenia rekrutacji na aplikowane przeze mnie stanowisko zgodnie z ustawą z dnia 10 maja 2018 r. o ochronie danych osobowych (Dz. U. 2018, poz. 1000) oraz Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 (RODO).</textarea>
     <label for="companyName">Nazwa firmy (uzupełnia klauzulę):</label>
-    <input type="text" id="companyName" maxlength="100" placeholder="Wpisz nazwę firmy" />
+    <input type="text" id="companyName" maxlength="100" placeholder="Wpisz nazwę firmy" aria-describedby="rodoClauseCount" />
     <div class="info-tip">Możesz dodać zgodę na przetwarzanie danych również na potrzeby przyszłych rekrutacji.</div>
     <label><input type="checkbox" id="futureRecruitmentConsent"> Wyrażam zgodę na przetwarzanie danych osobowych również na potrzeby przyszłych rekrutacji</label>
   </div>
 
-  <div class="section" id="messageSection">
+  <div class="section" id="messageSection" aria-label="Wzory wiadomości kontaktowych">
     <h2>Wzory wiadomości kontaktowych</h2>
     <label for="messageType">Wybierz rodzaj wiadomości:</label>
-    <select id="messageType">
+    <select id="messageType" aria-live="polite" aria-atomic="true" aria-relevant="additions removals">
       <option value="olx">Wiadomość OLX / Facebook</option>
       <option value="sms">Wiadomość SMS</option>
     </select>
     <textarea id="messageText" rows="6" readonly></textarea>
-    <button id="copyMessage">Kopiuj wiadomość do schowka</button>
+    <button id="copyMessage" aria-label="Kopiuj wiadomość do schowka">Kopiuj wiadomość do schowka</button>
   </div>
 
-  <div class="section" id="riskSection">
+  <div class="section" id="riskSection" aria-label="Test zaufania">
     <h2>Test zaufania: Obawy pracodawcy (punktacja i porady)</h2>
     <p>Oceń swoje odpowiedzi, aby zminimalizować obawy pracodawcy:</p>
     <label><input type="checkbox" class="riskCheck" value="1"> Dam z siebie wszystko każdego dnia pracy (zaangażowanie)</label><br/>
     <label><input type="checkbox" class="riskCheck" value="1"> Mam niezawodny transport i punktualność</label><br/>
     <label><input type="checkbox" class="riskCheck" value="1"> Jestem słowny i dotrzymuję terminów</label><br/>
     <label><input type="checkbox" class="riskCheck" value="1"> Potrafię szybko się uczyć i adaptować</label><br/>
-    <button id="calcRisk">Oblicz ryzyko i zobacz rekomendacje</button>
+    <button id="calcRisk" aria-label="Oblicz ryzyko i zobacz rekomendacje">Oblicz ryzyko i zobacz rekomendacje</button>
     <div class="risk-score" id="riskScore"></div>
     <div id="riskAdvice" style="margin-top: 10px;"></div>
   </div>
 
-  <button id="generateCV">Generuj i pokaż podgląd CV</button>
+  <button id="generateCV" aria-label="Generuj i pokaż podgląd CV">Generuj i pokaż podgląd CV</button>
 
-  <div id="cvPreview" aria-live="polite" role="region" tabindex="0"></div>
+  <div id="cvPreview" aria-live="polite" aria-atomic="true" aria-relevant="additions removals"></div>
 
   <div style="margin-top: 20px;">
-    <button id="downloadPDF">Pobierz CV w PDF</button>
-    <button id="downloadDOCX">Pobierz CV w DOCX</button>
+    <button id="downloadPDF" aria-label="Pobierz CV w formacie PDF">Pobierz CV w PDF</button>
+    <button id="downloadDOCX" aria-label="Pobierz CV w formacie DOCX">Pobierz CV w DOCX</button>
   </div>
-</main>
+</div>
 
-<footer>
-  ! ƑERRට®ꍏRT©2025   °•.Ⱥꪶꪶའightsའeserved•°•
-</footer>
+<footer>! ƑERRට®ꍏRT©2025   °•.Ⱥꪶꪶའightsའeserved•°•</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.2.1/docx.umd.js"></script>
 
 <script>
-  (function(){
-    const LOGIN = 'czajnik';
-    const PASSWORD = 'deluxe';
-
-    const loginPanel = document.getElementById('loginPanel');
-    const mainContent = document.getElementById('mainContent');
-    const loginBtn = document.getElementById('loginBtn');
-    const loginUser = document.getElementById('loginUser');
-    const loginPass = document.getElementById('loginPass');
-    const loginError = document.getElementById('loginError');
-
-    loginBtn.addEventListener('click', () => {
-      if(loginUser.value === LOGIN && loginPass.value === PASSWORD){
-        loginPanel.style.display = 'none';
-        mainContent.style.display = 'block';
-        loginError.style.display = 'none';
-        // Focus first input for accessibility
-        document.getElementById('name').focus();
-        loadAllFromStorage();
-        updateCVPreview();
-      } else {
-        loginError.style.display = 'block';
-      }
-    });
-
-    // Helpers for char count
-    function updateCharCount(id, countId, maxLen) {
-      const field = document.getElementById(id);
-      const count = field.value.length;
-      const span = document.getElementById(countId);
-      span.textContent = \`\${maxLen - count} znaków pozostało\`;
+  // LOGIN
+  const loginContainer = document.getElementById('loginContainer');
+  const appContainer = document.getElementById('appContainer');
+  const loginForm = document.getElementById('loginForm');
+  const loginError = document.getElementById('loginError');
+  loginForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    if(user === 'czajnik' && pass === 'deluxe'){
+      loginContainer.style.display = 'none';
+      appContainer.style.display = 'block';
+    } else {
+      loginError.textContent = 'Niepoprawny login lub hasło.';
     }
-    ['name','location','phone','email','summary','otherStrengths','experience','education','references','foundation','companyName','rodoClause'].forEach(id => {
-      let countId = id+'Count';
-      let maxLen = parseInt(document.getElementById(id)?.getAttribute('maxlength')) || 100;
-      if(document.getElementById(id) && document.getElementById(countId)) {
-        document.getElementById(id).addEventListener('input', () => updateCharCount(id, countId, maxLen));
-        updateCharCount(id, countId, maxLen);
-      }
-    });
+  });
 
-    // Message templates and update logic
-    const messageTemplates = {
-      olx: \`Dzień dobry,
+  // Liczenie pozostałych znaków
+  function updateCharCount(id, countId, maxLen) {
+    const field = document.getElementById(id);
+    const count = field.value.length;
+    const span = document.getElementById(countId);
+    span.textContent = \`\${maxLen - count} znaków pozostało\`;
+  }
+  ['name','location','phone','email','summary','otherStrengths','experience','education','references','foundation','companyName','rodoClause'].forEach(id => {
+    let countId = id+'Count';
+    let maxLen = parseInt(document.getElementById(id)?.getAttribute('maxlength')) || 100;
+    if(document.getElementById(id) && document.getElementById(countId)) {
+      document.getElementById(id).addEventListener('input', () => updateCharCount(id, countId, maxLen));
+      updateCharCount(id, countId, maxLen);
+    }
+  });
+
+  // Wiadomości kontaktowe wzory
+  const messageTemplates = {
+    olx: `Dzień dobry,
 Nazywam się Kamil Jabłoński. Piszę w sprawie Państwa ogłoszenia o pracę na stanowisko [Nazwa stanowiska].
 Jestem z Niemczy, mam prawo jazdy i jestem gotowy do pracy od zaraz. Moje CV przesyłam w załączniku.
 Jestem dostępny pod telefonem +48 502 767 157. Chętnie odpowiem na pytania lub spotkam się na krótkiej rozmowie.
 Z poważaniem,
-Kamil Jabłoński\`,
-      sms: \`Dzień dobry. Nazywam się Kamil Jabłoński, dzwonię w sprawie pracy dla [Nazwa stanowiska] z portalu OLX. Jestem z Niemczy i dostępny od zaraz. Czy to dobra chwila na rozmowę?\`
-    };
-
-    function updateMessage(){
-      const type = document.getElementById('messageType').value;
-      document.getElementById('messageText').value = messageTemplates[type];
-    }
-    document.getElementById('messageType').addEventListener('change', updateMessage);
-    document.getElementById('copyMessage').addEventListener('click', () => {
-      navigator.clipboard.writeText(document.getElementById('messageText').value).then(() => {
-        alert("Wiadomość skopiowana do schowka.");
-      });
+Kamil Jabłoński`,
+    sms: `Dzień dobry. Nazywam się Kamil Jabłoński, dzwonię w sprawie pracy dla [Nazwa stanowiska] z portalu OLX. Jestem z Niemczy i dostępny od zaraz. Czy to dobra chwila na rozmowę?`
+  };
+  function updateMessage() {
+    const type = document.getElementById('messageType').value;
+    document.getElementById('messageText').value = messageTemplates[type];
+  }
+  document.getElementById('messageType').addEventListener('change', updateMessage);
+  updateMessage();
+  document.getElementById('copyMessage').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('messageText').value).then(() => {
+      alert("Wiadomość skopiowana do schowka.");
     });
-    updateMessage();
+  });
 
-    function generateCVText() {
-      const name = document.getElementById('name').value.trim();
-      const location = document.getElementById('location').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const summary = document.getElementById('summary').value.trim();
-      const strengthsElements = [...document.querySelectorAll('.strength:checked')];
-      const strengths = strengthsElements.map(el => el.value);
-      const otherStrengths = document.getElementById('otherStrengths').value.trim();
-      if(otherStrengths) strengths.push(otherStrengths);
-      const experience = document.getElementById('experience').value.trim();
-      const education = document.getElementById('education').value.trim();
-      const references = document.getElementById('references').value.trim();
-      const foundation = document.getElementById('foundation').value.trim();
+  // Generowanie tekstu CV
+  function generateCVText() {
+    const name = document.getElementById('name').value.trim();
+    const location = document.getElementById('location').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const summary = document.getElementById('summary').value.trim();
+    const strengthsElements = [...document.querySelectorAll('.strength:checked')];
+    const strengths = strengthsElements.map(el => el.value);
+    const otherStrengths = document.getElementById('otherStrengths').value.trim();
+    if(otherStrengths) strengths.push(otherStrengths);
+    const experience = document.getElementById('experience').value.trim();
+    const education = document.getElementById('education').value.trim();
+    const references = document.getElementById('references').value.trim();
+    const foundation = document.getElementById('foundation').value.trim();
 
-      let rodoClause = document.getElementById('rodoClause').value.trim();
-      const companyName = document.getElementById('companyName').value.trim();
-      if(companyName.length) {
-        rodoClause = rodoClause.replace('[nazwa firmy]', companyName);
-      }
-      if(document.getElementById('futureRecruitmentConsent').checked) {
-        rodoClause += '\\nWyrażam zgodę na przetwarzanie moich danych osobowych również na potrzeby przyszłych rekrutacji.';
-      }
+    let rodoClause = document.getElementById('rodoClause').value.trim();
+    const companyName = document.getElementById('companyName').value.trim();
+    if(companyName.length) {
+      rodoClause = rodoClause.replace('[nazwa firmy]', companyName);
+    }
+    if(document.getElementById('futureRecruitmentConsent').checked) {
+      rodoClause += '\\nWyrażam zgodę na przetwarzanie moich danych osobowych również na potrzeby przyszłych rekrutacji.';
+    }
 
-      // Minimalizacja ryzyka AI - wprowadzanie unosowych, unikalnych synonimów (prosta humanizacja)
-      // Dla przykładu, zamienimy "Gotowość" na "Pełne przygotowanie"; "punktualność" na "dokładne pojawienie się na czas"
-      let humanizedSummary = summary
-          .replace(/gotowy/gi, 'pełne przygotowanie')
-          .replace(/punktualność/gi, 'dokładne pojawienie się na czas')
-          .replace(/rzetelność/gi, 'odpowiedzialne podejście')
-          .replace(/sumienność/gi, 'dokładność i staranność');
-
-      return \`
+    return \`
 \${name}
 Konkretny i słowny pracownik z \${location}
 tel: \${phone} | e-mail: \${email}
 
 Podsumowanie
-\${humanizedSummary}
+\${summary}
 
 Moje Atuty – Co wnoszę do firmy?
 \${strengths.map(s => '- ' + s).join('\\n')}
@@ -345,136 +292,141 @@ Fundament mojej pracy
 
 Klauzula RODO
 \${rodoClause}
-
-! ƑERRට®ꍏRT©2025   °•.Ⱥꪶꪶའightsའeserved•°•
 \`.trim();
-    }
+  }
 
-    function updateCVPreview(){
-      const cvText = generateCVText();
-      document.getElementById('cvPreview').textContent = cvText;
-    }
-    document.getElementById('generateCV').addEventListener('click', updateCVPreview);
+  // Podgląd CV
+  function updateCVPreview() {
+    const cvText = generateCVText();
+    document.getElementById('cvPreview').textContent = cvText;
+  }
+  document.getElementById('generateCV').addEventListener('click', updateCVPreview);
+  updateCVPreview();
 
-    function saveAllToStorage() {
-      const data = {};
-      ['name','location','phone','email','summary','otherStrengths','experience','education','references','foundation','rodoClause','companyName','futureRecruitmentConsent'].forEach(id => {
-        if(id === 'futureRecruitmentConsent'){
-          data[id] = document.getElementById(id).checked;
-        } else {
-          const el = document.getElementById(id);
-          if(el) data[id] = el.value;
-        }
-      });
-      data.strengths = [...document.querySelectorAll('.strength')].map(chk => chk.checked);
-      localStorage.setItem('cvKamilData', JSON.stringify(data));
-    }
-    function loadAllFromStorage() {
-      const data = JSON.parse(localStorage.getItem('cvKamilData') || '{}');
-      if(!data) return;
-      ['name','location','phone','email','summary','otherStrengths','experience','education','references','foundation','rodoClause','companyName','futureRecruitmentConsent'].forEach(id => {
-        if(id === 'futureRecruitmentConsent' && typeof data[id] === 'boolean') {
-          document.getElementById(id).checked = data[id];
-        } else if(data[id]) {
-          const el = document.getElementById(id);
-          if(el) el.value = data[id];
-        }
-      });
-      const strengths = document.querySelectorAll('.strength');
-      if(data.strengths && Array.isArray(data.strengths) && strengths.length === data.strengths.length){
-        strengths.forEach((chk, i) => chk.checked = data.strengths[i]);
+  // Eksport PDF
+  document.getElementById('downloadPDF').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const cvText = generateCVText();
+
+    const lines = doc.splitTextToSize(cvText, 180);
+    let y = 10;
+    const lineHeight = 7;
+    doc.setFont("Courier", "normal");
+    doc.setFontSize(11);
+    for (const line of lines) {
+      if (y > 280) {
+        doc.addPage();
+        y = 10;
       }
+      doc.text(line, 10, y);
+      y += lineHeight;
     }
+    doc.save("CV_Kamil_Jablonski.pdf");
+  });
 
-    let saveTimeout;
-    document.querySelectorAll('input, textarea, select').forEach(el => {
-      el.addEventListener('input', () => {
-        clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(() => {
-          saveAllToStorage();
-          updateCVPreview();
-        }, 300);
-      });
-    });
-
-    window.onload = () => {
-      loadAllFromStorage();
-    };
-
-    // PDF generation
-    document.getElementById('downloadPDF').addEventListener('click', () => {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const cvText = generateCVText();
-      // Format with basic line breaks and page breaks
-      const lines = cvText.split('\\n');
-      let y = 10;
-      const lineHeight = 7;
-      doc.setFont("Courier", "normal");
-      doc.setFontSize(11);
-      for(let i = 0; i < lines.length; i++){
-        if(y > 280){
-          doc.addPage();
-          y = 10;
-        }
-        doc.text(lines[i], 10, y);
-        y += lineHeight;
-      }
-      doc.save("CV_Kamil_Jablonski.pdf");
-    });
-
-    // DOCX generation
-    document.getElementById('downloadDOCX').addEventListener('click', async () => {
-      const { Document, Packer, Paragraph, TextRun } = window.docx;
-      const cvText = generateCVText();
-      const paragraphs = [];
-      cvText.split('\\n').forEach(line => {
-        if(line.trim() === '') {
-          paragraphs.push(new Paragraph(''));
-        } else {
-          paragraphs.push(new Paragraph({
-            children: [new TextRun(line.trim())]
-          }));
-        }
-      });
-      const doc = new Document({
-        sections: [{
-          properties: {},
-          children: paragraphs
-        }]
-      });
-      const blob = await Packer.toBlob(doc);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'CV_Kamil_Jablonski.docx';
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    // Trust test
-    document.getElementById('calcRisk').addEventListener('click', () => {
-      const checks = document.querySelectorAll('.riskCheck:checked').length;
-      const max = document.querySelectorAll('.riskCheck').length;
-      const risk = max - checks;
-      const riskScore = document.getElementById('riskScore');
-      const advice = document.getElementById('riskAdvice');
-      if(risk === 0){
-        riskScore.textContent = 'Twoje ryzyko jest minimalne — jesteś idealnym kandydatem!';
-        advice.textContent = 'Doskonała postawa i przygotowanie — utrzymuj swoje atuty.';
-      } else if(risk <= 1){
-        riskScore.textContent = 'Niskie ryzyko. Kilka rzeczy możesz poprawić.';
-        advice.textContent = 'Zwróć uwagę na punktualność i podtrzymuj motywację.';
-      } else if(risk <= 3){
-        riskScore.textContent = 'Umiarkowane ryzyko. Warto popracować nad zaangażowaniem i dyspozycyjnością.';
-        advice.textContent = 'Zadbaj o niezawodny transport i konsekwencję w pracy.';
+  // Eksport DOCX
+  document.getElementById('downloadDOCX').addEventListener('click', async () => {
+    const { Document, Packer, Paragraph, TextRun } = window.docx;
+    const cvText = generateCVText();
+    const paragraphs = [];
+    cvText.split('\n').forEach(line => {
+      if(line.trim() === '') {
+        paragraphs.push(new Paragraph(''));
       } else {
-        riskScore.textContent = 'Wysokie ryzyko. Zastanów się nad motywacją i logistyką.';
-        advice.textContent = 'Staraj się eliminować bariery i zwiększać swój profesjonalizm.';
+        paragraphs.push(new Paragraph({
+          children: [new TextRun(line.trim())]
+        }));
       }
     });
-  })();
+
+    const doc = new Document({
+      sections: [{
+        properties: {},
+        children: paragraphs
+      }]
+    });
+
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'CV_Kamil_Jablonski.docx';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Local Storage
+  function saveAllToStorage() {
+    const data = {};
+    ['name','location','phone','email','summary','otherStrengths','experience','education','references','foundation','rodoClause','companyName','futureRecruitmentConsent'].forEach(id => {
+      if(id === 'futureRecruitmentConsent'){
+        data[id] = document.getElementById(id).checked;
+      } else {
+        const el = document.getElementById(id);
+        if(el) data[id] = el.value;
+      }
+    });
+    data.strengths = [...document.querySelectorAll('.strength')].map(chk => chk.checked);
+    localStorage.setItem('cvKamilData', JSON.stringify(data));
+  }
+
+  function loadAllFromStorage() {
+    const data = JSON.parse(localStorage.getItem('cvKamilData') || '{}');
+    if(!data) return;
+    ['name','location','phone','email','summary','otherStrengths','experience','education','references','foundation','rodoClause','companyName','futureRecruitmentConsent'].forEach(id => {
+      if(id === 'futureRecruitmentConsent' && typeof data[id] === 'boolean') {
+        document.getElementById(id).checked = data[id];
+      } else if(data[id]) {
+        const el = document.getElementById(id);
+        if(el) el.value = data[id];
+      }
+    });
+    const strengths = document.querySelectorAll('.strength');
+    if(data.strengths && Array.isArray(data.strengths) && strengths.length === data.strengths.length){
+      strengths.forEach((chk, i) => chk.checked = data.strengths[i]);
+    }
+  }
+
+  let saveTimeout;
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    el.addEventListener('input', () => {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        saveAllToStorage();
+      }, 300);
+    });
+  });
+
+  window.onload = () => {
+    loadAllFromStorage();
+    updateCVPreview();
+  };
+
+  // Ryzyko i porady
+  document.getElementById('calcRisk').addEventListener('click', () => {
+    const checks = document.querySelectorAll('.riskCheck:checked').length;
+    const max = document.querySelectorAll('.riskCheck').length;
+    const risk = max - checks;
+    const riskScore = document.getElementById('riskScore');
+    const advice = document.getElementById('riskAdvice');
+    if(risk === 0){
+      riskScore.textContent = 'Twoje ryzyko jest minimalne — jesteś idealnym kandydatem!';
+      advice.textContent = 'Doskonała postawa i przygotowanie — utrzymuj swoje atuty.';
+    } else if(risk <= 1){
+      riskScore.textContent = 'Niskie ryzyko. Kilka rzeczy możesz poprawić.';
+      advice.textContent = 'Zwróć uwagę na punktualność i podtrzymuj motywację.';
+    } else if(risk <= 3){
+      riskScore.textContent = 'Umiarkowane ryzyko. Warto popracować nad zaangażowaniem i dyspozycyjnością.';
+      advice.textContent = 'Zadbaj o niezawodny transport i konsekwencję w pracy.';
+    } else {
+      riskScore.textContent = 'Wysokie ryzyko. Zastanów się nad motywacją i logistyką.';
+      advice.textContent = 'Staraj się eliminować bariery i zwiększać swój profesjonalizm.';
+    }
+  });
 </script>
+
+<footer>! ƑERRට®ꍏRT©2025   °•.Ⱥꪶꪶའightsའeserved•°•</footer>
 
 </body>
 </html>
