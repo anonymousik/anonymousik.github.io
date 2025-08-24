@@ -4,11 +4,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kreator CV Kamila Jabłońskiego</title>
+<title>Kreator CV Kamila Jabłońskiego - Pełny i Stabilny</title>
 <style>
   body { margin:0; font-family: Arial, sans-serif; background: #f0f4f8; }
   #loginContainer, #appContainer {
-    max-width: 900px; margin: 40px auto; background: white; border-radius: 10px; box-shadow: 0 0 15px #aaccee;
+    max-width: 900px; margin: 50px auto; background: white; border-radius: 10px; box-shadow: 0 0 15px #aaccee;
     padding: 25px 30px;
   }
   #appContainer { display: none; }
@@ -51,13 +51,12 @@
 
 <div id="loginContainer" style="max-width: 320px; margin: 80px auto; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px #aaccee; background:#fff;">
   <h2>Panel logowania</h2>
-  <form id="loginForm" autocomplete="off">
-    <label for="loginUser">Login:</label>
-    <input type="text" id="loginUser" name="loginUser" autocomplete="username" required />
+  <form id="loginForm" autocomplete="off" novalidate>
     <label for="loginPass">Hasło:</label>
-    <input type="password" id="loginPass" name="loginPass" autocomplete="current-password" required />
+    <input type="password" id="loginPass" name="loginPass" autocomplete="current-password" required aria-describedby="passHelp" />
+    <div id="passHelp" class="info-tip">Wprowadź tajne hasło, aby uzyskać dostęp</div>
     <button type="submit" style="margin-top: 20px;">Zaloguj się</button>
-    <div id="loginError" style="color: #d9534f; margin-top: 10px; font-weight: bold; min-height: 22px;"></div>
+    <div id="loginError" style="color: #d9534f; margin-top: 10px; font-weight: bold; min-height: 22px;" aria-live="polite"></div>
   </form>
 </div>
 
@@ -172,7 +171,14 @@
     <div id="riskAdvice" style="margin-top: 10px;"></div>
   </div>
 
-  <button id="generateCV" aria-label="Generuj i pokaż podgląd CV">Generuj i pokaż podgląd CV</button>
+  <label for="templateSelect">Wybierz szablon Quarto CV:</label>
+  <select id="templateSelect" aria-label="Szablon CV">
+    <option value="mattwarkentin">Matt Warkentin - Simple CV</option>
+    <option value="schochastics">Schochastics - Modern CV</option>
+  </select>
+  <button id="downloadQMD" style="margin-top:10px;">Pobierz plik Quarto .qmd</button>
+
+  <button id="generateCV" aria-label="Generuj i pokaż podgląd CV" style="margin-top:15px;">Generuj i pokaż podgląd CV</button>
 
   <div id="cvPreview" aria-live="polite" aria-atomic="true" aria-relevant="additions removals"></div>
 
@@ -188,7 +194,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.2.1/docx.umd.js"></script>
 
 <script>
-  // LOGIN
+  // LOGOWANIE
   const loginContainer = document.getElementById('loginContainer');
   const appContainer = document.getElementById('appContainer');
   const loginForm = document.getElementById('loginForm');
@@ -196,22 +202,21 @@
 
   loginForm.addEventListener('submit', e => {
     e.preventDefault();
-    const user = loginForm.loginUser.value.trim();
     const pass = loginForm.loginPass.value;
-    if(user === 'czajnik' && pass === 'deluxe'){
+    if(pass === '0000'){
       loginContainer.style.display = 'none';
       appContainer.style.display = 'block';
       loginError.textContent = '';
       const firstInput = appContainer.querySelector('input,textarea,select');
       if (firstInput) firstInput.focus();
     } else {
-      loginError.textContent = 'Niepoprawny login lub hasło.';
+      loginError.textContent = 'Niepoprawne hasło.';
       loginForm.loginPass.value = '';
       loginForm.loginPass.focus();
     }
   });
 
-  // Liczenie pozostałych znaków
+  // Funkcja liczenia znaków pozostałych
   function updateCharCount(id, countId, maxLen) {
     const field = document.getElementById(id);
     const count = field.value.length;
@@ -227,7 +232,7 @@
     }
   });
 
-  // Wiadomości kontaktowe wzory
+  // Wzory wiadomości kontaktowych
   const messageTemplates = {
     olx: `Dzień dobry,
 Nazywam się Kamil Jabłoński. Piszę w sprawie Państwa ogłoszenia o pracę na stanowisko [Nazwa stanowiska].
@@ -249,63 +254,68 @@ Kamil Jabłoński`,
     });
   });
 
-  // Generowanie tekstu CV
-  function generateCVText() {
-    const name = document.getElementById('name').value.trim();
-    const location = document.getElementById('location').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const summary = document.getElementById('summary').value.trim();
-    const strengthsElements = [...document.querySelectorAll('.strength:checked')];
-    const strengths = strengthsElements.map(el => el.value);
+  // Generowanie danych CV w strukturze
+  function collectCVData() {
+    const strengths = [...document.querySelectorAll('.strength:checked')].map(el => el.value);
     const otherStrengths = document.getElementById('otherStrengths').value.trim();
     if(otherStrengths) strengths.push(otherStrengths);
-    const experience = document.getElementById('experience').value.trim();
-    const education = document.getElementById('education').value.trim();
-    const references = document.getElementById('references').value.trim();
-    const foundation = document.getElementById('foundation').value.trim();
-
-    let rodoClause = document.getElementById('rodoClause').value.trim();
-    const companyName = document.getElementById('companyName').value.trim();
-    if(companyName.length) {
-      rodoClause = rodoClause.replace('[nazwa firmy]', companyName);
-    }
-    if(document.getElementById('futureRecruitmentConsent').checked) {
-      rodoClause += '\\nWyrażam zgodę na przetwarzanie moich danych osobowych również na potrzeby przyszłych rekrutacji.';
-    }
-
-    return \`
-\${name}
-Konkretny i słowny pracownik z \${location}
-tel: \${phone} | e-mail: \${email}
-
-Podsumowanie
-\${summary}
-
-Moje Atuty – Co wnoszę do firmy?
-\${strengths.map(s => '- ' + s).join('\\n')}
-
-\${experience ? 'Doświadczenie zawodowe:\n' + experience + '\\n' : ''}
-\${education ? 'Wykształcenie:\n' + education + '\\n' : ''}
-\${references ? 'Referencje:\n' + references + '\\n' : ''}
-
-Fundament mojej pracy
-\${foundation}
-
-Klauzula RODO
-\${rodoClause}
-\`.trim();
+    return {
+      name: document.getElementById('name').value.trim(),
+      location: document.getElementById('location').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      summary: document.getElementById('summary').value.trim(),
+      strengths: strengths,
+      experience: document.getElementById('experience').value.trim(),
+      education: document.getElementById('education').value.trim(),
+      references: document.getElementById('references').value.trim(),
+      foundation: document.getElementById('foundation').value.trim(),
+      rodoClause: (() => {
+        let text = document.getElementById('rodoClause').value.trim();
+        const company = document.getElementById('companyName').value.trim();
+        if(company) text = text.replace('[nazwa firmy]', company);
+        if(document.getElementById('futureRecruitmentConsent').checked) {
+          text += '\\nWyrażam zgodę na przetwarzanie moich danych osobowych również na potrzeby przyszłych rekrutacji.';
+        }
+        return text;
+      })(),
+    };
   }
 
-  // Podgląd CV
+  // Generowanie pełnego tekstu CV do podglądu i PDF/DOCX
+  function generateCVText() {
+    const data = collectCVData();
+    return `
+${data.name}
+Konkretny i słowny pracownik z ${data.location}
+tel: ${data.phone} | e-mail: ${data.email}
+
+Podsumowanie
+${data.summary}
+
+Moje Atuty – Co wnoszę do firmy?
+${data.strengths.map(s => '- ' + s).join('\n')}
+
+${data.experience ? 'Doświadczenie zawodowe:\n' + data.experience + '\n' : ''}
+${data.education ? 'Wykształcenie:\n' + data.education + '\n' : ''}
+${data.references ? 'Referencje:\n' + data.references + '\n' : ''}
+
+Fundament mojej pracy
+${data.foundation}
+
+Klauzula RODO
+${data.rodoClause}
+`.trim();
+  }
+
+  // Aktualizacja podglądu CV
   function updateCVPreview() {
-    const cvText = generateCVText();
-    document.getElementById('cvPreview').textContent = cvText;
+    document.getElementById('cvPreview').textContent = generateCVText();
   }
   document.getElementById('generateCV').addEventListener('click', updateCVPreview);
   updateCVPreview();
 
-  // Eksport PDF
+  // Eksport do PDF
   document.getElementById('downloadPDF').addEventListener('click', () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -327,7 +337,7 @@ Klauzula RODO
     doc.save("CV_Kamil_Jablonski.pdf");
   });
 
-  // Eksport DOCX
+  // Eksport do DOCX
   document.getElementById('downloadDOCX').addEventListener('click', async () => {
     const { Document, Packer, Paragraph, TextRun } = window.docx;
     const cvText = generateCVText();
@@ -358,7 +368,7 @@ Klauzula RODO
     URL.revokeObjectURL(url);
   });
 
-  // Local Storage
+  // Local Storage zapisywanie i ładowanie
   function saveAllToStorage() {
     const data = {};
     ['name','location','phone','email','summary','otherStrengths','experience','education','references','foundation','rodoClause','companyName','futureRecruitmentConsent'].forEach(id => {
@@ -372,31 +382,29 @@ Klauzula RODO
     data.strengths = [...document.querySelectorAll('.strength')].map(chk => chk.checked);
     localStorage.setItem('cvKamilData', JSON.stringify(data));
   }
-
   function loadAllFromStorage() {
     const data = JSON.parse(localStorage.getItem('cvKamilData') || '{}');
     if(!data) return;
     ['name','location','phone','email','summary','otherStrengths','experience','education','references','foundation','rodoClause','companyName','futureRecruitmentConsent'].forEach(id => {
       if(id === 'futureRecruitmentConsent' && typeof data[id] === 'boolean') {
         document.getElementById(id).checked = data[id];
-      } else if(data[id]) {
+      } else if(data[id]){
         const el = document.getElementById(id);
         if(el) el.value = data[id];
       }
     });
     const strengths = document.querySelectorAll('.strength');
     if(data.strengths && Array.isArray(data.strengths) && strengths.length === data.strengths.length){
-      strengths.forEach((chk, i) => chk.checked = data.strengths[i]);
+      strengths.forEach((chk,i) => chk.checked = data.strengths[i]);
     }
   }
 
+  // Debounced save
   let saveTimeout;
   document.querySelectorAll('input, textarea, select').forEach(el => {
     el.addEventListener('input', () => {
       clearTimeout(saveTimeout);
-      saveTimeout = setTimeout(() => {
-        saveAllToStorage();
-      }, 300);
+      saveTimeout = setTimeout(() => saveAllToStorage(), 300);
     });
   });
 
@@ -405,7 +413,7 @@ Klauzula RODO
     updateCVPreview();
   };
 
-  // Ryzyko i porady
+  // Test zaufania i rekomendacje
   document.getElementById('calcRisk').addEventListener('click', () => {
     const checks = document.querySelectorAll('.riskCheck:checked').length;
     const max = document.querySelectorAll('.riskCheck').length;
@@ -426,6 +434,92 @@ Klauzula RODO
       advice.textContent = 'Staraj się eliminować bariery i zwiększać swój profesjonalizm.';
     }
   });
+
+  // Szablony Quarto CV - generowanie pliku .qmd
+  document.getElementById('downloadQMD').addEventListener('click', () => {
+    const template = document.getElementById('templateSelect').value;
+    const data = collectCVData();
+    let content = '';
+    if(template === 'mattwarkentin'){
+      content = `
+---
+title: "Curriculum Vitae"
+format: pdf
+execute: false
+---
+
+# Dane osobowe
+- Imię i nazwisko: ${escapeYAML(data.name)}
+- Miejsce zamieszkania: ${escapeYAML(data.location)}
+- Telefon: ${escapeYAML(data.phone)}
+- E-mail: ${escapeYAML(data.email)}
+
+# Podsumowanie
+${escapeYAML(data.summary)}
+
+# Moje Atuty
+${data.strengths.map(s => "- " + escapeYAML(s)).join("\n")}
+
+# Doświadczenie zawodowe
+${escapeYAML(data.experience)}
+
+# Wykształcenie
+${escapeYAML(data.education)}
+
+# Referencje
+${escapeYAML(data.references)}
+
+# Fundament mojej pracy
+${escapeYAML(data.foundation)}
+
+# Klauzula RODO
+${escapeYAML(data.rodoClause)}
+`;
+    } else if(template === 'schochastics') {
+      content = `
+# Curriculum Vitae - Styl nowoczesny
+
+**${data.name}**  
+${data.location}  
+Tel: ${data.phone}  
+Email: ${data.email}  
+
+## Podsumowanie  
+${data.summary}  
+
+## Moje Atuty  
+${data.strengths.map(s => "* " + s).join("\n")}
+
+## Doświadczenie  
+${data.experience}
+
+## Wykształcenie  
+${data.education}
+
+## Referencje  
+${data.references}
+
+## Fundament  
+${data.foundation}
+
+## Klauzula RODO  
+${data.rodoClause}
+`;
+    }
+    const blob = new Blob([content], {type: "text/markdown"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "cv_kamil.qmd";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Pomocnicza funkcja escape YAML
+  function escapeYAML(str) {
+    if(!str) return '';
+    return str.replace(/[-:]/g, '\\$&').replace(/\n/g, '\n  ');
+  }
 </script>
 
 </body>
