@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kreator CV Kamila Jabłońskiego z Logowaniem</title>
+<title>Kreator CV Kamila Jabłońskiego</title>
 <style>
   body { margin:0; font-family: Arial, sans-serif; background: #f0f4f8; }
   #loginContainer, #appContainer {
@@ -11,7 +12,6 @@
     padding: 25px 30px;
   }
   #appContainer { display: none; }
-
   h1, h2 { color: #1a3c72; margin-bottom: 12px; }
   label { display: block; margin-top: 15px; font-weight: bold; }
   input[type=text], input[type=tel], input[type=email], input[type=password], textarea, select {
@@ -36,38 +36,34 @@
   .flex { display: flex; gap: 16px; flex-wrap: wrap; }
   .flex > div { flex: 1 1 260px; min-width: 260px; }
   .checkbox-group label { font-weight: normal; display: block; margin: 5px 0; }
-  footer {
-    text-align: center; font-family: 'Courier New', monospace; margin-top: 60px; padding: 20px 0;
-    font-size: 0.85rem; color: #555;
-    user-select: none;
-  }
+  .risk-score { font-weight: 700; font-size: 1.1rem; color: #d9534f; margin-top: 10px; }
   @media screen and (max-width: 640px) {
     .flex { flex-direction: column; }
     .flex > div { min-width: 100%; }
   }
-  /* Login Styling */
-  #loginContainer h2 { margin-bottom: 20px; }
-  #loginForm label { margin-top: 10px; }
-  #loginError {color: #d9534f; margin-top: 8px; font-weight: bold;}
+  footer {
+    text-align: center; font-family: 'Courier New', monospace; margin: 40px 0 20px; color: #555;
+    user-select: none;
+  }
 </style>
 </head>
 <body>
 
-<div id="loginContainer">
+<div id="loginContainer" style="max-width: 320px; margin: 80px auto; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px #aaccee; background:#fff;">
   <h2>Panel logowania</h2>
-  <form id="loginForm">
+  <form id="loginForm" autocomplete="off">
     <label for="loginUser">Login:</label>
-    <input type="text" id="loginUser" autocomplete="username" required />
+    <input type="text" id="loginUser" name="loginUser" autocomplete="username" required />
     <label for="loginPass">Hasło:</label>
-    <input type="password" id="loginPass" autocomplete="current-password" required />
-    <button type="submit">Zaloguj się</button>
-    <div id="loginError" aria-live="polite"></div>
+    <input type="password" id="loginPass" name="loginPass" autocomplete="current-password" required />
+    <button type="submit" style="margin-top: 20px;">Zaloguj się</button>
+    <div id="loginError" style="color: #d9534f; margin-top: 10px; font-weight: bold; min-height: 22px;"></div>
   </form>
 </div>
 
-<div id="appContainer" aria-live="polite">
+<div id="appContainer" aria-live="polite" style="display:none;">
   <h1>Kreator CV Kamila Jabłońskiego</h1>
-  <p>Stwórz profesjonalne CV, minimalizując ryzyko wykrycia AI. Podsumowanie i narzędzia w jednym miejscu.</p>
+  <p>Wypełnij pola, aby stworzyć CV budujące zaufanie i spełniające wymagania formalne i prawne.</p>
 
   <div class="section" id="personalSection" aria-label="Dane osobowe i kontaktowe">
     <h2>Dane osobowe i kontaktowe</h2>
@@ -197,15 +193,21 @@
   const appContainer = document.getElementById('appContainer');
   const loginForm = document.getElementById('loginForm');
   const loginError = document.getElementById('loginError');
+
   loginForm.addEventListener('submit', e => {
     e.preventDefault();
-    const user = document.getElementById('loginUser').value.trim();
-    const pass = document.getElementById('loginPass').value;
+    const user = loginForm.loginUser.value.trim();
+    const pass = loginForm.loginPass.value;
     if(user === 'czajnik' && pass === 'deluxe'){
       loginContainer.style.display = 'none';
       appContainer.style.display = 'block';
+      loginError.textContent = '';
+      const firstInput = appContainer.querySelector('input,textarea,select');
+      if (firstInput) firstInput.focus();
     } else {
       loginError.textContent = 'Niepoprawny login lub hasło.';
+      loginForm.loginPass.value = '';
+      loginForm.loginPass.focus();
     }
   });
 
@@ -214,7 +216,7 @@
     const field = document.getElementById(id);
     const count = field.value.length;
     const span = document.getElementById(countId);
-    span.textContent = \`\${maxLen - count} znaków pozostało\`;
+    span.textContent = `${maxLen - count} znaków pozostało`;
   }
   ['name','location','phone','email','summary','otherStrengths','experience','education','references','foundation','companyName','rodoClause'].forEach(id => {
     let countId = id+'Count';
@@ -425,8 +427,6 @@ Klauzula RODO
     }
   });
 </script>
-
-<footer>! ƑERRට®ꍏRT©2025   °•.Ⱥꪶꪶའightsའeserved•°•</footer>
 
 </body>
 </html>
