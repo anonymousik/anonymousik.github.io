@@ -629,4 +629,749 @@
         </div>
 
         <div class="threats-panel">
-            <div class="panel-title" style="color: var(--text-danger);">Threat Monitor<
+            <div class="panel-title" style="color: var(--text-danger);">Threat Monitor</div>
+            <div id="threats-list">
+                <div class="threat-item">
+                    <strong>LOW:</strong> Port scan detected<br>
+                    <small>Source: 192.168.1.100</small>
+                </div>
+                <div class="threat-item">
+                    <strong>MEDIUM:</strong> Suspicious login attempt<br>
+                    <small>Target: SSH service</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="logs-panel">
+            <div class="panel-title" style="color: var(--text-warning);">System Logs</div>
+            <div id="logs-container"></div>
+        </div>
+
+        <div class="network-panel">
+            <div class="panel-title" style="color: var(--text-success);">Network Map</div>
+            <div style="text-align: center; margin-top: 20px;">
+                <div class="network-node node-secure"></div>
+                <div class="network-node node-secure"></div>
+                <div class="network-node node-warning"></div>
+                <div class="network-node node-secure"></div>
+                <br>
+                <div class="network-node node-secure"></div>
+                <div class="network-node node-danger"></div>
+                <div class="network-node node-secure"></div>
+                <div class="network-node node-secure"></div>
+                <br>
+                <div class="network-node node-secure"></div>
+                <div class="network-node node-secure"></div>
+                <div class="network-node node-secure"></div>
+                <div class="network-node node-warning"></div>
+            </div>
+            <div style="font-size: 10px; margin-top: 10px;">
+                <div><span class="network-node node-secure"></span> Secure (12)</div>
+                <div><span class="network-node node-warning"></span> Warning (3)</div>
+                <div><span class="network-node node-danger"></span> Compromised (1)</div>
+            </div>
+        </div>
+
+        <div class="intel-panel">
+            <div class="panel-title" style="color: var(--text-secondary);">Intelligence</div>
+            <div class="intel-item">
+                <strong>OSINT:</strong> New vulnerability disclosed<br>
+                <small>CVE-2024-9876 (Critical)</small>
+            </div>
+            <div class="intel-item">
+                <strong>HUMINT:</strong> Social engineering campaign detected<br>
+                <small>Targeting financial sector</small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class SecFerroSystemComplete {
+            constructor() {
+                this.state = {
+                    bootPhase: 'grub',
+                    kernelLoaded: false,
+                    systemReady: false,
+                    mission: 'boot',
+                    subTask: 0,
+                    reputation: 100,
+                    securityLevel: 'MAXIMUM',
+                    cpuLoad: 0,
+                    memoryUsage: '2.1GB',
+                    swapUsage: '0KB',
+                    startTime: Date.now(),
+                    isExecuting: false,
+                    difficulty: 'elite',
+                    currentPath: '/home/agent',
+                    agentId: 'SEC-7741',
+                    encryptionLevel: 'AES-256',
+                    shell: 'zsh',
+                    prompt: 'agnoster',
+                    gitBranch: 'master',
+                    
+                    currentMission: null,
+                    currentMissionPhase: null,
+                    
+                    // Extended filesystem
+                    fs: {
+                        '/': ['home', 'etc', 'var', 'opt', 'usr', 'root', 'bin', 'sbin', 'lib', 'boot', 'dev', 'proc', 'sys', 'tmp', 'mnt'],
+                        '/home': ['agent', 'analyst', 'admin'],
+                        '/home/agent': ['missions', 'tools', 'intel', 'secure', '.zshrc', '.oh-my-zsh', 'Documents', 'Desktop'],
+                        '/home/agent/.oh-my-zsh': ['themes', 'plugins', 'custom', 'lib'],
+                        '/home/agent/.oh-my-zsh/themes': ['agnoster.zsh-theme', 'robbyrussell.zsh-theme', 'powerlevel10k.zsh-theme'],
+                        '/home/agent/.oh-my-zsh/plugins': ['git', 'sudo', 'zsh-autosuggestions', 'zsh-syntax-highlighting'],
+                        '/home/agent/tools': ['nmap', 'metasploit', 'burp', 'wireshark', 'volatility', 'ghidra', 'john', 'hydra', 'sqlmap', 'gobuster'],
+                        '/home/agent/missions': ['red_team', 'blue_team', 'purple_team', 'forensics', 'apt_simulation'],
+                        '/home/agent/intel': ['osint', 'humint', 'sigint', 'geoint', 'reports'],
+                        '/home/agent/secure': ['encrypted_comms', 'crypto_keys', 'steganography', 'tor_configs'],
+                        '/etc': ['passwd', 'shadow', 'hosts', 'network.conf', 'security.conf', 'systemd', 'init.d', 'fstab'],
+                        '/etc/systemd': ['system', 'user'],
+                        '/etc/systemd/system': ['networking.service', 'ssh.service', 'firewall.service', 'secferro.service'],
+                        '/var': ['log', 'spool', 'cache', 'lib'],
+                        '/var/log': ['auth.log', 'kern.log', 'syslog', 'secure.log', 'audit.log', 'boot.log', 'dmesg'],
+                        '/opt': ['secferro', 'custom_tools', 'mitre-attack'],
+                        '/opt/secferro': ['framework', 'modules', 'payloads', 'exploits'],
+                        '/usr': ['bin', 'sbin', 'lib', 'share', 'local'],
+                        '/usr/bin': ['bash', 'zsh', 'python3', 'gcc', 'git', 'vim', 'nano'],
+                        '/bin': ['ls', 'cd', 'cat', 'help', 'mission', 'start', 'clear', 'exit', 'ifconfig', 'ping', 'targets', 'assess', 'exploit'],
+                        '/boot': ['vmlinuz-5.19.0-secferro', 'initrd.img-5.19.0-secferro', 'grub'],
+                        '/dev': ['sda1', 'sda2', 'eth0', 'tty1', 'null', 'random', 'urandom'],
+                        '/proc': ['cpuinfo', 'meminfo', 'version', 'mounts'],
+                        '/sys': ['class', 'devices', 'kernel', 'fs'],
+                        '/root': ['classified', 'operations', '.zshrc', '.ssh'],
+                        '/tmp': []
+                    },
+
+                    fileContent: {
+                        '/home/agent/.zshrc': `# SECFERRO Agent ZSH Configuration
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="agnoster"
+plugins=(git sudo zsh-autosuggestions zsh-syntax-highlighting)
+source $ZSH/oh-my-zsh.sh
+
+# Custom aliases for SECFERRO operations
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias grep='grep --color=auto'
+alias nse='nmap --script'
+alias msf='msfconsole'
+alias recon='nmap -sS -O -A'
+alias vuln='nmap --script vuln'
+alias enum='enum4linux'
+
+# SECFERRO specific functions
+function mission-status() { echo "Current mission: $CURRENT_MISSION"; }
+function encrypt() { gpg --symmetric --cipher-algo AES256 "$1"; }
+function decrypt() { gpg --decrypt "$1"; }`,
+
+                        '/etc/security.conf': `# SECFERRO Security Configuration v2.1
+encryption_level=AES-256-GCM
+authentication=multi_factor_quantum
+logging_level=paranoid
+threat_detection=ai_enhanced
+firewall_status=adaptive_learning
+ids_status=neural_network
+honeypot_enabled=true
+quantum_key_distribution=active
+zero_trust_mode=enforced
+behavioral_analysis=enabled`,
+
+                        '/var/log/boot.log': `[    0.000000] Linux version 5.19.0-secferro (agent@secferro-build) (gcc version 11.3.0)
+[    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-5.19.0-secferro root=UUID=12345
+[    0.000000] KERNEL supported cpus: Intel P6 AMD K8 Centaur VIA
+[    0.000000] x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
+[    0.000000] BIOS-provided physical RAM map:
+[    0.000000] SECFERRO: Quantum encryption modules initialized
+[    0.000000] SECFERRO: Neural threat detection loaded
+[    0.000000] SECFERRO: Advanced persistent threat countermeasures active`,
+
+                        '/proc/cpuinfo': `processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 158
+model name	: Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz
+stepping	: 10
+microcode	: 0xf0
+cpu MHz		: 2208.005
+cache size	: 9216 KB
+physical id	: 0
+siblings	: 12
+core id		: 0
+cpu cores	: 6
+apicid		: 0
+initial apicid	: 0
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 22
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov`,
+
+                        '/proc/meminfo': `MemTotal:       16777216 kB
+MemFree:        12582912 kB
+MemAvailable:   14680064 kB
+Buffers:          524288 kB
+Cached:          2097152 kB
+SwapCached:            0 kB
+Active:          2621440 kB
+Inactive:        1048576 kB
+Active(anon):    1572864 kB
+Inactive(anon):   262144 kB
+Active(file):    1048576 kB
+Inactive(file):   786432 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:       8388608 kB
+SwapFree:        8388608 kB`,
+
+                        '/home/agent/intel/threat_intelligence.txt': `THREAT INTELLIGENCE BRIEFING - CLASSIFICATION: TOP SECRET
+========================================================
+Date: $(date)
+Source: Multiple Intelligence Agencies
+
+CURRENT THREAT LANDSCAPE:
+- APT29 (Cozy Bear): Active campaigns targeting government infrastructure
+- APT28 (Fancy Bear): Spear-phishing operations against defense contractors
+- Lazarus Group: Cryptocurrency exchange attacks increasing
+- FIN7: Targeting healthcare organizations with ransomware
+
+EMERGING THREATS:
+- AI-powered social engineering attacks
+- Quantum-resistant cryptography bypass attempts
+- Supply chain attacks on open-source repositories
+- Deepfake-enhanced business email compromise
+
+RECOMMENDED COUNTERMEASURES:
+- Implement quantum-safe cryptographic protocols
+- Deploy AI-based behavioral analysis
+- Enhance supply chain security verification
+- Activate advanced persistent threat hunting protocols`
+                    },
+
+                    bootSequence: [
+                        { phase: 'bios', messages: [
+                            'SECFERRO BIOS v2.1.0 - Quantum Enhanced',
+                            'Memory Test: 16384 MB OK',
+                            'CPU: Intel Core i7-8750H @ 2.20GHz [6 cores, 12 threads]',
+                            'Secure Boot: ENABLED',
+                            'TPM 2.0: ACTIVE',
+                            'Quantum RNG: INITIALIZED',
+                            'Hardware Security Module: READY',
+                            'Boot Device: /dev/sda1 [ENCRYPTED]'
+                        ]},
+                        { phase: 'grub', messages: [
+                            'Loading GRUB bootloader...',
+                            'Verifying kernel signature...',
+                            'Signature verification: PASSED',
+                            'Loading kernel: vmlinuz-5.19.0-secferro',
+                            'Loading initial ramdisk...'
+                        ]},
+                        { phase: 'kernel', messages: [
+                            '[    0.000000] Linux version 5.19.0-secferro starting...',
+                            '[    0.000012] SECFERRO: Quantum encryption modules loading...',
+                            '[    0.000045] SECFERRO: Neural threat detection initializing...',
+                            '[    0.000078] Memory: 16777216K/16777216K available',
+                            '[    0.001234] CPU: Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz',
+                            '[    0.002345] ACPI: Core revision 20220331',
+                            '[    0.003456] clocksource: refined-jiffies: mask: 0xffffffff',
+                            '[    0.004567] NET: Registered protocol family 16',
+                            '[    0.005678] audit: initializing netlink subsys',
+                            '[    0.006789] SECFERRO: Advanced persistent threat countermeasures loaded',
+                            '[    0.007890] PCI: Using configuration type 1 for base access',
+                            '[    0.008901] cryptd: max_cpu_qlen set to 1000',
+                            '[    0.009012] SECFERRO: Quantum key distribution protocol active',
+                            '[    0.010123] Block layer SCSI generic (bsg) driver version 0.4',
+                            '[    0.011234] SECFERRO: Zero-trust network architecture enabled'
+                        ]},
+                        { phase: 'initramfs', messages: [
+                            'Loading initial ramdisk...',
+                            'Mounting /dev/sda1 on / type ext4 (rw,relatime)',
+                            'Checking filesystem integrity...',
+                            'LUKS encryption: Unlocking root partition...',
+                            'dm-crypt: Cipher: aes-xts-plain64',
+                            'Filesystem check complete: CLEAN',
+                            'Switching to real root filesystem...'
+                        ]},
+                        { phase: 'systemd', messages: [
+                            'systemd[1]: System Manager starting...',
+                            'systemd[1]: Detected architecture x86-64',
+                            'systemd[1]: Running in initial RAM disk',
+                            'systemd[1]: Set hostname to <secferro-ops>',
+                            'systemd[1]: Initializing machine ID...',
+                            'systemd[1]: Installing knot of control groups...',
+                            'systemd[1]: Creating control group hierarchy...',
+                            'systemd[1]: Starting Early system initialization...',
+                            'systemd[1]: Starting Load Kernel Modules...',
+                            'systemd[1]: Starting Create list of static device nodes...'
+                        ]},
+                        { phase: 'services', messages: [
+                            'Starting networking service...',
+                            'Starting SSH daemon...',
+                            'Starting firewall service...',
+                            'Starting intrusion detection system...',
+                            'Starting threat intelligence feeds...',
+                            'Starting quantum key distribution...',
+                            'Starting neural threat analysis...',
+                            'Starting behavioral monitoring...',
+                            'Starting honeypot services...',
+                            'Starting secure communication channels...'
+                        ]},
+                        { phase: 'final', messages: [
+                            'SECFERRO initialization complete.',
+                            'All security protocols active.',
+                            'System ready for operations.',
+                            ''
+                        ]}
+                    ],
+
+                    services: {
+                        'networking': { status: 'active', description: 'Network configuration and routing' },
+                        'ssh': { status: 'active', description: 'Secure Shell daemon' },
+                        'firewall': { status: 'active', description: 'Adaptive learning firewall' },
+                        'ids': { status: 'active', description: 'Neural network intrusion detection' },
+                        'threat-intel': { status: 'active', description: 'Real-time threat intelligence' },
+                        'quantum-kd': { status: 'active', description: 'Quantum key distribution' },
+                        'neural-analysis': { status: 'active', description: 'AI-powered threat analysis' },
+                        'behavioral-mon': { status: 'active', description: 'Behavioral anomaly detection' },
+                        'honeypot': { status: 'active', description: 'Deception technology' },
+                        'secure-comms': { status: 'active', description: 'Encrypted communication channels' }
+                    },
+
+                    ohMyZshThemes: {
+                        'agnoster': {
+                            segments: ['user', 'host', 'path', 'git', 'status'],
+                            colors: { user: '#ff79c6', host: '#50fa7b', path: '#8be9fd', git: '#f1fa8c', status: '#ff5555' }
+                        },
+                        'powerlevel10k': {
+                            segments: ['user', 'host', 'path', 'git', 'time', 'status'],
+                            colors: { user: '#ff6ac1', host: '#5af78e', path: '#9aedfe', git: '#f4f99d', time: '#caa9fa', status: '#ff6e67' }
+                        },
+                        'robbyrussell': {
+                            segments: ['path', 'git', 'status'],
+                            colors: { path: '#8be9fd', git: '#f1fa8c', status: '#ff5555' }
+                        }
+                    },
+
+                    missions: {
+                        red_team: {
+                            name: 'OPERATION: CRIMSON SHADOW',
+                            objective: 'Advanced persistent threat simulation',
+                            phases: ['recon', 'weaponization', 'delivery', 'exploitation', 'installation', 'c2', 'actions'],
+                            commands: {
+                                'recon': ['osint', 'nmap', 'masscan', 'amass', 'recon-ng'],
+                                'weaponization': ['msfvenom', 'empire', 'covenant', 'cobalt-strike'],
+                                'delivery': ['phishing', 'watering-hole', 'usb-drop', 'supply-chain'],
+                                'exploitation': ['metasploit', 'exploit', 'web-exploit', 'buffer-overflow'],
+                                'installation': ['persistence', 'backdoor', 'rootkit', 'implant'],
+                                'c2': ['beacon', 'tunnel', 'exfiltration-prep', 'lateral-movement'],
+                                'actions': ['privilege-escalation', 'data-exfiltration', 'destruction', 'cleanup']
+                            },
+                            rewards: [50, 75, 100, 125, 150, 200, 300]
+                        },
+                        blue_team: {
+                            name: 'OPERATION: QUANTUM SHIELD',
+                            objective: 'Advanced defensive operations with AI enhancement',
+                            phases: ['detect', 'analyze', 'contain', 'eradicate', 'recover', 'lessons'],
+                            commands: {
+                                'detect': ['threat-hunt', 'siem-analysis', 'behavioral-analysis', 'ai-detection'],
+                                'analyze': ['malware-analysis', 'forensics', 'timeline-analysis', 'attribution'],
+                                'contain': ['network-isolation', 'endpoint-quarantine', 'traffic-shaping'],
+                                'eradicate': ['malware-removal', 'system-rebuild', 'patch-management'],
+                                'recover': ['backup-restore', 'system-hardening', 'monitoring-enhancement'],
+                                'lessons': ['incident-report', 'ioc-sharing', 'playbook-update']
+                            },
+                            rewards: [40, 60, 80, 100, 120, 150]
+                        },
+                        purple_team: {
+                            name: 'OPERATION: NEURAL CONVERGENCE',
+                            objective: 'AI-enhanced collaborative security testing',
+                            phases: ['planning', 'simulation', 'assessment', 'integration', 'optimization'],
+                            commands: {
+                                'planning': ['threat-modeling', 'attack-scenarios', 'defense-mapping'],
+                                'simulation': ['apt-simulation', 'insider-threat', 'supply-chain-attack'],
+                                'assessment': ['security-posture', 'gap-analysis', 'risk-quantification'],
+                                'integration': ['devsecops', 'security-automation', 'ai-integration'],
+                                'optimization': ['continuous-monitoring', 'adaptive-defense', 'ml-tuning']
+                            },
+                            rewards: [60, 90, 120, 160, 200]
+                        }
+                    },
+
+                    advancedTools: {
+                        'quantum-scanner': 'Quantum-enhanced vulnerability scanner',
+                        'ai-honeypot': 'AI-powered adaptive honeypot',
+                        'neural-ids': 'Neural network intrusion detection',
+                        'blockchain-forensics': 'Blockchain transaction analysis',
+                        'deepfake-detector': 'AI deepfake detection system',
+                        'zero-day-hunter': 'Autonomous zero-day discovery',
+                        'quantum-crypto': 'Quantum cryptographic protocols',
+                        'behavioral-profiler': 'Advanced behavioral analysis',
+                        'supply-chain-scanner': 'Supply chain security assessment',
+                        'iot-penetrator': 'IoT device penetration testing'
+                    },
+
+                    skillTree: {
+                        reconnaissance: {
+                            level: 1,
+                            xp: 0,
+                            maxXp: 100,
+                            skills: ['OSINT', 'Network Scanning', 'Social Engineering', 'HUMINT']
+                        },
+                        exploitation: {
+                            level: 1,
+                            xp: 0,
+                            maxXp: 100,
+                            skills: ['Web Exploitation', 'Binary Exploitation', 'Privilege Escalation', 'Persistence']
+                        },
+                        defense: {
+                            level: 1,
+                            xp: 0,
+                            maxXp: 100,
+                            skills: ['Incident Response', 'Malware Analysis', 'Forensics', 'Threat Hunting']
+                        },
+                        intelligence: {
+                            level: 1,
+                            xp: 0,
+                            maxXp: 100,
+                            skills: ['Threat Intelligence', 'Attribution', 'Geopolitical Analysis', 'Predictive Analytics']
+                        }
+                    },
+
+                    achievements: [],
+                    
+                    targets: [
+                        { 
+                            name: 'quantum-corp.net', 
+                            ip: '172.16.1.10',
+                            difficulty: 'expert',
+                            vulnerabilities: ['Quantum crypto implementation flaw', 'AI model poisoning vector'],
+                            openPorts: [22, 443, 8080, 9443],
+                            osintInfo: `Domain: quantum-corp.net
+Technology Stack: Next.js, Quantum cryptography, AI/ML pipeline
+Security Posture: High - but experimental quantum crypto has theoretical vulnerabilities
+Key Personnel: Dr. Sarah Chen (CTO), Marcus Rodriguez (CISO)
+Recent Activities: Quantum key distribution implementation, AI model deployment`,
+                            reputation: 300
+                        },
+                        { 
+                            name: 'legacy-mainframe.gov', 
+                            ip: '10.0.0.5',
+                            difficulty: 'master',
+                            vulnerabilities: ['COBOL buffer overflow', 'Legacy protocol weaknesses'],
+                            openPorts: [23, 3270, 8080],
+                            osintInfo: `Domain: legacy-mainframe.gov
+Technology Stack: IBM z/OS, COBOL applications, Legacy protocols
+Security Issues: Outdated systems, minimal security updates
+Importance: CRITICAL - Contains classified government data`,
+                            reputation: 500
+                        },
+                        { 
+                            name: 'ai-research-lab.edu', 
+                            ip: '192.168.20.1',
+                            difficulty: 'elite',
+                            vulnerabilities: ['ML model extraction', 'Adversarial AI attacks'],
+                            openPorts: [80, 443, 6006, 8888],
+                            osintInfo: `Domain: ai-research-lab.edu
+Research Focus: Advanced AI, Machine Learning, Quantum Computing
+Security Concerns: Experimental systems, potential data poisoning
+Value: HIGH - Contains cutting-edge AI research data`,
+                            reputation: 750
+                        }
+                    ],
+
+                    networkNodes: {
+                        secure: 15,
+                        warning: 4,
+                        compromised: 2,
+                        quantum: 3
+                    },
+
+                    currentTheme: 'agnoster'
+                };
+                
+                this.availableCommands = [
+                    // Basic commands
+                    'ls', 'cd', 'cat', 'help', 'mission', 'start', 'clear', 'exit', 'pwd', 'whoami', 'uname',
+                    // Network commands
+                    'ifconfig', 'ping', 'netstat', 'ss', 'iptables', 'tcpdump',
+                    // Security commands
+                    'targets', 'assess', 'exploit', 'scan', 'recon',
+                    // Advanced tools
+                    'osint', 'nmap', 'masscan', 'amass', 'recon-ng',
+                    'metasploit', 'msfvenom', 'empire', 'covenant', 'cobalt-strike',
+                    'burp', 'sqlmap', 'gobuster', 'dirb', 'nikto',
+                    'wireshark', 'tshark', 'volatility', 'ghidra', 'radare2',
+                    'john', 'hashcat', 'hydra', 'medusa',
+                    // Modern tools
+                    'quantum-scanner', 'ai-honeypot', 'neural-ids', 'blockchain-forensics',
+                    'deepfake-detector', 'zero-day-hunter', 'behavioral-profiler',
+                    // Analysis tools
+                    'threat-hunt', 'incident-response', 'malware-analysis', 'vulnerability-scan',
+                    'social-engineering', 'crypto-analysis', 'steganography', 'honeypot',
+                    'threat-modeling', 'compliance-audit', 'risk-assessment', 'zero-trust',
+                    'devsecops', 'ai-security', 'quantum-crypto', 'blockchain-analysis',
+                    'iot-security', 'cloud-security', 'supply-chain-scan',
+                    // System commands
+                    'systemctl', 'journalctl', 'ps', 'top', 'htop', 'free', 'df', 'mount',
+                    // ZSH specific
+                    'theme', 'plugins', 'alias', 'which', 'history', 'source',
+                    // SECFERRO specific
+                    'reputation', 'skills', 'achievements', 'leaderboard', 'stats'
+                ];
+                
+                this.commandHistory = [];
+                this.historyIndex = -1;
+                this.currentBootPhase = 0;
+                this.currentBootMessage = 0;
+
+                this.initializeSystem();
+            }
+
+            initializeSystem() {
+                this.output = document.getElementById('terminal-output');
+                this.input = document.getElementById('terminal-input');
+                this.promptContainer = document.getElementById('prompt-container');
+                this.autocompleteContainer = document.getElementById('autocomplete-container');
+                
+                this.input.addEventListener('keydown', (e) => this.handleInput(e));
+                this.input.addEventListener('input', () => this.handleAutocomplete());
+                
+                this.startMatrixEffect();
+                this.setupGrubMenu();
+            }
+
+            setupGrubMenu() {
+                const grubMenu = document.getElementById('grub-menu');
+                const options = grubMenu.querySelectorAll('.grub-option');
+                let selectedIndex = 0;
+
+                const updateSelection = () => {
+                    options.forEach((opt, idx) => {
+                        opt.classList.toggle('selected', idx === selectedIndex);
+                    });
+                };
+
+                document.addEventListener('keydown', (e) => {
+                    if (this.state.bootPhase !== 'grub') return;
+
+                    if (e.key === 'ArrowUp') {
+                        selectedIndex = Math.max(0, selectedIndex - 1);
+                        updateSelection();
+                    } else if (e.key === 'ArrowDown') {
+                        selectedIndex = Math.min(options.length - 1, selectedIndex + 1);
+                        updateSelection();
+                    } else if (e.key === 'Enter') {
+                        const selectedKernel = options[selectedIndex].dataset.kernel;
+                        this.startBootProcess(selectedKernel);
+                    }
+                });
+
+                // Auto-boot after 5 seconds
+                setTimeout(() => {
+                    if (this.state.bootPhase === 'grub') {
+                        this.startBootProcess('secferro');
+                    }
+                }, 5000);
+            }
+
+            startBootProcess(kernel) {
+                document.getElementById('grub-menu').classList.add('hidden');
+                document.getElementById('boot-screen').classList.remove('hidden');
+                
+                this.state.bootPhase = 'booting';
+                this.executeBootSequence();
+            }
+
+            executeBootSequence() {
+                const bootMessages = document.getElementById('boot-messages');
+                const progressFill = document.getElementById('boot-progress-fill');
+                
+                let totalMessages = 0;
+                this.state.bootSequence.forEach(phase => {
+                    totalMessages += phase.messages.length;
+                });
+
+                let currentMessage = 0;
+
+                const executePhase = (phaseIndex) => {
+                    if (phaseIndex >= this.state.bootSequence.length) {
+                        this.finishBoot();
+                        return;
+                    }
+
+                    const phase = this.state.bootSequence[phaseIndex];
+                    let messageIndex = 0;
+
+                    const executeMessage = () => {
+                        if (messageIndex >= phase.messages.length) {
+                            setTimeout(() => executePhase(phaseIndex + 1), 500);
+                            return;
+                        }
+
+                        const message = phase.messages[messageIndex];
+                        const timestamp = new Date().toISOString().substr(11, 12);
+                        
+                        let formattedMessage;
+                        if (phase.phase === 'kernel') {
+                            formattedMessage = `<span class="kernel">${message}</span>`;
+                        } else if (phase.phase === 'systemd') {
+                            formattedMessage = `<span class="info">${message}</span>`;
+                        } else if (phase.phase === 'services') {
+                            formattedMessage = `<span class="success">[  OK  ] ${message}</span>`;
+                        } else {
+                            formattedMessage = `<span class="boot">${message}</span>`;
+                        }
+
+                        bootMessages.innerHTML += formattedMessage + '\n';
+                        bootMessages.scrollTop = bootMessages.scrollHeight;
+
+                        currentMessage++;
+                        const progress = (currentMessage / totalMessages) * 100;
+                        progressFill.style.width = `${progress}%`;
+
+                        messageIndex++;
+                        setTimeout(executeMessage, Math.random() * 300 + 100);
+                    };
+
+                    executeMessage();
+                };
+
+                executePhase(0);
+            }
+
+            finishBoot() {
+                setTimeout(() => {
+                    document.getElementById('boot-screen').classList.add('hidden');
+                    document.getElementById('main-container').classList.add('visible');
+                    this.state.bootPhase = 'complete';
+                    this.state.systemReady = true;
+                    this.startSystemMonitoring();
+                    this.initializeZsh();
+                }, 2000);
+            }
+
+            initializeZsh() {
+                this.writeOutput('', 'boot');
+                this.writeZshWelcome();
+                this.updatePrompt();
+                this.input.focus();
+            }
+
+            writeZshWelcome() {
+                const welcomeText = `
+╔══════════════════════════════════════════════════════════════╗
+║                    SECFERRO TACTICAL WORKSTATION             ║
+║                         ZSH + OH-MY-ZSH                      ║
+╚══════════════════════════════════════════════════════════════╝
+
+Welcome to SECFERRO Operations Platform
+Current Theme: ${this.state.currentTheme}
+Shell: ZSH with OH-MY-ZSH framework
+Security Level: QUANTUM ENHANCED
+
+System Information:
+├── Kernel: Linux 5.19.0-secferro
+├── Architecture: x86_64
+├── Memory: 16GB (${this.state.memoryUsage} used)
+├── Encryption: AES-256-GCM + Quantum Key Distribution
+├── AI Protection: Neural threat detection ACTIVE
+└── Classification: TOP SECRET
+
+Type 'help' for available commands
+Type 'theme [name]' to change prompt theme
+Type 'mission' to view available operations
+Type 'skills' to view skill progression
+Type 'achievements' to view unlocked achievements
+
+`;
+                this.writeOutput(welcomeText, 'info');
+            }
+
+            updatePrompt() {
+                const theme = this.ohMyZshThemes[this.state.currentTheme];
+                let promptHtml = '';
+
+                if (theme.segments.includes('user')) {
+                    promptHtml += `<span class="prompt-segment prompt-user">agent</span>`;
+                }
+
+                if (theme.segments.includes('host')) {
+                    promptHtml += `<span class="prompt-segment prompt-host">@secferro</span>`;
+                }
+
+                if (theme.segments.includes('path')) {
+                    const displayPath = this.state.currentPath.replace('/home/agent', '~');
+                    promptHtml += `<span class="prompt-segment prompt-path"> ${displayPath}</span>`;
+                }
+
+                if (theme.segments.includes('git')) {
+                    promptHtml += `<span class="prompt-segment prompt-git"> git:(${this.state.gitBranch})</span>`;
+                }
+
+                if (theme.segments.includes('time')) {
+                    const time = new Date().toLocaleTimeString('pl-PL', { hour12: false });
+                    promptHtml += `<span class="prompt-segment" style="color: ${theme.colors.time}"> ${time}</span>`;
+                }
+
+                promptHtml += `<span class="prompt-segment prompt-symbol"> $ </span>`;
+
+                this.promptContainer.innerHTML = promptHtml;
+            }
+
+            startMatrixEffect() {
+                const matrixBg = document.getElementById('matrix-bg');
+                const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()ąćęłńóśźżĄĆĘŁŃÓŚŹŻ';
+                
+                for (let i = 0; i < 60; i++) {
+                    const column = document.createElement('div');
+                    column.className = 'matrix-column';
+                    column.style.left = Math.random() * 100 + '%';
+                    column.style.animationDelay = Math.random() * 5 + 's';
+                    column.style.animationDuration = (Math.random() * 8 + 5) + 's';
+                    
+                    let text = '';
+                    for (let j = 0; j < 25; j++) {
+                        text += chars[Math.floor(Math.random() * chars.length)] + '\n';
+                    }
+                    column.textContent = text;
+                    matrixBg.appendChild(column);
+                }
+            }
+
+            startSystemMonitoring() {
+                setInterval(() => {
+                    this.updateSystemStats();
+                    this.updateThreatFeed();
+                    this.updateSecurityLogs();
+                    this.updatePrompt();
+                }, 3000);
+
+                setInterval(() => {
+                    const uptime = Math.floor((Date.now() - this.state.startTime) / 1000);
+                    const hours = Math.floor(uptime / 3600);
+                    const minutes = Math.floor((uptime % 3600) / 60);
+                    const seconds = uptime % 60;
+                    document.getElementById('uptime').textContent = `${hours}h ${minutes}m ${seconds}s`;
+                }, 1000);
+            }
+
+            updateSystemStats() {
+                this.state.cpuLoad = Math.floor(Math.random() * 25) + 5;
+                document.getElementById('cpu-load').textContent = `${this.state.cpuLoad}%`;
+
+                const memUsed = (2.1 + Math.random() * 0.5).toFixed(1);
+                document.getElementById('memory-usage').textContent = `${memUsed}GB/16GB`;
+
+                const swapUsed = Math.floor(Math.random() * 100);
+                document.getElementById('swap-usage').textContent = `${swapUsed}KB/8GB`;
+
+                document.getElementById('reputation').textContent = this.state.reputation;
+                document.getElementById('reputation-fill').style.width = `${Math.min(100, this.state.reputation / 10)}%`;
+
+                document.getElementById('mission-status').textContent = 
+                    this.state.currentMission ? `${this.state.currentMission.toUpperCase()} - ${this.state.currentMissionPhase.toUpperCase()}` : 'STANDBY';
+            }
+
+            updateThreat
