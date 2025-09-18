@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 YouTube Music ReVanced - Przewodnik Instalacji 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(9, 132, 227, 0.4);
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border-left: 4px solid #e17055;
+            color: #2d3436;
+        }
+        
+        .success-box {
+            background: linear-gradient(135deg, #55efc4, #00b894);
+            border-left: 4px solid #00a085;
+            color: #2d3436;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            border-left: 4px solid #2d3436;
+            color: white;
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .feature-icon {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .file-card {
+            background: linear-gradient(135deg, #dfe6e9, #b2bec3);
+            border: 2px solid #74b9ff;
+            transition: all 0.3s ease;
+        }
+        
+        .file-card:hover {
+            border-color: #0984e3;
+            background: linear-gradient(135deg, #e4e8eb, #bdc3c7);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #00b894, #55efc4);
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        code {
+            background: rgba(45, 52, 54, 0.9);
+            color: #00cec9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        .dedication-box {
+            background: linear-gradient(135deg, #2d3436, #636e72);
+            color: white;
+            border: 2px solid #74b9ff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dedication-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(116, 185, 255, 0.2), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .safety-badge {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+    <!-- Header -->
+    <header class="py-8">
+        <div class="container mx-auto px-4">
+            <div class="text-center text-white">
+                <h1 class="text-5xl md:text-6xl font-bold mb-4 gradient-text">
+                    🎵 YouTube Music ReVanced
+                </h1>
+                <p class="text-xl mb-6">Kompleksowy Przewodnik Instalacji 2025</p>
+                <div class="inline-flex items-center gap-4">
+                    <span class="safety-badge">⚠️ Uwaga Bezpieczeństwa</span>
+                    <span class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        ✅ Zoptymalizowany dla Samsung
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dedication Section -->
+    <section class="py-8">
+        <div class="container mx-auto px-4">
+            <div class="dedication-box rounded-2xl p-8 mb-12">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold mb-4">🎯 Dedykacja Specjalna</h2>
+                    <p class="text-xl mb-4">Dla <span class="text-yellow-300 font-bold">DonPesto</span></p>
+                    <p class="text-gray-300 leading-relaxed max-w-2xl mx-auto">
+                        Ferro przygotował ten w pełni dopracowany, niezawodny przewodnik, 
+                        zoptymalizowany specjalnie dla smartfonów Samsung. Konkretny, techniczny 
+                        i skupiony na bezproblemowej instalacji od A do Z.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container mx-auto px-4 py-12 space-y-12">
+        
+        <!-- What is ReVanced Section -->
+        <section class="card rounded-2xl p-8">
+            <div class="flex items-center mb-6">
+                <div class="feature-icon mr-4">🚀</div>
+                <h2 class="text-3xl font-bold gradient-text">Czym jest YouTube Music ReVanced?</h2>
+            </div>
+            
+            <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                To zmodyfikowana wersja oficjalnej aplikacji YouTube Music, która odblokowuje funkcje premium bez kosztów:
+            </p>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                    <div class="text-3xl mb-2">🎧</div>
+                    <h3 class="font-bold text-blue-800">Odtwarzanie w tle</h3>
+                    <p class="text-sm text-blue-600">Muzyka przy zablokowanym ekranie</p>
+                </div>
+                
+                <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+                    <div class="text-3xl mb-2">🚫</div>
+                    <h3 class="font-bold text-green-800">Brak reklam</h3>
+                    <p class="text-sm text-green-600">Całkowite usunięcie przerw reklamowych</p>
+                </div>
+                
+                <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+                    <div class="text-3xl mb-2">📱</div>
+                    <h3 class="font-bold text-purple-800">Offline</h3>
+                    <p class="text-sm text-purple-600">Pobieranie i słuchanie bez internetu</p>
+                </div>
+                
+                <div class="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl">
+                    <div class="text-3xl mb-2">🎶</div>
+                    <h3 class="font-bold text-orange-800">Wysoka jakość</h3>
+                    <p class="text-sm text-orange-600">Streaming w najwyższej jakości</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Warning -->
+        <section class="warning-box rounded-2xl p-8">
+            <div class="flex items-start mb-4">
+                <div class="text-4xl mr-4">🛡️</div>
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">⚠️ Klauzula Bezpieczeństwa</h2>
+                    <p class="text-lg font-semibold">Cybersecurity First!</p>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <p class="leading-relaxed">
+                    Instalujemy aplikacje spoza oficjalnego Google Play. <strong>Kluczowe</strong> jest pobieranie plików 
+                    wyłącznie z zaufanych, oficjalnych źródeł. Gwarantuje to, że pliki są czyste i nie zawierają złośliwego oprogramowania.
+                </p>
+                
+                <div class="bg-red-100 border border-red-300 rounded-lg p-4">
+                    <p class="font-bold text-red-800">🚨 NIGDY nie pobieraj plików APK z losowych stron internetowych!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Required Files Section -->
+        <section class="card rounded-2xl p-8">
+            <div class="flex items-center mb-8">
+                <div class="step-number mr-4">📦</div>
+                <h2 class="text-3xl font-bold gradient-text">Wymagane Pliki</h2>
+            </div>
+            
+            <p class="text-lg text-gray-700 mb-8">
+                Do poprawnego działania potrzebujemy dwóch plików. Poniższe linki prowadzą do najnowszych, oficjalnych wersji:
+            </p>
+            
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- MicroG File -->
+                <div class="file-card rounded-xl p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">🔐</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">ReVanced MicroG</h3>
+                            <p class="text-sm text-gray-600">Wersja: 0.3.0.220616 (2024)</p>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-700 mb-6">
+                        Niezbędny komponent do zalogowania się na Twoje konto Google. 
+                        Działa jako bezpieczny zamiennik Usług Google Play.
+                    </p>
+                    
+                    <div class="space-y-3">
+                        <a href="https://github.com/ReVanced/GmsCore/releases/download/v0.3.1.4.240913/app.revanced.android.gms-240913008-signed.apk" 
+                           target="_blank" class="btn-primary w-full justify-center">
+                            📥 Pobierz MicroG APK v0.3.1.4
+                        </a>
+                        <div class="text-xs text-gray-500 space-y-1">
+                            <p>Źródło: GitHub ReVanced (Oficjalne)</p>
+                            <p>Rozmiar: ~12MB | Wersja: 240913008</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Music ReVanced File -->
+                <div class="file-card rounded-xl p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mr-4">
+                            <span class="text-white text-xl">🎵</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">YouTube Music ReVanced</h3>
+                            <p class="text-sm text-gray-600">Wersja: 6.42.52 (2024)</p>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-700 mb-6">
+                        Główna, zmodyfikowana aplikacja klienta muzycznego z wszystkimi funkcjami premium.
+                    </p>
+                    
+                    <div class="space-y-3">
+                        <a href="https://revanced.to/music/" 
+                           target="_blank" class="btn-primary w-full justify-center">
+                            📥 Pobierz Music ReVanced APK v7.25.52
+                        </a>
+                        <div class="btn-secondary mx-auto">
+                            <a href="https://github.com/NoName-exe/revanced/releases" 
+                               target="_blank" class="flex items-center justify-center gap-2">
+                                📥 ReVanced Extended (NoName-exe)
+                            </a>
+                        </div>
+                        <div class="text-xs text-gray-500 space-y-1">
+                            <p>Źródło: revanced.to (Zweryfikowane)</p>
+                            <p>Extended: NoName-exe GitHub (Community)</p>
+                            <p>Rozmiar: ~85MB | Najnowsza wersja</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box rounded-xl p-6 mt-8">
+                <div class="flex items-start">
+                    <div class="text-2xl mr-3">💡</div>
+                    <div>
+                        <h4 class="font-bold mb-2">Wskazówka dla początkujących:</h4>
+                        <p>Pliki APK to paczki instalacyjne aplikacji Android, podobnie jak pliki .exe w Windows. 
+                        Pobierz oba pliki na swój telefon Samsung i zapamiętaj lokalizację (zazwyczaj folder "Pobrane").</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Advanced Samsung-Specific Setup Guide -->
+        <section class="card rounded-2xl p-8">
+            <div class="flex items-center mb-8">
+                <div class="step-number mr-4 bg-gradient-to-br from-blue-500 to-purple-500">📱</div>
+                <h2 class="text-3xl font-bold gradient-text">Samsung One UI - Przygotowanie Systemu</h2>
+            </div>
+            
+            <div class="warning-box rounded-xl p-6 mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="text-2xl mr-3">⚠️</div>
+                    <h3 class="text-xl font-bold">Kluczowe przygotowanie dla Samsung!</h3>
+                </div>
+                <p>Samsung ma dodatkowe zabezpieczenia, które mogą blokować instalację. Te kroki są NIEZBĘDNE!</p>
+            </div>
+            
+            <div class="space-y-10">
+                <!-- Pre-Step: System Preparation -->
+                <div class="border-l-4 border-purple-500 pl-8">
+                    <div class="flex items-center mb-6">
+                        <div class="step-number mr-4 bg-gradient-to-br from-purple-500 to-blue-500">0</div>
+                        <h3 class="text-2xl font-bold text-gray-800">Przygotowanie Systemu Samsung</h3>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <!-- Sub-step A: Enable Unknown Sources -->
+                        <div class="bg-blue-50 rounded-xl p-6">
+                            <h4 class="text-lg font-bold text-blue-800 mb-4">📋 A. Włączenie Instalacji z Nieznanych Źródeł</h4>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        <span class="text-blue-600 font-bold text-sm">1</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold">Otwórz Ustawienia Samsung</p>
+                                        <p class="text-gray-600">Znajdź ikonę ⚙️ na ekranie głównym lub w menu aplikacji</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        <span class="text-blue-600 font-bold text-sm">2</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold">Przejdź do: <code>Biometria i zabezpieczenia</code></p>
+                                        <p class="text-gray-600">W niektórych wersjach może być: "Zabezpieczenia" lub "Prywatność i zabezpieczenia"</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        <span class="text-blue-600 font-bold text-sm">3</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold">Znajdź: <code>Instaluj nieznane aplikacje</code></p>
+                                        <p class="text-gray-600">Alternatywnie może być: "Nieznane źródła" lub "Zewnętrzne źródła"</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        <span class="text-green-600 font-bold text-sm">✓</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold">Włącz dla przeglądarki (Chrome/Samsung Internet)</p>
+                                        <p class="text-gray-600">Wybierz aplikację, którą będziesz pobierać pliki i włącz przełącznik</p>
+                                    </div>
+                            
