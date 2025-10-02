@@ -3,55 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UBECZBLOCKER :: SecFerro Division</title>
-    <link rel="stylesheet" href="style.css">
+    <title>SECFERRO :: MAIN INTERFACE</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-    <video autoplay muted loop id="bg-video">
-        <source src="assets/1000177744.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-
-    <div class="main-content">
-        <header>
-            <img src="assets/1000178503.png" alt="SecFerro Division" class="main-logo">
-            <h1>GREETINGS FROM SECFRRO DIVISION</h1>
-            <p class="glitch" data-text="THERE IS NO PATCH FOR HUMAN STUPIDITY">THERE IS NO PATCH FOR HUMAN STUPIDITY</p>
-        </header>
-
-        <section class="content-section">
-            <h2>Core Services</h2>
-            <p>We provide solutions that operate beyond conventional limitations. Our UBECZBLOCKER is the prime example of assertive digital presence.</p>
-        </section>
-
-        <footer>
-            <h3>Certifications & Affiliations</h3>
-            <div class="badges">
-                <img src="assets/defcon.png" alt="Defcon Trainings">
-                <img src="assets/blackhat.png" alt="Black Hat USA 2024">
-                <img src="assets/github.png" alt="GitHub Advanced Security">
-                <img src="assets/comptia.png" alt="CompTIA A+">
-            </div>
-            <p>&copy; 2025 SecFerro Division. All rights reserved. No rules applied.</p>
-        </footer>
-    </div>
-
-    <div id="adblock-modal" class="modal">
-        <div class="modal-content">
-            <img src="assets/1000179151.jpg" alt="UBECZBLOCKER Warning">
-            <div class="modal-text">
-                <h2>AdBlocker Detected!</h2>
-                <p>Your adblocker is interfering with this site's content. It's a pathetic attempt to control the flow of information.</p>
-                <p><strong>To continue, you must disable your adblocker and refresh the page.</strong></p>
-                <p>We believe in a free, unfiltered internet. Your compliance is not optional.</p>
-                <button onclick="location.reload()">I Have Disabled AdBlocker</button>
-            </div>
+    <div class="scanline"></div>
+    <div class="terminal-container">
+        <div id="terminal-output"></div>
+        <div class="terminal-menu">
+            <p>// SELECT MODULE:</p>
+            <ul>
+                <li><a href="ubeczblocker.html">[01] UBECZBLOCKER_v2.5</a></li>
+                <li><a href="#">[02] RED_TEAM_OPS</a></li>
+                <li><a href="#">[03] CYBER_INTEL_MATRIX</a></li>
+                <li><a href="#">[04] SECURE_COMMS_PROTOCOL</a></li>
+                <li><a href="#">[05] EXIT_SYSTEM</a></li>
+            </ul>
         </div>
     </div>
-
-    <script src="js/ads.js"></script>
-    <script src="detect.js"></script>
-
+    <script src="js/main.js"></script>
 </body>
 </html>
