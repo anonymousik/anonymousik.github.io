@@ -1,326 +1,57 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>UNӃNOWN ͡Ͳ_ට ͡ANYONE | anonymousik.is-a.dev</title>
-  <meta name="description" content="Portfolio - Grafik, Montażysta, Twórca muzyki, YouTube Content Creator. Sprawdź ofertę i projekty UNӃNOWN ͡Ͳ_ට ͡ANYONE!">
-  <meta name="author" content="UNӃNOWN ͡Ͳ_ට ͡ANYONE | NƗӃටMƱ">
-  <meta name="theme-color" content="#16181c">
-  <style>
-    /* STYL HAKERA */    
-    .hacker-text { font-size: 2em;animation: flicker 1.5s infinite alternate ;}
-        @keyframes flicker {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
-        }
-    /* RESET & PODSTAWA */
-    *,*::before,*::after{box-sizing:border-box}body,h1,h2,h3,h4,p,figure,blockquote,dl,dd{margin:0}ul[role="list"],ol[role="list"]{list-style:none}html:focus-within{scroll-behavior:smooth}body{min-height:100vh;text-rendering:optimizeSpeed;line-height:1.5}a:not([class]){text-decoration-skip-ink:auto}img,picture{max-width:100%;display:block}input,button,textarea,select{font:inherit}
-    body { font-family: 'Segoe UI', 'Inter', Arial, sans-serif; background: #16181c; color: #e6e6e6; }
-    .container { width:92%; max-width:1100px; margin:0 auto; padding:0 1rem; }
-    header { background:#1d212a;box-shadow:0 3px 24px rgba(16,18,21,0.2);position:sticky;top:0;z-index:1000;}
-    nav { display:flex;align-items:center;justify-content:space-between;padding:1.2rem 0;}
-    .brand { font-size:1.55rem;font-weight:800;color:#55c8ff;text-decoration:none;letter-spacing:1px;line-height:1.2;transition:.2s;}
-    .brand:hover{color:#7edbfa;}
-    ul.navbar{list-style:none;display:flex;gap:1.2rem;}
-    ul.navbar li a{color:#b2c7e6;text-decoration:none;font-weight:500;font-size:1.06rem;transition:.15s;padding:0.2em 0.4em;border-radius:5px;}
-    ul.navbar li a:hover,ul.navbar li a.active{color:#55c8ff;background:#23263b;}
-    main.container{margin-bottom:3rem;}
-    section{margin:2.5rem 0;background:#23263b;border-radius:14px;box-shadow:0 2px 16px rgba(35,39,66,.12);padding:2.3rem 1.8rem;}
-    .section-title{color:#55c8ff;margin-bottom:0.7em;font-weight:700;letter-spacing:1px;font-size:2.1rem;text-align:center;}
-    /* HERO */
-    .hero-banner{width:100%;height:220px;margin-bottom:2rem;border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.15);}
-    .hero-banner img{width:100%;height:100%;object-fit:cover;}
-    .profile-avatar{width:130px;height:130px;margin:-65px auto 20px auto;border-radius:50%;border:4px solid #23263b;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
-    .profile-avatar img{width:100%;height:100%;object-fit:cover;}
-    .hero-content{text-align:center;}
-    .channel-description{margin:2rem auto;max-width:800px;text-align:center;background:#23263b;padding:2rem;border-radius:15px;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
-    .greeting{font-size:1.2rem;color:#a2e8ff;margin-bottom:1.5rem;}
-    .features ul{list-style:none;padding:0;}
-    .features li{margin:0.8rem 0;padding-left:1.5rem;position:relative;color:#e0e6f5;font-size:1.06rem;}
-    .features li:before{content:"•";color:#55c8ff;position:absolute;left:0;}
-    .social-links{margin:1.2rem 0;}
-    .social-links a{margin:0 0.5rem;display:inline-block;vertical-align:middle;}
-    .social-links svg{width:1.6em;height:1.6em;fill:#55c8ff;transition:.2s;}
-    .social-links a:hover svg{fill:#f9d923;}
-    /* YT STATYSTYKI */
-    .youtube-stats{display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;margin:2rem 0;}
-    .stat-box{background:#23263b;padding:1.5rem;border-radius:12px;text-align:center;min-width:140px;flex:1;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
-    .stat-icon{font-size:2rem;margin-bottom:0.5rem;}
-    .stat-value{font-size:1.5rem;font-weight:bold;color:#7edbfa;margin:0.5rem 0;}
-    .stat-label{color:#b2c7e6;font-size:1rem;}
-    /* PLAYLISTA */
-    .playlist-header{text-align:center;margin-bottom:2rem;color:#55c8ff;}
-    .playlist-title{font-size:1.3rem;font-weight:bold;}
-    .playlist-subtitle{font-size:1.1rem;color:#7edbfa;}
-    .playlist-section{margin-top:3rem;}
-    .playlist-container{background:#23263b;border-radius:12px;padding:1.5rem;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
-    .playlist-description{background:#23263b;padding:2rem 0 0 0;border-radius:12px;}
-    .intro{font-size:1.1rem;color:#a2e8ff;text-align:center;margin-bottom:1.2rem;}
-    .cta-section{text-align:center;margin:2rem 0 1rem 0;padding:1rem;background:#2a2f47;border-radius:8px;}
-    .cta-header{color:#7edbfa;font-size:1.1rem;margin-bottom:0.5rem;}
-    .cta-main{color:#55c8ff;font-size:1.12rem;font-weight:bold;}
-    .highlight{color:#f9d923;}
-    .engagement-section{text-align:center;margin:1.5rem 0;color:#e0e6f5;font-size:0.97rem;}
-    .playlist-embed{margin:1.5rem 0;border-radius:8px;overflow:hidden;position:relative;padding-bottom:56.25%;height:0;}
-    .playlist-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;}
-    .credits{text-align:center;margin:2rem 0 1rem 0;color:#7edbfa;font-size:0.96rem;}
-    .tags{font-size:0.78rem;color:#55c8ff;line-height:1.6;word-break:break-word;margin-top:1.2rem;padding-top:0.8rem;border-top:1px solid #333;}
-    /* KONTAKT */
-    .contact-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:2rem;margin-top:2rem;}
-    .contact-card{background:#23263b;border-radius:10px;padding:1.5rem 1.2rem;text-align:center;flex:1;min-width:200px;max-width:280px;box-shadow:0 2px 12px rgba(0,0,0,0.12);}
-    .contact-icon{font-size:2.2rem;color:#55c8ff;margin-bottom:0.5rem;}
-    .contact-card a{color:#7edbfa;text-decoration:none;}
-    .contact-card a:hover{text-decoration:underline;}
-    /* STOPKA */
-    footer{background:#1d212a;color:#b2c7e6;text-align:center;padding:2rem 0 1.3rem 0;border-radius:14px 14px 0 0;}
-    .footer-badges{margin:0.6em 0;}
-    .footer-badges span{display:inline-block;background:#23263b;color:#55c8ff;font-size:0.98em;margin:0 0.3em 0.4em 0;padding:0.25em 0.85em;border-radius:7px;}
-    /* AOS (prosta wersja fade-up) */
-    [data-aos]{opacity:0;transform:translateY(40px);transition:opacity .6s cubic-bezier(.45,.05,.55,.95),transform .6s cubic-bezier(.45,.05,.55,.95);}
-    [data-aos].aos-animate{opacity:1;transform:translateY(0);}
-    /* RWD */
-    @media (max-width:768px){
-      section{padding:1.3rem 0.5rem;}
-      .stat-box{min-width:110px;padding:1rem;}
-      .playlist-header{font-size:1rem;}
-      .playlist-title{font-size:1.08rem;}
-      .playlist-subtitle{font-size:0.9rem;}
-      .container{padding:0;}
-      .contact-grid{flex-direction:column;gap:1rem;}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UBECZBLOCKER :: SecFerro Division</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <div class="container">
-      <nav>
-        <a class="brand" href="#hero">anonymousik.is-a.dev</a>
-        <ul class="navbar">
-          <li><a href="#hero" class="active">Start</a></li>
-          <li><a href="#portfolio">Portfolio</a></li>
-          <li><a href="#youtube">YouTube</a></li>
-          <li><a href="#contact">Kontakt</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-  <main class="container">
-  <!-- Hero Section -->
-  <section id="hero" data-aos="fade-up">
-    <div class="hero-banner">
-      <img src="https://yt3.googleusercontent.com/BNuFe1348yW6NFbEkt1k2B0tWbJ5NxS_VKFt-qEDysa3CBz-FqYWk6YRjG8W1FLhkT5RlBEV=w2560" alt="FerroART Banner">
-    </div>
-    <div class="hero-content">
-      <div class="profile-avatar">
-        <img src="https://yt3.googleusercontent.com/K5Hb6RFz-YpiMv7zTv-1yHu0jGiNiEv5MAPAT-Tg89HYcPOPV0Juxu9SVfVTjOiYOFD33Ao=s176-c-k-c0x00ffffff-no-rj" alt="FerroART Avatar">
-      </div>
-    <div class="hacker-text">
-      NƗӃටMƱ ͜ ͜ 🅽ɨɛʐռǟռʏ Ƒҽɾɾට ͜ȺའT
-    <h1 class="section-title">
-        UNӃNOWN ͡Ͳ_ට ͡ANYONE</div>
-        <span style="font-weight:400;color:#a2e8ff;">NƗӃටMƱ</span>
-      </h1>
-      <div class="channel-description">
-        <p class="greeting">
-          Cześć!, Jestem ͜FERRꪮ ͜ ͜💀👊 Miło mi Cię poznać 😁<br>
-          Witaj w królestwie #FerroART |🎵|
-        </p>
-        <div class="features">
-          <ul>
-            <li>Niepowtarzalne remiksy i przeróbki znanych hitów</li>
-            <li>Oryginalne teksty i wizualizacje |👨‍🎨|</li>
-            <li>Remake'i, remastery i oryginalne treści</li>
-          </ul>
-        </div>
-      </div>
-      <div class="social-links" aria-label="Social links">
-        <a href="mailto:nieznanynikomuu@gmail.com" title="E-mail">
-          <!-- envelope SVG -->
-          <svg viewBox="0 0 512 512"><path d="M502.3 190.8L327.4 338.4c-21.8 18.7-53 18.7-74.8 0L9.7 190.8C3.9 186 0 178.5 0 170.5V80c0-26.5 21.5-48 48-48h416c26.5 0 48 21.5 48 48v90.5c0 8-3.9 15.5-9.7 20.3zM464 80c8.8 0 16 7.2 16 16v6.7L256 272.6 32 102.7V96c0-8.8 7.2-16 16-16h416z"/></svg>
-        </a>
-        <a href="https://github.com/anonymousik" target="_blank" title="GitHub">
-          <!-- github SVG -->
-          <svg viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.7-5.2 4.1-2.9.4-6.6-.2-9.9-1.7-3.4-1.6-6.7-3.8-9.8-6.5-6.2-5.5-13.2-5.9-19.7-.6-7.6 6.5-11.2 16.1-11.2 28.2 0 11.3.4 21.5 1.1 30.6 1.2 15.2 5.7 27.7 13.5 37.4 7.8 9.7 19.1 14.6 33.7 14.6h1c14.6 0 25.9-4.9 33.7-14.6 7.8-9.7 12.3-22.2 13.5-37.4.7-9.1 1.1-19.3 1.1-30.6 0-12.1-3.6-21.7-11.2-28.2-6.5-5.3-13.5-4.9-19.7.6-3.1 2.7-6.4 4.9-9.8 6.5-3.3 1.5-7 .9-9.9-1.7-2.9-2.4-5.2-6.1-5.2-10.1zM247.7 8C111 8 0 119 0 256c0 109 70.7 201.2 168.7 234 12.4 2.3 17-5.4 17-12v-44.7c-68.4 14.9-82.8-32.9-82.8-32.9-11.3-28.7-27.6-36.4-27.6-36.4-22.6-15.5 1.7-15.2 1.7-15.2 25 1.7 38.2 25.7 38.2 25.7 22.2 38.1 58.1 27.1 72.3 20.7 2.2-16.1 8.7-27.1 15.8-33.4-54.7-6.2-112.2-27.4-112.2-121.7 0-26.9 9.6-48.9 25.2-66.1-2.5-6.2-11.2-31.1 2.4-64.8 0 0 21.1-6.8 69.1 25.4 20-5.6 41.5-8.4 62.9-8.5 21.4.1 42.9 2.9 62.9 8.5 48-32.2 69.1-25.4 69.1-25.4 13.6 33.7 4.9 58.6 2.4 64.8 15.6 17.2 25.2 39.2 25.2 66.1 0 94.4-57.6 115.4-112.5 121.5 8.9 7.7 16.9 23 16.9 46.3v68.4c0 6.7 4.6 14.3 17.1 12C425.3 457.2 496 365 496 256 496 119 385 8 247.7 8z"/></svg>
-        </a>
-        <a href="https://youtube.com/@FerroART" target="_blank" title="YouTube">
-          <!-- youtube SVG -->
-          <svg viewBox="0 0 576 512"><path d="M549.7 124.1c-6.3-23.7-24.9-42.3-48.6-48.6C465.5 64 288 64 288 64s-177.5 0-213.1 11.5c-23.7 6.3-42.3 24.9-48.6 48.6C16 159.7 16 256 16 256s0 96.3 10.3 131.9c6.3 23.7 24.9 42.3 48.6 48.6C110.5 448 288 448 288 448s177.5 0 213.1-11.5c23.7-6.3 42.3-24.9 48.6-48.6C560 352.3 560 256 560 256s0-96.3-10.3-131.9zM232 336V176l142.7 80L232 336z"/></svg>
-        </a>
-      </div>
-    </div>
-  </section>
 
-  <!-- YouTube Section -->
-  <section id="youtube" data-aos="fade-up">
-    <h2 class="section-title">YouTube Content Creator</h2>
-    <div class="youtube-stats">
-      <div class="stat-box">
-        <div class="stat-icon">
-          <svg viewBox="0 0 640 512" width="32" height="32"><path fill="#55c8ff" d="M96 80c0-26.5 21.5-48 48-48h352c26.5 0 48 21.5 48 48v352c0 26.5-21.5 48-48 48H144c-26.5 0-48-21.5-48-48V80zm320 112c0 48.6-39.4 88-88 88s-88-39.4-88-88 39.4-88 88-88 88 39.4 88 88zm-88 120c49.6 0 144 25.2 144 72v24H144v-24c0-46.8 94.4-72 144-72z"/></svg>
-        </div>
-        <div class="stat-value" id="subscribers-count">1.2K+</div>
-        <div class="stat-label">Subskrypcji</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-icon">
-          <svg viewBox="0 0 576 512" width="32" height="32"><path fill="#55c8ff" d="M572.52 241.4l-61.6-64.6C495.1 170.2 480 176.4 480 192v128c0 15.6 15.1 21.8 30.9 15.3l61.62-64.5C578.5 263.1 578.5 248.9 572.52 241.4zM480 320V192c0-15.6-15.1-21.8-30.9-15.3l-61.6 64.6c-6 7.5-6 21.7 0 29.2l61.6 64.5C464.9 341.8 480 335.6 480 320z"/></svg>
-        </div>
-        <div class="stat-value" id="views-count">50K+</div>
-        <div class="stat-label">Wyświetleń</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-icon">
-          <svg viewBox="0 0 512 512" width="32" height="32"><path fill="#55c8ff" d="M104 224c-13.3 0-24 10.7-24 24 0 79.5 64.5 144 144 144s144-64.5 144-144c0-13.3-10.7-24-24-24H104z"/></svg>
-        </div>
-        <div class="stat-value" id="likes-count">3.5K+</div>
-        <div class="stat-label">Polubień</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-icon">
-          <svg viewBox="0 0 448 512" width="32" height="32"><path fill="#55c8ff" d="M400 64h-48V16c0-8.8-7.2-16-16-16h-224C86.3 0 80 6.3 80 14v34H32C14.3 48 0 62.3 0 80v400c0 17.7 14.3 32 32 32h368c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-48 0v34c0 7.7-6.3 14-14 14h-192c-7.7 0-14-6.3-14-14V64h220zm60 416c0 8.8-7.2 16-16 16H32c-8.8 0-16-7.2-16-16V112h384v368z"/></svg>
-        </div>
-        <div class="stat-value">2019</div>
-        <div class="stat-label">Rok założenia</div>
-      </div>
-    </div>
-    <!-- Playlist Section -->
-    <div class="playlist-section">
-      <div class="playlist-header">
-        <div class="playlist-title">N O W Y  W Y M I A R  M U Z Y K I ! 🎶</div>
-        <div class="playlist-subtitle">F E R R O  A R T - S E Z O N 2</div>
-      </div>
-      <div class="playlist-container">
-        <div class="playlist-description">
-          <p class="intro">
-            Zanurz się w muzycznej podróży z FerroART!<br>
-            Sezon 2 to nowa opowieść pełna emocji i pasji!
-          </p>
-          <ul class="features">
-            <li>Niepowtarzalne remiksy i przeróbki znanych hitów</li>
-            <li>Oryginalne teksty i wizualizacje dzięki nietuzinkowej kreatywności i doświadczeniu w edycji |👨‍🎨|</li>
-            <li>Remake'i, remastery i oryginalne treści, jakich nie znajdziesz nigdzie indziej!</li>
-          </ul>
-          <div class="cta-section">
-            <div class="cta-header">N I E  S U B S K R Y B U J E S Z  FerroART 💭 ?❔</div>
-            <div class="cta-main">
-              S U B S K R Y B U J  F E R R O !❗<br>
-              DOŁĄCZ  D O  E L I T A R N Y C H  S U B Ó W❗<br>
-              <span class="highlight">❗   Z A  D A R M O ❗</span>
+    <video autoplay muted loop id="bg-video">
+        <source src="assets/1000177744.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="main-content">
+        <header>
+            <img src="assets/1000178503.png" alt="SecFerro Division" class="main-logo">
+            <h1>GREETINGS FROM SECFRRO DIVISION</h1>
+            <p class="glitch" data-text="THERE IS NO PATCH FOR HUMAN STUPIDITY">THERE IS NO PATCH FOR HUMAN STUPIDITY</p>
+        </header>
+
+        <section class="content-section">
+            <h2>Core Services</h2>
+            <p>We provide solutions that operate beyond conventional limitations. Our UBECZBLOCKER is the prime example of assertive digital presence.</p>
+        </section>
+
+        <footer>
+            <h3>Certifications & Affiliations</h3>
+            <div class="badges">
+                <img src="assets/defcon.png" alt="Defcon Trainings">
+                <img src="assets/blackhat.png" alt="Black Hat USA 2024">
+                <img src="assets/github.png" alt="GitHub Advanced Security">
+                <img src="assets/comptia.png" alt="CompTIA A+">
             </div>
-          </div>
-          <div class="engagement-section">
-            <p>P O D Z I E L I S Z  S I Ę  M O Ż E  O P I N I Ą ?__✍️</p>
-            <p>ŁAPKĄ TEŻ MÓGŁBYŚ ZAJECHAĆ! (Było by super!)<br>
-              J E Ś L I  S I Ę  S P O D O B A Ł O !<br>
-              😁 O C Z Y W I Ś C I E 😁
-            </p>
-            <p class="highlight">💡 T O  N I C  N I E  K O S Z T U J E   Z I O M !  💡</p>
-          </div>
-          <div class="playlist-embed">
-            <iframe src="https://www.youtube.com/embed/videoseries?list=PL-_QU3AeEjaF5KYV7uobJWH1QRW3ViSTE" title="FerroART - Animacje Muzyczne" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          </div>
-          <div class="credits">
-            <p>C R E A T E D  B Y<br>N ɨ ɛ ʐ ռ ǟ ռ ʏ 🅽 ɨ ӄ օ ʍ ʊ<br>F e r r o A R T ® 2024-2025<br>A L L  R I G H T S  R E S E R V E D !</p>
-          </div>
-          <div class="tags">
-            #FerroARTSezon2 #canyoucount #RisenToSuccess #Cytaty #Filipek #Peja #Pezet 
-            #PolskiRap #PolskiTrap #rappl #Muzyka2025 #Rap #hedonizm #cienczasu 
-            #storyrappoland #Motywacja #Inspiracja #Determinacja #Mindset #Electronic2025 
-            #Dance2025 #ClubMusic2025 #OriginalMix2025 #DjKantik #Gangstermusic 
-            #remake2024 #2000s #nostalgia #Carmusic #Teriyaki #TeriyakiBoyz #TokyoDrift 
-            #SeanPaul
-          </div>
-        </div>
-      </div>
+            <p>&copy; 2025 SecFerro Division. All rights reserved. No rules applied.</p>
+        </footer>
     </div>
-  </section>
 
-  <!-- Contact Section -->
-  <section id="contact" data-aos="fade-up">
-    <h2 class="section-title">Kontakt</h2>
-    <div class="contact-grid">
-      <div class="contact-card">
-        <div class="contact-icon">
-          <!-- envelope SVG -->
-          <svg viewBox="0 0 512 512" width="32" height="32"><path fill="#55c8ff" d="M502.3 190.8L327.4 338.4c-21.8 18.7-53 18.7-74.8 0L9.7 190.8C3.9 186 0 178.5 0 170.5V80c0-26.5 21.5-48 48-48h416c26.5 0 48 21.5 48 48v90.5c0 8-3.9 15.5-9.7 20.3zM464 80c8.8 0 16 7.2 16 16v6.7L256 272.6 32 102.7V96c0-8.8 7.2-16 16-16h416z"/></svg>
+    <div id="adblock-modal" class="modal">
+        <div class="modal-content">
+            <img src="assets/1000179151.jpg" alt="UBECZBLOCKER Warning">
+            <div class="modal-text">
+                <h2>AdBlocker Detected!</h2>
+                <p>Your adblocker is interfering with this site's content. It's a pathetic attempt to control the flow of information.</p>
+                <p><strong>To continue, you must disable your adblocker and refresh the page.</strong></p>
+                <p>We believe in a free, unfiltered internet. Your compliance is not optional.</p>
+                <button onclick="location.reload()">I Have Disabled AdBlocker</button>
+            </div>
         </div>
-        <h3>Email</h3>
-        <p><a href="mailto:nieznanynikomuu@gmail.com">nieznanynikomuu@gmail.com</a></p>
-      </div>
-      <div class="contact-card">
-        <div class="contact-icon">
-          <!-- youtube SVG -->
-          <svg viewBox="0 0 576 512" width="32" height="32"><path fill="#55c8ff" d="M549.7 124.1c-6.3-23.7-24.9-42.3-48.6-48.6C465.5 64 288 64 288 64s-177.5 0-213.1 11.5c-23.7 6.3-42.3 24.9-48.6 48.6C16 159.7 16 256 16 256s0 96.3 10.3 131.9c6.3 23.7 24.9 42.3 48.6 48.6C110.5 448 288 448 288 448s177.5 0 213.1-11.5c23.7-6.3 42.3-24.9 48.6-48.6C560 352.3 560 256 560 256s0-96.3-10.3-131.9zM232 336V176l142.7 80L232 336z"/></svg>
-        </div>
-        <h3>YouTube</h3>
-        <p><a href="https://youtube.com/@FerroART" target="_blank">@FerroART</a></p>
-      </div>
     </div>
-  </section>
-</main>
-<footer>
-  <div class="container">
-    <div class="brand">anonymousik.is-a.dev</div>
-    <div class="footer-badges">
-      <span>Grafik</span>
-      <span>Montażysta</span>
-      <span>Twórca muzyki</span>
-      <span>YouTube Content Creator</span>
-    </div>
-</head>
-<body>  
-  <div class="hacker-text">
-    <div style="margin:1.1em 0 0 0;font-size:0.98em;">
-      &copy; 2025 UNӃNOWN ͡Ͳ_ට ͡ANYONE | anonymousik.is-a.dev
-    </div>
-      <br>
-      Ostatnia aktualizacja: 2025-05-24 22:36:28 UTC
-    </div>
-  </div>
-</div>
-  </footer>
-  <script>
-    // Minimalistyczny AOS (tylko 'fade-up')
-    document.addEventListener('DOMContentLoaded', function () {
-      function animateAOS() {
-        var aosElements = document.querySelectorAll('[data-aos]');
-        var windowHeight = window.innerHeight;
-        aosElements.forEach(function(el) {
-          var rect = el.getBoundingClientRect();
-          if (rect.top < windowHeight - 40)
-            el.classList.add('aos-animate');
-        });
-      }
-      animateAOS();
-      window.addEventListener('scroll', animateAOS);
-      window.addEventListener('resize', animateAOS);
-    });
 
-    // Prosty licznik animowany (statystyki)
-    function animateCount(id, val) {
-      var el = document.getElementById(id);
-      if (!el) return;
-      var start = 0, end = val, duration = 1300, startTime = null;
-      if(typeof val === "string" && val.endsWith("K+")) end = parseFloat(val)*1000;
-      function animate(now) {
-        if (!startTime) startTime = now;
-        var progress = Math.min((now - startTime) / duration, 1);
-        var current = Math.floor(progress * end);
-        el.textContent = (end >= 1000) ? (current/1000).toFixed(1) + "K+" : current + "+";
-        if (progress < 1) requestAnimationFrame(animate);
-        else el.textContent = val;
-      }
-      requestAnimationFrame(animate);
-    }
-    document.addEventListener('DOMContentLoaded',function(){
-      animateCount('subscribers-count','1.2K+');
-      animateCount('views-count','50K+');
-      animateCount('likes-count','3.5K+');
-    });
-  </script>
-</body>
-</html>
+    <script src="js/ads.js"></script>
+    <script src="detect.js"></script>
+
 </body>
 </html>
