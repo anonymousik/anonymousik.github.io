@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MODULE :: UBECZBLOCKER</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <video autoplay muted loop id="bg-video">
+        <source src="assets/1000177744.mp4" type="video/mp4">
+    </video>
+
+    <div class="main-content">
+        <header>
+            <img src="assets/1000179144.png" alt="UBECZBLOCKER" class="module-logo">
+            <h1 class="glitch" data-text="UBECZBLOCKER v2.5">UBECZBLOCKER v2.5</h1>
+            <p>// ANTI-ADBLOCK PROTOCOL :: ACTIVE</p>
+            <a href="index.html" class="back-link">&lt;&lt; RETURN TO MAIN INTERFACE</a>
+        </header>
+        <section class="content-section">
+            <h2>STATUS: MONITORING...</h2>
+            <p>This module actively neutralizes ad-blocking extensions to ensure content integrity. If you are seeing this message, the system is operating correctly. Any attempt to block resources will be met with immediate countermeasures.</p>
+        </section>
+    </div>
+
+    <div id="adblock-modal" class="modal">
+        <div class="modal-content">
+            <img src="assets/1000179151.jpg" alt="UBECZBLOCKER Warning">
+            <div class="modal-text">
+                <h2>COUNTERMEASURE ACTIVATED</h2>
+                <p>Hostile ad-blocking software detected on your network. Access to this module is now restricted.</p>
+                <p><strong>To restore functionality, terminate the hostile process (disable AdBlock) and re-initiate the connection (refresh page).</strong></p>
+                <button onclick="location.reload()">CONNECTION RE-INITIATED</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/ads.js"></script>
+    <script src="js/detect.js"></script>
+</body>
+</html>
