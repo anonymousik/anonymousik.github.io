@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INITIALIZING :: SECFERRO OS</title>
+    <link rel="stylesheet" href="css/loader.css">
+</head>
+<body>
+    <div class="loader-container">
+        <div class="glitch logo" data-text="SECFERRO">SECFERRO</div>
+        <div class="scanline"></div>
+        <div class="terminal">
+            <p>> Booting SecFerro Operating System...</p>
+            <p>> Kernel version: 5.4.0-SFD_x64</p>
+            <p>> Initializing modules... <span class="status-ok">OK</span></p>
+            <p>> Mounting virtual file systems... <span class="status-ok">OK</span></p>
+            <p>> Loading encryption keys... <span class="status-ok">OK</span></p>
+            <p>> Establishing secure uplink... <span class="status-ok">DONE</span></p>
+            <p class="blink">> CONNECTION ESTABLISHED. REDIRECTING...</p>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 5000); // Czas trwania animacji w milisekundach
+    </script>
+</body>
+</html>
