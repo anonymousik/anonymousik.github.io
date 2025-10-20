@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADBHUB Quantum Station v5.0 - Ultimate Android Control Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --quantum-purple: #9333ea;
+            --quantum-pink: #ec4899;
+            --quantum-blue: #3b82f6;
+            --quantum-cyan: #06b6d4;
+            --cyber-dark: #0a0a0f;
+            --cyber-darker: #050508;
+            --neon-green: #00ff88;
+            --neon-orange: #ff9500;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--cyber-darker);
+            color: #fff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0f 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(147, 51, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+            animation: bgMove 20s ease infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-50px, 50px) rotate(5deg); }
+        }
+
+        /* Grid Pattern */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(147, 51, 234, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(147, 51, 234, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: gridMove 30s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 5%;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 15, 0.8);
+            border-bottom: 1px solid rgba(147, 51, 234, 0.2);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--quantum-purple), var(--quantum-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(147, 51, 234, 0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--quantum-cyan);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 5% 2rem;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, var(--quantum-cyan), var(--quantum-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(147, 51, 234, 0.5)); }
+            to { filter: drop-shadow(0 0 40px rgba(6, 182, 212, 0.8)); }
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            color: var(--quantum-cyan);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .hero .description {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--quantum-purple), var(--quantum-pink));
+            color: #fff;
+            box-shadow: 0 10px 40px rgba(147, 51, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(147, 51, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #fff;
+            border: 2px solid var(--quantum-cyan);
+        }
+
+        .btn-secondary:hover {
+            background: var(--quantum-cyan);
+            color: var(--cyber-dark);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 5%;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, var(--quantum-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 4rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(147, 51, 234, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(6, 182, 212, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--quantum-cyan);
+            box-shadow: 0 20px 60px rgba(147, 51, 234, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--quantum-cyan);
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+        }
+
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            padding: 0.3rem 0.8rem;
+            background: rgba(147, 51, 234, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--neon-green);
+        }
+
+        /* Tech Stack Section */
+        .tech-stack {
+            padding: 6rem 5%;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(147, 51, 234, 0.1);
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+
+        .tech-item:hover {
+            background: rgba(147, 51, 234, 0.1);
+            transform: scale(1.05);
+        }
+
+        .tech-item .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .tech-item h4 {
+            color: var(--quantum-cyan);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 4rem 5%;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            position: relative;
+        }
+
+        .stat-number {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--quantum-purple), var(--quantum-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.5rem;
+        }
+
+        /* Installation Section */
+        .installation {
+            padding: 6rem 5%;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--quantum-purple);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 800px;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            color: var(--neon-green);
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--quantum-purple);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: var(--quantum-pink);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 5%;
+            text-align: center;
+            border-top: 1px solid rgba(147, 51, 234, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .social-links a {
+            color: var(--quantum-cyan);
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--quantum-purple);
+            transform: scale(1.2);
+        }
+
+        /* Scroll Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Floating Particles */
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--quantum-cyan);
+            border-radius: 50%;
+            animation: float 6s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">⚡ ADBHUB QUANTUM</div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#tech">Technology</a></li>
+            <li><a href="#install">Installation</a></li>
+            <li><a href="#docs">Docs</a></li>
+            <li><a href="https://github.com" target="_blank">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>ADBHUB QUANTUM STATION</h1>
+            <p class="subtitle">🚀 Ultimate Android Control Center v5.0</p>
+            <p class="description">
+                Zaawansowana, samonaprawiająca się platforma do rootowania, optymalizacji i odkrywania ukrytych możliwości urządzeń Android. 
+                AI-powered, modułowa architektura z automatycznymi systemami bezpieczeństwa i wydajności.
+            </p>
+            <div class="cta-buttons">
+                <a href="#install" class="btn btn-primary">⚡ Start Now</a>
+                <a href="#features" class="btn btn-secondary">🔍 Explore Features</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats fade-in">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">150+</div>
+                <div class="stat-label">Optymalizacji</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Modułów AI</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Automatyzacja</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Możliwości</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <h2 class="section-title fade-in">Revolutionary Features</h2>
+        <p class="section-subtitle fade-in">Odkryj moc profesjonalnych narzędzi</p>
+        
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <span class="feature-icon">🤖</span>
+                <h3>AI Performance Optimizer</h3>
+                <p>Inteligentny system adaptacyjny analizujący wzorce użytkowania i automatycznie dostosowujący parametry wydajności w czasie rzeczywistym.</p>
+                <div class="feature-tags">
+                    <span class="tag">Machine Learning</span>
+                    <span class="tag">Adaptive</span>
+                    <span class="tag">Real-time</span>
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <span class="feature-icon">🔓</span>
+                <h3>Advanced Rooting Suite</h3>
+                <p>Innowacyjne techniki rootowania bazujące na Magisk, KernelSU i metodach bootloader unlock. Wsparcie dla 500+ modeli urządzeń.</p>
+                <div class="feature-tags">
+                    <span class="tag">Magisk</span>
+                    <span class="tag">KernelSU</span>
+                    <span class="tag">SafetyNet</span>
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <span class="feature-icon">⚡</span>
+                <h3>Quantum Gaming Boost</h3>
+                <p>Ponad 100 właściwości systemowych GPU/CPU, ANGLE/Vulkan rendering, dynamic refresh rate, thermal management.</p>
+                <div class="feature-tags">
+                    <span class="tag">GPU Boost</span>
+                    <span class="tag">Vulkan</span>
+                    <span class="tag">0-lag</span>
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <span class="feature-icon">🔒</span>
+                <h3>Security & Privacy Suite</h3>
+                <p>Zaawansowane firewall, DNS over HTTPS/TLS, app permission manager, encrypted backup, privacy scanner.</p>
+                <div class="feature-tags">
+                    <span class="tag">Firewall</span>
+                    <span class="tag">Encryption</span>
+                    <span class="tag">Privacy</span>
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <span class="feature-icon">🔧</span>
+                <h3>Kernel Compilation Lab</h3>
+                <p>Pełne środowisko do kompilacji custom kerneli: toolchain setup, config optimizer, performance profiler.</p>
+                <div class="feature-tags">
+                    <span class="tag">GCC/Clang</span>
+                    <span class="tag">Custom ROM</span>
+                    <span class="tag">OC/UV</span>
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <span class="feature-icon">🎨</span>
+                <h3>Display Mastery</h3>
+                <p>Dynamic refresh rate optimizer, color calibration, HDR enhancement, DPI customization, screen recording 4K@60fps.</p>
+                <div class="feature-tags">
+                    <span class="tag">120Hz+</span>
+                    <span class="tag">HDR</span>
+                    <span class="tag">4K</span>
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <span class="feature-icon">🧹</span>
+                <h3>Intelligent Debloater</h3>
+                <p>AI-assisted bloatware removal z 5000+ bazą aplikacji systemowych. Safe mode, backup przed usunięciem.</p>
+                <div class="feature-tags">
+                    <span class="tag">Safe Remove</span>
+                    <span class="tag">AI Detection</span>
+                    <span class="tag">Backup</span>
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <span class="feature-icon">📊</span>
+                <h3>Real-time Monitor</h3>
+                <p>Live dashboard: CPU/GPU usage, temperature, battery drain analysis, network monitor, RAM optimizer.</p>
+                <div class="feature-tags">
+                    <span class="tag">Live Stats</span>
+                    <span class="tag">Analytics</span>
+                    <span class="tag">Graphs</span>
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <span class="feature-icon">🎯</span>
+                <h3>Smart Overclock</h3>
+                <p>Bezpieczne podkręcanie CPU/GPU z voltage control, thermal throttle management, stability testing.</p>
+                <div class="feature-tags">
+                    <span class="tag">CPU OC</span>
+                    <span class="tag">GPU OC</span>
+                    <span class="tag">Safe Mode</span>
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <span class="feature-icon">🌐</span>
+                <h3>Network Arsenal</h3>
+                <p>WiFi analyzer, DNS changer, VPN integration, packet capture, bandwidth monitor, ad-blocker DNS.</p>
+                <div class="feature-tags">
+                    <span class="tag">WiFi 6E</span>
+                    <span class="tag">DNS</span>
+                    <span class="tag">VPN</span>
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <span class="feature-icon">💾</span>
+                <h3>Quantum Backup System</h3>
+                <p>Incremental backups, cloud sync, scheduled automation, encrypted storage, one-click restore.</p>
+                <div class="feature-tags">
+                    <span class="tag">Encrypted</span>
+                    <span class="tag">Cloud</span>
+                    <span class="tag">Auto</span>
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <span class="feature-icon">🔮</span>
+                <h3>Hidden Features Unlocker</h3>
+                <p>Odkrywanie ukrytych funkcji producenta: developer options, engineering mode, secret codes, hidden settings.</p>
+                <div class="feature-tags">
+                    <span class="tag">Secret Codes</span>
+                    <span class="tag">Dev Mode</span>
+                    <span class="tag">Unlock</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section id="tech" class="tech-stack">
+        <h2 class="section-title fade-in">Technology Stack</h2>
+        <p class="section-subtitle fade-in">Cutting-edge technologies powering ADBHUB</p>
+        
+        <div class="tech-grid">
+            <div class="tech-item fade-in">
+                <div class="icon">🐚</div>
+                <h4>Bash 5.0+</h4>
+                <p>Advanced shell scripting</p>
+            </div>
+            <div class="tech-item fade-in">
+                <div class="icon">🐍</div>
+                <h4>Python 3.10+</h4>
+                <p>AI & automation modules</p>
+            </div>
+            <div class="tech-item fade-in">
+                <div class="icon">🦀</div>
+                <h4>Rust</h4>
+                <p>Performance-critical components</p>
+            </div>
+            <div class="tech-item fade-in">
+                <div class="icon">🔧</div>
+                <h4>ADB Protocol</h4>
+                <p>Direct device communication</p>
+            </div>
+            <div class="tech-item fade-in">
+                <div class="icon">🎨</div>
+                <h4>TUI Framework</h4>
+                <p>Modern terminal interface</p>
+            </div>
+            <div class="tech-item fade-in">
+                <div class="icon">🤖</div>
+                <h4>TensorFlow Lite</h4>
+                <p>On-device ML inference</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section id="install" class="installation">
+        <h2 class="section-title fade-in">Quick Installation</h2>
+        <p class="section-subtitle fade-in">Get started in 60 seconds</p>
+        
+        <div class="code-block fade-in">
+            <button class="copy-btn" onclick="copyCode()">📋 Copy</button>
+            <pre><code># Clone repository
+git clone https://github.com/secferro/adbhub-quantum.git
+cd adbhub-quantum
+
+# Run auto-installer (handles all dependencies)
+./install.sh
+
+# Launch ADBHUB Quantum Station
+./adbhub.sh
+
+# Optional: Install system-wide
+sudo ./install.sh --global</code></pre>
+        </div>
+
+        <div class="cta-buttons" style="margin-top: 3rem;">
+            <a href="https://github.com" class="btn btn-primary">📥 Download v5.0</a>
+            <a href="#docs" class="btn btn-secondary">📖 Read Docs</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 ADBHUB Quantum Station | SecFerro Division</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Open Source MIT License | Built with ❤️ for Android Community</p>
+        <div class="social-links">
+            <a href="https://github.com">📦 GitHub</a>
+            <a href="#">💬 Discord</a>
+            <a href="#">📧 Contact</a>
+            <a href="#">📘 Wiki</a>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Copy code function
+        function copyCode() {
+            const code = document.querySelector('.code-block pre').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => btn.textContent = '📋 Copy', 2000);
+            });
+        }
+
+        // Generate floating particles
+        function createParticles() {
+            const hero = document.querySelector('.hero');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                hero.appendChild(particle);
+            }
+        }
+
+        createParticles();
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
