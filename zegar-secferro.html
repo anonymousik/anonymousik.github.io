@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecFerro Division - ZEGAR Z TWOJEJ PRZEGLĄDARKI</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+        
+        :root {
+            --primary: #00ff41;
+            --secondary: #ff0055;
+            --accent: #00d4ff;
+            --dark: #0a0e27;
+            --darker: #050814;
+            --glow: rgba(0, 255, 65, 0.4);
+            --red-glow: rgba(255, 0, 85, 0.3);
+            --blue-glow: rgba(0, 212, 255, 0.4);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--darker);
+            font-family: 'Share Tech Mono', monospace;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        .loading-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 30px var(--glow);
+            margin-bottom: 2rem;
+            animation: logoGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes logoGlow {
+            0%, 100% { text-shadow: 0 0 30px var(--glow); }
+            50% { text-shadow: 0 0 60px var(--glow), 0 0 90px var(--glow); }
+        }
+        
+        .loading-bar {
+            width: 300px;
+            max-width: 80%;
+            height: 4px;
+            background: rgba(0, 255, 65, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            animation: loadProgress 2s ease-out forwards;
+            box-shadow: 0 0 20px var(--glow);
+        }
+        
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        
+        .loading-text {
+            margin-top: 1rem;
+            color: var(--primary);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            animation: loadingDots 1.5s infinite;
+        }
+        
+        @keyframes loadingDots {
+            0%, 20% { content: 'INITIALIZING.'; }
+            40% { content: 'INITIALIZING..'; }
+            60%, 100% { content: 'INITIALIZING...'; }
+        }
+        
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 65, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 0, 85, 0.03) 0%, transparent 50%);
+            animation: bgPulse 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        /* Matrix rain effect */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.08;
+            z-index: 0;
+        }
+        
+        .terminal-container {
+            width: 100%;
+            max-width: 1000px;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            box-shadow: 
+                0 0 40px var(--glow),
+                0 0 80px rgba(0, 255, 65, 0.2),
+                inset 0 0 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            animation: containerEntry 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center;
+        }
+        
+        @keyframes containerEntry {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .terminal-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                var(--primary) 10deg,
+                transparent 20deg,
+                transparent 340deg,
+                var(--primary) 350deg,
+                transparent 360deg
+            );
+            animation: borderRotate 8s linear infinite;
+            opacity: 0.3;
+        }
+        
+        @keyframes borderRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .terminal-container::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            border-radius: 10px;
+            z-index: -1;
+        }
+        
+        .terminal-header {
+            background: rgba(0, 255, 65, 0.05);
+            border-bottom: 1px solid var(--primary);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .terminal-title {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--glow);
+            letter-spacing: 3px;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 10px var(--glow); }
+            50% { text-shadow: 0 0 20px var(--glow), 0 0 30px var(--glow); }
+        }
+        
+        .title-icon {
+            display: inline-block;
+            animation: iconRotate 4s linear infinite;
+        }
+        
+        @keyframes iconRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status-bar {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .status-indicator:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.3);
+        }
+        
+        .led {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--glow);
+            animation: pulse 2s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .led::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 1px solid var(--primary);
+            opacity: 0;
+            animation: ripple 2s ease-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
+        }
+        
+        @keyframes ripple {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+        
+        .led.red {
+            background: var(--secondary);
+            box-shadow: 0 0 15px var(--red-glow);
+        }
+        
+        .led.red::after {
+            border-color: var(--secondary);
+        }
+        
+        .led.blue {
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--blue-glow);
+        }
+        
+        .led.blue::after {
+            border-color: var(--accent);
+        }
+        
+        .terminal-body {
+            padding: clamp(2rem, 5vw, 3.5rem);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .display-screen {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 8px;
+            padding: clamp(2rem, 5vw, 3rem);
+            position: relative;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .display-screen:hover {
+            border-color: rgba(0, 255, 65, 0.5);
+            box-shadow: inset 0 0 30px rgba(0, 255, 65, 0.05);
+        }
+        
+        /* Scanline effect */
+        .display-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 65, 0.03) 0px,
+                transparent 2px,
+                transparent 4px
+            );
+            pointer-events: none;
+            animation: scanline 8s linear infinite;
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100%); }
+        }
+        
+        .display-screen::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(0, 255, 65, 0.1),
+                transparent
+            );
+            animation: shine 3s ease-in-out infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
+        }
+        
+        .time-display {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 30px var(--glow);
+            font-weight: 700;
+            letter-spacing: 0.5rem;
+            animation: timeGlow 2s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+        
+        @keyframes timeGlow {
+            0%, 100% {
+                text-shadow: 
+                    0 0 20px var(--glow),
+                    0 0 30px var(--glow);
+            }
+            50% {
+                text-shadow: 
+                    0 0 30px var(--glow),
+                    0 0 50px var(--glow),
+                    0 0 70px var(--glow);
+            }
+        }
+        
+        .poem-container {
+            position: relative;
+            z-index: 1;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #poem-display {
+            color: var(--primary);
+            font-size: clamp(1.1rem, 2.8vw, 1.4rem);
+            line-height: 1.9;
+            text-align: center;
+            text-shadow: 0 0 20px var(--glow);
+            white-space: pre-line;
+            font-family: 'Share Tech Mono', monospace;
+            animation: poemFadeIn 0.5s ease-out;
+        }
+        
+        @keyframes poemFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.3em;
+            background: var(--primary);
+            margin-left: 3px;
+            animation: cursorBlink 0.8s infinite;
+            box-shadow: 0 0 10px var(--glow);
+            vertical-align: middle;
+        }
+        
+        @keyframes cursorBlink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+        
+        .controls {
+            margin-top: 2.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .btn {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.8rem 1.5rem;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: relative;
+            overflow: hidden;
+            font-weight: 700;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0, 255, 65, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+        
+        .btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+        
+        .btn:hover {
+            background: rgba(0, 255, 65, 0.2);
+            box-shadow: 0 0 30px var(--glow);
+            transform: translateY(-3px) scale(1.02);
+            border-color: var(--primary);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+        
+        .btn span {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn.active {
+            background: var(--primary);
+            color: var(--darker);
+            box-shadow: 
+                0 0 40px var(--glow),
+                0 5px 15px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary);
+            animation: activeButton 2s ease-in-out infinite;
+        }
+        
+        @keyframes activeButton {
+            0%, 100% {
+                box-shadow: 
+                    0 0 40px var(--glow),
+                    0 5px 15px rgba(0, 0, 0, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 0 60px var(--glow),
+                    0 0 80px rgba(0, 255, 65, 0.3),
+                    0 5px 15px rgba(0, 0, 0, 0.3);
+            }
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .config-panel {
+            margin-top: 2rem;
+            background: rgba(0, 255, 65, 0.03);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 6px;
+            padding: 1.5rem;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .config-title {
+            font-family: 'Orbitron', monospace;
+            color: var(--primary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .config-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.1);
+        }
+        
+        .config-row:last-child {
+            border-bottom: none;
+        }
+        
+        .config-label {
+            color: rgba(0, 255, 65, 0.8);
+            font-size: 0.9rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            top: 3px;
+            left: 3px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px var(--glow);
+        }
+        
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+        
+        .toggle-switch.active::before {
+            left: 27px;
+            background: var(--darker);
+        }
+        
+        .footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            color: rgba(0, 255, 65, 0.5);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            animation: footerGlow 4s ease-in-out infinite;
+        }
+        
+        @keyframes footerGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+        
+        .divider {
+            margin-top: 0.5rem;
+            opacity: 0.7;
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: var(--darker);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            border: 1px solid var(--primary);
+            z-index: 1000;
+        }
+        
+        .btn:hover .tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .terminal-header {
+                padding: 0.8rem 1rem;
+            }
+            
+            .terminal-body {
+                padding: 1.5rem 1rem;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-bar {
+                gap: 1rem;
+            }
+            
+            .config-panel {
+                padding: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .status-bar {
+                font-size: 0.7rem;
+            }
+            
+            .led {
+                width: 8px;
+                height: 8px;
+            }
+            
+            .terminal-title {
+                letter-spacing: 2px;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">⬢ SECFERRO</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+        <div class="loading-text">INITIALIZING...</div>
+    </div>
+
+    <canvas class="matrix-bg" id="matrix"></canvas>
+    
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="terminal-title">
+                <span class="title-icon">⬢</span> SECFERRO DIVISION
+            </div>
+            <div class="status-bar">
+                <div class="status-indicator">
+                    <div class="led"></div>
+                    <span>QUANTUM</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="led blue"></div>
+                    <span id="sync-status">SYNC</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="led red"></div>
+                    <span id="voice-status">VOICE</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="terminal-body">
+            <div class="display-screen">
+                <div class="time-display" id="time-display">--:--:--</div>
+                <div class="poem-container">
+                    <div id="poem-display">System ready...</div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" id="voice-toggle">
+                    <span>
+                        🔊 LEKTOR
+                        <span class="tooltip">Włącz/wyłącz czytanie</span>
+                    </span>
+                </button>
+                <button class="btn" id="refresh-btn">
+                    <span>
+                        ↻ ODŚWIEŻ
+                        <span class="tooltip">Nowy wiersz</span>
+                    </span>
+                </button>
+                <button class="btn" id="config-btn">
+                    <span>
+                        ⚙ USTAWIENIA
+                        <span class="tooltip">Konfiguracja</span>
+                    </span>
+                </button>
+            </div>
+            
+            <div class="config-panel" id="configPanel" style="display: none;">
+                <div class="config-title">⚙ KONFIGURACJA SYSTEMU</div>
+                <div class="config-row">
+                    <div class="config-label">Język / Language</div>
+                    <button class="btn" id="lang-toggle" style="padding: 0.4rem 1rem; font-size: 0.75rem;">
+                        <span>🌐 PL</span>
+                    </button>
+                </div>
+                <div class="config-row">
+                    <div class="config-label">Auto-odczyt co minutę</div>
+                    <div class="toggle-switch" id="auto-read-toggle"></div>
+                </div>
+                <div class="config-row">
+                    <div class="config-label">Efekty dźwiękowe</div>
+                    <div class="toggle-switch active" id="sound-toggle"></div>
+                </div>
+                <div class="config-row">
+                    <div class="config-label">Szybkość pisania</div>
+                    <input type="range" min="10" max="100" value="30" id="speed-slider" 
+                           style="width: 120px; accent-color: var(--primary);">
+                </div>
+            </div>
+            
+            <div class="footer">
+                <div>SECFERRO DIVISION - KWANTOWY ZEGAR OPERACYJNY/div>
+                <div class="divider">KLASYFIKACJA: NIEZNANA NIKOMU- CREATED BY FERROART </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            language: 'pl',
+            voiceEnabled: false,
+            autoRead: false,
+            soundEnabled: true,
+            typingSpeed: 30
+        };
+
+        // DOM Elements
+        const loadingScreen = document.getElementById('loadingScreen');
+        const poemDisplay = document.getElementById('poem-display');
+        const timeDisplay = document.getElementById('time-display');
+        const voiceToggle = document.getElementById('voice-toggle');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const configBtn = document.getElementById('config-btn');
+        const configPanel = document.getElementById('configPanel');
+        const langToggle = document.getElementById('lang-toggle');
+        const voiceStatus = document.getElementById('voice-status');
+        const syncStatus = document.getElementById('sync-status');
+        const autoReadToggle = document.getElementById('auto-read-toggle');
+        const soundToggle = document.getElementById('sound-toggle');
+        const speedSlider = document.getElementById('speed-slider');
+
+        let currentMinute = -1;
+        let isTyping = false;
+        let speechSynthesis = window.speechSynthesis || null;
+        let currentUtterance = null;
+        let voicesLoaded = false;
+        let audioContext = null;
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                updateClock();
+            }, 2000);
+        });
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }
+
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const chars = '01FERROクケSECスセTIMERソ⬢◆◇';
+        const fontSize = 14;
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = Array(columns).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(5, 8, 20, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        function playSound(frequency = 440, duration = 0.1, type = 'sine') {
+            if (!CONFIG.soundEnabled || !audioContext) return;
+            
+            try {
+                initAudio();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.03, audioContext.currentTime + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (error) {
+                console.warn('Sound error:', error);
+            }
+        }
+
+        // Time formatting
+        function formatTime(date) {
+            return date.toLocaleTimeString('pl-PL', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false 
+            });
+        }
+
+        // Local poem generation with more variety
+        function generatePoemLocal(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            
+            const poemsTemplates = {
+                pl: [
+                    `Godzina ${timeString} na zegarze bije,\nW cyfrowej ciszy czas płynie.`,
+                    `Sekwencja ${timeString} w matrixy tkwi,\nKażda chwila w kodzie drzemie.`,
+                    `Terminal ${timeString} wskazuje czas,\nKwantowy zegar odmierza nasz pas.`,
+                    `O ${timeString} system się budzi,\nW SecFerro Division nikt nie zwleka, nie nudzi.`,
+                    `Czas ${timeString} w ciemności migocze,\nCyfrowe echo w przestrzeni łopoce.`,
+                    `${timeString} - moment zamrożony w czasie,\nW hakerskiej otchłani co się nie zgasi.`,
+                    `Zegar quantum, ${timeString} na ekranie,\nPrzyszłość i przeszłość w jednym kadrze.`,
+                    `W sieci czasu ${timeString} zapisane,\nSekundy płyną, spokojnie, dane.`
+                ],
+                en: [
+                    `Time shows ${timeString} clear and bright,\nIn digital silence through the night.`,
+                    `At ${timeString} the matrix flows,\nWhere quantum time forever glows.`,
+                    `Terminal reads ${timeString} today,\nSecure division lights the way.`,
+                    `Clock strikes ${timeString} in cyberspace,\nTime frozen in this darkened place.`
+                ]
+            };
+            
+            const templates = poemsTemplates[CONFIG.language] || poemsTemplates.pl;
+            return templates[Math.floor(Math.random() * templates.length)];
+        }
+
+        // Load and configure voices
+        function loadVoices() {
+            if (!speechSynthesis) return;
+            
+            try {
+                const voices = speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    voicesLoaded = true;
+                    console.log('Voices loaded:', voices.length);
+                }
+            } catch (error) {
+                console.warn('Cannot load voices:', error);
+            }
+        }
+
+        // Text-to-speech with better error handling
+        function speakText(text) {
+            if (!CONFIG.voiceEnabled || !speechSynthesis) return;
+            
+            try {
+                // Cancel any ongoing speech
+                if (currentUtterance) {
+                    speechSynthesis.cancel();
+                }
+                
+                const cleanText = text.replace(/\n/g, '. ').replace(/[⬢◆◇]/g, '');
+                currentUtterance = new SpeechSynthesisUtterance(cleanText);
+                
+                // Configure voice
+                if (voicesLoaded) {
+                    const voices = speechSynthesis.getVoices();
+                    let selectedVoice = null;
+                    
+                    if (CONFIG.language === 'pl') {
+                        selectedVoice = voices.find(v => 
+                            v.lang.startsWith('pl') || v.name.includes('Polish')
+                        );
+                    } else {
+                        selectedVoice = voices.find(v => 
+                            v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Microsoft'))
+                        );
+                    }
+                    
+                    if (selectedVoice) {
+                        currentUtterance.voice = selectedVoice;
+                    }
+                }
+                
+                currentUtterance.lang = CONFIG.language === 'pl' ? 'pl-PL' : 'en-US';
+                currentUtterance.rate = 0.85;
+                currentUtterance.pitch = 1;
+                currentUtterance.volume = 1;
+                
+                // Events
+                currentUtterance.onstart = () => {
+                    voiceStatus.textContent = 'SPEAKING';
+                };
+                
+                currentUtterance.onend = () => {
+                    voiceStatus.textContent = 'VOICE';
+                };
+                
+                currentUtterance.onerror = (event) => {
+                    console.warn('Speech error:', event);
+                    voiceStatus.textContent = 'ERROR';
+                    setTimeout(() => {
+                        voiceStatus.textContent = 'VOICE';
+                    }, 2000);
+                };
+                
+                speechSynthesis.speak(currentUtterance);
+                
+            } catch (error) {
+                console.warn('Speech synthesis error:', error);
+            }
+        }
+
+        // Typing animation with sound
+        async function typePoem(poem) {
+            isTyping = true;
+            poemDisplay.innerHTML = '';
+            syncStatus.textContent = 'TYPING';
+            
+            const speed = 150 - CONFIG.typingSpeed;
+            
+            for (let i = 0; i < poem.length; i++) {
+                poemDisplay.innerHTML = poem.substring(0, i + 1) + '<span class="typing-cursor"></span>';
+                
+                if (poem[i] !== ' ' && poem[i] !== '\n') {
+                    playSound(800 + Math.random() * 200, 0.05);
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, speed));
+            }
+            
+            poemDisplay.innerHTML = poem;
+            isTyping = false;
+            syncStatus.textContent = 'SYNC';
+
+            if (CONFIG.autoRead && CONFIG.voiceEnabled) {
+                setTimeout(() => speakText(poem), 300);
+            }
+        }
+
+        async function updateClock() {
+            const now = new Date();
+            const currentMinuteNow = now.getMinutes();
+            
+            timeDisplay.textContent = formatTime(now);
+            
+            if (currentMinuteNow !== currentMinute && !isTyping) {
+                currentMinute = currentMinuteNow;
+                const timeString = formatTime(now).substring(0, 5);
+                const poem = generatePoemLocal(timeString);
+                
+                playSound(1200, 0.2, 'triangle');
+                await typePoem(poem);
+            }
+        }
+
+        // Event listeners
+        voiceToggle.addEventListener('click', () => {
+            initAudio();
+            
+            if (!speechSynthesis) {
+                alert('Lektor nie jest dostępny w tej przeglądarce.\n\nTTS is not available in this browser.');
+                return;
+            }
+            
+            CONFIG.voiceEnabled = !CONFIG.voiceEnabled;
+            voiceToggle.classList.toggle('active');
+            voiceStatus.textContent = CONFIG.voiceEnabled ? 'ON' : 'OFF';
+            
+            playSound(CONFIG.voiceEnabled ? 1500 : 800, 0.15);
+            
+            if (!CONFIG.voiceEnabled && speechSynthesis) {
+                speechSynthesis.cancel();
+            }
+
+            if (CONFIG.voiceEnabled && voicesLoaded) {
+                const testText = CONFIG.language === 'pl' ? 
+                    'Lektor aktywowany' : 
+                    'Voice activated';
+                speakText(testText);
+            }
+        });
+
+        refreshBtn.addEventListener('click', () => {
+            initAudio();
+            playSound(1000, 0.15);
+            currentMinute = -1;
+            updateClock();
+        });
+
+        configBtn.addEventListener('click', () => {
+            initAudio();
+            playSound(900, 0.1);
+            const isVisible = configPanel.style.display !== 'none';
+            configPanel.style.display = isVisible ? 'none' : 'block';
+            configBtn.classList.toggle('active');
+        });
+
+        langToggle.addEventListener('click', () => {
+            playSound(1100, 0.1);
+            CONFIG.language = CONFIG.language === 'pl' ? 'en' : 'pl';
+            langToggle.querySelector('span').textContent = `🌐 ${CONFIG.language.toUpperCase()}`;
+            currentMinute = -1;
+
+            if (speechSynthesis) {
+                speechSynthesis.cancel();
+            }
+            
+            updateClock();
+        });
+
+        autoReadToggle.addEventListener('click', () => {
+            playSound(1000, 0.1);
+            CONFIG.autoRead = !CONFIG.autoRead;
+            autoReadToggle.classList.toggle('active');
+        });
+
+        soundToggle.addEventListener('click', () => {
+            CONFIG.soundEnabled = !CONFIG.soundEnabled;
+            soundToggle.classList.toggle('active');
+            if (CONFIG.soundEnabled) {
+                playSound(1200, 0.15);
+            }
+        });
+
+        speedSlider.addEventListener('input', (e) => {
+            CONFIG.typingSpeed = parseInt(e.target.value);
+            if (CONFIG.soundEnabled) {
+                playSound(800 + CONFIG.typingSpeed * 5, 0.05);
+            }
+        });
+
+        loadVoices();
+        
+        if (speechSynthesis) {
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = loadVoices;
+            }
+
+            setTimeout(loadVoices, 100);
+            setTimeout(loadVoices, 500);
+        }
+
+        setInterval(updateClock, 1000);
+        document.addEventListener('click', initAudio, { once: true });
+
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'v' || e.key === 'V') {
+                voiceToggle.click();
+            } else if (e.key === 'r' || e.key === 'R') {
+                refreshBtn.click();
+            } else if (e.key === 'c' || e.key === 'C') {
+                configBtn.click();
+            } else if (e.key === 'l' || e.key === 'L') {
+                langToggle.click();
+            }
+        });
+
+        console.log('%c⬢ SECFERRO DIVISION', 'color: #00ff41; font-size: 20px; font-weight: bold;');
+        console.log('%cQuantum Clock System Initialized', 'color: #00ff41; font-size: 12px;');
+        console.log('%cKeyboard shortcuts: V=Voice, R=Refresh, C=Config, L=Language', 'color: #00d4ff; font-size: 10px;');
+    </script>
+</body>
+</html>
