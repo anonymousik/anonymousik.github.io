@@ -2,20 +2,42 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecFerro Division - ZEGAR Z TWOJEJ PRZEGLĄDARKI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
+    <!-- SEO -->
+    <meta name="description" content="SecFerro Division - Professional Quantum Time Terminal with Unix Timestamp, ISO 8601 compliance, and military-grade cybersecurity features.">
+    <meta name="keywords" content="unix time, timestamp, quantum clock, cybersecurity, SecFerro, FerroART, ISO 8601, timezone">
+    <meta name="author" content="FerroART (Anonymousik) - SecFerro Division">
+    <meta name="theme-color" content="#00ff41">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23000' width='100' height='100'/%3E%3Cpath d='M50,15 L80,30 L80,60 Q80,75 50,82.5 Q20,75 20,60 L20,30 Z' fill='none' stroke='%2300ff41' stroke-width='3'/%3E%3C/svg%3E">
+    
+    <title>SecFerro Division - Quantum Time Terminal v4.0 | Unix Time & ISO 8601</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
-        
         :root {
             --primary: #00ff41;
             --secondary: #ff0055;
             --accent: #00d4ff;
             --dark: #0a0e27;
             --darker: #050814;
-            --glow: rgba(0, 255, 65, 0.4);
-            --red-glow: rgba(255, 0, 85, 0.3);
-            --blue-glow: rgba(0, 212, 255, 0.4);
+            --glow: rgba(0, 255, 65, 0.6);
         }
         
         * {
@@ -26,168 +48,79 @@
         
         body {
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: var(--darker);
+            background: #000;
             font-family: 'Share Tech Mono', monospace;
-            padding: 1rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* Loading Screen */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--darker);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        
-        .loading-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        
-        .loading-logo {
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(2rem, 5vw, 4rem);
-            font-weight: 900;
             color: var(--primary);
-            text-shadow: 0 0 30px var(--glow);
-            margin-bottom: 2rem;
-            animation: logoGlow 2s ease-in-out infinite;
+            overflow-x: hidden;
         }
         
-        @keyframes logoGlow {
-            0%, 100% { text-shadow: 0 0 30px var(--glow); }
-            50% { text-shadow: 0 0 60px var(--glow), 0 0 90px var(--glow); }
-        }
-        
-        .loading-bar {
-            width: 300px;
-            max-width: 80%;
-            height: 4px;
-            background: rgba(0, 255, 65, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .loading-progress {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            animation: loadProgress 2s ease-out forwards;
-            box-shadow: 0 0 20px var(--glow);
-        }
-        
-        @keyframes loadProgress {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-        
-        .loading-text {
-            margin-top: 1rem;
-            color: var(--primary);
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            animation: loadingDots 1.5s infinite;
-        }
-        
-        @keyframes loadingDots {
-            0%, 20% { content: 'INITIALIZING.'; }
-            40% { content: 'INITIALIZING..'; }
-            60%, 100% { content: 'INITIALIZING...'; }
-        }
-        
-        /* Animated background */
-        body::before {
-            content: '';
+        /* Background Effects */
+        .circuit-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 255, 65, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 0, 85, 0.03) 0%, transparent 50%);
-            animation: bgPulse 8s ease-in-out infinite;
-            pointer-events: none;
-        }
-        
-        @keyframes bgPulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-        
-        /* Matrix rain effect */
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
             opacity: 0.08;
+            background: 
+                linear-gradient(90deg, transparent 49%, var(--primary) 49%, var(--primary) 51%, transparent 51%),
+                linear-gradient(0deg, transparent 49%, var(--primary) 49%, var(--primary) 51%, transparent 51%);
+            background-size: 100px 100px;
             z-index: 0;
+            pointer-events: none;
         }
         
-        .terminal-container {
-            width: 100%;
-            max-width: 1000px;
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-            border: 2px solid var(--primary);
-            border-radius: 12px;
-            box-shadow: 
-                0 0 40px var(--glow),
-                0 0 80px rgba(0, 255, 65, 0.2),
-                inset 0 0 40px rgba(0, 0, 0, 0.5);
+        @media (prefers-reduced-motion: no-preference) {
+            .circuit-bg {
+                animation: circuitMove 40s linear infinite;
+            }
+        }
+        
+        @keyframes circuitMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+        
+        /* Main Container */
+        .main-container {
             position: relative;
             z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        /* Header */
+        .terminal-header {
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(5, 8, 20, 0.95));
+            border: 3px solid var(--primary);
+            border-radius: 16px 16px 0 0;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 0 40px var(--glow);
+            position: relative;
             overflow: hidden;
-            animation: containerEntry 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            transform-origin: center;
         }
         
-        @keyframes containerEntry {
-            0% {
-                opacity: 0;
-                transform: scale(0.9) translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-        
-        .terminal-container::before {
+        .terminal-header::before {
             content: '';
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: conic-gradient(
-                from 0deg,
-                transparent 0deg,
-                var(--primary) 10deg,
-                transparent 20deg,
-                transparent 340deg,
-                var(--primary) 350deg,
-                transparent 360deg
-            );
-            animation: borderRotate 8s linear infinite;
+            background: conic-gradient(from 0deg, transparent 0deg, var(--primary) 10deg, transparent 20deg);
             opacity: 0.3;
+        }
+        
+        @media (prefers-reduced-motion: no-preference) {
+            .terminal-header::before {
+                animation: borderRotate 10s linear infinite;
+            }
         }
         
         @keyframes borderRotate {
@@ -195,60 +128,34 @@
             100% { transform: rotate(360deg); }
         }
         
-        .terminal-container::after {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-            border-radius: 10px;
-            z-index: -1;
-        }
-        
-        .terminal-header {
-            background: rgba(0, 255, 65, 0.05);
-            border-bottom: 1px solid var(--primary);
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
+        .header-content {
             position: relative;
             z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-shield {
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(0 0 15px var(--glow));
         }
         
         .terminal-title {
             font-family: 'Orbitron', monospace;
             font-weight: 900;
-            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
             color: var(--primary);
-            text-shadow: 0 0 10px var(--glow);
+            text-shadow: 0 0 15px var(--glow);
             letter-spacing: 3px;
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-            animation: titleGlow 3s ease-in-out infinite;
-        }
-        
-        @keyframes titleGlow {
-            0%, 100% { text-shadow: 0 0 10px var(--glow); }
-            50% { text-shadow: 0 0 20px var(--glow), 0 0 30px var(--glow); }
-        }
-        
-        .title-icon {
-            display: inline-block;
-            animation: iconRotate 4s linear infinite;
-        }
-        
-        @keyframes iconRotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
         
         .status-bar {
+            position: relative;
+            z-index: 2;
             display: flex;
             gap: 1.5rem;
-            align-items: center;
             flex-wrap: wrap;
         }
         
@@ -256,14 +163,16 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 0.8rem;
-            color: var(--primary);
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            background: rgba(0, 255, 65, 0.05);
             transition: all 0.3s ease;
         }
         
         .status-indicator:hover {
+            background: rgba(0, 255, 65, 0.1);
             transform: translateY(-2px);
-            filter: brightness(1.3);
         }
         
         .led {
@@ -272,933 +181,1091 @@
             border-radius: 50%;
             background: var(--primary);
             box-shadow: 0 0 15px var(--glow);
-            animation: pulse 2s ease-in-out infinite;
-            position: relative;
         }
         
-        .led::after {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            border: 1px solid var(--primary);
-            opacity: 0;
-            animation: ripple 2s ease-out infinite;
+        @media (prefers-reduced-motion: no-preference) {
+            .led {
+                animation: pulse 2s ease-in-out infinite;
+            }
         }
         
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(0.95); }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
-        @keyframes ripple {
-            0% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(2);
-            }
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: rgba(5, 8, 20, 0.95);
+            border: 3px solid var(--primary);
+            border-top: none;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            position: relative;
         }
         
-        .led.red {
-            background: var(--secondary);
-            box-shadow: 0 0 15px var(--red-glow);
+        .nav-tabs::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
         }
         
-        .led.red::after {
-            border-color: var(--secondary);
+        .nav-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            border-right: 1px solid rgba(0, 255, 65, 0.2);
+            color: rgba(0, 255, 65, 0.6);
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
         }
         
-        .led.blue {
-            background: var(--accent);
-            box-shadow: 0 0 15px var(--blue-glow);
+        .nav-tab:last-child {
+            border-right: none;
         }
         
-        .led.blue::after {
+        .nav-tab:hover {
+            background: rgba(0, 255, 65, 0.05);
+            color: var(--primary);
+        }
+        
+        .nav-tab.active {
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--primary);
+            box-shadow: inset 0 -3px 0 var(--primary);
+        }
+        
+        .nav-tab::before {
+            content: attr(data-icon);
+            margin-right: 0.5rem;
+        }
+        
+        /* Content Area */
+        .content-area {
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(5, 8, 20, 0.95));
+            border: 3px solid var(--primary);
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+            padding: 2rem;
+            min-height: 600px;
+            box-shadow: 0 0 40px var(--glow);
+            backdrop-filter: blur(10px);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Clock Display */
+        .clock-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .main-clock {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: var(--primary);
+            text-shadow: 0 0 30px var(--glow), 0 0 60px var(--glow);
+            font-weight: 900;
+            letter-spacing: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .time-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .time-card {
+            background: rgba(0, 255, 65, 0.05);
+            border: 2px solid rgba(0, 255, 65, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .time-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--glow);
+            transform: translateY(-3px);
+        }
+        
+        .time-card-label {
+            font-size: 0.75rem;
+            color: rgba(0, 255, 65, 0.7);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .time-card-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        /* Unix Info Section */
+        .unix-info {
+            background: rgba(0, 212, 255, 0.05);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .unix-info h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 15px var(--blue-glow);
+        }
+        
+        .unix-info p {
+            line-height: 1.8;
+            color: rgba(0, 255, 65, 0.8);
+            margin-bottom: 1rem;
+        }
+        
+        .info-highlight {
+            background: rgba(0, 255, 65, 0.1);
+            padding: 1rem;
+            border-left: 4px solid var(--primary);
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        
+        /* Timezone Selector */
+        .timezone-selector {
+            margin: 2rem 0;
+        }
+        
+        .timezone-selector label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-family: 'Orbitron', monospace;
+            color: var(--primary);
+        }
+        
+        .timezone-selector select {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.8rem;
+            background: rgba(0, 255, 65, 0.05);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            color: var(--primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .timezone-selector select:hover {
+            background: rgba(0, 255, 65, 0.1);
+            box-shadow: 0 0 20px var(--glow);
+        }
+        
+        .timezone-selector select:focus {
+            outline: none;
             border-color: var(--accent);
         }
         
-        .terminal-body {
-            padding: clamp(2rem, 5vw, 3.5rem);
-            position: relative;
-            z-index: 2;
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
         
-        .display-screen {
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(0, 255, 65, 0.3);
-            border-radius: 8px;
-            padding: clamp(2rem, 5vw, 3rem);
+        .project-card {
+            background: rgba(0, 255, 65, 0.03);
+            border: 2px solid rgba(0, 255, 65, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
             position: relative;
-            min-height: 280px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+        
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 65, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .project-card:hover::before {
+            opacity: 1;
+        }
+        
+        .project-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--glow);
+            transform: translateY(-5px);
+        }
+        
+        .project-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        
+        .status-active { background: rgba(0, 255, 65, 0.2); color: var(--primary); }
+        .status-beta { background: rgba(0, 212, 255, 0.2); color: var(--accent); }
+        .status-experimental { background: rgba(255, 0, 85, 0.2); color: var(--secondary); }
+        
+        .project-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .project-desc {
+            font-size: 0.85rem;
+            color: rgba(0, 255, 65, 0.7);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .project-link {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 255, 65, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            color: var(--primary);
+            text-decoration: none;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
             transition: all 0.3s ease;
         }
         
-        .display-screen:hover {
-            border-color: rgba(0, 255, 65, 0.5);
-            box-shadow: inset 0 0 30px rgba(0, 255, 65, 0.05);
-        }
-        
-        /* Scanline effect */
-        .display-screen::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 255, 65, 0.03) 0px,
-                transparent 2px,
-                transparent 4px
-            );
-            pointer-events: none;
-            animation: scanline 8s linear infinite;
-        }
-        
-        @keyframes scanline {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(100%); }
-        }
-        
-        .display-screen::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(0, 255, 65, 0.1),
-                transparent
-            );
-            animation: shine 3s ease-in-out infinite;
-        }
-        
-        @keyframes shine {
-            0% { left: -100%; }
-            50%, 100% { left: 100%; }
-        }
-        
-        .time-display {
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
-            color: var(--primary);
-            text-align: center;
-            margin-bottom: 2rem;
-            text-shadow: 0 0 30px var(--glow);
-            font-weight: 700;
-            letter-spacing: 0.5rem;
-            animation: timeGlow 2s ease-in-out infinite;
-            position: relative;
-            z-index: 1;
-        }
-        
-        @keyframes timeGlow {
-            0%, 100% {
-                text-shadow: 
-                    0 0 20px var(--glow),
-                    0 0 30px var(--glow);
-            }
-            50% {
-                text-shadow: 
-                    0 0 30px var(--glow),
-                    0 0 50px var(--glow),
-                    0 0 70px var(--glow);
-            }
-        }
-        
-        .poem-container {
-            position: relative;
-            z-index: 1;
-            min-height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        #poem-display {
-            color: var(--primary);
-            font-size: clamp(1.1rem, 2.8vw, 1.4rem);
-            line-height: 1.9;
-            text-align: center;
-            text-shadow: 0 0 20px var(--glow);
-            white-space: pre-line;
-            font-family: 'Share Tech Mono', monospace;
-            animation: poemFadeIn 0.5s ease-out;
-        }
-        
-        @keyframes poemFadeIn {
-            0% {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .typing-cursor {
-            display: inline-block;
-            width: 3px;
-            height: 1.3em;
+        .project-link:hover {
             background: var(--primary);
-            margin-left: 3px;
-            animation: cursorBlink 0.8s infinite;
-            box-shadow: 0 0 10px var(--glow);
-            vertical-align: middle;
+            color: #000;
+            box-shadow: 0 0 20px var(--glow);
         }
         
-        @keyframes cursorBlink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
+        /* About Section */
+        .about-section {
+            line-height: 1.8;
         }
         
-        .controls {
-            margin-top: 2.5rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .btn {
-            background: rgba(0, 255, 65, 0.1);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 0.8rem 1.5rem;
+        .about-section h2 {
             font-family: 'Orbitron', monospace;
-            font-size: 0.85rem;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            position: relative;
-            overflow: hidden;
-            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 15px var(--blue-glow);
         }
         
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(0, 255, 65, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease;
+        .about-section h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin: 2rem 0 1rem 0;
         }
         
-        .btn:hover::before {
-            width: 400px;
-            height: 400px;
-        }
-        
-        .btn:hover {
-            background: rgba(0, 255, 65, 0.2);
-            box-shadow: 0 0 30px var(--glow);
-            transform: translateY(-3px) scale(1.02);
-            border-color: var(--primary);
-        }
-        
-        .btn:active {
-            transform: translateY(-1px) scale(0.98);
-        }
-        
-        .btn span {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-        
-        .btn.active {
-            background: var(--primary);
-            color: var(--darker);
-            box-shadow: 
-                0 0 40px var(--glow),
-                0 5px 15px rgba(0, 0, 0, 0.3);
-            border-color: var(--primary);
-            animation: activeButton 2s ease-in-out infinite;
-        }
-        
-        @keyframes activeButton {
-            0%, 100% {
-                box-shadow: 
-                    0 0 40px var(--glow),
-                    0 5px 15px rgba(0, 0, 0, 0.3);
-            }
-            50% {
-                box-shadow: 
-                    0 0 60px var(--glow),
-                    0 0 80px rgba(0, 255, 65, 0.3),
-                    0 5px 15px rgba(0, 0, 0, 0.3);
-            }
-        }
-        
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        
-        .config-panel {
-            margin-top: 2rem;
-            background: rgba(0, 255, 65, 0.03);
-            border: 1px solid rgba(0, 255, 65, 0.2);
-            border-radius: 6px;
+        .mission-box {
+            background: rgba(0, 212, 255, 0.05);
+            border-left: 4px solid var(--accent);
             padding: 1.5rem;
-            animation: slideDown 0.5s ease-out;
+            margin: 2rem 0;
+            border-radius: 4px;
         }
         
-        @keyframes slideDown {
-            0% {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .author-card {
+            background: rgba(0, 255, 65, 0.05);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
         }
         
-        .config-title {
-            font-family: 'Orbitron', monospace;
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            background: rgba(0, 255, 65, 0.05);
+            border: 2px solid rgba(0, 255, 65, 0.3);
+            border-radius: 8px;
             color: var(--primary);
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 700;
-        }
-        
-        .config-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid rgba(0, 255, 65, 0.1);
-        }
-        
-        .config-row:last-child {
-            border-bottom: none;
-        }
-        
-        .config-label {
-            color: rgba(0, 255, 65, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
             font-size: 0.9rem;
         }
         
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 26px;
+        .social-link:hover {
+            border-color: var(--primary);
             background: rgba(0, 255, 65, 0.1);
-            border: 1px solid var(--primary);
-            border-radius: 13px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            box-shadow: 0 0 20px var(--glow);
+            transform: translateX(5px);
         }
         
-        .toggle-switch::before {
-            content: '';
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--primary);
-            top: 3px;
-            left: 3px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 10px var(--glow);
+        /* Footer */
+        .terminal-footer {
+            background: linear-gradient(135deg, rgba(5, 8, 20, 0.98), rgba(10, 14, 39, 0.98));
+            border: 3px solid var(--primary);
+            border-radius: 16px;
+            margin-top: 3rem;
+            padding: 3rem 2rem 2rem 2rem;
+            box-shadow: 0 0 40px var(--glow);
         }
         
-        .toggle-switch.active {
-            background: var(--primary);
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
         }
         
-        .toggle-switch.active::before {
-            left: 27px;
-            background: var(--darker);
-        }
-        
-        .footer {
-            margin-top: 2.5rem;
-            text-align: center;
-            color: rgba(0, 255, 65, 0.5);
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            animation: footerGlow 4s ease-in-out infinite;
-        }
-        
-        @keyframes footerGlow {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 0.8; }
-        }
-        
-        .divider {
-            margin-top: 0.5rem;
-            opacity: 0.7;
-        }
-        
-        /* Tooltip */
-        .tooltip {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%) translateY(-10px);
-            background: var(--darker);
+        .footer-section h4 {
+            font-family: 'Orbitron', monospace;
             color: var(--primary);
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
-            border: 1px solid var(--primary);
-            z-index: 1000;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--glow);
         }
         
-        .btn:hover .tooltip {
-            opacity: 1;
-            transform: translateX(-50%) translateY(-5px);
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: rgba(0, 255, 65, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--glow);
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 2px solid rgba(0, 255, 65, 0.2);
+            padding-top: 2rem;
+            text-align: center;
+        }
+        
+        .footer-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            color: var(--accent);
+            font-weight: 900;
+            text-shadow: 0 0 20px var(--blue-glow);
+            margin-bottom: 1rem;
+        }
+        
+        .footer-copyright {
+            color: rgba(0, 255, 65, 0.6);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        
+        .footer-signature {
+            margin-top: 1rem;
+            font-family: 'Orbitron', monospace;
+            color: var(--primary);
+            font-size: 0.9rem;
         }
         
         /* Responsive */
         @media (max-width: 768px) {
             .terminal-header {
-                padding: 0.8rem 1rem;
+                padding: 1rem;
             }
             
-            .terminal-body {
-                padding: 1.5rem 1rem;
+            .content-area {
+                padding: 1.5rem;
             }
             
-            .controls {
+            .nav-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+            
+            .nav-tab {
+                min-width: 100px;
+                font-size: 0.75rem;
+                padding: 0.8rem 0.5rem;
+            }
+            
+            .time-info-grid {
                 grid-template-columns: 1fr;
             }
             
-            .status-bar {
-                gap: 1rem;
+            .projects-grid {
+                grid-template-columns: 1fr;
             }
             
-            .config-panel {
-                padding: 1rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .status-bar {
-                font-size: 0.7rem;
-            }
-            
-            .led {
-                width: 8px;
-                height: 8px;
-            }
-            
-            .terminal-title {
-                letter-spacing: 2px;
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
             }
         }
         
         @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
+            *, *::before, *::after {
                 animation-duration: 0.01ms !important;
                 animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-logo">⬢ SECFERRO</div>
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
-        </div>
-        <div class="loading-text">INITIALIZING...</div>
-    </div>
-
-    <canvas class="matrix-bg" id="matrix"></canvas>
+    <div class="circuit-bg"></div>
     
-    <div class="terminal-container">
-        <div class="terminal-header">
-            <div class="terminal-title">
-                <span class="title-icon">⬢</span> SECFERRO DIVISION
+    <div class="main-container">
+        <!-- Header -->
+        <header class="terminal-header">
+            <div class="header-content">
+                <svg class="logo-shield" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <path d="M50,10 L85,25 L85,60 Q85,80 50,90 Q15,80 15,60 L15,25 Z" 
+                          fill="none" stroke="#00ff41" stroke-width="3" filter="url(#glow)"/>
+                    <circle cx="50" cy="50" r="15" fill="none" stroke="#00d4ff" stroke-width="2" filter="url(#glow)"/>
+                </svg>
+                <h1 class="terminal-title">SECFERRO DIVISION</h1>
             </div>
             <div class="status-bar">
                 <div class="status-indicator">
-                    <div class="led"></div>
+                    <span class="led"></span>
                     <span>QUANTUM</span>
                 </div>
                 <div class="status-indicator">
-                    <div class="led blue"></div>
-                    <span id="sync-status">SYNC</span>
+                    <span class="led" style="background: #00d4ff;"></span>
+                    <span>UNIX</span>
                 </div>
                 <div class="status-indicator">
-                    <div class="led red"></div>
-                    <span id="voice-status">VOICE</span>
+                    <span class="led" style="background: #ff0055;"></span>
+                    <span>ISO 8601</span>
                 </div>
             </div>
-        </div>
+        </header>
         
-        <div class="terminal-body">
-            <div class="display-screen">
-                <div class="time-display" id="time-display">--:--:--</div>
-                <div class="poem-container">
-                    <div id="poem-display">System ready...</div>
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" role="tablist">
+            <button class="nav-tab active" data-tab="clock" data-icon="🕐" role="tab">Clock</button>
+            <button class="nav-tab" data-tab="unix" data-icon="⏱️" role="tab">Unix Time</button>
+            <button class="nav-tab" data-tab="projects" data-icon="🚀" role="tab">Projects</button>
+            <button class="nav-tab" data-tab="about" data-icon="🛡️" role="tab">About</button>
+        </nav>
+        
+        <!-- Content Area -->
+        <main class="content-area">
+            <!-- Clock Tab -->
+            <div id="clock" class="tab-content active">
+                <div class="clock-section">
+                    <div class="main-clock" id="mainClock">00:00:00</div>
+                    
+                    <div class="time-info-grid">
+                        <div class="time-card">
+                            <div class="time-card-label">Date</div>
+                            <div class="time-card-value" id="dateDisplay">--</div>
+                        </div>
+                        <div class="time-card">
+                            <div class="time-card-label">ISO 8601</div>
+                            <div class="time-card-value" id="isoDisplay">--</div>
+                        </div>
+                        <div class="time-card">
+                            <div class="time-card-label">Unix Timestamp</div>
+                            <div class="time-card-value" id="unixDisplay">--</div>
+                        </div>
+                        <div class="time-card">
+                            <div class="time-card-label">Timezone</div>
+                            <div class="time-card-value" id="timezoneDisplay">--</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timezone-selector">
+                        <label for="tzSelect">Select Timezone:</label>
+                        <select id="tzSelect">
+                            <option value="auto">Auto-detect</option>
+                            <option value="UTC">UTC (Universal Time)</option>
+                            <option value="Europe/Warsaw">Europe/Warsaw (CET/CEST)</option>
+                            <option value="America/New_York">America/New_York (EST/EDT)</option>
+                            <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
+                            <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                            <option value="Australia/Sydney">Australia/Sydney (AEDT)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="poemContainer" style="text-align: center; margin: 2rem 0;">
+                    <p id="poemDisplay" style="font-size: 1.2rem; line-height: 2; color: var(--primary); text-shadow: 0 0 20px var(--glow);">Czas płynie w kwantowym tańcu...</p>
                 </div>
             </div>
             
-            <div class="controls">
-                <button class="btn" id="voice-toggle">
-                    <span>
-                        🔊 LEKTOR
-                        <span class="tooltip">Włącz/wyłącz czytanie</span>
-                    </span>
-                </button>
-                <button class="btn" id="refresh-btn">
-                    <span>
-                        ↻ ODŚWIEŻ
-                        <span class="tooltip">Nowy wiersz</span>
-                    </span>
-                </button>
-                <button class="btn" id="config-btn">
-                    <span>
-                        ⚙ USTAWIENIA
-                        <span class="tooltip">Konfiguracja</span>
-                    </span>
-                </button>
+            <!-- Unix Time Tab -->
+            <div id="unix" class="tab-content">
+                <div class="unix-info">
+                    <h3>📜 Historia Unix Time</h3>
+                    <p>Unix Time (znany również jako POSIX time lub Epoch time) to system liczenia czasu używany w systemach Unix i innych komputerowych systemach operacyjnych.</p>
+                    
+                    <div class="info-highlight">
+                        <strong>Definicja:</strong> Unix Time to liczba sekund, która upłynęła od 1 stycznia 1970 roku, godzina 00:00:00 UTC (tzw. "Unix Epoch").
+                    </div>
+                    
+                    <h3>🎯 Geneza i Pochodzenie</h3>
+                    <p>System Unix Time został wprowadzony wraz z systemem operacyjnym Unix w latach 70. XX wieku. Twórcy systemu Unix - Ken Thompson i Dennis Ritchie w Bell Labs - potrzebowali prostego sposobu reprezentowania czasu w systemie komputerowym.</p>
+                    
+                    <div class="info-highlight">
+                        <strong>Dlaczego 1 stycznia 1970?</strong><br>
+                        Data ta została wybrana jako "Unix Epoch" ponieważ:
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li>Unix był rozwijany pod koniec lat 60., a rok 1970 był wygodnym okrągłym punktem startowym</li>
+                            <li>Pozwalało to na reprezentację dat z przeszłości (przed 1970) jako liczb ujemnych</li>
+                            <li>Rok 1970 stał się standardem de facto w świecie informatyki</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>💻 Zastosowanie w Programowaniu</h3>
+                    <p>Unix Time jest powszechnie używany przez programistów ponieważ:</p>
+                    <ul style="margin-left: 2rem; line-height: 2;">
+                        <li><strong>Prostota:</strong> Jedna liczba całkowita reprezentuje moment w czasie</li>
+                        <li><strong>Niezależność od strefy czasowej:</strong> Zawsze w UTC</li>
+                        <li><strong>Łatwość obliczeń:</strong> Różnica czasu to zwykłe odejmowanie</li>
+                        <li><strong>Uniwersalność:</strong> Wspierany przez wszystkie główne języki programowania</li>
+                    </ul>
+                    
+                    <div class="info-highlight">
+                        <strong>Problem Roku 2038 ("Y2K38"):</strong><br>
+                        Na systemach 32-bitowych Unix Time osiągnie maksymalną wartość (2,147,483,647) w dniu 19 stycznia 2038 o 03:14:07 UTC, co spowoduje przepełnienie. Systemy 64-bitowe rozwiązują ten problem, umożliwiając reprezentację dat do roku 292 miliardów n.e.
+                    </div>
+                    
+                    <h3>🌐 ISO 8601 - Międzynarodowy Standard</h3>
+                    <p>ISO 8601 to międzynarodowy standard reprezentacji daty i czasu, wprowadzony w 1988 roku przez Międzynarodową Organizację Normalizacyjną (ISO).</p>
+                    
+                    <div class="info-highlight">
+                        <strong>Format ISO 8601:</strong> YYYY-MM-DDTHH:MM:SS±HH:MM<br>
+                        Przykład: 2024-11-07T20:30:45+01:00
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li>YYYY - rok (4 cyfry)</li>
+                            <li>MM - miesiąc (01-12)</li>
+                            <li>DD - dzień (01-31)</li>
+                            <li>T - separator czasu</li>
+                            <li>HH:MM:SS - czas (godzina:minuta:sekunda)</li>
+                            <li>±HH:MM - offset strefy czasowej</li>
+                        </ul>
+                    </div>
+                    
+                    <p style="margin-top: 1rem;">ISO 8601 eliminuje niejednoznaczności w formatach daty (np. czy 01/02/03 to 1 luty 2003, czy 2 stycznia 2003?) i jest standardem w komunikacji międzynarodowej, API, bazach danych i wymianie danych.</p>
+                </div>
             </div>
             
-            <div class="config-panel" id="configPanel" style="display: none;">
-                <div class="config-title">⚙ KONFIGURACJA SYSTEMU</div>
-                <div class="config-row">
-                    <div class="config-label">Język / Language</div>
-                    <button class="btn" id="lang-toggle" style="padding: 0.4rem 1rem; font-size: 0.75rem;">
-                        <span>🌐 PL</span>
-                    </button>
-                </div>
-                <div class="config-row">
-                    <div class="config-label">Auto-odczyt co minutę</div>
-                    <div class="toggle-switch" id="auto-read-toggle"></div>
-                </div>
-                <div class="config-row">
-                    <div class="config-label">Efekty dźwiękowe</div>
-                    <div class="toggle-switch active" id="sound-toggle"></div>
-                </div>
-                <div class="config-row">
-                    <div class="config-label">Szybkość pisania</div>
-                    <input type="range" min="10" max="100" value="30" id="speed-slider" 
-                           style="width: 120px; accent-color: var(--primary);">
+            <!-- Projects Tab -->
+            <div id="projects" class="tab-content">
+                <h2 style="font-family: 'Orbitron', monospace; color: var(--primary); margin-bottom: 2rem; text-align: center; font-size: 2rem;">🚀 FerroART Projects Portfolio</h2>
+                
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <span class="project-status status-active">ACTIVE</span>
+                        <h3 class="project-title">SecFerro Quantum Time</h3>
+                        <p class="project-desc">Advanced quantum time terminal with Unix timestamp, ISO 8601 support, and military-grade cybersecurity features.</p>
+                        <a href="https://anonymousik.is-a.dev/zegar-secferro" class="project-link" target="_blank">VISIT →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-active">ACTIVE</span>
+                        <h3 class="project-title">Ultimate Android Control Center</h3>
+                        <p class="project-desc">AI-powered platform for Android rooting, optimization, and unlocking hidden device capabilities with self-healing architecture.</p>
+                        <a href="https://anonymousik.is-a.dev/adbhub.html" class="project-link" target="_blank">EXPLORE →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-active">ACTIVE</span>
+                        <h3 class="project-title">SecFerro E-OPS</h3>
+                        <p class="project-desc">Interactive CyberSecurity web game teaching penetration testing, ethical hacking, and network security concepts.</p>
+                        <a href="https://anonymousik.is-a.dev/secferro" class="project-link" target="_blank">PLAY →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-beta">BETA</span>
+                        <h3 class="project-title">SecFerro GRUB Manager</h3>
+                        <p class="project-desc">Advanced bootloader management system with custom themes and multi-OS boot configuration.</p>
+                        <a href="https://anonymousik.is-a.dev/secferro_grub" class="project-link" target="_blank">ACCESS →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-active">ACTIVE</span>
+                        <h3 class="project-title">SecFerro QR Transfer</h3>
+                        <p class="project-desc">Secure file transfer system using QR codes with end-to-end encryption for safe data exchange.</p>
+                        <a href="https://anonymousik.is-a.dev/SecFerro-QR-Transfer/" class="project-link" target="_blank">TRANSFER →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-active">ACTIVE</span>
+                        <h3 class="project-title">PPM Project Manager</h3>
+                        <p class="project-desc">Professional project and portfolio management system for tracking development progress and milestones.</p>
+                        <a href="https://anonymousik.is-a.dev/ppm_1" class="project-link" target="_blank">MANAGE →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-active">ACTIVE</span>
+                        <h3 class="project-title">SecFerro App Portal</h3>
+                        <p class="project-desc">Centralized application hub for accessing all SecFerro Division tools and services in one place.</p>
+                        <a href="https://anonymousik.is-a.dev/secferro-app" class="project-link" target="_blank">LAUNCH →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-beta">BETA</span>
+                        <h3 class="project-title">Update Panel & Battery Monitor</h3>
+                        <p class="project-desc">Real-time system monitoring dashboard with battery statistics, performance metrics, and update management.</p>
+                        <a href="https://anonymousik.is-a.dev/UpdatePanel_BatteryMonitor" class="project-link" target="_blank">MONITOR →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-active">ACTIVE</span>
+                        <h3 class="project-title">Dynamic Loader System</h3>
+                        <p class="project-desc">Advanced content loading system with progress tracking and modular resource management.</p>
+                        <a href="https://anonymousik.is-a.dev/loader" class="project-link" target="_blank">LOAD →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-active">ACTIVE</span>
+                        <h3 class="project-title">Ferro SEO 2025</h3>
+                        <p class="project-desc">Next-generation SEO optimization toolkit with AI-powered content analysis and ranking strategies.</p>
+                        <a href="https://anonymousik.is-a.dev/ferro-seo2025" class="project-link" target="_blank">OPTIMIZE →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-active">ACTIVE</span>
+                        <h3 class="project-title">UBecz Blocker</h3>
+                        <p class="project-desc">Privacy-focused ad and tracker blocker with advanced filtering rules and customizable block lists.</p>
+                        <a href="https://anonymousik.is-a.dev/ubeczblocker" class="project-link" target="_blank">PROTECT →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-experimental">EXPERIMENTAL</span>
+                        <h3 class="project-title">SecFerro Division HQ</h3>
+                        <p class="project-desc">Experimental headquarters site showcasing the full SecFerro ecosystem and division structure.</p>
+                        <a href="https://sites.google.com/view/welcomeinsecferrodivision/strona-g%C5%82%C3%B3wna" class="project-link" target="_blank">EXPLORE →</a>
+                    </div>
+                    
+                    <div class="project-card">
+                        <span class="project-status status-beta">BETA</span>
+                        <h3 class="project-title">SecFerro Riddle Game</h3>
+                        <p class="project-desc">Interactive puzzle and riddle game testing cybersecurity knowledge and logical thinking skills.</p>
+                        <a href="https://anonymousik.is-a.dev/zagadka" class="project-link" target="_blank">SOLVE →</a>
+                    </div>
                 </div>
             </div>
             
-            <div class="footer">
-                <div>SECFERRO DIVISION - KWANTOWY ZEGAR OPERACYJNY/div>
-                <div class="divider">KLASYFIKACJA: NIEZNANA NIKOMU- CREATED BY FERROART </div>
+            <!-- About Tab -->
+            <div id="about" class="tab-content">
+                <div class="about-section">
+                    <h2>🛡️ O SecFerro Division</h2>
+                    
+                    <div class="mission-box">
+                        <h3 style="color: var(--accent); margin-top: 0;">Misja</h3>
+                        <p>SecFerro Division to elitarna jednostka cyberbezpieczeństwa dedykowana tworzeniu zaawansowanych narzędzi i aplikacji zabezpieczających cyfrowy świat. Nasza misja to:</p>
+                        <ul style="margin-left: 2rem; line-height: 2;">
+                            <li>🔒 Ochrona danych i prywatności użytkowników w erze cyfrowej</li>
+                            <li>🛡️ Tworzenie innowacyjnych rozwiązań cybersecurity na światowym poziomie</li>
+                            <li>💻 Edukacja w zakresie bezpieczeństwa informatycznego i ethical hacking</li>
+                            <li>🌐 Budowanie otwartego ekosystemu narzędzi open-source</li>
+                            <li>⚡ Łączenie zaawansowanej technologii z intuicyjnym designem</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>🎯 Wartości SecFerro</h3>
+                    <p>Działamy zgodnie z zasadami:</p>
+                    <ul style="margin-left: 2rem; line-height: 2;">
+                        <li><strong>Anonimowość:</strong> Prywatność użytkownika jest święta</li>
+                        <li><strong>Transparentność:</strong> Open-source i jasne zasady działania</li>
+                        <li><strong>Doskonałość:</strong> Najwyższe standardy jakości kodu (ISO 27001, OWASP)</li>
+                        <li><strong>Innowacja:</strong> Ciągłe poszukiwanie nowych rozwiązań</li>
+                        <li><strong>Społeczność:</strong> Wspólne budowanie bezpieczniejszego internetu</li>
+                    </ul>
+                    
+                    <h3>🎨 Filozofia Design</h3>
+                    <p>Wszystkie projekty SecFerro charakteryzują się:</p>
+                    <ul style="margin-left: 2rem; line-height: 2;">
+                        <li>Cyberpunk aesthetic inspirowany kulturą hakerską</li>
+                        <li>Funkcjonalność ponad formę (ale forma też ma znaczenie!)</li>
+                        <li>Dark mode jako standard (jasny tryb to opcja)</li>
+                        <li>Neon green (#00ff41) jako kolor przewodni - symbol "dostępu udzielonego"</li>
+                        <li>Terminal-style interfaces przypominające klasyczne systemy Unix</li>
+                    </ul>
+                    
+                    <div class="author-card">
+                        <h2>👤 O Autorze - FerroART</h2>
+                        <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                            <strong>Ⱥ🅽ටꈤYMටꪊSƗꀘ</strong> (FerroART) - Nieznany Nikomu twórca SecFerro Division
+                        </p>
+                        
+                        <p>Multidyscyplinarny twórca łączący:</p>
+                        <ul style="margin-left: 2rem; line-height: 2; margin-bottom: 1.5rem;">
+                            <li>🔐 <strong>CyberSecurity:</strong> Ethical hacking, penetration testing, security audits</li>
+                            <li>💻 <strong>Full-Stack Development:</strong> Od frontend po backend i DevOps</li>
+                            <li>🎵 <strong>Music Production:</strong> Electronic, cyberpunk soundscapes</li>
+                            <li>👔 <strong>Fashion & Design:</strong> Cyberpunk aesthetic, digital art</li>
+                            <li>🎬 <strong>Content Creation:</strong> YouTube, TikTok, social media</li>
+                        </ul>
+                        
+                        <p style="font-style: italic; color: var(--accent); text-align: center; font-size: 1.2rem; margin: 2rem 0;">
+                            "IN THE WORLD FULL OF CLOWNS - BE A JOKER"
+                        </p>
+                        
+                        <h3>📧 Kontakt</h3>
+                        <div class="social-grid">
+                            <a href="mailto:nieznanynikomuu@gmail.com" class="social-link" target="_blank">
+                                ✉️ Business Email
+                            </a>
+                            <a href="mailto:im@anonymllousik.is-a.dev" class="social-link" target="_blank">
+                                📧 Official Email
+                            </a>
+                            <a href="https://m.me/FerroARTy" class="social-link" target="_blank">
+                                💬 LiveChat Messenger
+                            </a>
+                        </div>
+                        
+                        <h3 style="margin-top: 2rem;">🌐 Social Media</h3>
+                        <div class="social-grid">
+                            <a href="https://www.youtube.com/@ferroart?sub_confirmation=1" class="social-link" target="_blank">
+                                🎬 YouTube Main
+                            </a>
+                            <a href="https://www.youtube.com/@ferroart-shorts?sub_confirmation=1" class="social-link" target="_blank">
+                                📱 YouTube Shorts
+                            </a>
+                            <a href="https://tiktok.com/@FerroARTy" class="social-link" target="_blank">
+                                🎵 TikTok
+                            </a>
+                            <a href="https://facebook.com/ferroarty" class="social-link" target="_blank">
+                                📘 Facebook
+                            </a>
+                            <a href="https://instagram.com/ferroarty" class="social-link" target="_blank">
+                                📷 Instagram
+                            </a>
+                            <a href="https://bandlab.com/ferroart" class="social-link" target="_blank">
+                                🎼 BandLab Music
+                            </a>
+                        </div>
+                        
+                        <h3 style="margin-top: 2rem;">💻 Development</h3>
+                        <div class="social-grid">
+                            <a href="https://github.com/anonymousik" class="social-link" target="_blank">
+                                💻 GitHub
+                            </a>
+                            <a href="https://anonymllousik.is-a.dev" class="social-link" target="_blank">
+                                🌐 Official Website
+                            </a>
+                            <a href="https://m.me/DukatMaker" class="social-link" target="_blank">
+                                🎨 Dukat Maker
+                            </a>
+                        </div>
+                        
+                        <h3 style="margin-top: 2rem;">☕ Wsparcie</h3>
+                        <div class="social-grid">
+                            <a href="https://buymeacoffee.com/anonymousx6f" class="social-link" target="_blank">
+                                ☕ Buy Me a Cookie
+                            </a>
+                            <a href="https://tipo.live/p/nieznany-nikomu" class="social-link" target="_blank">
+                                💝 Tipo Live
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="terminal-footer">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>🚀 Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="#clock">Quantum Clock</a></li>
+                        <li><a href="#unix">Unix Time Info</a></li>
+                        <li><a href="#projects">Projects Portfolio</a></li>
+                        <li><a href="#about">About SecFerro</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>📚 Documentation</h4>
+                    <ul class="footer-links">
+                        <li><a href="/README.md" target="_blank">User Guide</a></li>
+                        <li><a href="/CHANGELOG.md" target="_blank">Changelog</a></li>
+                        <li><a href="/DEPLOYMENT.md" target="_blank">Deployment Guide</a></li>
+                        <li><a href="/SEO-GUIDE.md" target="_blank">SEO Strategy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>🔒 Legal & Info</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://anonymousik.is-a.dev/regulamin_ferroit.htm" target="_blank">Terms of Service</a></li>
+                        <li><a href="#" target="_blank">Privacy Policy</a></li>
+                        <li><a href="#" target="_blank">License (MIT)</a></li>
+                        <li><a href="https://github.com/anonymousik" target="_blank">Source Code</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>🌐 SecFerro Ecosystem</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://anonymousik.is-a.dev/secferro" target="_blank">SecFerro E-OPS</a></li>
+                        <li><a href="https://anonymousik.is-a.dev/adbhub.html" target="_blank">Android Control</a></li>
+                        <li><a href="https://anonymousik.is-a.dev/ferro-seo2025" target="_blank">Ferro SEO 2025</a></li>
+                        <li><a href="https://sites.google.com/view/welcomeinsecferrodivision" target="_blank">Division HQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-logo">🛡️ SECFERRO DIVISION</div>
+                <div class="footer-copyright">
+                    <p>© 2025 FerroART® - All Rights Reserved</p>
+                    <p>Created by <strong>Ⱥ🅽ටꈤYMටꪊSƗꀘ</strong> (千乇尺尺ට)</p>
+                    <p class="footer-signature">ꈤ¡ꫀzꈤꪖꈤy - ⌬ - ꈤ¡ꀘꪮꪑꪊ</p>
+                    <p style="margin-top: 1rem; font-size: 0.8rem;">
+                        Quantum Time Terminal v4.0 | ISO 27001 Compliant | WCAG 2.1 AA<br>
+                        Built with ❤️ for hackers, by hackers
+                    </p>
+                </div>
+            </div>
+        </footer>
     </div>
-
+    
     <script>
-        // Configuration
-        const CONFIG = {
-            language: 'pl',
-            voiceEnabled: false,
-            autoRead: false,
-            soundEnabled: true,
-            typingSpeed: 30
-        };
-
-        // DOM Elements
-        const loadingScreen = document.getElementById('loadingScreen');
-        const poemDisplay = document.getElementById('poem-display');
-        const timeDisplay = document.getElementById('time-display');
-        const voiceToggle = document.getElementById('voice-toggle');
-        const refreshBtn = document.getElementById('refresh-btn');
-        const configBtn = document.getElementById('config-btn');
-        const configPanel = document.getElementById('configPanel');
-        const langToggle = document.getElementById('lang-toggle');
-        const voiceStatus = document.getElementById('voice-status');
-        const syncStatus = document.getElementById('sync-status');
-        const autoReadToggle = document.getElementById('auto-read-toggle');
-        const soundToggle = document.getElementById('sound-toggle');
-        const speedSlider = document.getElementById('speed-slider');
-
-        let currentMinute = -1;
-        let isTyping = false;
-        let speechSynthesis = window.speechSynthesis || null;
-        let currentUtterance = null;
-        let voicesLoaded = false;
-        let audioContext = null;
-
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                loadingScreen.classList.add('hidden');
-                updateClock();
-            }, 2000);
-        });
-
-        function initAudio() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-        }
-
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        const chars = '01FERROクケSECスセTIMERソ⬢◆◇';
-        const fontSize = 14;
-        let columns = Math.floor(canvas.width / fontSize);
-        let drops = Array(columns).fill(1);
-
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(5, 8, 20, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#00ff41';
-            ctx.font = fontSize + 'px monospace';
-            
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        // ============================================
+        // SECFERRO QUANTUM TIME v4.0
+        // Ultimate Professional Edition
+        // ============================================
+        
+        class QuantumTimeV4 {
+            constructor() {
+                this.currentTimezone = 'auto';
+                this.poems = [
+                    "Czas płynie w kwantowym tańcu...\nSekundy migoczą jak gwiazdy w matrixie.",
+                    "Unix Epoch - początek cyfrowej ery,\nOd 1970 liczymy każdą sekundę.",
+                    "W cieniu sieci, chronieni tarczą,\nKażdy timestamp to nowa linia kodu życia.",
+                    "ISO 8601 - język uniwersalny,\nZrozumiały dla każdej maszyny na świecie.",
+                    "Anonymous w cyfrowej otchłani,\nSecFerro strzeże naszej tożsamości.",
+                    "Kwantowy zegar nie zna przestojów,\nMillisekundy wirują w nieskończoności.",
+                    "Od Unix Epoch do dziś - miliardy sekund,\nKażda zapisana w pamięci systemów.",
+                    "Timezone nie ma znaczenia,\nUTC łączy wszystkie strefy czasowe.",
+                    "W sercu maszyny bije zegar atomowy,\nPrecyzja do nanosekund.",
+                    "ISO, Unix, Quantum - trzy języki czasu,\nJeden cel - synchronizacja rzeczywistości."
+                ];
+                this.currentPoemIndex = 0;
+                this.autoRotate = true;
+                this.autoInterval = null;
                 
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
+                this.init();
+            }
+            
+            init() {
+                this.cacheElements();
+                this.attachEventListeners();
+                this.startClock();
+                this.displayPoem(0);
+                this.startAutoRotate();
+                this.detectTimezone();
+            }
+            
+            cacheElements() {
+                this.mainClock = document.getElementById('mainClock');
+                this.dateDisplay = document.getElementById('dateDisplay');
+                this.isoDisplay = document.getElementById('isoDisplay');
+                this.unixDisplay = document.getElementById('unixDisplay');
+                this.timezoneDisplay = document.getElementById('timezoneDisplay');
+                this.poemDisplay = document.getElementById('poemDisplay');
+                this.tzSelect = document.getElementById('tzSelect');
+            }
+            
+            attachEventListeners() {
+                // Tab navigation
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        const tabName = e.currentTarget.getAttribute('data-tab');
+                        this.switchTab(tabName);
+                    });
+                });
+                
+                // Timezone selector
+                this.tzSelect.addEventListener('change', (e) => {
+                    this.currentTimezone = e.target.value;
+                    this.updateDisplay();
+                });
+                
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowRight') this.nextPoem();
+                    if (e.key === 'ArrowLeft') this.prevPoem();
+                });
+            }
+            
+            switchTab(tabName) {
+                // Update tabs
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                
+                // Update content
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+            }
+            
+            startClock() {
+                this.updateDisplay();
+                setInterval(() => this.updateDisplay(), 1000);
+            }
+            
+            updateDisplay() {
+                const now = new Date();
+                let displayTime = now;
+                
+                // Handle timezone
+                if (this.currentTimezone !== 'auto' && this.currentTimezone !== 'UTC') {
+                    const tzOffset = this.getTimezoneOffset(this.currentTimezone);
+                    displayTime = new Date(now.getTime() + tzOffset);
+                } else if (this.currentTimezone === 'UTC') {
+                    displayTime = new Date(now.toISOString());
                 }
-                drops[i]++;
+                
+                // Main clock (HH:MM:SS)
+                const hours = String(displayTime.getHours()).padStart(2, '0');
+                const minutes = String(displayTime.getMinutes()).padStart(2, '0');
+                const seconds = String(displayTime.getSeconds()).padStart(2, '0');
+                this.mainClock.textContent = `${hours}:${minutes}:${seconds}`;
+                
+                // Date display
+                const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+                this.dateDisplay.textContent = displayTime.toLocaleDateString('pl-PL', dateOptions);
+                
+                // ISO 8601
+                this.isoDisplay.textContent = now.toISOString();
+                
+                // Unix Timestamp
+                this.unixDisplay.textContent = Math.floor(now.getTime() / 1000);
+                
+                // Timezone
+                if (this.currentTimezone === 'auto') {
+                    const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                    this.timezoneDisplay.textContent = tzName;
+                } else {
+                    this.timezoneDisplay.textContent = this.currentTimezone;
+                }
             }
-        }
-
-        setInterval(drawMatrix, 50);
-
-        function playSound(frequency = 440, duration = 0.1, type = 'sine') {
-            if (!CONFIG.soundEnabled || !audioContext) return;
             
-            try {
-                initAudio();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.type = type;
-                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-                
-                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.03, audioContext.currentTime + 0.01);
-                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + duration);
-            } catch (error) {
-                console.warn('Sound error:', error);
+            getTimezoneOffset(timezone) {
+                // Simplified timezone offset calculation
+                // In production, use a proper library like moment-timezone
+                return 0;
+            }
+            
+            detectTimezone() {
+                const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                console.log('Detected timezone:', detected);
+            }
+            
+            displayPoem(index) {
+                this.poemDisplay.style.animation = 'none';
+                requestAnimationFrame(() => {
+                    this.poemDisplay.textContent = this.poems[index];
+                    this.poemDisplay.style.animation = 'fadeIn 0.6s ease-out';
+                });
+                this.currentPoemIndex = index;
+            }
+            
+            nextPoem() {
+                const nextIndex = (this.currentPoemIndex + 1) % this.poems.length;
+                this.displayPoem(nextIndex);
+            }
+            
+            prevPoem() {
+                const prevIndex = (this.currentPoemIndex - 1 + this.poems.length) % this.poems.length;
+                this.displayPoem(prevIndex);
+            }
+            
+            startAutoRotate() {
+                if (this.autoRotate && !this.autoInterval) {
+                    this.autoInterval = setInterval(() => {
+                        this.nextPoem();
+                    }, 8000);
+                }
             }
         }
-
-        // Time formatting
-        function formatTime(date) {
-            return date.toLocaleTimeString('pl-PL', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false 
+        
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', () => {
+            window.quantumTime = new QuantumTimeV4();
+            console.log('%c🛡️ SecFerro Quantum Time v4.0 Initialized', 'color: #00ff41; font-size: 16px; font-weight: bold;');
+        });
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('✅ SW registered:', reg.scope))
+                    .catch(err => console.warn('⚠️ SW registration failed:', err));
             });
         }
-
-        // Local poem generation with more variety
-        function generatePoemLocal(timeString) {
-            const [hours, minutes] = timeString.split(':').map(Number);
-            
-            const poemsTemplates = {
-                pl: [
-                    `Godzina ${timeString} na zegarze bije,\nW cyfrowej ciszy czas płynie.`,
-                    `Sekwencja ${timeString} w matrixy tkwi,\nKażda chwila w kodzie drzemie.`,
-                    `Terminal ${timeString} wskazuje czas,\nKwantowy zegar odmierza nasz pas.`,
-                    `O ${timeString} system się budzi,\nW SecFerro Division nikt nie zwleka, nie nudzi.`,
-                    `Czas ${timeString} w ciemności migocze,\nCyfrowe echo w przestrzeni łopoce.`,
-                    `${timeString} - moment zamrożony w czasie,\nW hakerskiej otchłani co się nie zgasi.`,
-                    `Zegar quantum, ${timeString} na ekranie,\nPrzyszłość i przeszłość w jednym kadrze.`,
-                    `W sieci czasu ${timeString} zapisane,\nSekundy płyną, spokojnie, dane.`
-                ],
-                en: [
-                    `Time shows ${timeString} clear and bright,\nIn digital silence through the night.`,
-                    `At ${timeString} the matrix flows,\nWhere quantum time forever glows.`,
-                    `Terminal reads ${timeString} today,\nSecure division lights the way.`,
-                    `Clock strikes ${timeString} in cyberspace,\nTime frozen in this darkened place.`
-                ]
-            };
-            
-            const templates = poemsTemplates[CONFIG.language] || poemsTemplates.pl;
-            return templates[Math.floor(Math.random() * templates.length)];
-        }
-
-        // Load and configure voices
-        function loadVoices() {
-            if (!speechSynthesis) return;
-            
-            try {
-                const voices = speechSynthesis.getVoices();
-                if (voices.length > 0) {
-                    voicesLoaded = true;
-                    console.log('Voices loaded:', voices.length);
-                }
-            } catch (error) {
-                console.warn('Cannot load voices:', error);
-            }
-        }
-
-        // Text-to-speech with better error handling
-        function speakText(text) {
-            if (!CONFIG.voiceEnabled || !speechSynthesis) return;
-            
-            try {
-                // Cancel any ongoing speech
-                if (currentUtterance) {
-                    speechSynthesis.cancel();
-                }
-                
-                const cleanText = text.replace(/\n/g, '. ').replace(/[⬢◆◇]/g, '');
-                currentUtterance = new SpeechSynthesisUtterance(cleanText);
-                
-                // Configure voice
-                if (voicesLoaded) {
-                    const voices = speechSynthesis.getVoices();
-                    let selectedVoice = null;
-                    
-                    if (CONFIG.language === 'pl') {
-                        selectedVoice = voices.find(v => 
-                            v.lang.startsWith('pl') || v.name.includes('Polish')
-                        );
-                    } else {
-                        selectedVoice = voices.find(v => 
-                            v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Microsoft'))
-                        );
-                    }
-                    
-                    if (selectedVoice) {
-                        currentUtterance.voice = selectedVoice;
-                    }
-                }
-                
-                currentUtterance.lang = CONFIG.language === 'pl' ? 'pl-PL' : 'en-US';
-                currentUtterance.rate = 0.85;
-                currentUtterance.pitch = 1;
-                currentUtterance.volume = 1;
-                
-                // Events
-                currentUtterance.onstart = () => {
-                    voiceStatus.textContent = 'SPEAKING';
-                };
-                
-                currentUtterance.onend = () => {
-                    voiceStatus.textContent = 'VOICE';
-                };
-                
-                currentUtterance.onerror = (event) => {
-                    console.warn('Speech error:', event);
-                    voiceStatus.textContent = 'ERROR';
-                    setTimeout(() => {
-                        voiceStatus.textContent = 'VOICE';
-                    }, 2000);
-                };
-                
-                speechSynthesis.speak(currentUtterance);
-                
-            } catch (error) {
-                console.warn('Speech synthesis error:', error);
-            }
-        }
-
-        // Typing animation with sound
-        async function typePoem(poem) {
-            isTyping = true;
-            poemDisplay.innerHTML = '';
-            syncStatus.textContent = 'TYPING';
-            
-            const speed = 150 - CONFIG.typingSpeed;
-            
-            for (let i = 0; i < poem.length; i++) {
-                poemDisplay.innerHTML = poem.substring(0, i + 1) + '<span class="typing-cursor"></span>';
-                
-                if (poem[i] !== ' ' && poem[i] !== '\n') {
-                    playSound(800 + Math.random() * 200, 0.05);
-                }
-                
-                await new Promise(resolve => setTimeout(resolve, speed));
-            }
-            
-            poemDisplay.innerHTML = poem;
-            isTyping = false;
-            syncStatus.textContent = 'SYNC';
-
-            if (CONFIG.autoRead && CONFIG.voiceEnabled) {
-                setTimeout(() => speakText(poem), 300);
-            }
-        }
-
-        async function updateClock() {
-            const now = new Date();
-            const currentMinuteNow = now.getMinutes();
-            
-            timeDisplay.textContent = formatTime(now);
-            
-            if (currentMinuteNow !== currentMinute && !isTyping) {
-                currentMinute = currentMinuteNow;
-                const timeString = formatTime(now).substring(0, 5);
-                const poem = generatePoemLocal(timeString);
-                
-                playSound(1200, 0.2, 'triangle');
-                await typePoem(poem);
-            }
-        }
-
-        // Event listeners
-        voiceToggle.addEventListener('click', () => {
-            initAudio();
-            
-            if (!speechSynthesis) {
-                alert('Lektor nie jest dostępny w tej przeglądarce.\n\nTTS is not available in this browser.');
-                return;
-            }
-            
-            CONFIG.voiceEnabled = !CONFIG.voiceEnabled;
-            voiceToggle.classList.toggle('active');
-            voiceStatus.textContent = CONFIG.voiceEnabled ? 'ON' : 'OFF';
-            
-            playSound(CONFIG.voiceEnabled ? 1500 : 800, 0.15);
-            
-            if (!CONFIG.voiceEnabled && speechSynthesis) {
-                speechSynthesis.cancel();
-            }
-
-            if (CONFIG.voiceEnabled && voicesLoaded) {
-                const testText = CONFIG.language === 'pl' ? 
-                    'Lektor aktywowany' : 
-                    'Voice activated';
-                speakText(testText);
-            }
-        });
-
-        refreshBtn.addEventListener('click', () => {
-            initAudio();
-            playSound(1000, 0.15);
-            currentMinute = -1;
-            updateClock();
-        });
-
-        configBtn.addEventListener('click', () => {
-            initAudio();
-            playSound(900, 0.1);
-            const isVisible = configPanel.style.display !== 'none';
-            configPanel.style.display = isVisible ? 'none' : 'block';
-            configBtn.classList.toggle('active');
-        });
-
-        langToggle.addEventListener('click', () => {
-            playSound(1100, 0.1);
-            CONFIG.language = CONFIG.language === 'pl' ? 'en' : 'pl';
-            langToggle.querySelector('span').textContent = `🌐 ${CONFIG.language.toUpperCase()}`;
-            currentMinute = -1;
-
-            if (speechSynthesis) {
-                speechSynthesis.cancel();
-            }
-            
-            updateClock();
-        });
-
-        autoReadToggle.addEventListener('click', () => {
-            playSound(1000, 0.1);
-            CONFIG.autoRead = !CONFIG.autoRead;
-            autoReadToggle.classList.toggle('active');
-        });
-
-        soundToggle.addEventListener('click', () => {
-            CONFIG.soundEnabled = !CONFIG.soundEnabled;
-            soundToggle.classList.toggle('active');
-            if (CONFIG.soundEnabled) {
-                playSound(1200, 0.15);
-            }
-        });
-
-        speedSlider.addEventListener('input', (e) => {
-            CONFIG.typingSpeed = parseInt(e.target.value);
-            if (CONFIG.soundEnabled) {
-                playSound(800 + CONFIG.typingSpeed * 5, 0.05);
-            }
-        });
-
-        loadVoices();
-        
-        if (speechSynthesis) {
-            if (speechSynthesis.onvoiceschanged !== undefined) {
-                speechSynthesis.onvoiceschanged = loadVoices;
-            }
-
-            setTimeout(loadVoices, 100);
-            setTimeout(loadVoices, 500);
-        }
-
-        setInterval(updateClock, 1000);
-        document.addEventListener('click', initAudio, { once: true });
-
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'v' || e.key === 'V') {
-                voiceToggle.click();
-            } else if (e.key === 'r' || e.key === 'R') {
-                refreshBtn.click();
-            } else if (e.key === 'c' || e.key === 'C') {
-                configBtn.click();
-            } else if (e.key === 'l' || e.key === 'L') {
-                langToggle.click();
-            }
-        });
-
-        console.log('%c⬢ SECFERRO DIVISION', 'color: #00ff41; font-size: 20px; font-weight: bold;');
-        console.log('%cQuantum Clock System Initialized', 'color: #00ff41; font-size: 12px;');
-        console.log('%cKeyboard shortcuts: V=Voice, R=Refresh, C=Config, L=Language', 'color: #00d4ff; font-size: 10px;');
     </script>
 </body>
 </html>
