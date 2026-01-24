@@ -4,24 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECFERRO :: MAIN INTERFACE</title>
+    
+    <meta name="google-site-verification" content="i0vrNWTbxA73yTjnsm_-Ra2OcFaAHXcYxT6TyjhWyzI" />
+
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+    
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    
+    <meta http-equiv="Referrer-Policy" content="no-referrer">
+
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), interest-cohort=()">
+
+    <meta name="robots" content="noindex, nofollow">
+
     <link rel="stylesheet" href="css/style.css">
 </head>
-<meta name="google-site-verification" content="i0vrNWTbxA73yTjnsm_-Ra2OcFaAHXcYxT6TyjhWyzI" />
 <body>
     <div class="scanline"></div>
+    
     <div class="terminal-container">
-        <div id="terminal-output"></div>
-        <div class="terminal-menu">
+        <header>
+            <p class="system-status">// SYSTEM: ONLINE | ENCRYPTION: ACTIVE</p>
+        </header>
+
+        <main id="terminal-output">
+            </main>
+
+        <nav class="terminal-menu">
             <p>// SELECT MODULE:</p>
             <ul>
-                <li><a href="ubeczblocker.html">[01] UBECZBLOCKER_v2.5</a></li>
-                <li><a href="#">[02] RED_TEAM_OPS</a></li>
-                <li><a href="#">[03] CYBER_INTEL_MATRIX</a></li>
-                <li><a href="#">[04] SECURE_COMMS_PROTOCOL</a></li>
-                <li><a href="#">[05] EXIT_SYSTEM</a></li>
+                <li><a href="ubeczblocker.html" class="menu-link">[01] UBECZBLOCKER_v2.5</a></li>
+                <li><a href="#" class="menu-link">[02] RED_TEAM_OPS</a></li>
+                <li><a href="#" class="menu-link">[03] CYBER_INTEL_MATRIX</a></li>
+                <li><a href="#" class="menu-link">[04] SECURE_COMMS_PROTOCOL</a></li>
+                <li><a href="#" class="menu-link">[05] EXIT_SYSTEM</a></li>
             </ul>
-        </div>
+        </nav>
     </div>
+
     <script src="js/main.js"></script>
 </body>
 </html>
