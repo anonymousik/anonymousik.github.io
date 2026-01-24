@@ -1,0 +1,38 @@
+name: Security Header Audit
+
+on:
+  # Pozwala na ręczne uruchomienie przyciskiem w zakładce "Actions"
+  workflow_dispatch:
+  # Opcjonalnie: Uruchamiaj codziennie o 6:00 rano
+  schedule:
+    - cron: '0 6 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pobranie kodu (Checkout)
+        uses: actions/checkout@v4
+
+      - name: Konfiguracja Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Instalacja zależności
+        run: pip install requests
+
+      - name: Uruchomienie skanera bezpieczeństwa
+        run: python security_audit.py
+
+      - name: Wdrożenie na GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          # Publikuje tylko plik index.html wygenerowany przez skrypt
+          keep_files: false
+          # UWAGA: To nadpisze zawartość brancha gh-pages!
