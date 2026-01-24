@@ -1,0 +1,782 @@
+import React, { useState, useEffect } from 'react';
+import { Play, RotateCcw, Lightbulb, CheckCircle, Lock, Trophy, Flame, Shield } from 'lucide-react';
+
+const SecFerroPythonCourse = () => {
+  // Rozszerzone definicje poziomów - od podstaw do zaawansowanych
+  const levels = [
+    {
+      id: 1,
+      title: "Witaj w Pythonie",
+      description: "Twój pierwszy kontakt z językiem Python. Rozpocznijmy od tradycyjnego pierwszego programu.",
+      task: "Napisz program, który wyświetli tekst 'Witaj w SecFerro!' na konsoli.",
+      starterCode: "# Wpisz swój kod tutaj\n",
+      expectedOutput: "Witaj w SecFerro!",
+      hint: "Użyj funkcji print() z tekstem w cudzysłowie: print('Witaj w SecFerro!')",
+      solution: "print('Witaj w SecFerro!')",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 2,
+      title: "Zmienne i liczby",
+      description: "Naucz się przechowywać i operować na liczbach przy użyciu zmiennych.",
+      task: "Utwórz zmienną o nazwie 'wiek' z wartością 25, następnie ją wyświetl.",
+      starterCode: "# Utwórz zmienną i wyświetl ją\n",
+      expectedOutput: "25",
+      hint: "Utwórz zmienną: wiek = 25, następnie wyświetl: print(wiek)",
+      solution: "wiek = 25\nprint(wiek)",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 3,
+      title: "Zmienne tekstowe",
+      description: "Pracuj z danymi tekstowymi używając zmiennych typu string.",
+      task: "Utwórz zmienną 'imie' ze swoim imieniem, następnie wyświetl 'Cześć, [imie]!'",
+      starterCode: "# Utwórz zmienną tekstową\n",
+      expectedOutput: "Cześć, Python!",
+      hint: "Użyj konkatenacji lub f-stringów: print(f'Cześć, {imie}!')",
+      solution: "imie = 'Python'\nprint(f'Cześć, {imie}!')",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 4,
+      title: "Pobieranie danych od użytkownika",
+      description: "Naucz się otrzymywać dane od użytkowników i reagować na nie.",
+      task: "Zapytaj użytkownika o ulubiony kolor i wyświetl 'Twój ulubiony kolor to [kolor]'",
+      starterCode: "# Pobierz dane i odpowiedz\n",
+      expectedOutput: "Twój ulubiony kolor to niebieski",
+      hint: "Użyj input(): kolor = input('Jaki jest Twój ulubiony kolor? ')",
+      solution: "kolor = input('Jaki jest Twój ulubiony kolor? ')\nprint(f'Twój ulubiony kolor to {kolor}')",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 5,
+      title: "Podstawowe operacje matematyczne",
+      description: "Wykonuj operacje matematyczne w Pythonie.",
+      task: "Oblicz 15 + 27 i wyświetl wynik.",
+      starterCode: "# Oblicz i wyświetl sumę\n",
+      expectedOutput: "42",
+      hint: "Użyj operatora +: print(15 + 27)",
+      solution: "print(15 + 27)",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 6,
+      title: "Instrukcje warunkowe",
+      description: "Podejmuj decyzje w kodzie za pomocą instrukcji if.",
+      task: "Sprawdź czy liczba 10 jest większa od 5. Jeśli tak, wyświetl 'Tak, 10 jest większe od 5'",
+      starterCode: "# Użyj instrukcji if\nliczba = 10\n",
+      expectedOutput: "Tak, 10 jest większe od 5",
+      hint: "Użyj if: if liczba > 5: print('Tak, 10 jest większe od 5')",
+      solution: "liczba = 10\nif liczba > 5:\n    print('Tak, 10 jest większe od 5')",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 7,
+      title: "Pętle for",
+      description: "Powtarzaj działania używając pętli for.",
+      task: "Wyświetl liczby od 1 do 3 używając pętli for.",
+      starterCode: "# Użyj pętli for\n",
+      expectedOutput: "1\n2\n3",
+      hint: "Użyj range(): for i in range(1, 4): print(i)",
+      solution: "for i in range(1, 4):\n    print(i)",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 8,
+      title: "Pętle while",
+      description: "Używaj pętli while do warunkowego powtarzania.",
+      task: "Wyświetl liczby od 1 do 3 używając pętli while.",
+      starterCode: "# Użyj pętli while\nlicznik = 1\n",
+      expectedOutput: "1\n2\n3",
+      hint: "Zwiększaj licznik w każdej iteracji: while licznik <= 3: print(licznik); licznik += 1",
+      solution: "licznik = 1\nwhile licznik <= 3:\n    print(licznik)\n    licznik += 1",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 9,
+      title: "Podstawy list",
+      description: "Przechowuj wiele elementów w listach.",
+      task: "Utwórz listę z owocami ['jabłko', 'banan', 'pomarańcza'] i wyświetl drugi element.",
+      starterCode: "# Utwórz listę i odwołaj się do elementów\n",
+      expectedOutput: "banan",
+      hint: "Listy używają indeksowania od zera: owoce[1] pobiera drugi element",
+      solution: "owoce = ['jabłko', 'banan', 'pomarańcza']\nprint(owoce[1])",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 10,
+      title: "Operacje na listach",
+      description: "Dodawaj i modyfikuj elementy list.",
+      task: "Utwórz listę [1, 2, 3], dodaj liczbę 4, następnie wyświetl całą listę.",
+      starterCode: "# Utwórz listę i dodaj element\n",
+      expectedOutput: "[1, 2, 3, 4]",
+      hint: "Użyj metody append(): liczby.append(4), następnie print(liczby)",
+      solution: "liczby = [1, 2, 3]\nliczby.append(4)\nprint(liczby)",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 11,
+      title: "Podstawy funkcji",
+      description: "Twórz kod wielokrotnego użytku za pomocą funkcji.",
+      task: "Zdefiniuj funkcję o nazwie 'powitaj', która wyświetla 'Witaj!' i ją wywołaj.",
+      starterCode: "# Zdefiniuj i wywołaj funkcję\n",
+      expectedOutput: "Witaj!",
+      hint: "Użyj słowa kluczowego def: def powitaj(): print('Witaj!'), następnie wywołaj powitaj()",
+      solution: "def powitaj():\n    print('Witaj!')\n\npowitaj()",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 12,
+      title: "Funkcje z parametrami",
+      description: "Przekazuj dane do funkcji używając parametrów.",
+      task: "Utwórz funkcję 'powiedz_czesc' z parametrem imie, która wyświetla 'Cześć, [imie]!'. Wywołaj z 'Świat'.",
+      starterCode: "# Funkcja z parametrem\n",
+      expectedOutput: "Cześć, Świat!",
+      hint: "def powiedz_czesc(imie): print(f'Cześć, {imie}!'), następnie powiedz_czesc('Świat')",
+      solution: "def powiedz_czesc(imie):\n    print(f'Cześć, {imie}!')\n\npowiedz_czesc('Świat')",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 13,
+      title: "Słowniki",
+      description: "Przechowuj pary klucz-wartość używając słowników.",
+      task: "Utwórz słownik z danymi osoby: imie='Ala', wiek=30. Wyświetl imię.",
+      starterCode: "# Utwórz i użyj słownika\n",
+      expectedOutput: "Ala",
+      hint: "Użyj nawiasów klamrowych: osoba = {'imie': 'Ala', 'wiek': 30}, dostęp przez osoba['imie']",
+      solution: "osoba = {'imie': 'Ala', 'wiek': 30}\nprint(osoba['imie'])",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 14,
+      title: "Metody stringów",
+      description: "Manipuluj ciągami znaków za pomocą wbudowanych metod.",
+      task: "Weź ciąg 'programowanie python' i wyświetl go wielkimi literami.",
+      starterCode: "# Użyj metod stringów\ntekst = 'programowanie python'\n",
+      expectedOutput: "PROGRAMOWANIE PYTHON",
+      hint: "Użyj metody upper(): tekst.upper()",
+      solution: "tekst = 'programowanie python'\nprint(tekst.upper())",
+      difficulty: "podstawowy"
+    },
+    {
+      id: 15,
+      title: "Comprehensions list",
+      description: "Twórz listy w zwięzły sposób używając list comprehensions.",
+      task: "Utwórz listę kwadratów liczb od 1 do 5 używając list comprehension.",
+      starterCode: "# List comprehension\n",
+      expectedOutput: "[1, 4, 9, 16, 25]",
+      hint: "Składnia: [x**2 for x in range(1, 6)]",
+      solution: "kwadraty = [x**2 for x in range(1, 6)]\nprint(kwadraty)",
+      difficulty: "średni"
+    },
+    {
+      id: 16,
+      title: "Funkcje lambda",
+      description: "Twórz małe, anonimowe funkcje w jednej linii.",
+      task: "Utwórz funkcję lambda, która mnoży liczbę przez 2, i zastosuj ją do liczby 5.",
+      starterCode: "# Funkcja lambda\n",
+      expectedOutput: "10",
+      hint: "lambda x: x * 2, następnie wywołaj z (5)",
+      solution: "mnoz_przez_2 = lambda x: x * 2\nprint(mnoz_przez_2(5))",
+      difficulty: "średni"
+    },
+    {
+      id: 17,
+      title: "Obsługa wyjątków",
+      description: "Naucz się elegancko obsługiwać błędy w kodzie.",
+      task: "Użyj try-except, aby bezpiecznie podzielić 10 przez 0 i wyświetl 'Błąd dzielenia'.",
+      starterCode: "# Try-except\n",
+      expectedOutput: "Błąd dzielenia",
+      hint: "try: wynik = 10/0 except ZeroDivisionError: print('Błąd dzielenia')",
+      solution: "try:\n    wynik = 10 / 0\nexcept ZeroDivisionError:\n    print('Błąd dzielenia')",
+      difficulty: "średni"
+    },
+    {
+      id: 18,
+      title: "Praca z plikami",
+      description: "Zapisuj i odczytuj dane z plików.",
+      task: "Symuluj zapisanie tekstu 'SecFerro Python' do pliku i wyświetl potwierdzenie.",
+      starterCode: "# Praca z plikami (symulacja)\n",
+      expectedOutput: "Dane zapisane pomyślnie",
+      hint: "Dla symulacji: print('Dane zapisane pomyślnie')",
+      solution: "# with open('dane.txt', 'w') as plik:\n#     plik.write('SecFerro Python')\nprint('Dane zapisane pomyślnie')",
+      difficulty: "średni"
+    },
+    {
+      id: 19,
+      title: "Klasy i obiekty",
+      description: "Wprowadzenie do programowania obiektowego.",
+      task: "Utwórz klasę Samochod z atrybutem marka, stwórz obiekt i wyświetl markę.",
+      starterCode: "# Klasa i obiekt\n",
+      expectedOutput: "Tesla",
+      hint: "class Samochod: def __init__(self, marka): self.marka = marka",
+      solution: "class Samochod:\n    def __init__(self, marka):\n        self.marka = marka\n\nauto = Samochod('Tesla')\nprint(auto.marka)",
+      difficulty: "średni"
+    },
+    {
+      id: 20,
+      title: "Metody klas",
+      description: "Dodawaj funkcjonalność do klas za pomocą metod.",
+      task: "Rozszerz klasę Samochod o metodę jedz(), która zwraca 'Samochód jedzie'.",
+      starterCode: "# Metody w klasach\n",
+      expectedOutput: "Samochód jedzie",
+      hint: "Dodaj metodę def jedz(self): return 'Samochód jedzie'",
+      solution: "class Samochod:\n    def __init__(self, marka):\n        self.marka = marka\n    \n    def jedz(self):\n        return 'Samochód jedzie'\n\nauto = Samochod('Tesla')\nprint(auto.jedz())",
+      difficulty: "średni"
+    },
+    {
+      id: 21,
+      title: "Dziedziczenie",
+      description: "Twórz hierarchie klas poprzez dziedziczenie.",
+      task: "Utwórz klasę ElektrycznySamochod dziedziczącą po Samochod, dodaj atrybut bateria.",
+      starterCode: "# Dziedziczenie klas\n",
+      expectedOutput: "100",
+      hint: "class ElektrycznySamochod(Samochod): def __init__(self, marka, bateria)",
+      solution: "class Samochod:\n    def __init__(self, marka):\n        self.marka = marka\n\nclass ElektrycznySamochod(Samochod):\n    def __init__(self, marka, bateria):\n        super().__init__(marka)\n        self.bateria = bateria\n\nauto = ElektrycznySamochod('Tesla', 100)\nprint(auto.bateria)",
+      difficulty: "zaawansowany"
+    },
+    {
+      id: 22,
+      title: "Dekoratory",
+      description: "Modyfikuj zachowanie funkcji za pomocą dekoratorów.",
+      task: "Utwórz prosty dekorator, który wyświetla 'Start' przed wykonaniem funkcji.",
+      starterCode: "# Dekorator\n",
+      expectedOutput: "Start\nWykonuję funkcję",
+      hint: "def dekorator(func): def wrapper(): print('Start'); return func(); return wrapper",
+      solution: "def dekorator(func):\n    def wrapper():\n        print('Start')\n        return func()\n    return wrapper\n\n@dekorator\ndef funkcja():\n    print('Wykonuję funkcję')\n\nfunkcja()",
+      difficulty: "zaawansowany"
+    },
+    {
+      id: 23,
+      title: "Generatory",
+      description: "Twórz wydajne iteratory używając generatorów.",
+      task: "Utwórz generator zwracający kwadraty liczb od 1 do 3.",
+      starterCode: "# Generator\n",
+      expectedOutput: "1\n4\n9",
+      hint: "def generator(): for i in range(1,4): yield i**2",
+      solution: "def kwadraty():\n    for i in range(1, 4):\n        yield i ** 2\n\nfor kwadrat in kwadraty():\n    print(kwadrat)",
+      difficulty: "zaawansowany"
+    },
+    {
+      id: 24,
+      title: "Context managers",
+      description: "Zarządzaj zasobami używając context managerów.",
+      task: "Zaimplementuj prosty context manager używając klasy z __enter__ i __exit__.",
+      starterCode: "# Context manager\n",
+      expectedOutput: "Wchodzę\nWewnątrz\nWychodzę",
+      hint: "class Manager: def __enter__(self): ...; def __exit__(self, ...): ...",
+      solution: "class Manager:\n    def __enter__(self):\n        print('Wchodzę')\n        return self\n    \n    def __exit__(self, *args):\n        print('Wychodzę')\n\nwith Manager():\n    print('Wewnątrz')",
+      difficulty: "zaawansowany"
+    },
+    {
+      id: 25,
+      title: "Asynchroniczność",
+      description: "Wprowadzenie do programowania asynchronicznego.",
+      task: "Symuluj podstawową funkcję async, która wyświetla 'Operacja async'.",
+      starterCode: "# Async (symulacja)\n",
+      expectedOutput: "Operacja async",
+      hint: "Dla symulacji wystarczy print('Operacja async')",
+      solution: "# async def operacja():\n#     print('Operacja async')\n# await operacja()\nprint('Operacja async')",
+      difficulty: "zaawansowany"
+    },
+    {
+      id: 26,
+      title: "Wyrażenia regularne",
+      description: "Wyszukuj wzorce w tekście używając regex.",
+      task: "Znajdź wszystkie liczby w tekście 'Mam 2 koty i 3 psy' (symulacja).",
+      starterCode: "# Regex (symulacja)\n",
+      expectedOutput: "['2', '3']",
+      hint: "Dla symulacji: print(['2', '3'])",
+      solution: "# import re\n# tekst = 'Mam 2 koty i 3 psy'\n# liczby = re.findall(r'\\d+', tekst)\n# print(liczby)\nprint(['2', '3'])",
+      difficulty: "zaawansowany"
+    },
+    {
+      id: 27,
+      title: "Itertools i funkcje wyższego rzędu",
+      description: "Zaawansowane operacje na iteratorach.",
+      task: "Użyj map() do podwojenia każdej liczby w liście [1, 2, 3].",
+      starterCode: "# Map i funkcje wyższego rzędu\n",
+      expectedOutput: "[2, 4, 6]",
+      hint: "list(map(lambda x: x*2, [1, 2, 3]))",
+      solution: "liczby = [1, 2, 3]\nwynik = list(map(lambda x: x * 2, liczby))\nprint(wynik)",
+      difficulty: "zaawansowany"
+    },
+    {
+      id: 28,
+      title: "Metaklasy podstawy",
+      description: "Poznaj koncepcję metaklas w Pythonie.",
+      task: "Wyświetl typ klasy Samochod (symulacja konceptu metaklas).",
+      starterCode: "# Metaklasy (symulacja)\n",
+      expectedOutput: "<class 'type'>",
+      hint: "class Samochod: pass; print(type(Samochod))",
+      solution: "class Samochod:\n    pass\n\nprint(type(Samochod))",
+      difficulty: "zaawansowany"
+    },
+    {
+      id: 29,
+      title: "Property i deskryptory",
+      description: "Kontroluj dostęp do atrybutów klas.",
+      task: "Utwórz klasę z property dla atrybutu temperatura z walidacją.",
+      starterCode: "# Property\n",
+      expectedOutput: "25",
+      hint: "@property def temperatura(self): return self._temp",
+      solution: "class Termometr:\n    def __init__(self):\n        self._temp = 0\n    \n    @property\n    def temperatura(self):\n        return self._temp\n    \n    @temperatura.setter\n    def temperatura(self, wartosc):\n        self._temp = wartosc\n\nt = Termometr()\nt.temperatura = 25\nprint(t.temperatura)",
+      difficulty: "zaawansowany"
+    },
+    {
+      id: 30,
+      title: "Projekt końcowy: System bezpieczeństwa",
+      description: "Połącz wszystkie umiejętności w jeden zaawansowany projekt.",
+      task: "Stwórz klasę SystemBezpieczenstwa z metodą sprawdz_haslo(), która weryfikuje złożoność hasła.",
+      starterCode: "# Projekt końcowy SecFerro\n",
+      expectedOutput: "Hasło bezpieczne",
+      hint: "Użyj klas, metod, walidacji i logiki warunkowej",
+      solution: "class SystemBezpieczenstwa:\n    def sprawdz_haslo(self, haslo):\n        if len(haslo) >= 8 and any(c.isdigit() for c in haslo):\n            return 'Hasło bezpieczne'\n        return 'Hasło niezabezpieczone'\n\nsystem = SystemBezpieczenstwa()\nprint(system.sprawdz_haslo('SecFerro123'))",
+      difficulty: "zaawansowany"
+    }
+  ];
+
+  // State management
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [userCode, setUserCode] = useState(levels[0].starterCode);
+  const [completedLevels, setCompletedLevels] = useState(new Set());
+  const [showHint, setShowHint] = useState(false);
+  const [feedback, setFeedback] = useState(null);
+  const [streak, setStreak] = useState(0);
+  const [showLevelSelector, setShowLevelSelector] = useState(false);
+
+  useEffect(() => {
+    const level = levels.find(l => l.id === currentLevel);
+    setUserCode(level.starterCode);
+    setShowHint(false);
+    setFeedback(null);
+  }, [currentLevel]);
+
+  const executeCode = (code) => {
+    try {
+      const printRegex = /print\((.*?)\)/g;
+      const matches = [];
+      let match;
+      
+      while ((match = printRegex.exec(code)) !== null) {
+        let value = match[1].trim();
+        
+        if (value.startsWith("'") && value.endsWith("'")) {
+          matches.push(value.slice(1, -1));
+        } else if (value.startsWith('"') && value.endsWith('"')) {
+          matches.push(value.slice(1, -1));
+        } else if (value.match(/^\d+$/)) {
+          matches.push(value);
+        } else if (value.includes('f\'') || value.includes('f"')) {
+          if (code.includes('imie = \'Python\'') || code.includes('imie = "Python"')) {
+            matches.push(value.replace(/f['"]Cześć, \{imie\}!['"]/, 'Cześć, Python!'));
+          }
+          if (code.includes('kolor = input(')) {
+            matches.push('Twój ulubiony kolor to niebieski');
+          }
+        } else if (value.includes('+')) {
+          try {
+            const result = eval(value);
+            matches.push(result.toString());
+          } catch {
+            matches.push(value);
+          }
+        }
+      }
+
+      if (code.includes('for i in range(1, 4)')) {
+        matches.push('1', '2', '3');
+      }
+      if (code.includes('while licznik <= 3')) {
+        matches.push('1', '2', '3');
+      }
+      if (code.includes('owoce[1]') || code.includes("owoce = ['jabłko', 'banan'")) {
+        matches.push('banan');
+      }
+      if (code.includes('[1, 2, 3, 4]')) {
+        matches.push('[1, 2, 3, 4]');
+      }
+      if (code.includes('osoba[\'imie\']') || code.includes('osoba["imie"]')) {
+        matches.push('Ala');
+      }
+      if (code.includes('.upper()')) {
+        matches.push('PROGRAMOWANIE PYTHON');
+      }
+      if (code.includes('[x**2 for x in range(1, 6)]')) {
+        matches.push('[1, 4, 9, 16, 25]');
+      }
+      if (code.includes('lambda x: x * 2') && code.includes('(5)')) {
+        matches.push('10');
+      }
+      if (code.includes('ZeroDivisionError')) {
+        matches.push('Błąd dzielenia');
+      }
+      if (code.includes('Dane zapisane pomyślnie')) {
+        matches.push('Dane zapisane pomyślnie');
+      }
+      if (code.includes('auto.marka') && code.includes('Tesla')) {
+        matches.push('Tesla');
+      }
+      if (code.includes('auto.jedz()')) {
+        matches.push('Samochód jedzie');
+      }
+      if (code.includes('auto.bateria') && code.includes('100')) {
+        matches.push('100');
+      }
+      if (code.includes('@dekorator')) {
+        matches.push('Start', 'Wykonuję funkcję');
+      }
+      if (code.includes('yield i ** 2')) {
+        matches.push('1', '4', '9');
+      }
+      if (code.includes('__enter__') && code.includes('__exit__')) {
+        matches.push('Wchodzę', 'Wewnątrz', 'Wychodzę');
+      }
+      if (code.includes('Operacja async')) {
+        matches.push('Operacja async');
+      }
+      if (code.includes("['2', '3']")) {
+        matches.push("['2', '3']");
+      }
+      if (code.includes('map(lambda x: x * 2')) {
+        matches.push('[2, 4, 6]');
+      }
+      if (code.includes('type(Samochod)')) {
+        matches.push("<class 'type'>");
+      }
+      if (code.includes('t.temperatura')) {
+        matches.push('25');
+      }
+      if (code.includes('SystemBezpieczenstwa')) {
+        matches.push('Hasło bezpieczne');
+      }
+
+      return matches.join('\n');
+    } catch (error) {
+      return "Błąd: " + error.message;
+    }
+  };
+
+  const handleSubmit = () => {
+    const level = levels.find(l => l.id === currentLevel);
+    const output = executeCode(userCode);
+    const isCorrect = output.trim() === level.expectedOutput.trim();
+
+    if (isCorrect) {
+      setCompletedLevels(prev => new Set([...prev, currentLevel]));
+      setStreak(prev => prev + 1);
+      setFeedback({
+        type: 'success',
+        message: '🎉 Doskonale! Ukończyłeś ten poziom!',
+        output: output
+      });
+    } else {
+      setStreak(0);
+      setFeedback({
+        type: 'error',
+        message: 'Nie do końca poprawne. Spróbuj ponownie:',
+        output: output,
+        expected: level.expectedOutput,
+        explanation: level.hint
+      });
+    }
+  };
+
+  const handleReset = () => {
+    const level = levels.find(l => l.id === currentLevel);
+    setUserCode(level.starterCode);
+    setFeedback(null);
+    setShowHint(false);
+  };
+
+  const handleLevelChange = (levelId) => {
+    const maxUnlockedLevel = Math.max(1, Math.max(...Array.from(completedLevels)) + 1);
+    if (levelId <= maxUnlockedLevel) {
+      setCurrentLevel(levelId);
+      setShowLevelSelector(false);
+    }
+  };
+
+  const currentLevelData = levels.find(l => l.id === currentLevel);
+  const progressPercentage = (completedLevels.size / levels.length) * 100;
+
+  const getDifficultyColor = (difficulty) => {
+    switch(difficulty) {
+      case 'podstawowy': return 'bg-green-100 text-green-800 border-green-300';
+      case 'średni': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'zaawansowany': return 'bg-red-100 text-red-800 border-red-300';
+      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      {/* Header */}
+      <header className="bg-slate-800 shadow-2xl border-b-4 border-blue-500">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Shield className="w-10 h-10 text-blue-400" />
+                <div>
+                  <h1 className="text-3xl font-bold text-blue-400">SecFerro</h1>
+                  <p className="text-xs text-gray-400">KURS PYTHON DIVISION protected</p>
+                </div>
+              </div>
+              <div className="hidden md:flex items-center space-x-2 text-gray-300">
+                <Trophy className="w-5 h-5 text-yellow-400" />
+                <span className="font-medium">{completedLevels.size}/{levels.length} Poziomów</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 bg-orange-900 px-3 py-1 rounded-full border border-orange-600">
+                <Flame className="w-4 h-4 text-orange-400" />
+                <span className="font-bold text-orange-300">{streak}</span>
+                <span className="text-orange-400 text-sm">seria</span>
+              </div>
+              
+              <button
+                onClick={() => setShowLevelSelector(!showLevelSelector)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-lg"
+              >
+                Poziom {currentLevel}
+              </button>
+            </div>
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="mt-4">
+            <div className="flex justify-between text-sm text-gray-300 mb-1">
+              <span>Ogólny postęp</span>
+              <span>{Math.round(progressPercentage)}%</span>
+            </div>
+            <div className="w-full bg-slate-700 rounded-full h-3 shadow-inner">
+              <div 
+                className="bg-gradient-to-r from-blue-500 to-cyan-400 h-3 rounded-full transition-all duration-500 shadow-lg"
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Level Selector Modal */}
+      {showLevelSelector && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-800 rounded-xl max-w-6xl w-full max-h-[85vh] overflow-y-auto border-2 border-blue-500 shadow-2xl">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-blue-400">Wybierz poziom</h2>
+                <button
+                  onClick={() => setShowLevelSelector(false)}
+                  className="text-gray-400 hover:text-gray-200 text-3xl font-bold"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {levels.map((level) => {
+                  const isCompleted = completedLevels.has(level.id);
+                  const isLocked = level.id > Math.max(1, Math.max(...Array.from(completedLevels)) + 1);
+                  const isCurrentLevel = level.id === currentLevel;
+                  
+                  return (
+                    <button
+                      key={level.id}
+                      onClick={() => !isLocked && handleLevelChange(level.id)}
+                      disabled={isLocked}
+                      className={`p-4 rounded-lg border-2 text-left transition-all ${
+                        isCurrentLevel
+                          ? 'border-blue-500 bg-blue-900 bg-opacity-50'
+                          : isCompleted
+                          ? 'border-green-500 bg-green-900 bg-opacity-30 hover:bg-green-900 hover:bg-opacity-50'
+                          : isLocked
+                          ? 'border-gray-600 bg-slate-700 cursor-not-allowed opacity-40'
+                          : 'border-gray-600 bg-slate-700 hover:border-blue-400 hover:bg-slate-600'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-bold text-sm text-gray-400">Poziom {level.id}</span>
+                        {isCompleted ? (
+                          <CheckCircle className="w-5 h-5 text-green-400" />
+                        ) : isLocked ? (
+                          <Lock className="w-5 h-5 text-gray-500" />
+                        ) : null}
+                      </div>
+                      <h3 className="font-semibold text-white mb-2">{level.title}</h3>
+                      <p className="text-xs text-gray-400 line-clamp-2 mb-2">{level.description}</p>
+                      <span className={`text-xs px-2 py-1 rounded border ${getDifficultyColor(level.difficulty)}`}>
+                        {level.difficulty}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Panel - Instructions */}
+          <div className="bg-slate-800 rounded-xl shadow-2xl p-6 border border-slate-700">
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-blue-400">
+                    Poziom {currentLevel}: {currentLevelData.title}
+                  </h2>
+                  <span className={`text-xs px-2 py-1 rounded border mt-2 inline-block ${getDifficultyColor(currentLevelData.difficulty)}`}>
+                    {currentLevelData.difficulty}
+                  </span>
+                </div>
+                {completedLevels.has(currentLevel) && (
+                  <CheckCircle className="w-8 h-8 text-green-400" />
+                )}
+              </div>
+              
+              <p className="text-gray-300 mb-4">{currentLevelData.description}</p>
+              
+              <div className="bg-blue-900 bg-opacity-40 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                <h3 className="font-semibold text-blue-300 mb-2">Zadanie:</h3>
+                <p className="text-blue-200">{currentLevelData.task}</p>
+              </div>
+            </div>
+
+            {/* Hint Section */}
+            <div className="mb-6">
+              <button
+                onClick={() => setShowHint(!showHint)}
+                className="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 transition-colors"
+              >
+                <Lightbulb className="w-5 h-5" />
+                <span className="font-medium">
+                  {showHint ? 'Ukryj podpowiedź' : 'Pokaż podpowiedź'}
+                </span>
+              </button>
+              
+              {showHint && (
+                <div className="mt-3 bg-yellow-900 bg-opacity-30 border-l-4 border-yellow-500 p-4 rounded-r-lg">
+                  <p className="text-yellow-200">{currentLevelData.hint}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Feedback */}
+            {feedback && (
+              <div className={`p-4 rounded-lg mb-6 border ${
+                feedback.type === 'success' 
+                  ? 'bg-green-900 bg-opacity-40 border-green-500' 
+                  : 'bg-red-900 bg-opacity-40 border-red-500'
+              }`}>
+                <p className={`font-medium mb-2 ${
+                  feedback.type === 'success' 
+                    ? 'text-green-300' 
+                    : 'text-red-300'
+                }`}>
+                  {feedback.message}
+                </p>
+                
+                {feedback.output && (
+                  <div className="mb-2">
+                    <p className="text-sm text-gray-400 mb-1">Twoje wyjście:</p>
+                    <pre className="bg-slate-900 p-3 rounded text-sm font-mono text-green-400 border border-slate-700">{feedback.output}</pre>
+                  </div>
+                )}
+                
+                {feedback.expected && (
+                  <div className="mb-2">
+                    <p className="text-sm text-gray-400 mb-1">Oczekiwane wyjście:</p>
+                    <pre className="bg-slate-900 p-3 rounded text-sm font-mono text-blue-400 border border-slate-700">{feedback.expected}</pre>
+                  </div>
+                )}
+                
+                {feedback.explanation && feedback.type === 'error' && (
+                  <div className="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border border-blue-700">
+                    <p className="text-sm text-blue-300"><strong>Wskazówka:</strong> {feedback.explanation}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Right Panel - Code Editor */}
+          <div className="bg-slate-800 rounded-xl shadow-2xl overflow-hidden border border-slate-700">
+            <div className="bg-slate-900 text-white p-4 flex items-center justify-between border-b border-slate-700">
+              <h3 className="font-semibold text-blue-400">Edytor kodu Python</h3>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={handleReset}
+                  className="flex items-center space-x-1 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded transition-colors text-sm border border-slate-600"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>Reset</span>
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  className="flex items-center space-x-1 bg-green-600 hover:bg-green-500 px-3 py-1 rounded transition-colors text-sm shadow-lg"
+                >
+                  <Play className="w-4 h-4" />
+                  <span>Uruchom</span>
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-0">
+              <textarea
+                value={userCode}
+                onChange={(e) => setUserCode(e.target.value)}
+                className="w-full h-96 p-4 font-mono text-sm bg-slate-950 text-green-400 border-0 resize-none focus:outline-none focus:ring-0"
+                placeholder="Napisz swój kod Python tutaj..."
+                spellCheck={false}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <div className="mt-8 flex justify-between items-center">
+          <button
+            onClick={() => currentLevel > 1 && handleLevelChange(currentLevel - 1)}
+            disabled={currentLevel === 1}
+            className="px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors border border-slate-600"
+          >
+            ← Poprzedni poziom
+          </button>
+          
+          <div className="text-center">
+            <p className="text-gray-300 font-medium">
+              Poziom {currentLevel} z {levels.length}
+            </p>
+            <p className="text-sm text-gray-500">
+              {completedLevels.size} ukończonych
+            </p>
+          </div>
+          
+          <button
+            onClick={() => {
+              if (completedLevels.has(currentLevel) && currentLevel < levels.length) {
+                handleLevelChange(currentLevel + 1);
+              }
+            }}
+            disabled={!completedLevels.has(currentLevel) || currentLevel === levels.length}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors shadow-lg"
+          >
+            Następny poziom →
+          </button>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="mt-12 pb-8 text-center text-gray-500 text-sm">
+        <p>SecFerro Python Division • Chroniony system edukacyjny</p>
+      </footer>
+    </div>
+  );
+};
+
+export default SecFerroPythonCourse;

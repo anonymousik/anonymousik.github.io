@@ -1,0 +1,80 @@
+
+        <!DOCTYPE html>
+        <html lang="pl">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Raport Bezpieczeństwa SECFERRO DIVISION: https://anonymousik.is-a.dev</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a1a; color: #e0e0e0; padding: 20px; }
+                .container { max-width: 800px; margin: 0 auto; background: #2d2d2d; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+                h1 { color: #4db8ff; border-bottom: 1px solid #444; padding-bottom: 10px; }
+                .status { font-weight: bold; padding: 5px 10px; border-radius: 4px; }
+                .pass { background: #28a745; color: white; }
+                .fail { background: #dc3545; color: white; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { text-align: left; padding: 12px; border-bottom: 1px solid #444; }
+                th { color: #bbb; }
+                .timestamp { text-align: right; color: #777; font-size: 0.8em; margin-top: 20px; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>🛡️ Audyt Nagłówków Bezpieczeństwa</h1>
+                <p>Cel: <strong>https://anonymousik.is-a.dev</strong></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nagłówek</th>
+                            <th>Opis</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        
+                        <tr>
+                            <td>Strict-Transport-Security</td>
+                            <td>Wymusza HTTPS (HSTS)</td>
+                            <td><span class="status pass">OK</span></td>
+                        </tr>
+            
+                        <tr>
+                            <td>X-Content-Type-Options</td>
+                            <td>Chroni przed MIME-sniffing</td>
+                            <td><span class="status fail">BRAK</span></td>
+                        </tr>
+            
+                        <tr>
+                            <td>X-Frame-Options</td>
+                            <td>Blokuje Clickjacking</td>
+                            <td><span class="status fail">BRAK</span></td>
+                        </tr>
+            
+                        <tr>
+                            <td>Referrer-Policy</td>
+                            <td>Chroni prywatność danych o źródle</td>
+                            <td><span class="status fail">BRAK</span></td>
+                        </tr>
+            
+                        <tr>
+                            <td>Permissions-Policy</td>
+                            <td>Blokuje kamerę/mikrofon/geo</td>
+                            <td><span class="status fail">BRAK</span></td>
+                        </tr>
+            
+                        <tr>
+                            <td>Content-Security-Policy</td>
+                            <td>Ochrona przed XSS/Injections</td>
+                            <td><span class="status fail">BRAK</span></td>
+                        </tr>
+            
+                    </tbody>
+                </table>
+                <div class="timestamp">
+                    Ostatnia aktualizacja: 2026-01-24 18:08:35 UTC <br>
+                    Status serwera: 200
+                </div>
+            </div>
+        </body>
+        </html>
+        

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kreator CV Kamila Jabłońskiego – Kompleksowy i Estetyczny</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Lato&family=Montserrat:wght@700&family=Georgia&display=swap" rel="stylesheet" />
+
+<style>
+  body, textarea, input, select {
+    font-family: 'Lato', 'Calibri', Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #222;
+    background: #f0f4f8;
+    margin: 0;
+    padding: 0;
+  }
+  #loginContainer, #appContainer {
+    max-width: 900px;
+    margin: 50px auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #aaccee;
+    padding: 25px 30px;
+  }
+  #appContainer { display: none; }
+  
+  h1, h2 {
+    font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    color: #1a3c72;
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    margin-top: 16px;
+    font-weight: 600;
+    color: #1a3c72;
+  }
+
+  input[type=text], input[type=tel], input[type=email], input[type=password], textarea, select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+    font-size: 13px;
+    resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+  }
+
+  input[type=text]:focus, input[type=tel]:focus, input[type=email]:focus, input[type=password]:focus, textarea:focus, select:focus {
+    border-color: #1a3c72;
+    outline: none;
+    box-shadow: 0 0 5px #1a3c72a0;
+  }
+
+  textarea { min-height: 100px; }
+
+  button {
+    background: linear-gradient(135deg, #23527c, #1a3c72);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    padding: 14px 26px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 25px;
+    font-weight: 700;
+    transition: background 0.3s ease;
+    user-select:none;
+  }
+
+  button:hover, button:focus {
+    background: linear-gradient(135deg, #1a3c72, #14509f);
+  }
+
+  #cvPreview {
+    font-family: 'Georgia', serif;
+    color: #2c3e50;
+    line-height: 1.6;
+    font-size: 14px;
+    border: 1px solid #aaccee;
+    padding: 25px;
+    border-radius: 12px;
+    white-space: pre-wrap;
+    min-height: 320px;
+    box-shadow: inset 0 0 15px #d0dffe;
+    margin-top: 25px;
+  }
+
+  .info-tip {
+    background-color: #e0f0ff;
+    border-left: 6px solid #1a3c72;
+    color: #0e2a47;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+
+  .char-count {
+    font-size: 0.8rem;
+    color: #666;
+    float: right;
+  }
+
+  .flex {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .flex > div {
+    flex: 1 1 280px;
+    min-width: 280px;
+  }
+
+  .checkbox-group label {
+    font-weight: 500;
+    display: block;
+    margin: 5px 0;
+    cursor: pointer;
+  }
+
+  .risk-score {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #d9534f;
+    margin-top: 10px;
+  }
+
+  footer {
+    text-align: center;
+    font-family: 'Georgia', serif;
+    margin: 40px 0 20px;
+    color: #555;
+    user-select:none;
+  }
+
+  /* Responsive improvements */
+  @media screen and (max-width: 680px) {
+    .flex {
+      flex-direction: column;
+    }
+    .flex > div {
+      min-width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="loginContainer" style="max-width: 360px; margin: 80px auto; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px #aaccee; background:#fff;">
+  <h2>Panel logowania</h2>
+  <form id="loginForm" autocomplete="off" novalidate>
+    <label for="loginPass">Hasło:</label>
+    <input type="password" id="loginPass" name="loginPass" autocomplete="current-password" required aria-describedby="passHelp" />
+    <div id="passHelp" class="info-tip">Wprowadź tajne hasło, aby uzyskać dostęp</div>
+    <button type="submit">Zaloguj się</button>
+    <div id="loginError" style="color: #d9534f; margin-top: 12px; font-weight: 700; min-height: 22px;" aria-live="polite"></div>
+  </form>
+</div>
+
+<!-- Main App -->
+<div id="appContainer" aria-live="polite" style="display:none;">
+
+  <h1>Kreator CV Kamila Jabłońskiego</h1>
+  <p>Wypełnij pola, aby stworzyć CV budujące zaufanie i spełniające wymagania formalne i prawne.</p>
+  <p style="font-weight:bold; color:#B85C43;">Uwaga: Po wygenerowaniu CV prosimy o dokładne sprawdzenie i ewentualną korektę treści przed wysłaniem.</p>
+
+  <!-- Dane osobowe -->
+  <section aria-label="Dane osobowe i kontaktowe" id="personalSection">
+    <h2>Dane osobowe i kontaktowe</h2>
+    <div class="flex">
+      <div>
+        <label for="name">Imię i nazwisko</label>
+        <input type="text" id="name" maxlength="50" value="Kamil Jabłoński" aria-required="true" aria-describedby="nameCount" />
+        <span class="char-count" id="nameCount">50 znaków max</span>
+      </div>
+      <div>
+        <label for="location">Miejsce zamieszkania</label>
+        <input type="text" id="location" maxlength="50" value="Niemcza" aria-describedby="locationCount" />
+        <span class="char-count" id="locationCount">50 znaków max</span>
+      </div>
+    </div>
+    <div class="flex">
+      <div>
+        <label for="phone">Telefon</label>
+        <input type="tel" id="phone" maxlength="15" placeholder="+48 502 767 157" value="+48 502 767 157" aria-describedby="phoneCount" />
+        <span class="char-count" id="phoneCount">15 znaków max</span>
+        <div class="info-tip">Podaj numer w formacie +48 123 456 789</div>
+      </div>
+      <div>
+        <label for="email">E-mail</label>
+        <input type="email" id="email" maxlength="50" placeholder="adres@mail.com" value="Kam.Jab@yahoo.com" aria-describedby="emailCount" />
+        <span class="char-count" id="emailCount">50 znaków max</span>
+        <div class="info-tip">Podaj poprawny adres e-mail</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Podsumowanie zawodowe -->
+  <section aria-label="Podsumowanie zawodowe" id="summarySection">
+    <h2>Podsumowanie zawodowe (max 300 znaków)</h2>
+    <textarea id="summary" maxlength="300" aria-describedby="summaryCount">Gwarantuję sumienność i pełne zaangażowanie. Jestem mieszkańcem Niemczy, gotowy od zaraz podjąć pracę fizyczną i szybko wdrożyć się w nowe obowiązki. Szanuję swój czas i czas pracodawcy, dlatego punktualność i rzetelność to dla mnie podstawa.</textarea>
+    <span class="char-count" id="summaryCount">300 znaków max</span>
+    <div class="info-tip">Użyj mocnych, zobowiązujących określeń, np. „Gwarantuję”, „punktualność” i „rzetelność”.</div>
+  </section>
+
+  <!-- Mocne atuty -->
+  <section aria-label="Mocne atuty" id="strengthsSection">
+    <h2>Moje Atuty (zaznacz i dopisz inne)</h2>
+    <div class="checkbox-group" role="group" aria-labelledby="strengthsLabel">
+      <label><input type="checkbox" class="strength" value="Gotowość do pracy od zaraz, również w systemie zmianowym i weekendy." checked /> Gotowość i dostępność</label>
+      <label><input type="checkbox" class="strength" value="Posiadam czynne prawo jazdy kat. B i własny transport, co gwarantuje niezawodność i punktualność." checked /> Mobilność</label>
+      <label><input type="checkbox" class="strength" value="Doskonała kondycja fizyczna pozwala mi wykonywać zadania wymagające siły i wytrzymałości." checked /> Siła i wytrzymałość</label>
+      <label><input type="checkbox" class="strength" value="Szybko się uczę i dążę do samodzielności." checked /> Szybkie uczenie się</label>
+    </div>
+    <label for="otherStrengths">Inne atuty (opcjonalnie)</label>
+    <textarea id="otherStrengths" maxlength="200" placeholder="Np. zaangażowanie, punktualność, dyspozycyjność" aria-describedby="otherStrengthsCount"></textarea>
+    <span class="char-count" id="otherStrengthsCount">200 znaków max</span>
+  </section>
+
+  <!-- Doświadczenie zawodowe -->
+  <section aria-label="Doświadczenie zawodowe" id="experienceSection">
+    <h2>Doświadczenie zawodowe (opcjonalne)</h2>
+    <textarea id="experience" maxlength="500" placeholder="Opisz swoje doświadczenie lub pozostaw puste, jeśli brak." aria-describedby="experienceCount"></textarea>
+    <span class="char-count" id="experienceCount">500 znaków max</span>
+  </section>
+
+  <!-- Wykształcenie -->
+  <section aria-label="Wykształcenie" id="educationSection">
+    <h2>Wykształcenie (opcjonalne)</h2>
+    <textarea id="education" maxlength="300" placeholder="Wpisz swoje wykształcenie lub pozostaw puste." aria-describedby="educationCount"></textarea>
+    <span class="char-count" id="educationCount">300 znaków max</span>
+  </section>
+
+  <!-- Referencje -->
+  <section aria-label="Referencje" id="referencesSection">
+    <h2>Referencje (opcjonalne)</h2>
+    <textarea id="references" maxlength="300" placeholder="Dane osób polecających lub wpisz 'Dostępne na życzenie'" aria-describedby="referencesCount"></textarea>
+    <span class="char-count" id="referencesCount">300 znaków max</span>
+  </section>
+
+  <!-- Fundament pracy -->
+  <section aria-label="Fundament mojej pracy" id="foundationSection">
+    <h2>Fundament mojej pracy</h2>
+    <textarea id="foundation" maxlength="400" aria-describedby="foundationCount">Na mnie można polegać. Zawsze kończę to, co zacząłem. Działam w sposób transparentny i zgodny z zasadami. Dobrze radzę sobie z powtarzalnymi zadaniami i utrzymuję koncentrację.</textarea>
+    <span class="char-count" id="foundationCount">400 znaków max</span>
+    <div class="info-tip">Podkreśl swoje wartości i postawę, która daje gwarancję pracodawcy.</div>
+  </section>
+
+  <!-- Klauzula RODO -->
+  <section aria-label="Klauzula RODO" id="rodoSection">
+    <h2>Klauzula RODO</h2>
+    <textarea id="rodoClause" rows="4" maxlength="700" aria-describedby="rodoClauseCount">Wyrażam zgodę na przetwarzanie moich danych osobowych przez [nazwa firmy] w celu prowadzenia rekrutacji na aplikowane przeze mnie stanowisko zgodnie z ustawą z dnia 10 maja 2018 r. o ochronie danych osobowych (Dz. U. 2018, poz. 1000) oraz Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 (RODO).</textarea>
+    <label for="companyName">Nazwa firmy (uzupełnia klauzulę):</label>
+    <input type="text" id="companyName" maxlength="100" placeholder="Wpisz nazwę firmy" aria-describedby="rodoClauseCount" />
+    <div class="info-tip">Możesz dodać zgodę na przetwarzanie danych również na potrzeby przyszłych rekrutacji.</div>
+    <label><input type="checkbox" id="futureRecruitmentConsent"> Wyrażam zgodę na przetwarzanie danych osobowych również na potrzeby przyszłych rekrutacji</label>
+  </section>
+
+  <!-- Wiadomości kontaktowe -->
+  <section aria-label="Wzory wiadomości kontaktowych" id="messageSection">
+    <h2>Wzory wiadomości kontaktowych</h2>
+    <label for="messageType">Wybierz rodzaj wiadomości:</label>
+    <select id="messageType" aria-live="polite" aria-atomic="true" aria-relevant="additions removals">
+      <option value="olx">Wiadomość OLX / Facebook</option>
+      <option value="sms">Wiadomość SMS</option>
+    </select>
+    <textarea id="messageText" rows="6" readonly></textarea>
+    <button id="copyMessage" aria-label="Kopiuj wiadomość do schowka">Kopiuj wiadomość do schowka</button>
+  </section>
+
+  <!-- Test zaufania -->
+  <section aria-label="Test zaufania" id="riskSection">
+    <h2>Test zaufania: Obawy pracodawcy (punktacja i porady)</h2>
+    <p>Oceń swoje odpowiedzi, aby zminimalizować obawy pracodawcy:</p>
+    <label><input type="checkbox" class="riskCheck" value="1"> Dam z siebie wszystko każdego dnia pracy (zaangażowanie)</label><br/>
+    <label><input type="checkbox" class="riskCheck" value="1"> Mam niezawodny transport i punktualność</label><br/>
+    <label><input type="checkbox" class="riskCheck" value="1"> Jestem słowny i dotrzymuję terminów</label><br/>
+    <label><input type="checkbox" class="riskCheck" value="1"> Potrafię szybko się uczyć i adaptować</label><br/>
+    <button id="calcRisk" aria-label="Oblicz ryzyko i zobacz rekomendacje">Oblicz ryzyko i zobacz rekomendacje</button>
+    <div class="risk-score" id="riskScore"></div>
+    <div id="riskAdvice" style="margin-top: 10px;"></div>
+  </section>
+
+  <!-- Szablony Quarto -->
+  <label for="templateSelect">Wybierz szablon Quarto CV:</label>
+  <select id="templateSelect" aria-label="Szablon CV">
+    <option value="mattwarkentin">Matt Warkentin - Simple CV</option>
+    <option value="schochastics">Schochastics - Modern CV</option>
+  </select>
+  <button id="downloadQMD" style="margin-top:10px;">Pobierz plik Quarto .qmd</button>
+
+  <!-- Akcje główne -->
+  <button id="generateCV" aria-label="Generuj i pokaż podgląd CV" style="margin-top:15px;">Generuj i pokaż podgląd CV</button>
+
+  <div id="cvPreview" aria-live="polite" aria-atomic="true" aria-relevant="additions removals" tabindex="0"></div>
+
+  <div style="margin-top: 20px;">
+    <button id="downloadPDF" aria-label="Pobierz CV w formacie PDF">Pobierz CV w PDF</button>
+    <button id="downloadDOCX" aria-label="Pobierz CV w formacie DOCX">Pobierz CV w DOCX</button>
+    <button id="copyText" aria-label="Kopiuj całe CV do schowka" style="margin-left:10px;">Kopiuj CV do schowka</button>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <button id="openInGoogleDocs" aria-label="Otwórz CV w nowym dokumencie Google Docs">Otwórz w Google Docs</button>
+    <small style="display:block; margin-top:4px; color:#555;">Uwaga: Przekierowanie otwiera nowy dokument Google Docs. Wymagane konto Google.</small>
+  </div>
+</div>
+
+<footer>! ƑERRට®ꍏRT©2025   °•.Ⱥꪶꪶའightsའeserved•°•</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.2.1/docx.umd.js"></script>
+
+<script>
+  // Logowanie
+  const loginForm = document.getElementById('loginForm');
+  loginForm.addEventListener('submit', e => {
+    e.preventDefault();
+    let pass = document.getElementById('loginPass').value.trim();
+    if(pass === '0000'){
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('appContainer').style.display = 'block';
+      document.getElementById('loginError').textContent = '';
+      let firstInput = document.getElementById('appContainer').querySelector('input,textarea,select');
+      if(firstInput) firstInput.focus();
+    } else{
+      document.getElementById('loginError').textContent = 'Niepoprawne hasło.';
+      document.getElementById('loginPass').value = '';
+      document.getElementById('loginPass').focus();
+    }
+  });
+
+  // Liczenie znaków
+  function updateCharCount(id, countId, maxLen) {
+    const el = document.getElementById(id);
+    const count = el.value.length;
+    const span = document.getElementById(countId);
+    if(span) span.textContent = `${maxLen - count} znaków pozostało`;
+  }
+  ['name','location','phone','email','summary','otherStrengths','experience','education','references','foundation','companyName','rodoClause'].forEach(id => {
+    let maxLen = document.getElementById(id)?.getAttribute('maxlength') || 100;
+    let countId = id+'Count';
+    let el = document.getElementById(id);
+    if(el && document.getElementById(countId)) {
+      el.addEventListener('input', () => updateCharCount(id, countId, maxLen));
+      updateCharCount(id, countId, maxLen);
+    }
+  });
+
+  // Aktualizacja wiadomości kontaktowej
+  const messageTemplates = {
+    olx: `Dzień dobry,
+Nazywam się Kamil Jabłoński. Piszę w sprawie Państwa ogłoszenia o pracę na stanowisko [Nazwa stanowiska].
+Jestem z Niemczy, mam prawo jazdy i jestem gotowy do pracy od zaraz. Moje CV przesyłam w załączniku.
+Jestem dostępny pod telefonem +48 502 767 157. Chętnie odpowiem na pytania lub spotkam się na krótkiej rozmowie.
+Z poważaniem,
+Kamil Jabłoński`,
+    sms: `Dzień dobry. Nazywam się Kamil Jabłoński, dzwonię w sprawie pracy dla [Nazwa stanowiska] z portalu OLX. Jestem z Niemczy i dostępny od zaraz. Czy to dobra chwila na rozmowę?`
+  };
+  function updateMessage() {
+    let type = document.getElementById('messageType').value;
+    document.getElementById('messageText').value = messageTemplates[type];
+  }
+  document.getElementById('messageType').addEventListener('change', updateMessage);
+  updateMessage();
+  document.getElementById('copyMessage').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('messageText').value).then(() => {
+      alert("Wiadomość skopiowana do schowka.");
+    });
+  });
+
+  // Zbieranie danych CV
+  function collectCVData() {
+    const strengths = [...document.querySelectorAll('.strength:checked')].map(e => e.value);
+    let other = document.getElementById('otherStrengths').value.trim();
+    if(other) strengths.push(other);
+    return {
+      name: document.getElementById('name').value.trim(),
+      location: document.getElementById('location').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      summary: document.getElementById('summary').value.trim(),
+      strengths: strengths,
+      experience: document.getElementById('experience').value.trim(),
+      education: document.getElementById('education').value.trim(),
+      references: document.getElementById('references').value.trim(),
+      foundation: document.getElementById('foundation').value.trim(),
+      rodoClause: (() => {
+        let text = document.getElementById('rodoClause').value.trim();
+        const company = document.getElementById('companyName').value.trim();
+        if(company) text = text.replace('[nazwa firmy]', company);
+        if(document.getElementById('futureRecruitmentConsent').checked){
+          text += '\\nWyrażam zgodę na przetwarzanie moich danych osobowych również na potrzeby przyszłych rekrutacji.';
+        }
+        return text;
+      })()
+    };
+  }
+
+  // Generowanie tekstu CV
+  function generateCVText() {
+    const d = collectCVData();
+    return `
+${d.name}
+Konkretny i słowny pracownik z ${d.location}
+tel: ${d.phone} | e-mail: ${d.email}
+
+Podsumowanie
+${d.summary}
+
+Moje Atuty – Co wnoszę do firmy?
+${d.strengths.map(s => '- ' + s).join('\n')}
+
+${d.experience ? 'Doświadczenie zawodowe:\n' + d.experience + '\n' : ''}
+${d.education ? 'Wykształcenie:\n' + d.education + '\n' : ''}
+${d.references ? 'Referencje:\n' + d.references + '\n' : ''}
+
+Fundament mojej pracy
+${d.foundation}
+
+Klauzula RODO
+${d.rodoClause}
+`.trim();
+  }
+
+  // Podgląd CV
+  function updateCVPreview(){
+    document.getElementById('cvPreview').textContent = generateCVText();
+  }
+  document.getElementById('generateCV').addEventListener('click', updateCVPreview);
+  updateCVPreview();
+
+  // Eksport do PDF (z ostrzeżeniem)
+  document.getElementById('downloadPDF').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4', putOnlyUsedFonts: true, floatPrecision: 16 });
+    doc.setFont('times', 'normal');
+    doc.setFontSize(12);
+    const marginX = 15;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const usableWidth = pageWidth - marginX * 2;
+    const lineHeight = 7;
+    let y = 15;
+    const cvText = generateCVText();
+    const lines = doc.splitTextToSize(cvText, usableWidth);
+    lines.forEach(line => {
+      if (y > 280) {
+        doc.addPage();
+        y = 15;
+      }
+      doc.text(line, marginX, y);
+      y += lineHeight;
+    });
+    alert("PDF został wygenerowany. Przed wysłaniem proszę dokładnie sprawdzić wygenerowane CV.");
+    doc.save("CV_Kamil_Jablonski.pdf");
+  });
+
+  // Eksport do DOCX
+  document.getElementById('downloadDOCX').addEventListener('click', async () => {
+    const { Document, Packer, Paragraph, TextRun } = window.docx;
+    const cvText = generateCVText();
+    const paragraphs = cvText.split('\n').map(line =>
+      line.trim() === '' ? new Paragraph('') : new Paragraph({ children: [new TextRun(line.trim())] })
+    );
+    const doc = new Document({ sections: [{ children: paragraphs }] });
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'CV_Kamil_Jablonski.docx';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Kopiuj cały tekst CV do schowka
+  document.getElementById('copyText').addEventListener('click', () => {
+    const text = generateCVText();
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Treść CV skopiowana do schowka.");
+    }).catch(() => {
+      alert("Nie udało się skopiować do schowka.");
+    });
+  });
+
+  // Otwórz w Google Docs (kopiuj do schowka + nowy dokument)
+  document.getElementById('openInGoogleDocs').addEventListener('click', () => {
+    const text = generateCVText();
+    const url = "https://docs.google.com/document/create";
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Treść CV skopiowana do schowka. Wklej (Ctrl+V) w nowo otwartym dokumencie Google Docs.");
+      window.open(url, '_blank');
+    }).catch(() => {
+      alert("Proszę ręcznie skopiować tekst i wkleić do: " + url);
+      window.open(url, '_blank');
+    });
+  });
+
+  // Test zaufania
+  document.getElementById('calcRisk').addEventListener('click', () => {
+    const checks = document.querySelectorAll('.riskCheck:checked').length;
+    const max = document.querySelectorAll('.riskCheck').length;
+    const risk = max - checks;
+    const riskScore = document.getElementById('riskScore');
+    const advice = document.getElementById('riskAdvice');
+    if (risk === 0) {
+      riskScore.textContent = 'Twoje ryzyko jest minimalne — jesteś idealnym kandydatem!';
+      advice.textContent = 'Doskonała postawa i przygotowanie — utrzymuj swoje atuty.';
+    } else if (risk <= 1) {
+      riskScore.textContent = 'Niskie ryzyko. Kilka rzeczy możesz poprawić.';
+      advice.textContent = 'Zwróć uwagę na punktualność i podtrzymuj motywację.';
+    } else if (risk <= 3) {
+      riskScore.textContent = 'Umiarkowane ryzyko. Warto popracować nad zaangażowaniem i dyspozycyjnością.';
+      advice.textContent = 'Zadbaj o niezawodny transport i konsekwencję w pracy.';
+    } else {
+      riskScore.textContent = 'Wysokie ryzyko. Zastanów się nad motywacją i logistyką.';
+      advice.textContent = 'Staraj się eliminować bariery i zwiększać swój profesjonalizm.';
+    }
+  });
+
+  // Zapis i odczyt z LocalStorage
+  function saveAllToStorage() {
+    const data = {};
+    ['name', 'location', 'phone', 'email', 'summary', 'otherStrengths', 'experience', 'education', 'references', 'foundation', 'rodoClause', 'companyName', 'futureRecruitmentConsent'].forEach(id => {
+      if (id === 'futureRecruitmentConsent') {
+        data[id] = document.getElementById(id).checked;
+      } else {
+        const el = document.getElementById(id);
+        if (el) data[id] = el.value;
+      }
+    });
+    data.strengths = [...document.querySelectorAll('.strength')].map(chk => chk.checked);
+    localStorage.setItem('cvKamilData', JSON.stringify(data));
+  }
+  function loadAllFromStorage() {
+    const data = JSON.parse(localStorage.getItem('cvKamilData') || '{}');
+    if (!data) return;
+    ['name', 'location', 'phone', 'email', 'summary', 'otherStrengths', 'experience', 'education', 'references', 'foundation', 'rodoClause', 'companyName', 'futureRecruitmentConsent'].forEach(id => {
+      if (id === 'futureRecruitmentConsent' && typeof data[id] === 'boolean') {
+        document.getElementById(id).checked = data[id];
+      } else if (data[id]) {
+        const el = document.getElementById(id);
+        if (el) el.value = data[id];
+      }
+    });
+    const strengths = document.querySelectorAll('.strength');
+    if (data.strengths && Array.isArray(data.strengths) && strengths.length === data.strengths.length) {
+      strengths.forEach((chk, i) => chk.checked = data.strengths[i]);
+    }
+  }
+
+  // debounce save input
+  let saveTimeout;
+  document.querySelectorAll('input,textarea,select').forEach(el => {
+    el.addEventListener('input', () => {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(saveAllToStorage, 300);
+    });
+  });
+
+  // Ładuj dane na start
+  window.onload = () => {
+    loadAllFromStorage();
+    updateCVPreview();
+  };
+</script>
+
+</body>
+</html>

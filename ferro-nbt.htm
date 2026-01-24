@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FERRO - Smart City & Meeting Platform</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --ferro-primary: #ff6b35;
+            --ferro-secondary: #4ecdc4;
+            --ferro-dark: #0a0a0a;
+            --ferro-darker: #1a1a2e;
+            --ferro-accent: #16213e;
+            --ferro-text: #e0e0e0;
+            --ferro-text-muted: #b0b0b0;
+            --ferro-success: #16a34a;
+            --ferro-warning: #d97706;
+            --ferro-danger: #dc2626;
+            --ferro-glass: rgba(26, 26, 46, 0.9);
+            --ferro-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --ferro-glow: 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--ferro-dark) 0%, var(--ferro-darker) 50%, var(--ferro-accent) 100%);
+            color: var(--ferro-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* Header & Navigation */
+        .header {
+            background: var(--ferro-glass);
+            padding: 20px 0;
+            border-bottom: 2px solid var(--ferro-primary);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            background: linear-gradient(45deg, var(--ferro-primary), var(--ferro-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: var(--ferro-text);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--ferro-primary);
+        }
+
+        .auth-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--ferro-primary), var(--ferro-secondary));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--ferro-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--ferro-text);
+            border: 2px solid var(--ferro-primary);
+            padding: 10px 22px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: var(--ferro-primary);
+            color: white;
+        }
+
+        /* Main Content Sections */
+        .main-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        .section {
+            padding: 80px 0;
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 120px 0;
+            background: radial-gradient(circle at center, rgba(255, 107, 53, 0.1) 0%, transparent 70%);
+        }
+
+        .hero h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--ferro-primary), var(--ferro-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            color: var(--ferro-text-muted);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .feature-card {
+            background: var(--ferro-glass);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--ferro-primary), var(--ferro-secondary));
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(255, 107, 53, 0.2);
+            border-color: var(--ferro-primary);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.5em;
+            color: var(--ferro-primary);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-description {
+            color: var(--ferro-text-muted);
+            line-height: 1.6;
+        }
+
+        /* Meeting Join Section */
+        .join-section {
+            background: var(--ferro-glass);
+            border-radius: 24px;
+            padding: 60px;
+            margin: 60px 0;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+        }
+
+        .join-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--ferro-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            border-radius: 12px;
+            color: var(--ferro-text);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--ferro-primary);
+            box-shadow: var(--ferro-glow);
+        }
+
+        /* Smart City Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .dashboard-card {
+            background: var(--ferro-glass);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            position: relative;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--ferro-primary), var(--ferro-secondary));
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            color: var(--ferro-primary);
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active { background: var(--ferro-success); color: white; }
+        .status-warning { background: var(--ferro-warning); color: white; }
+        .status-error { background: var(--ferro-danger); color: white; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            color: var(--ferro-primary);
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--ferro-text-muted);
+            font-size: 0.9em;
+        }
+
+        /* ETA Tracking */
+        .eta-display {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 4px solid var(--ferro-primary);
+        }
+
+        .eta-time {
+            font-size: 2em;
+            color: var(--ferro-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .eta-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .eta-detail {
+            text-align: center;
+        }
+
+        .eta-detail-value {
+            color: var(--ferro-secondary);
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+
+        .eta-detail-label {
+            color: var(--ferro-text-muted);
+            font-size: 0.8em;
+        }
+
+        /* Loading & Animations */
+        .loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .loading.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 107, 53, 0.3);
+            border-top: 3px solid var(--ferro-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .join-section {
+                padding: 30px 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--ferro-glass);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--ferro-primary);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--ferro-text);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--ferro-primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 10001;
+            box-shadow: var(--ferro-shadow);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: var(--ferro-success);
+        }
+
+        .notification.error {
+            background: var(--ferro-danger);
+        }
+
+        .notification.warning {
+            background: var(--ferro-warning);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <canvas id="bg-animation"></canvas>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo-section">
+                <div class="logo">FERRO</div>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" onclick="showSection('home')">Strona główna</a>
+                <a href="#" class="nav-item" onclick="showSection('meetings')">Spotkania</a>
+                <a href="#" class="nav-item" onclick="showSection('smart-city')">Smart City</a>
+                <a href="#" class="nav-item" onclick="showSection('eta-tracker')">ETA Tracker</a>
+                <a href="#" class="nav-item" onclick="showSection('documentation')">Dokumentacja</a>
+            </nav>
+            
+            <div class="auth-section">
+                <a href="#" class="btn-secondary" onclick="showModal('loginModal')">Zaloguj</a>
+                <a href="#" class="btn-primary" onclick="showModal('registerModal')">Zarejestruj</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <div class="container">
+                    <h1>FERRO Never Be Late</h1>
+                    <p>Zaawansowana platforma koordynacji spotkań z predykcyjnym systemem ETA i inteligentnym monitoringiem Smart City</p>
+                    
+                    <div class="hero-actions">
+                        <a href="#" class="btn-primary" onclick="showSection('meetings')">Rozpocznij spotkanie</a>
+                        <a href="#" class="btn-secondary" onclick="showSection('smart-city')">Smart City Dashboard</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <span class="feature-icon">🎯</span>
+                        <h3 class="feature-title">Predykcyjny ETA Engine</h3>
+                        <p class="feature-description">
+                            Zaawansowane uczenie maszynowe analizujące wzorce ruchu, warunki pogodowe i historyczne dane podróży 
+                            w celu precyzyjnego przewidywania czasu przybycia.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="feature-icon">🔔</span>
+                        <h3 class="feature-title">Inteligentne Powiadomienia</h3>
+                        <p class="feature-description">
+                            System powiadomień oparty na AI, który uczy się Twoich preferencji i dostarcza informacje 
+                            w optymalnym czasie przez wybrane kanały komunikacji.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="feature-icon">🔐</span>
+                        <h3 class="feature-title">Bezpieczne Dołączanie</h3>
+                        <p class="feature-description">
+                            Kryptograficznie bezpieczne kody dołączania z elastycznym czasem wygaśnięcia 
+                            i granularną kontrolą uprawnień uczestników.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="feature-icon">🏙️</span>
+                        <h3 class="feature-title">Smart City Integration</h3>
+                        <p class="feature-description">
+                            Pełna integracja z systemami miejskimi - monitoring ruchu, jakość powietrza, 
+                            wydarzenia publiczne i infrastruktura transportowa.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="feature-icon">📊</span>
+                        <h3 class="feature-title">Analytics & Insights</h3>
+                        <p class="feature-description">
+                            Zaawansowane analityki wzorców podróży, optymalizacja tras i personalizowane 
+                            rekomendacje oparte na historii użytkowania.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="feature-icon">🌐</span>
+                        <h3 class="feature-title">Real-time Collaboration</h3>
+                        <p class="feature-description">
+                            Współpraca w czasie rzeczywistym z WebSocket, udostępnianie lokalizacji 
+                            i synchronizacja statusów wszystkich uczestników spotkania.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Meeting Section -->
+        <section id="meetings" class="section">
+            <div class="container">
+                <div class="join-section">
+                    <h2 style="text-align: center; margin-bottom: 40px; color: var(--ferro-primary);">
+                        Dołącz do spotkania lub utwórz nowe
+                    </h2>
+                    
+                    <div class="join-form">
+                        <div class="form-group">
+                            <label class="form-label">Kod spotkania</label>
+                            <input type="text" class="form-input" id="meetingCode" placeholder="Wprowadź kod spotkania (np. ABC123XY)">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Twoja nazwa</label>
+                            <input type="text" class="form-input" id="displayName" placeholder="Wprowadź swoją nazwę">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Email (opcjonalnie)</label>
+                            <input type="email" class="form-input" id="email" placeholder="twoj@email.com">
+                        </div>
+                        
+                        <button class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="joinMeeting()">
+                            Dołącz do spotkania
+                        </button>
+                        
+                        <div style="text-align: center; margin: 20px 0; color: var(--ferro-text-muted);">lub</div>
+                        
+                        <button class="btn-secondary" style="width: 100%;" onclick="createNewMeeting()">
+                            Utwórz nowe spotkanie
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Meeting Status Display -->
+                <div id="meetingStatus" style="display: none;">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Status spotkania</h3>
+                            <span class="status-badge status-active">Aktywne</span>
+                        </div>
+                        
+                        <div id="meetingInfo">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Smart City Section -->
+        <section id="smart-city" class="section">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 50px; color: var(--ferro-primary);">
+                    Smart City Dashboard
+                </h2>
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">🚦 Monitoring Ruchu</h3>
+                            <span class="status-badge status-active">Aktywny</span>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number" id="trafficFlow">847</div>
+                                <div class="stat-label">Pojazdy/godz</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="avgSpeed">42</div>
+                                <div class="stat-label">Śr. prędkość</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="incidents">3</div>
+                                <div class="stat-label">Zdarzenia</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">🌡️ Środowisko</h3>
+                            <span class="status-badge status-warning">Uwaga</span>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number" id="airQuality">68</div>
+                                <div class="stat-label">Jakość powietrza</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="temperature">23°C</div>
+                                <div class="stat-label">Temperatura</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="humidity">65%</div>
+                                <div class="stat-label">Wilgotność</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">🛡️ Bezpieczeństwo</h3>
+                            <span class="status-badge status-active">Aktywny</span>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number" id="cameras">156</div>
+                                <div class="stat-label">Kamery aktywne</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="alerts">2</div>
+                                <div class="stat-label">Alerty</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="response">4.2</div>
+                                <div class="stat-label">Czas reakcji</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">⚡ Infrastruktura</h3>
+                            <span class="status-badge status-active">Aktywny</span>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number" id="powerGrid">98.7%</div>
+                                <div class="stat-label">Sieć energetyczna</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="waterSystem">99.2%</div>
+                                <div class="stat-label">System wodny</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="connectivity">95.8%</div>
+                                <div class="stat-label">Łączność</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ETA Tracker Section -->
+        <section id="eta-tracker" class="section">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 50px; color: var(--ferro-primary);">
+                    ETA Tracker - Śledzenie w czasie rzeczywistym
+                </h2>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">📍 Aktualny Status Podróży</h3>
+                        <button class="btn-primary" onclick="startLocationTracking()">Rozpocznij śledzenie</button>
+                    </div>
+                    
+                    <div id="etaDisplay" class="eta-display">
+                        <div class="eta-time">Szacowany czas przybycia: --:--</div>
+                        
+                        <div class="eta-details">
+                            <div class="eta-detail">
+                                <div class="eta-detail-value" id="remainingTime">--</div>
+                                <div class="eta-detail-label">Pozostało minut</div>
+                            </div>
+                            <div class="eta-detail">
+                                <div class="eta-detail-value" id="confidence">--%</div>
+                                <div class="eta-detail-label">Pewność prognozy</div>
+                            </div>
+                            <div class="eta-detail">
+                                <div class="eta-detail-value" id="distance">-- km</div>
+                                <div class="eta-detail-label">Dystans</div>
+                            </div>
+                            <div class="eta-detail">
+                                <div class="eta-detail-value" id="transportMode">--</div>
+                                <div class="eta-detail-label">Środek transportu</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="loading" id="locationLoading">
+                        <div class="spinner"></div>
+                        <span style="margin-left: 15px;">Obliczanie ETA...</span>
+                    </div>
+
+                    <div id="delayFactors" style="margin-top: 20px; display: none;">
+                        <h4 style="color: var(--ferro-primary); margin-bottom: 15px;">Czynniki opóźnień:</h4>
+                        <ul id="delayList" style="color: var(--ferro-text-muted);"></ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documentation Section -->
+        <section id="documentation" class="section">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 50px; color: var(--ferro-primary);">
+                    Dokumentacja API & Integracje
+                </h2>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <span class="

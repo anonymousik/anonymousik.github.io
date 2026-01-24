@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FerroART SEO Strategy Dashboard 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cyber-black: #0A0A0A;
+            --electric-cyan: #00F0FF;
+            --secferro-red: #FF0040;
+            --tech-gray: #2A2A2A;
+            --neon-green: #00FF41;
+            --bg-dark: #0f0f0f;
+            --bg-card: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--cyber-black) 0%, var(--tech-gray) 100%);
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .glitch {
+            position: relative;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
+        /* Header */
+        header {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--electric-cyan);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--electric-cyan), var(--secferro-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        nav {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        nav a:hover {
+            border-color: var(--electric-cyan);
+            background: rgba(0, 240, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(255, 0, 64, 0.1));
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            border: 1px solid var(--electric-cyan);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px var(--electric-cyan);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--electric-cyan);
+            margin-bottom: 2rem;
+        }
+
+        /* Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid var(--tech-gray);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            border-color: var(--electric-cyan);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--electric-cyan);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Section Styling */
+        .section {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--tech-gray);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--electric-cyan);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(180deg, var(--electric-cyan), var(--secferro-red));
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            background: var(--tech-gray);
+            border: 1px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #fff;
+        }
+
+        .tab:hover {
+            border-color: var(--electric-cyan);
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--electric-cyan), var(--secferro-red));
+            border-color: var(--electric-cyan);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Keyword Grid */
+        .keyword-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .keyword-tag {
+            background: var(--tech-gray);
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .keyword-tag:hover {
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 65, 0.1);
+            transform: scale(1.05);
+        }
+
+        .keyword-tag.priority-high {
+            border-left: 3px solid var(--secferro-red);
+        }
+
+        .keyword-tag.priority-medium {
+            border-left: 3px solid var(--electric-cyan);
+        }
+
+        .keyword-tag.priority-low {
+            border-left: 3px solid var(--neon-green);
+        }
+
+        /* Copy Button */
+        .copy-btn {
+            background: linear-gradient(135deg, var(--electric-cyan), var(--neon-green));
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 240, 255, 0.5);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Template Cards */
+        .template-card {
+            background: var(--tech-gray);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--electric-cyan);
+        }
+
+        .template-title {
+            font-size: 1.3rem;
+            color: var(--electric-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .template-content {
+            background: var(--cyber-black);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Content Calendar */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .day-card {
+            background: var(--tech-gray);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .day-card:hover {
+            border-color: var(--electric-cyan);
+            transform: translateY(-3px);
+        }
+
+        .day-title {
+            font-size: 1.2rem;
+            color: var(--electric-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--cyber-black);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .task-item::before {
+            content: '▶';
+            color: var(--neon-green);
+        }
+
+        /* Analytics Dashboard */
+        .metric-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--tech-gray);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+
+        .metric-label {
+            font-weight: 600;
+        }
+
+        .metric-input {
+            background: var(--cyber-black);
+            border: 1px solid var(--electric-cyan);
+            color: #fff;
+            padding: 0.5rem;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .metric-growth {
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .metric-growth.positive {
+            color: var(--neon-green);
+        }
+
+        .metric-growth.negative {
+            color: var(--secferro-red);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--cyber-black);
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--electric-cyan), var(--neon-green));
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #000;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--cyber-black);
+            color: var(--electric-cyan);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--electric-cyan);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--cyber-black);
+            padding: 2rem;
+            text-align: center;
+            border-top: 2px solid var(--electric-cyan);
+            margin-top: 4rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--electric-cyan);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            nav {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .metric-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--cyber-black);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--electric-cyan);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-green);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--tech-gray);
+            border-top: 3px solid var(--electric-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success Message */
+        .success-message {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--neon-green), var(--electric-cyan));
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 700;
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.5s;
+            z-index: 2000;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Download Button */
+        .download-btn {
+            background: var(--secferro-red);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 0, 64, 0.5);
+        }
+
+        /* Export Panel */
+        .export-panel {
+            background: var(--tech-gray);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo glitch">千乇尺尺ට SEO</div>
+            <nav>
+                <a href="#stats">Dashboard</a>
+                <a href="#keywords">Keywords</a>
+                <a href="#templates">Templates</a>
+                <a href="#calendar">Calendar</a>
+                <a href="#analytics">Analytics</a>
+                <a href="#export">Export</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="hero">
+            <h1>FerroART SEO Strategy 2025</h1>
+            <p>Kompletna, interaktywna strategia promocji z automatyzacją</p>
+            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                <button class="copy-btn" onclick="exportAllData()">📥 Eksportuj wszystko</button>
+                <button class="copy-btn" onclick="generateReport()">📊 Generuj raport</button>
+            </div>
+        </div>
+
+        <!-- Stats Dashboard -->
+        <div id="stats" class="section">
+            <h2 class="section-title">📊 Dashboard Statystyk</h2>
+            <div class="stats-grid">
+                <div class="stat-card tooltip" data-tooltip="Aktualizuj co miesiąc">
+                    <div class="stat-number" id="subscribers">0</div>
+                    <div class="stat-label">Subskrybenci</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 0%" id="subs-progress">0%</div>
+                    </div>
+                </div>
+                <div class="stat-card tooltip" data-tooltip="Cel: 10% MoM wzrost">
+                    <div class="stat-number" id="views">0</div>
+                    <div class="stat-label">Wyświetlenia</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 0%" id="views-progress">0%</div>
+                    </div>
+                </div>
+                <div class="stat-card tooltip" data-tooltip="Cel: 8%+">
+                    <div class="stat-number" id="engagement">0%</div>
+                    <div class="stat-label">Engagement Rate</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 0%" id="engagement-progress">0%</div>
+                    </div>
+                </div>
+                <div class="stat-card tooltip" data-tooltip="Przychód miesięczny">
+                    <div class="stat-number" id="revenue">0 PLN</div>
+                    <div class="stat-label">Przychód</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 0%" id="revenue-progress">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keywords Section -->
+        <div id="keywords" class="section">
+            <h2 class="section-title">🔑 SEO Keywords</h2>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('brand-keywords')">Brand</div>
+                <div class="tab" onclick="switchTab('genre-keywords')">Genre</div>
+                <div class="tab" onclick="switchTab('trending-keywords')">Trending</div>
+                <div class="tab" onclick="switchTab('fashion-keywords')">Fashion</div>
+                <div class="tab" onclick="switchTab('technical-keywords')">Technical</div>
+            </div>
+
+            <div id="brand-keywords" class="tab-content active">
+                <p style="margin-bottom: 1rem; color: #888;">🔴 High Priority | 🔵 Medium Priority | 🟢 Low Priority</p>
+                <div class="keyword-grid">
+                    <div class="keyword-tag priority-high" onclick="copyText('FerroART')">FerroART</div>
+                    <div class="keyword-tag priority-high" onclick="copyText('FerroART Sezon 2')">FerroART Sezon 2</div>
+                    <div class="keyword-tag priority-high" onclick="copyText('FerroART Sezon 3')">FerroART Sezon 3</div>
+                    <div class="keyword-tag priority-high" onclick="copyText('SecFerro Division')">SecFerro Division</div>
+                    <div class="keyword-tag priority-medium" onclick="copyText('千乇尺尺ට')">千乇尺尺ට</div>
+                    <div class="keyword-tag priority-medium" onclick="copyText('nieznany nikomu')">nieznany nikomu</div>
+                    <div class="keyword-tag priority-low" onclick="copyText('FerroART nowa muzyka')">FerroART nowa muzyka</div>
+                    <div class="keyword-tag priority-low" onclick="copyText('FerroART remix')">FerroART remix</div>
+                </div>
+                <button class="copy-btn" onclick="copyAllKeywords('brand')">📋 Kopiuj wszystkie</button>
+            </div>
+
+            <div id="genre-keywords" class="tab-content">
+                <div class="keyword-grid">
+                    <div class="keyword-tag priority-high" onclick="copyText('Polski hip hop')">Polski hip hop</div>
+                    <div class="keyword-tag priority-high" onclick="copyText('Rap PL')">Rap PL</div>
+                    <div class="keyword-tag priority-high" onclick="copyText('Polski rap')">Polski rap</div>
+                    <div class="keyword-tag priority-medium" onclick="copyText('Underground polski rap')">Underground polski rap</div>
+                    <div class="keyword-tag priority-medium" onclick="copyText('Muzyka hipnotyzująca')">Muzyka hipnotyzująca</div>
+                    <div class="keyword-tag priority-medium" onclick="copyText('Refleksyjna muzyka')">Refleksyjna muzyka</div>
+                    <div class="keyword-tag priority-low" onclick="copyText('Muzyka do medytacji')">Muzyka do medytacji</div>
+                    <div class="keyword-tag priority-low" onclick="copyText('Muzyka do tańca')">Muzyka do tańca</div>
+                </div>
+                <button class="copy-btn" onclick="copyAllKeywords('genre')">📋 Kopiuj wszystkie</button>
+            </div>
+
+            <div id="trending-keywords" class="tab-content">
+                <div class="keyword-grid">
+                    <div class="keyword-tag priority-high" onclick="copyText('Hedonizm')">Hedonizm</div>
+                    <div class="keyword-tag priority-high" onclick="copyText('Nowości muzyczne 2025')">Nowości muzyczne 2025</div>
+                    <div class="keyword-tag priority-medium" onclick="copyText('Psychologia tłumu')">Psychologia tłumu</div>
+                    <div class="keyword-tag priority-medium" onclick="copyText('Muzyka z przesłaniem')">Muzyka z przesłaniem</div>
+                    <div class="keyword-tag priority-low" onclick="copyText('Remake 2025')">Remake 2025</div>
+                    <div class="keyword-tag priority-low" onclick="copyText('Nostalgia 2000s')">Nostalgia 2000s</div>
+                </div>
+                <button class="copy-btn" onclick="copyAllKeywords('trending')">📋 Kopiuj wszystkie</button>
+            </div>
+
+            <div id="fashion-keywords" class="tab-content">
+                <div class="keyword-grid">
+                    <div class="keyword-tag priority-high" onclick="copyText('Streetwear polska')">Streetwear polska</div>
+                    <div class="keyword-tag priority-high" onclick="copyText('SecFerro Division')">SecFerro Division</div>
+                    <div class="keyword-tag priority-medium" onclick="copyText('Polski designer')">Polski designer</div>
+                    <div class="keyword-tag priority-medium" onclick="copyText('CyberSecurity fashion')">CyberSecurity fashion</div>
+                    <div class="keyword-tag priority-low" onclick="copyText('Glitch art clothing')">Glitch art clothing</div>
+                    <div class="keyword-tag priority-low" onclick="copyText('Urban style polska')">Urban style polska</div>
+                </div>
+                <button class="copy-btn" onclick="copyAllKeywords('fashion')">📋 Kopiuj wszystkie</button>
+            </div>
+
+            <div id="technical-keywords" class="tab-content">
+                <div class="keyword-grid">
+                    <div class="keyword-tag priority-medium" onclick="copyText('Produkcja muzyczna polska')">Produkcja muzyczna polska</div>
+                    <div class="keyword-tag priority-medium" onclick="copyText('Original mix 2025')">Original mix 2025</div>
+                    <div class="keyword-tag priority-low" onclick="copyText('Beats do rapu')">Beats do rapu</div>
+                    <div class="keyword-tag priority-low" onclick="copyText('FL Studio tutorial')">FL Studio tutorial</div>
+                </div>
+                <button class="copy-btn" onclick="copyAllKeywords('technical')">📋 Kopiuj wszystkie</button>
+            </div>
+        </div>
+
+        <!-- Templates Section -->
+        <div id="templates" class="section">
+            <h2 class="section-title">📝 Ready-to-Use Templates</h2>
+            
+            <div class="template-card">
+                <div class="template-title">🎬 Tytuł YouTube (Wariant A)</div>
+                <div class="template-content" id="template-title-a">FerroART - [NAZWA UTWORU] | Polski Hip-Hop 2025 🔥 | Refleksyjna Muzyka × Cybersecurity Vibes</div>
+                <button class="copy-btn" onclick="copyTemplate('template-title-a')">📋 Kopiuj</button>
+            </div>
+
+            <div class="template-card">
+                <div class="template-title">📱 Opis YouTube Short</div>
+                <div class="template-content" id="template-short">🔥 [Emotional statement o tracku]
+
+[1-2 zdania o czym jest utwór]
+
+➡️ Pełna wersja: [link]
+🔔 Subskrybuj: @FerroART
+
+#FerroART #PolskiHipHop #RapPL #MuzykaHipnotyzująca #NowościMuzyczne</div>
+                <button class="copy-btn" onclick="copyTemplate('template-short')">📋 Kopiuj</button>
+            </div>
+
+            <div class="template-card">
+                <div class="template-title">📷 Instagram Caption</div>
+                <div class="template-content" id="template-ig">[Emoji] [Opening hook question]
+
+[Mini-story 3-4 zdania z line breaks]
+
+[Connecting message]
+
+[CTA with specific action]
+
+—
+[Quote lub takeaway]
+—
+
+#FerroART #SecFerro #PolskiHipHop #RapPL #MuzykaHipnotyzująca #NowościMuzyczne #PolskaMusyka #UndergroundPolska #PolskiBrand #WspieramPolskich</div>
+                <button class="copy-btn" onclick="copyTemplate('template-ig')">📋 Kopiuj</button>
+            </div>
+
+            <div class="template-card">
+                <div class="template-title">💬 Pinned Comment (Konkurs)</div>
+                <div class="template-content" id="template-comment">🔥 OFICJALNY KOMENTARZ FERROART 🔥
+
+Dziękuję Ci za obejrzenie! Ta [kolekcja/utwór] to dla mnie coś więcej – to manifest kreatywności.
+
+🎁 KONKURS: Zostaw komentarz odpowiadając na 3 pytania:
+1️⃣ Co najbardziej przypadło Ci do gustu?
+2️⃣ Który element byś wybrał/a i dlaczego?
+3️⃣ Jak połączyłbyś/połączyłabyś to z własnym vibe'm?
+
+⚡ TOP 3 najciekawsze odpowiedzi otrzymają [nagroda]!
+📅 Wyniki: [data i godzina]
+
+P.S. Zostaw suba żeby nie przegapić! 🚀</div>
+                <button class="copy-btn" onclick="copyTemplate('template-comment')">📋 Kopiuj</button>
+            </div>
+
+            <div class="template-card">
+                <div class="template-title">📧 Email Współpraca (Influencer)</div>
+                <div class="template-content" id="template-email">Cześć [Name]! 👋
+
+Śledzę Twój content i mega szanuję vibe który reprezentujesz. 
+Tworzę muzykę jako FerroART i mam nowy [track/kolekcję] [NAZWA], który idealnie pasuje do Twojej estetyki.
+
+Chciałbym Ci wysłać early access. Bez żadnych zobowiązań - jeśli poczujesz, będę mega wdzięczny za share. Jeśli nie, no hard feelings! 🤝
+
+Daj znać jeśli jesteś zainteresowany/a.
+
+Respect,
+千乇尺尺ට
+[kontakt]</div>
+                <button class="copy-btn" onclick="copyTemplate('template-email')">📋 Kopiuj</button>
+            </div>
+        </div>
+
+        <!-- Content Calendar -->
+        <div id="calendar" class="section">
+            <h2 class="section-title">📅 Content Calendar (90 Days)</h2>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('week1-cal')">Tydzień 1-2</div>
+                <div class="tab" onclick="switchTab('week3-cal')">Tydzień 3 (Launch)</div>
+                <div class="tab" onclick="switchTab('week4-cal')">Tydzień 4-5</div>
+                <div class="tab" onclick="switchTab('week6-cal')">Tydzień 6-12</div>
+            </div>
+
+            <div id="week1-cal" class="tab-content active">
+                <div class="calendar-grid">
+                    <div class="day-card">
+                        <div class="day-title">📍 Dzień 1-3: Teaser</div>
+                        <ul class="task-list">
+                            <li class="task-item">Announce "Coś wielkiego nadchodzi"</li>
+                            <li class="task-item">Post cryptic visual (wszystkie platformy)</li>
+                            <li class="task-item">Zmień zdjęcia profilowe (SecFerro branding)</li>
+                            <li class="task-item">Stories z countdown</li>
+                        </ul>
+                        <button class="copy-btn" onclick="exportDayTasks('day1-3')">📥 Export</button>
+                    </div>
+
+                    <div class="day-card">
+                        <div class="day-title">📍 Dzień 4-7: Reveal</div>
+                        <ul class="task-list">
+                            <li class="task-item">Reveal track title/project name</li>
+                            <li class="task-item">15-sec snippet (best moment)</li>
+                            <li class="task-item">Behind-the-scenes studio photos</li>
+                            <li class="task-item">TikTok: Process video</li>
+                        </ul>
+                        <button class="copy-btn" onclick="exportDayTasks('day4-7')">📥 Export</button>
+                    </div>
+
+                    <div class="day-card">
+                        <div class="day-title">📍 Dzień 8-14: Buildup</div>
+                        <ul class="task-list">
+                            <li class="task-item">Lyrics teaser (najlepszy bar)</li>
+                            <li class="task-item">Instagram Poll (engage audience)</li>
+                            <li class="task-item">30-sec snippet z countdown "7 dni"</li>
+                            <li class="task-item">Fashion teaser (SecFerro first look)</li>
+                        </ul>
+                        <button class="copy-btn" onclick="exportDayTasks('day8-14')">📥 Export</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="week3-cal" class="tab-content">
+                <div class="calendar-grid">
+                    <div class="day-card">
+                        <div class="day-title">🚀 PIĄTEK - PREMIERE DAY</div>
+                        <ul class="task-list">
+                            <li class="task-item">12:00 - Premiere post (wszystkie platformy)</li>
+                            <li class="task-item">15:00 - YouTube Premiere (live chat)</li>
+                            <li class="task-item">15:10 - Pin comment z konkursem</li>
+                            <li class="task-item">16:00 - Reaction compilation</li>
+                            <li class="task-item">20:00 - Thank you post</li>
+                            <li class="task-item">22:00 - Instagram Live listening party</li>
+                        </ul>
+                        <button class="copy-btn" onclick="exportDayTasks('premiere')">📥 Export</button>
+                    </div>
+
+                    <div class="day-card">
+                        <div class="day-title">📊 SOBOTA - Day After</div>
+                        <ul class="task-list">
+                            <li class="task-item">"24h recap" - stats highlights</li>
+                            <li class="task-item">Repost best fan reactions</li>
+                            <li class="task-item">Share to Facebook groups</li>
+                            <li class="task-item">TikTok duet reacting to fans</li>
+                        </ul>
+                        <button class="copy-btn" onclick="exportDayTasks('day-after')">📥 Export</button>
+                    </div>
+
+                    <div class="day-card">
+                        <div class="day-title">💡 NIEDZIELA - Momentum</div>
+                        <ul class="task-list">
+                            <li class="task-item">YouTube: "Making of" video</li>
+                            <li class="task-item">Blog post: Deep dive lyrics</li>
+                            <li class="task-item">Announce contest winner</li>
+                            <li class="task-item">Tease next project</li>
+                        </ul>
+                        <button class="copy-btn" onclick="exportDayTasks('sunday')">📥 Export</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="week4-cal" class="tab-content">
+                <div class="day-card">
+                    <div class="day-title">🔄 Tydzień 4-5: Maintenance</div>
+                    <p style="margin: 1rem 0; color: #888;">Strategia: Keep algorithm fed</p>
+                    <ul class="task-list">
+                        <li class="task-item">3x TikTok daily (różne kąty tego samego tracka)</li>
+                        <li class="task-item">1x YouTube Short daily</li>
+                        <li class="task-item">2x Instagram posts/reels weekly</li>
+                        <li class="task-item">Daily Stories z engagement stickers</li>
+                        <li class="task-item">Respond to ALL comments (first hour)</li>
+                    </ul>
+                    <p style="margin-top: 1rem; padding: 1rem; background: var(--cyber-black); border-radius: 8px;">
+                        <strong>Content Mix:</strong><br>
+                        40% - Track promotion<br>
+                        30% - Behind-the-scenes<br>
+                        20% - Fashion content<br>
+                        10% - Community content
+                    </p>
+                    <button class="copy-btn" onclick="exportDayTasks('week4-5')">📥 Export</button>
+                </div>
+            </div>
+
+            <div id="week6-cal" class="tab-content">
+                <div class="day-card">
+                    <div class="day-title">📈 Tydzień 6-12: Scale</div>
+                    <p style="margin: 1rem 0; color: #888;">Focus: Cross-promotion & collaboration</p>
+                    <ul class="task-list">
+                        <li class="task-item">Week 6: Collaborate z 2-3 micro-influencers</li>
+                        <li class="task-item">Week 7: Guest na Polish hip-hop podcasts</li>
+                        <li class="task-item">Week 8: Playlist placement push</li>
+                        <li class="task-item">Week 9: Reddit AMAs</li>
+                        <li class="task-item">Week 10-11: Analyze data, double down winners</li>
+                        <li class="task-item">Week 12: Begin teasing next release</li>
+                    </ul>
+                    <button class="copy-btn" onclick="exportDayTasks('week6-12')">📥 Export</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics" class="section">
+            <h2 class="section-title">📊 Analytics Tracker - Kompleksowy Dashboard</h2>
+            <p style="margin-bottom: 1.5rem; color: #888;">Śledź wszystkie metryki sukcesu - aktualizuj co miesiąc</p>
+
+            <!-- Primary Metrics -->
+            <h3 style="color: var(--electric-cyan); margin: 2rem 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.5rem;">🎯</span> Główne Wskaźniki Sukcesu
+            </h3>
+
+            <div class="metric-row">
+                <div class="metric-label">📊 Wzrost Liczby Subskrybentów</div>
+                <input type="number" class="metric-input" id="input-subs" placeholder="np. 1250" oninput="updateMetric('subs')">
+                <div class="metric-growth" id="growth-subs">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">👁️ Łączna Liczba Wyświetleń</div>
+                <input type="number" class="metric-input" id="input-views" placeholder="np. 25000" oninput="updateMetric('views')">
+                <div class="metric-growth" id="growth-views">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">💬 Wskaźnik Zaangażowania (%)</div>
+                <input type="number" class="metric-input" id="input-engagement" placeholder="Cel: 8%+" step="0.1" oninput="updateMetric('engagement')">
+                <div class="metric-growth" id="growth-engagement">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">💰 Przychody (PLN)</div>
+                <input type="number" class="metric-input" id="input-revenue" placeholder="np. 500" oninput="updateMetric('revenue')">
+                <div class="metric-growth" id="growth-revenue">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">🔗 Ruch na Stronie (odwiedzający)</div>
+                <input type="number" class="metric-input" id="input-traffic" placeholder="np. 1500" oninput="updateMetric('traffic')">
+                <div class="metric-growth" id="growth-traffic">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">📧 Lista E-mail (subskrybenci)</div>
+                <input type="number" class="metric-input" id="input-email" placeholder="np. 350" oninput="updateMetric('email')">
+                <div class="metric-growth" id="growth-email">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">👕 Sprzedane Towary (szt.)</div>
+                <input type="number" class="metric-input" id="input-merch" placeholder="np. 25" oninput="updateMetric('merch')">
+                <div class="metric-growth" id="growth-merch">--</div>
+            </div>
+
+            <!-- YouTube Detailed Analytics -->
+            <h3 style="color: var(--electric-cyan); margin: 2rem 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.5rem;">📺</span> YouTube - Szczegółowe Statystyki
+            </h3>
+
+            <div class="metric-row">
+                <div class="metric-label">📈 CTR - Click Through Rate (%)</div>
+                <input type="number" class="metric-input" id="input-yt-ctr" placeholder="Cel: 6-10%" step="0.1" oninput="updateMetric('yt-ctr')">
+                <div class="metric-growth" id="growth-yt-ctr">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">⏱️ AVD - Średni Czas Oglądania (%)</div>
+                <input type="number" class="metric-input" id="input-yt-avd" placeholder="Cel: 50%+" step="0.1" oninput="updateMetric('yt-avd')">
+                <div class="metric-growth" id="growth-yt-avd">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">⏰ Watch Time (godziny/miesiąc)</div>
+                <input type="number" class="metric-input" id="input-yt-watchtime" placeholder="Cel: 4000h dla monetyzacji" oninput="updateMetric('yt-watchtime')">
+                <div class="metric-growth" id="growth-yt-watchtime">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">💰 RPM - Revenue Per Mille ($)</div>
+                <input type="number" class="metric-input" id="input-yt-rpm" placeholder="np. 3.50" step="0.01" oninput="updateMetric('yt-rpm')">
+                <div class="metric-growth" id="growth-yt-rpm">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">📊 Impressions (wyświetlenia miniatur)</div>
+                <input type="number" class="metric-input" id="input-yt-impressions" placeholder="np. 50000" oninput="updateMetric('yt-impressions')">
+                <div class="metric-growth" id="growth-yt-impressions">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">🔄 Conversion Rate - Sub (Views→Subs %)</div>
+                <input type="number" class="metric-input" id="input-yt-conversion" placeholder="Standard: 1-2%" step="0.01" oninput="updateMetric('yt-conversion')">
+                <div class="metric-growth" id="growth-yt-conversion">--</div>
+            </div>
+
+            <!-- TikTok Analytics -->
+            <h3 style="color: var(--electric-cyan); margin: 2rem 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.5rem;">📱</span> TikTok - Analityka
+            </h3>
+
+            <div class="metric-row">
+                <div class="metric-label">👥 Followersów TikTok</div>
+                <input type="number" class="metric-input" id="input-tt-followers" placeholder="np. 2500" oninput="updateMetric('tt-followers')">
+                <div class="metric-growth" id="growth-tt-followers">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">👁️ Video Views (miesięcznie)</div>
+                <input type="number" class="metric-input" id="input-tt-views" placeholder="np. 150000" oninput="updateMetric('tt-views')">
+                <div class="metric-growth" id="growth-tt-views">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">📈 Completion Rate (%)</div>
+                <input type="number" class="metric-input" id="input-tt-completion" placeholder="Cel: 80%+" step="0.1" oninput="updateMetric('tt-completion')">
+                <div class="metric-growth" id="growth-tt-completion">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">🔄 Shares (udostępnienia)</div>
+                <input type="number" class="metric-input" id="input-tt-shares" placeholder="np. 450" oninput="updateMetric('tt-shares')">
+                <div class="metric-growth" id="growth-tt-shares">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">🎵 Sound Uses (użycia Twojego audio)</div>
+                <input type="number" class="metric-input" id="input-tt-sounds" placeholder="np. 125" oninput="updateMetric('tt-sounds')">
+                <div class="metric-growth" id="growth-tt-sounds">--</div>
+            </div>
+
+            <!-- Instagram Analytics -->
+            <h3 style="color: var(--electric-cyan); margin: 2rem 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.5rem;">📷</span> Instagram - Statystyki
+            </h3>
+
+            <div class="metric-row">
+                <div class="metric-label">👥 Followersów Instagram</div>
+                <input type="number" class="metric-input" id="input-ig-followers" placeholder="np. 1800" oninput="updateMetric('ig-followers')">
+                <div class="metric-growth" id="growth-ig-followers">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">👁️ Reach (zasięg miesięczny)</div>
+                <input type="number" class="metric-input" id="input-ig-reach" placeholder="np. 35000" oninput="updateMetric('ig-reach')">
+                <div class="metric-growth" id="growth-ig-reach">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">📊 Impressions (wyświetlenia)</div>
+                <input type="number" class="metric-input" id="input-ig-impressions" placeholder="np. 65000" oninput="updateMetric('ig-impressions')">
+                <div class="metric-growth" id="growth-ig-impressions">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">💾 Saves (zapisania postów)</div>
+                <input type="number" class="metric-input" id="input-ig-saves" placeholder="np. 350" oninput="updateMetric('ig-saves')">
+                <div class="metric-growth" id="growth-ig-saves">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">📩 DM Shares (udostępnienia w wiad.)</div>
+                <input type="number" class="metric-input" id="input-ig-dmshares" placeholder="np. 280" oninput="updateMetric('ig-dmshares')">
+                <div class="metric-growth" id="growth-ig-dmshares">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">🎬 Reels Plays</div>
+                <input type="number" class="metric-input" id="input-ig-reels" placeholder="np. 45000" oninput="updateMetric('ig-reels')">
+                <div class="metric-growth" id="growth-ig-reels">--</div>
+            </div>
+
+            <!-- Facebook Analytics -->
+            <h3 style="color: var(--electric-cyan); margin: 2rem 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.5rem;">📘</span> Facebook - Metryki
+            </h3>
+
+            <div class="metric-row">
+                <div class="metric-label">👥 Polubienia Strony</div>
+                <input type="number" class="metric-input" id="input-fb-likes" placeholder="np. 1200" oninput="updateMetric('fb-likes')">
+                <div class="metric-growth" id="growth-fb-likes">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">👁️ Post Reach (miesięcznie)</div>
+                <input type="number" class="metric-input" id="input-fb-reach" placeholder="np. 28000" oninput="updateMetric('fb-reach')">
+                <div class="metric-growth" id="growth-fb-reach">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">💬 Engagement (interakcje)</div>
+                <input type="number" class="metric-input" id="input-fb-engagement" placeholder="np. 1850" oninput="updateMetric('fb-engagement')">
+                <div class="metric-growth" id="growth-fb-engagement">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">🎬 Video Views (miesięcznie)</div>
+                <input type="number" class="metric-input" id="input-fb-videoviews" placeholder="np. 15000" oninput="updateMetric('fb-videoviews')">
+                <div class="metric-growth" id="growth-fb-videoviews">--</div>
+            </div>
+
+            <!-- Streaming Platforms -->
+            <h3 style="color: var(--electric-cyan); margin: 2rem 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.5rem;">🎵</span> Platformy Streamingowe
+            </h3>
+
+            <div class="metric-row">
+                <div class="metric-label">🎧 Spotify Streams</div>
+                <input type="number" class="metric-input" id="input-spotify-streams" placeholder="np. 8500" oninput="updateMetric('spotify-streams')">
+                <div class="metric-growth" id="growth-spotify-streams">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">👥 Spotify Monthly Listeners</div>
+                <input type="number" class="metric-input" id="input-spotify-listeners" placeholder="np. 450" oninput="updateMetric('spotify-listeners')">
+                <div class="metric-growth" id="growth-spotify-listeners">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">🍎 Apple Music Streams</div>
+                <input type="number" class="metric-input" id="input-apple-streams" placeholder="np. 3200" oninput="updateMetric('apple-streams')">
+                <div class="metric-growth" id="growth-apple-streams">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">🎼 BandLab Plays</div>
+                <input type="number" class="metric-input" id="input-bandlab-plays" placeholder="np. 2800" oninput="updateMetric('bandlab-plays')">
+                <div class="metric-growth" id="growth-bandlab-plays">--</div>
+            </div>
+
+            <!-- Community & Engagement -->
+            <h3 style="color: var(--electric-cyan); margin: 2rem 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.5rem;">💬</span> Community & Zaangażowanie
+            </h3>
+
+            <div class="metric-row">
+                <div class="metric-label">💬 Łączna Liczba Komentarzy</div>
+                <input type="number" class="metric-input" id="input-comments-total" placeholder="np. 850" oninput="updateMetric('comments-total')">
+                <div class="metric-growth" id="growth-comments-total">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">🔄 Łączne Udostępnienia</div>
+                <input type="number" class="metric-input" id="input-shares-total" placeholder="np. 320" oninput="updateMetric('shares-total')">
+                <div class="metric-growth" id="growth-shares-total">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">❤️ Łączne Polubienia</div>
+                <input type="number" class="metric-input" id="input-likes-total" placeholder="np. 4500" oninput="updateMetric('likes-total')">
+                <div class="metric-growth" id="growth-likes-total">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">📩 Wiadomości Prywatne (miesięcznie)</div>
+                <input type="number" class="metric-input" id="input-dms-received" placeholder="np. 145" oninput="updateMetric('dms-received')">
+                <div class="metric-growth" id="growth-dms-received">--</div>
+            </div>
+
+            <!-- Monetization & Business -->
+            <h3 style="color: var(--electric-cyan); margin: 2rem 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.5rem;">💰</span> Monetyzacja & Biznes
+            </h3>
+
+            <div class="metric-row">
+                <div class="metric-label">💵 AdSense Revenue (PLN)</div>
+                <input type="number" class="metric-input" id="input-adsense" placeholder="np. 250" oninput="updateMetric('adsense')">
+                <div class="metric-growth" id="growth-adsense">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">👕 Przychód z Merchu (PLN)</div>
+                <input type="number" class="metric-input" id="input-merch-revenue" placeholder="np. 1200" oninput="updateMetric('merch-revenue')">
+                <div class="metric-growth" id="growth-merch-revenue">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">🎵 Streaming Revenue (PLN)</div>
+                <input type="number" class="metric-input" id="input-streaming-revenue" placeholder="np. 85" oninput="updateMetric('streaming-revenue')">
+                <div class="metric-growth" id="growth-streaming-revenue">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">🤝 Sponsorship Deals (liczba)</div>
+                <input type="number" class="metric-input" id="input-sponsorships" placeholder="np. 2" oninput="updateMetric('sponsorships')">
+                <div class="metric-growth" id="growth-sponsorships">--</div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-label">☕ Donations (Tipo/BuyCoffee PLN)</div>
+                <input type="number" class="metric-input" id="input-donations" placeholder="np. 180" oninput="updateMetric('donations')">
+                <div class="metric-growth" id="growth-donations">--</div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="copy-btn" onclick="saveAnalytics()">💾 Zapisz wszystkie dane</button>
+                <button class="download-btn" onclick="downloadAnalytics()">📥 Pobierz raport CSV</button>
+                <button class="download-btn" onclick="generateDetailedReport()">📊 Generuj pełny raport</button>
+                <button class="copy-btn" onclick="compareWithGoals()">🎯 Porównaj z celami</button>
+            </div>
+
+            <!-- Summary Panel -->
+            <div id="summary-panel" style="margin-top: 2rem; padding: 1.5rem; background: var(--tech-gray); border-radius: 10px; border-left: 4px solid var(--neon-green); display: none;">
+                <h3 style="color: var(--neon-green); margin-bottom: 1rem;">📈 Podsumowanie Miesięczne</h3>
+                <div id="summary-content"></div>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div id="export" class="section">
+            <h2 class="section-title">📥 Export & Downloads</h2>
+            <div class="export-panel">
+                <h3 style="color: var(--electric-cyan); margin-bottom: 1rem;">Wybierz materiały do pobrania:</h3>
+                <div class="export-options">
+                    <button class="download-btn" onclick="downloadKeywords()">🔑 Keywords (CSV)</button>
+                    <button class="download-btn" onclick="downloadTemplates()">📝 Templates (TXT)</button>
+                    <button class="download-btn" onclick="downloadCalendar()">📅 Calendar (JSON)</button>
+                    <button class="download-btn" onclick="downloadHashtags()"># Hashtagi (TXT)</button>
+                    <button class="download-btn" onclick="downloadAllMaterials()">📦 Wszystko (ZIP)</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--tech-gray); border-radius: 10px; border-left: 4px solid var(--neon-green);">
+                <h3 style="color: var(--neon-green); margin-bottom: 1rem;">💡 Quick Links</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <a href="https://studio.youtube.com" target="_blank" style="color: var(--electric-cyan); text-decoration: none;">📺 YouTube Studio</a>
+                    <a href="https://analytics.tiktok.com" target="_blank" style="color: var(--electric-cyan); text-decoration: none;">📱 TikTok Analytics</a>
+                    <a href="https://business.facebook.com" target="_blank" style="color: var(--electric-cyan); text-decoration: none;">📘 Meta Business Suite</a>
+                    <a href="https://trends.google.com" target="_blank" style="color: var(--electric-cyan); text-decoration: none;">📊 Google Trends</a>
+                    <a href="https://www.tubebuddy.com" target="_blank" style="color: var(--electric-cyan); text-decoration: none;">🔧 TubeBuddy</a>
+                    <a href="https://www.canva.com" target="_blank" style="color: var(--electric-cyan); text-decoration: none;">🎨 Canva</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-message" id="success-msg">✅ Skopiowano do schowka!</div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="https://www.youtube.com/@ferroart" target="_blank">YouTube</a>
+            <a href="https://tiktok.com/@FerroARTy" target="_blank">TikTok</a>
+            <a href="https://facebook.com/ferroarty" target="_blank">Facebook</a>
+            <a href="https://bandlab.com/ferroart" target="_blank">BandLab</a>
+            <a href="https://github.com/anonymousik" target="_blank">GitHub</a>
+            <a href="mailto:nieznanynikomuu@gmail.com">Contact</a>
+        </div>
+        <p style="color: #888; margin-top: 1rem;">© 2025 FerroART® - Created by 千乇尺尺ට</p>
+        <p style="color: var(--electric-cyan); margin-top: 0.5rem;">ꈤ¡ꫀzꈤꪖꈤy - ⌬ - ꈤ¡ꀘꪮꪑꪊ</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">🔥 "IN THE WORLD FULL OF CLOWNS - BE A JOKER" 🔥</p>
+    </footer>
+
+    <script>
+        // Tab Switching
+        function switchTab(tabId) {
+            const allTabs = document.querySelectorAll('.tab');
+            const allContent = document.querySelectorAll('.tab-content');
+            
+            allTabs.forEach(tab => tab.classList.remove('active'));
+            allContent.forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Copy to Clipboard
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showSuccessMessage();
+            });
+        }
+
+        function copyTemplate(templateId) {
+            const text = document.getElementById(templateId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showSuccessMessage();
+            });
+        }
+
+        function showSuccessMessage() {
+            const msg = document.getElementById('success-msg');
+            msg.classList.add('show');
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 2000);
+        }
+
+        // Copy All Keywords
+        const keywordSets = {
+            brand: ['FerroART', 'FerroART Sezon 2', 'FerroART Sezon 3', 'SecFerro Division', '千乇尺尺ට', 'nieznany nikomu', 'FerroART nowa muzyka', 'FerroART remix'],
+            genre: ['Polski hip hop', 'Rap PL', 'Polski rap', 'Underground polski rap', 'Muzyka hipnotyzująca', 'Refleksyjna muzyka', 'Muzyka do medytacji', 'Muzyka do tańca'],
+            trending: ['Hedonizm', 'Nowości muzyczne 2025', 'Psychologia tłumu', 'Muzyka z przesłaniem', 'Remake 2025', 'Nostalgia 2000s'],
+            fashion: ['Streetwear polska', 'SecFerro Division', 'Polski designer', 'CyberSecurity fashion', 'Glitch art clothing', 'Urban style polska'],
+            technical: ['Produkcja muzyczna polska', 'Original mix 2025', 'Beats do rapu', 'FL Studio tutorial']
+        };
+
+        function copyAllKeywords(category) {
+            const keywords = keywordSets[category].join(', ');
+            navigator.clipboard.writeText(keywords).then(() => {
+                showSuccessMessage();
+            });
+        }
+
+        // Analytics Update with extended metrics
+        let previousData = {};
+
+        function updateMetric(metric) {
+            const input = document.getElementById(`input-${metric}`);
+            const value = parseFloat(input.value) || 0;
+            
+            // Update dashboard cards if exists
+            const dashElement = document.getElementById(metric);
+            if (dashElement) {
+                if (metric === 'engagement') {
+                    dashElement.textContent = value + '%';
+                } else if (metric === 'revenue') {
+                    dashElement.textContent = value + ' PLN';
+                } else {
+                    dashElement.textContent = value.toLocaleString();
+                }
+            }
+            
+            // Calculate growth
+            if (previousData[metric]) {
+                const growth = ((value - previousData[metric]) / previousData[metric] * 100).toFixed(1);
+                const growthEl = document.getElementById(`growth-${metric}`);
+                if (growthEl) {
+                    growthEl.textContent = (growth > 0 ? '+' : '') + growth + '%';
+                    growthEl.className = 'metric-growth ' + (growth >= 0 ? 'positive' : 'negative');
+                }
+            }
+            
+            // Update progress bars for main dashboard
+            const progressMap = {
+                'subs': 'subs-progress',
+                'views': 'views-progress',
+                'engagement': 'engagement-progress',
+                'revenue': 'revenue-progress'
+            };
+            
+            if (progressMap[metric]) {
+                const progress = document.getElementById(progressMap[metric]);
+                if (progress) {
+                    const maxValues = {subs: 10000, views: 100000, engagement: 10, revenue: 5000};
+                    const percentage = Math.min((value / maxValues[metric]) * 100, 100);
+                    progress.style.width = percentage + '%';
+                    progress.textContent = percentage.toFixed(0) + '%';
+                }
+            }
+        }
+
+        function saveAnalytics() {
+            const allMetrics = [
+                'subs', 'views', 'engagement', 'revenue', 'traffic', 'email', 'merch',
+                'yt-ctr', 'yt-avd', 'yt-watchtime', 'yt-rpm', 'yt-impressions', 'yt-conversion',
+                'tt-followers', 'tt-views', 'tt-completion', 'tt-shares', 'tt-sounds',
+                'ig-followers', 'ig-reach', 'ig-impressions', 'ig-saves', 'ig-dmshares', 'ig-reels',
+                'fb-likes', 'fb-reach', 'fb-engagement', 'fb-videoviews',
+                'spotify-streams', 'spotify-listeners', 'apple-streams', 'bandlab-plays',
+                'comments-total', 'shares-total', 'likes-total', 'dms-received',
+                'adsense', 'merch-revenue', 'streaming-revenue', 'sponsorships', 'donations'
+            ];
+            
+            const currentData = {};
+            allMetrics.forEach(metric => {
+                const input = document.getElementById(`input-${metric}`);
+                if (input) {
+                    currentData[metric] = parseFloat(input.value) || 0;
+                }
+            });
+            
+            previousData = currentData;
+            
+            localStorage.setItem('ferroart-analytics', JSON.stringify({
+                data: currentData,
+                date: new Date().toISOString()
+            }));
+            
+            alert('✅ Wszystkie dane zapisane! Wprowadź nowe wartości za miesiąc, aby zobaczyć wzrost.');
+            
+            // Generate summary
+            generateSummary(currentData);
+        }
+
+        function generateSummary(data) {
+            const summaryPanel = document.getElementById('summary-panel');
+            const summaryContent = document.getElementById('summary-content');
+            
+            const totalReach = (data['yt-impressions'] || 0) + (data['ig-reach'] || 0) + (data['fb-reach'] || 0) + (data['tt-views'] || 0);
+            const totalEngagement = (data['comments-total'] || 0) + (data['shares-total'] || 0) + (data['likes-total'] || 0);
+            const totalRevenue = (data['adsense'] || 0) + (data['merch-revenue'] || 0) + (data['streaming-revenue'] || 0) + (data['donations'] || 0);
+            const totalFollowers = (data['subs'] || 0) + (data['tt-followers'] || 0) + (data['ig-followers'] || 0) + (data['fb-likes'] || 0);
+            
+            summaryContent.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div style="padding: 1rem; background: var(--cyber-black); border-radius: 8px; border-left: 3px solid var(--electric-cyan);">
+                        <div style="font-size: 0.9rem; color: #888;">Łączny Zasięg</div>
+                        <div style="font-size: 1.8rem; color: var(--electric-cyan); font-weight: 700;">${totalReach.toLocaleString()}</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--cyber-black); border-radius: 8px; border-left: 3px solid var(--neon-green);">
+                        <div style="font-size: 0.9rem; color: #888;">Łączne Zaangażowanie</div>
+                        <div style="font-size: 1.8rem; color: var(--neon-green); font-weight: 700;">${totalEngagement.toLocaleString()}</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--cyber-black); border-radius: 8px; border-left: 3px solid var(--secferro-red);">
+                        <div style="font-size: 0.9rem; color: #888;">Łączny Przychód</div>
+                        <div style="font-size: 1.8rem; color: var(--secferro-red); font-weight: 700;">${totalRevenue.toLocaleString()} PLN</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--cyber-black); border-radius: 8px; border-left: 3px solid var(--electric-cyan);">
+                        <div style="font-size: 0.9rem; color: #888;">Suma Followersów</div>
+                        <div style="font-size: 1.8rem; color: var(--electric-cyan); font-weight: 700;">${totalFollowers.toLocaleString()}</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1.5rem; padding: 1rem; background: var(--cyber-black); border-radius: 8px;">
+                    <h4 style="color: var(--electric-cyan); margin-bottom: 0.5rem;">💡 Insights & Rekomendacje:</h4>
+                    <ul style="list-style: none; padding-left: 0;">
+                        ${data['yt-ctr'] < 6 ? '<li style="padding: 0.5rem 0; border-bottom: 1px solid var(--tech-gray);">⚠️ CTR poniżej 6% - ulepsz thumbnails i tytuły</li>' : ''}
+                        ${data['yt-avd'] < 50 ? '<li style="padding: 0.5rem 0; border-bottom: 1px solid var(--tech-gray);">⚠️ AVD poniżej 50% - popraw hook (pierwsze 30 sek)</li>' : ''}
+                        ${data['engagement'] >= 8 ? '<li style="padding: 0.5rem 0; border-bottom: 1px solid var(--tech-gray);">✅ Świetny engagement rate! Utrzymaj momentum</li>' : ''}
+                        ${data['tt-completion'] >= 80 ? '<li style="padding: 0.5rem 0; border-bottom: 1px solid var(--tech-gray);">✅ Wysoki completion rate na TikTok - twórz więcej podobnego contentu</li>' : ''}
+                        ${data['ig-saves'] > 100 ? '<li style="padding: 0.5rem 0; border-bottom: 1px solid var(--tech-gray);">✅ Dużo zapisań na IG - twórz więcej "saveable" contentu</li>' : ''}
+                        ${totalRevenue < 1000 ? '<li style="padding: 0.5rem 0; border-bottom: 1px solid var(--tech-gray);">💡 Rozważ aktywację dodatkowych źródeł przychodu (merch, sponsorzy)</li>' : ''}
+                        ${data['subs'] >= 1000 && data['yt-watchtime'] >= 4000 ? '<li style="padding: 0.5rem 0; border-bottom: 1px solid var(--tech-gray);">🎉 Spełniasz wymagania monetyzacji YouTube!</li>' : ''}
+                    </ul>
+                </div>
+            `;
+            
+            summaryPanel.style.display = 'block';
+        }
+
+        function compareWithGoals() {
+            const goals = {
+                subs: 10000,
+                engagement: 8,
+                revenue: 2000,
+                'yt-ctr': 6,
+                'yt-avd': 50,
+                'tt-completion': 80,
+                'ig-saves': 500
+            };
+            
+            let report = '🎯 PORÓWNANIE Z CELAMI:\n\n';
+            
+            for (const [metric, goal] of Object.entries(goals)) {
+                const input = document.getElementById(`input-${metric}`);
+                if (input && input.value) {
+                    const current = parseFloat(input.value);
+                    const percentage = (current / goal * 100).toFixed(1);
+                    const status = percentage >= 100 ? '✅' : percentage >= 75 ? '🟡' : '🔴';
+                    report += `${status} ${metric.toUpperCase()}: ${current} / ${goal} (${percentage}%)\n`;
+                }
+            }
+            
+            alert(report);
+        }
+
+        function downloadAnalytics() {
+            const allMetrics = [
+                'subs', 'views', 'engagement', 'revenue', 'traffic', 'email', 'merch',
+                'yt-ctr', 'yt-avd', 'yt-watchtime', 'yt-rpm', 'yt-impressions', 'yt-conversion',
+                'tt-followers', 'tt-views', 'tt-completion', 'tt-shares', 'tt-sounds',
+                'ig-followers', 'ig-reach', 'ig-impressions', 'ig-saves', 'ig-dmshares', 'ig-reels',
+                'fb-likes', 'fb-reach', 'fb-engagement', 'fb-videoviews',
+                'spotify-streams', 'spotify-listeners', 'apple-streams', 'bandlab-plays',
+                'comments-total', 'shares-total', 'likes-total', 'dms-received',
+                'adsense', 'merch-revenue', 'streaming-revenue', 'sponsorships', 'donations'
+            ];
+            
+            const date = new Date().toLocaleDateString('pl-PL');
+            let csv = 'Category,Metric,Value,Date\n';
+            
+            const categories = {
+                'Main': ['subs', 'views', 'engagement', 'revenue', 'traffic', 'email', 'merch'],
+                'YouTube': ['yt-ctr', 'yt-avd', 'yt-watchtime', 'yt-rpm', 'yt-impressions', 'yt-conversion'],
+                'TikTok': ['tt-followers', 'tt-views', 'tt-completion', 'tt-shares', 'tt-sounds'],
+                'Instagram': ['ig-followers', 'ig-reach', 'ig-impressions', 'ig-saves', 'ig-dmshares', 'ig-reels'],
+                'Facebook': ['fb-likes', 'fb-reach', 'fb-engagement', 'fb-videoviews'],
+                'Streaming': ['spotify-streams', 'spotify-listeners', 'apple-streams', 'bandlab-plays'],
+                'Community': ['comments-total', 'shares-total', 'likes-total', 'dms-received'],
+                'Monetization': ['adsense', 'merch-revenue', 'streaming-revenue', 'sponsorships', 'donations']
+            };
+            
+            for (const [category, metrics] of Object.entries(categories)) {
+                metrics.forEach(metric => {
+                    const input = document.getElementById(`input-${metric}`);
+                    if (input) {
+                        const value = input.value || 0;
+                        csv += `${category},${metric},${value},${date}\n`;
+                    }
+                });
+            }
+            
+            downloadFile('ferroart-complete-analytics.csv', csv);
+        }
+
+        function generateDetailedReport() {
+            const allMetrics = {
+                'subs': 'Subskrybenci YouTube',
+                'views': 'Wyświetlenia',
+                'engagement': 'Engagement Rate (%)',
+                'revenue': 'Przychód (PLN)',
+                'traffic': 'Ruch na stronie',
+                'email': 'Lista email',
+                'merch': 'Sprzedane towary',
+                'yt-ctr': 'YouTube CTR (%)',
+                'yt-avd': 'YouTube AVD (%)',
+                'yt-watchtime': 'Watch Time (h)',
+                'tt-followers': 'TikTok Followers',
+                'tt-views': 'TikTok Views',
+                'ig-followers': 'Instagram Followers',
+                'ig-reach': 'Instagram Reach',
+                'spotify-streams': 'Spotify Streams'
+            };
+            
+            let report = `
+╔═══════════════════════════════════════════════════════╗
+║    FERROART - SZCZEGÓŁOWY RAPORT ANALYTICS 2025      ║
+╚═══════════════════════════════════════════════════════╝
+
+📅 Data wygenerowania: ${new Date().toLocaleString('pl-PL')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 GŁÓWNE WSKAŹNIKI SUKCESU
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+            for (const [metric, label] of Object.entries(allMetrics)) {
+                const input = document.getElementById(`input-${metric}`);
+                if (input && input.value) {
+                    const growthEl = document.getElementById(`growth-${metric}`);
+                    const growth = growthEl ? growthEl.textContent : '--';
+                    report += `${label}: ${input.value} (${growth})\n`;
+                }
+            }
+            
+            // Calculate totals
+            const totalReach = 
+                (parseFloat(document.getElementById('input-yt-impressions')?.value) || 0) +
+                (parseFloat(document.getElementById('input-ig-reach')?.value) || 0) +
+                (parseFloat(document.getElementById('input-fb-reach')?.value) || 0) +
+                (parseFloat(document.getElementById('input-tt-views')?.value) || 0);
+                
+            const totalRevenue =
+                (parseFloat(document.getElementById('input-adsense')?.value) || 0) +
+                (parseFloat(document.getElementById('input-merch-revenue')?.value) || 0) +
+                (parseFloat(document.getElementById('input-streaming-revenue')?.value) || 0) +
+                (parseFloat(document.getElementById('input-donations')?.value) || 0);
+            
+            report += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📈 PODSUMOWANIE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Łączny Zasięg: ${totalReach.toLocaleString()}
+Łączny Przychód: ${totalRevenue.toLocaleString()} PLN
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 NASTĘPNE KROKI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Kontynuuj 3x daily posting na TikTok
+2. Optymalizuj thumbnails (CTR cel: 8%+)
+3. Engage z community (first 30 min każdego posta)
+4. Testuj nowe formaty content co tydzień
+5. Reach out do 3 influencerów na współpracę
+
+© 2025 FerroART® - 千乇尺尺ට
+`;
+            
+            downloadFile('ferroart-detailed-report.txt', report);
+        }
+
+        // Download Functions
+        function downloadKeywords() {
+            let csv = 'Category,Keyword,Priority\n';
+            for (const [category, keywords] of Object.entries(keywordSets)) {
+                keywords.forEach((kw, idx) => {
+                    const priority = idx < 3 ? 'High' : idx < 6 ? 'Medium' : 'Low';
+                    csv += `${category},${kw},${priority}\n`;
+                });
+            }
+            downloadFile('ferroart-keywords.csv', csv);
+        }
+
+        function downloadTemplates() {
+            const templates = document.querySelectorAll('.template-content');
+            let text = 'FERROART SEO TEMPLATES\n' + '='.repeat(50) + '\n\n';
+            templates.forEach((template, idx) => {
+                const title = template.previousElementSibling.textContent;
+                text += `${title}\n${'-'.repeat(50)}\n${template.textContent}\n\n`;
+            });
+            downloadFile('ferroart-templates.txt', text);
+        }
+
+        function downloadHashtags() {
+            const hashtags = `YOUTUBE HASHTAGS:
+#FerroART #FerroARTSezon2 #PolskiHipHop #RapPL #MuzykaHipnotyzująca #NowościMuzyczne #Hedonizm #MuzykaZPrzesłaniem #PolskiRap #Underground #OriginalMix2025 #Remake2025 #MuzykaDoMedytacji #PolskaProdukcjaMuzyczna #CyberSecMusic
+
+TIKTOK HASHTAGS:
+#FerroART #PolskiRap #RapPL #TikTokPolska #PolishMusic #UndergroundRap #MusicProducer #ViralSound #PolskaMusyka #NewMusic
+
+INSTAGRAM HASHTAGS:
+#FerroART #SecFerro #SecFerroDivision #FerroARTSezon2 #FerroARTSezon3 #PolskiRap #RapPL #PolskiHipHop #PolskaMusyka #PolishMusic #StreetwearPolska #PolskiFashion #UrbanStylePoland #MuzykaHipnotyzująca #MuzykaZPrzesłaniem #RefleksyjnaMusyka #Hedonizm #NowościMuzyczne2025 #PolskaProdukcjaMuzyczna #CyberSecurityFashion #GlitchArtStyle #UndergroundPolska #PolskiTwórca #PolskiBrand #WspieramPolskichTwórców #MadeInPoland #PolskaKreatywność #PolskiDesigner #MuzykaIFashion #NewMusic
+
+FACEBOOK HASHTAGS:
+#FerroART #PolskiRap #PolskaMusyka #WspieramPolskich #PolskiBrand #SecFerro #StreetwearPolska #MuzykaPolska #NowośćMuzyczne #PolskiHipHop #PolskaKreatywność #MuzykaIFashion`;
+            
+            downloadFile('ferroart-hashtags.txt', hashtags);
+        }
+
+        function downloadCalendar() {
+            const calendar = {
+                week1_2: {
+                    day1_3: ['Announce "Coś wielkiego nadchodzi"', 'Post cryptic visual', 'Zmień zdjęcia profilowe', 'Stories z countdown'],
+                    day4_7: ['Reveal track title/project name', '15-sec snippet', 'BTS studio photos', 'TikTok process video'],
+                    day8_14: ['Lyrics teaser', 'Instagram Poll', '30-sec snippet + countdown', 'Fashion teaser']
+                },
+                week3_launch: {
+                    friday: ['12:00 - Premiere post', '15:00 - YouTube Premiere', '15:10 - Pin comment', '16:00 - Reaction compilation', '20:00 - Thank you post', '22:00 - IG Live'],
+                    saturday: ['24h recap', 'Repost fan reactions', 'Share to FB groups', 'TikTok duet'],
+                    sunday: ['Making of video', 'Blog post lyrics', 'Announce winner', 'Tease next project']
+                },
+                week4_5: ['3x TikTok daily', '1x YouTube Short daily', '2x IG posts weekly', 'Daily Stories', 'Respond to comments'],
+                week6_12: ['Collaborate with influencers', 'Podcast appearances', 'Playlist pitching', 'Reddit AMAs', 'Analyze data', 'Tease next release']
+            };
+            
+            downloadFile('ferroart-calendar.json', JSON.stringify(calendar, null, 2));
+        }
+
+        function downloadAnalytics() {
+            const data = {
+                subscribers: document.getElementById('input-subs').value || 0,
+                views: document.getElementById('input-views').value || 0,
+                engagement: document.getElementById('input-engagement').value || 0,
+                revenue: document.getElementById('input-revenue').value || 0,
+                traffic: document.getElementById('input-traffic').value || 0,
+                email: document.getElementById('input-email').value || 0,
+                date: new Date().toLocaleDateString('pl-PL')
+            };
+            
+            let csv = 'Metric,Value,Date\n';
+            for (const [key, value] of Object.entries(data)) {
+                if (key !== 'date') {
+                    csv += `${key},${value},${data.date}\n`;
+                }
+            }
+            
+            downloadFile('ferroart-analytics.csv', csv);
+        }
+
+        function downloadFile(filename, content) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            showSuccessMessage();
+        }
+
+        function downloadAllMaterials() {
+            downloadKeywords();
+            setTimeout(() => downloadTemplates(), 200);
+            setTimeout(() => downloadHashtags(), 400);
+            setTimeout(() => downloadCalendar(), 600);
+            setTimeout(() => {
+                alert('✅ Wszystkie materiały zostały pobrane!\n\nZnajdziesz je w folderze Downloads.');
+            }, 800);
+        }
+
+        function exportAllData() {
+            const data = {
+                keywords: keywordSets,
+                analytics: {
+                    subscribers: document.getElementById('input-subs').value || 0,
+                    views: document.getElementById('input-views').value || 0,
+                    engagement: document.getElementById('input-engagement').value || 0,
+                    revenue: document.getElementById('input-revenue').value || 0
+                },
+                exportDate: new Date().toISOString()
+            };
+            
+            downloadFile('ferroart-complete-export.json', JSON.stringify(data, null, 2));
+        }
+
+        function generateReport() {
+            const report = `
+╔═══════════════════════════════════════════════════════╗
+║         FERROART SEO STRATEGY REPORT 2025            ║
+╚═══════════════════════════════════════════════════════╝
+
+📊 CURRENT STATISTICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Subscribers: ${document.getElementById('input-subs').value || 'N/A'}
+Views: ${document.getElementById('input-views').value || 'N/A'}
+Engagement Rate: ${document.getElementById('input-engagement').value || 'N/A'}%
+Revenue: ${document.getElementById('input-revenue').value || 'N/A'} PLN
+
+🎯 KEY OBJECTIVES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Grow YouTube to 10K subscribers (monetization)
+✓ Achieve 8%+ engagement rate
+✓ Launch SecFerro Division fashion line
+✓ Establish 3+ revenue streams
+
+📅 NEXT ACTIONS (7 DAYS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Post 3x TikTok daily
+2. Upload 1x YouTube video
+3. Engage with all comments (first hour)
+4. Create 5x Instagram Stories
+5. Reach out to 2 micro-influencers
+
+🔑 TOP KEYWORDS TO FOCUS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• FerroART
+• Polski Hip Hop
+• SecFerro Division
+• Hedonizm
+• Streetwear Polska
+
+Generated: ${new Date().toLocaleString('pl-PL')}
+© 2025 FerroART® - 千乇尺尺ට
+            `.trim();
+            
+            downloadFile('ferroart-report.txt', report);
+        }
+
+        function exportDayTasks(dayId) {
+            const taskLists = {
+                'day1-3': ['Announce "Coś wielkiego nadchodzi"', 'Post cryptic visual', 'Zmień zdjęcia profilowe', 'Stories z countdown'],
+                'day4-7': ['Reveal track title', '15-sec snippet', 'BTS photos', 'TikTok process video'],
+                'day8-14': ['Lyrics teaser', 'Instagram Poll', '30-sec snippet', 'Fashion teaser'],
+                'premiere': ['12:00 - Premiere post', '15:00 - YouTube Premiere', '15:10 - Pin comment', '16:00 - Reactions', '20:00 - Thank you

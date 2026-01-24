@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecFERRO | Blokada Bezpieczeństwa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-neon: #ffb800; /* Bursztynowy z maski */
+            --alert-red: #ff2a2a;    /* Czerwień dla zagrożeń */
+            --tech-blue: #00f2ff;
+            --bg-color: #020202;
+            --panel-bg: rgba(10, 10, 10, 0.85);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Share Tech Mono', monospace;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                repeating-linear-gradient(0deg, transparent, transparent 1px, #111 1px, #111 2px);
+            background-size: cover;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 184, 0, 0.3);
+            opacity: 0.4;
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            width: 90%;
+            max-width: 900px;
+            border: 1px solid var(--primary-neon);
+            background: var(--panel-bg);
+            padding: 2px; /* Ramka wewnętrzna */
+            box-shadow: 0 0 30px rgba(255, 184, 0, 0.15);
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        /* Ozdobne narożniki */
+        .corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-neon);
+            transition: 0.3s;
+        }
+        .c-ul { top: -5px; left: -5px; border-right: none; border-bottom: none; }
+        .c-ur { top: -5px; right: -5px; border-left: none; border-bottom: none; }
+        .c-bl { bottom: -5px; left: -5px; border-right: none; border-top: none; }
+        .c-br { bottom: -5px; right: -5px; border-left: none; border-top: none; }
+
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid rgba(255, 184, 0, 0.2);
+        }
+
+        .right-panel {
+            flex: 1.5;
+            min-width: 350px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .image-wrapper {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--primary-neon);
+            box-shadow: 0 0 25px var(--primary-neon);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: sepia(0.2) contrast(1.1);
+        }
+
+        .division-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--primary-neon);
+            border: 1px solid var(--primary-neon);
+            padding: 5px 15px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            text-shadow: 0 0 5px var(--primary-neon);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: #fff;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+        
+        h1 span {
+            color: var(--alert-red);
+            display: block;
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            margin-bottom: 5px;
+        }
+
+        .terminal-log {
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 3px solid var(--alert-red);
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            margin: 20px 0;
+            width: 100%;
+        }
+
+        .log-line {
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .label { color: #888; }
+        .value { color: var(--tech-blue); }
+        .alert-val { color: var(--alert-red); font-weight: bold; animation: blink 1s infinite; }
+
+        .message-box {
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            margin-top: 10px;
+        }
+
+        .scramble-text {
+            color: #ccc;
+            line-height: 1.5;
+            min-height: 60px;
+        }
+
+        .btn {
+            margin-top: 25px;
+            align-self: flex-start;
+            background: transparent;
+            border: 1px solid var(--primary-neon);
+            color: var(--primary-neon);
+            padding: 10px 30px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        .btn:hover {
+            background: var(--primary-neon);
+            color: #000;
+            box-shadow: 0 0 20px var(--primary-neon);
+        }
+
+        @keyframes blink { 50% { opacity: 0.5; } }
+        @keyframes scan {
+            0% { top: -10%; }
+            100% { top: 110%; }
+        }
+
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .left-panel { border-right: none; border-bottom: 1px solid #333; padding: 20px; }
+            .right-panel { padding: 20px; }
+            h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scan-line"></div>
+
+    <div class="container">
+        <div class="corner c-ul"></div>
+        <div class="corner c-ur"></div>
+        <div class="corner c-bl"></div>
+        <div class="corner c-br"></div>
+
+        <div class="left-panel">
+            <div class="image-wrapper">
+                <img src="40d5516c59355ec565078094248dc23b4902874679c286fa560b713e66c9e7a7.jpg" alt="SecFerro Agent">
+            </div>
+            <div class="division-badge">SecFERRO DIVISION</div>
+            <div style="margin-top:10px; font-size: 0.7rem; color: #666;">ID: <span id="agent-id">SF-992</span></div>
+        </div>
+
+        <div class="right-panel">
+            <h1>
+                <span>CYBER-THREAT DETECTED</span>
+                DOSTĘP ZABLOKOWANY
+            </h1>
+
+            <div class="terminal-log">
+                <span class="log-line"><span class="label">> REQUEST_ID:</span> <span class="value" id="req-id">...</span></span>
+                <span class="log-line"><span class="label">> TARGET URL:</span> <span class="value" id="blocked-url">...</span></span>
+                <span class="log-line"><span class="label">> THREAT LEVEL:</span> <span class="alert-val">CRITICAL / HIGH</span></span>
+                <span class="log-line"><span class="label">> CLASSIFICATION:</span> <span class="alert-val">TRACKINGWARE / MALICIOUS</span></span>
+            </div>
+
+            <div class="message-box">
+                <p class="label" style="font-size: 0.8rem; margin-bottom: 5px;">SYSTEM MESSAGE // SECFERRO PROTOCOL:</p>
+                <p class="scramble-text" id="text-scramble">Inicjalizacja...</p>
+            </div>
+
+            <a href="#" class="btn" onclick="window.history.back()">Wróć do bezpiecznej strefy</a>
+        </div>
+    </div>
+
+    <script>
+        // 1. Ustawienie zablokowanego URL
+        // W prawdziwym środowisku URL może być przekazywany przez parametr GET, tutaj pobieramy obecny
+        document.getElementById('blocked-url').innerText = window.location.href;
+
+        // 2. Generowanie losowego ID żądania
+        const generateId = () => 'REQ-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        document.getElementById('req-id').innerText = generateId();
+        document.getElementById('agent-id').innerText = 'SF-' + Math.floor(Math.random() * 8999 + 1000);
+
+        // 3. Animacja tekstu (Efekt deszyfracji)
+        const targetMessage = "Zatrzymano połączenie wychodzące. Dywizja SecFERRO zidentyfikowała domenę docelową jako niebezpieczną. Witryna zawiera skrypty śledzące (Spyware) lub złośliwe oprogramowanie naruszające integralność Twoich danych.";
+        
+        const textElement = document.getElementById('text-scramble');
+        const chars = 'ABCDEF0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+        let frame = 0;
+
+        function updateText() {
+            let output = '';
+            // Prędkość odkrywania (im mniejszy dzielnik, tym szybciej)
+            let completed = Math.floor(frame / 2);
+
+            for (let i = 0; i < targetMessage.length; i++) {
+                if (i < completed) {
+                    output += targetMessage[i];
+                } else if (targetMessage[i] === ' ') {
+                    output += ' ';
+                } else {
+                    output += chars[Math.floor(Math.random() * chars.length)];
+                }
+            }
+            
+            textElement.innerText = output;
+
+            if (completed < targetMessage.length) {
+                frame++;
+                requestAnimationFrame(updateText);
+            }
+        }
+
+        // Opóźnienie startu animacji dla efektu "ładowania"
+        setTimeout(updateText, 600);
+    </script>
+</body>
+</html>

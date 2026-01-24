@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECFERRO: E-Ops Cyberwarfare - CLASSIFIED</title>
+    <meta name="description" content="Advanced Cybersecurity Training Simulator - Elite Operations Division">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #030303;
+            --bg-accent: #1a1a1a;
+            --text-primary: #00ff41;
+            --text-secondary: #00ffff;
+            --text-danger: #ff0040;
+            --text-warning: #ffaa00;
+            --text-success: #00ff88;
+            --text-info: #0088ff;
+            --text-neon: #ff0099;
+            --border-glow: 0 0 20px var(--text-primary), inset 0 0 10px rgba(0, 255, 65, 0.1);
+            --matrix-glow: 0 0 30px #00ff41, 0 0 60px #00ff41, 0 0 90px #00ff41;
+            --cyber-purple: #8A2BE2;
+            --cyber-gold: #FFD700;
+            --glass-bg: rgba(0, 0, 0, 0.7);
+            --glass-border: rgba(0, 255, 65, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, #001122 100%);
+            color: var(--text-primary);
+            font-family: 'VT323', monospace;
+            font-size: 16px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Advanced matrix background with GPU acceleration */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.06;
+            z-index: 0;
+            will-change: transform;
+            transform: translateZ(0);
+        }
+
+        .matrix-column {
+            position: absolute;
+            color: var(--text-primary);
+            font-family: 'VT323', monospace;
+            font-size: 10px;
+            line-height: 1.1;
+            animation: matrix-fall linear infinite;
+            will-change: transform, opacity;
+            text-shadow: 0 0 5px currentColor;
+        }
+
+        @keyframes matrix-fall {
+            0% { 
+                transform: translateY(-100vh); 
+                opacity: 1; 
+            }
+            80% { 
+                opacity: 0.8; 
+            }
+            100% { 
+                transform: translateY(100vh); 
+                opacity: 0; 
+            }
+        }
+
+        /* Cyber particles effect */
+        .cyber-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            box-shadow: 0 0 4px currentColor;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            50% { transform: translateY(-20px) translateX(10px); opacity: 1; }
+        }
+
+        /* Navigation System */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .nav-logo {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: 18px;
+            color: var(--text-primary);
+            text-shadow: var(--matrix-glow);
+            animation: pulse 2s infinite;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            margin: 0;
+        }
+
+        .nav-item a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: 'Space Mono', monospace;
+            font-weight: 400;
+            font-size: 14px;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+        }
+
+        .nav-item a:hover {
+            color: var(--text-primary);
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .nav-item a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--text-primary);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 5px var(--text-primary);
+        }
+
+        .nav-item a:hover::after {
+            width: 100%;
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 3px;
+        }
+
+        .nav-toggle span {
+            width: 20px;
+            height: 2px;
+            background: var(--text-primary);
+            transition: 0.3s;
+            box-shadow: 0 0 5px var(--text-primary);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            color: var(--text-secondary);
+            text-shadow: var(--matrix-glow);
+            margin-bottom: 20px;
+            animation: glow-pulse 3s ease-in-out infinite;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: var(--text-primary);
+            margin-bottom: 30px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        .hero-description {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.8);
+            animation: fadeInUp 1s ease-out 1s both;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 1.5s both;
+        }
+
+        .cta-button {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--text-primary), var(--text-success));
+            color: var(--bg-primary);
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.8);
+        }
+
+        .cta-button.secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--text-primary);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .cta-button.secondary:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+
+        /* Section Base Styles */
+        .section {
+            padding: 80px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--text-primary), var(--text-secondary));
+            box-shadow: 0 0 10px var(--text-primary);
+        }
+
+        /* Game Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--text-primary), var(--text-secondary), var(--text-neon));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.2);
+            border-color: var(--text-primary);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .feature-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .feature-description {
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Wiki Section */
+        .wiki-section {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(0, 20, 40, 0.8));
+        }
+
+        .wiki-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .wiki-tab {
+            background: transparent;
+            border: 2px solid var(--text-primary);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .wiki-tab.active,
+        .wiki-tab:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            box-shadow: 0 0 15px var(--text-primary);
+        }
+
+        .wiki-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 40px;
+            min-height: 400px;
+        }
+
+        .wiki-tab-content {
+            display: none;
+        }
+
+        .wiki-tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .wiki-tab-content h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .wiki-tab-content h4 {
+            font-family: 'Orbitron', monospace;
+            color: var(--text-primary);
+            margin: 20px 0 10px;
+            font-size: 1.2rem;
+        }
+
+        .wiki-tab-content p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .wiki-tab-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .wiki-tab-content li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .wiki-tab-content li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        .command-example {
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 3px solid var(--text-primary);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            font-family: 'Orbitron', monospace;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Gaming Section */
+        .gaming-section {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(0, 0, 0, 0.9));
+        }
+
+        .game-preview {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--text-danger), var(--text-warning), var(--text-primary), var(--text-secondary));
+            animation: rainbow 3s linear infinite;
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .terminal-preview {
+            background: var(--bg-primary);
+            border: 2px solid var(--text-primary);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'VT323', monospace;
+            color: var(--text-primary);
+            margin: 20px 0;
+            box-shadow: var(--border-glow);
+        }
+
+        .terminal-line {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .prompt {
+            color: var(--text-secondary);
+        }
+
+        /* Game Container (Hidden initially) */
+        #game-container {
+            display: none;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+            background: var(--bg-primary);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { text-shadow: var(--matrix-glow); }
+            50% { text-shadow: 0 0 50px #00ff41, 0 0 80px #00ff41, 0 0 120px #00ff41; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 60px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 60px);
+                background: var(--glass-bg);
+                backdrop-filter: blur(15px);
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 50px 0;
+                gap: 20px;
+                transition: left 0.3s ease;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .nav-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .nav-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -6px);
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-button {
+                width: 200px;
+                text-align: center;
+            }
+
+            .wiki-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .wiki-tab {
+                width: 200px;
+                text-align: center;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section {
+                padding: 60px 0;
+            }
+
+            .container {
+                padding: 0 15px;
+            }
+
+            .feature-card,
+            .wiki-content,
+            .game-preview {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .matrix-column,
+            .particle,
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --bg-primary: #000000;
+                --bg-secondary: #000000;
+                --text-primary: #ffffff;
+                --text-secondary: #ffff00;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Advanced Matrix Background -->
+    <div class="matrix-bg" id="matrix-bg"></div>
+    <div class="cyber-particles" id="cyber-particles"></div>
+
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <div class="nav-wrapper">
+            <div class="nav-logo">SECFERRO</div>
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="#home">START</a></li>
+                <li class="nav-item"><a href="#features">OPERACJE</a></li>
+                <li class="nav-item"><a href="#wiki">INTEL</a></li>
+                <li class="nav-item"><a href="#gaming">SYMULATOR</a></li>
+                <li class="nav-item"><a href="#" onclick="startGame()">DEPLOY</a></li>
+            </ul>
+            <div class="nav-toggle" id="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">SECFERRO:<br>E-OPS CYBERWARFARE</h1>
+            <p class="hero-subtitle">CLASSIFIED DIVISION - ELITE OPERATIONS</p>
+            <p class="hero-description">
+                Wkrocz do świata zaawansowanej cyberwojny. Dołącz do elitarnej jednostki SECFERRO 
+                i zdobądź umiejętności niezbędne do ochrony infrastruktury krytycznej przed 
+                najbardziej zaawansowanymi zagrożeniami cyfrowego wieku.
+            </p>
+            <div class="hero-cta">
+                <button class="cta-button" onclick="startGame()">ROZPOCZNIJ MISJĘ</button>
+                <a href="#wiki" class="cta-button secondary">BAZA WIEDZY</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <h2 class="section-title">OPERACJE SPECJALNE</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Red Team Operations</h3>
+                    <p class="feature-description">
+                        Symulacje Advanced Persistent Threats, penetration testing i exploit development. 
+                        Naucz się myśleć jak najlepsi hakerzy świata.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3 class="feature-title">Blue Team Defense</h3>
+                    <p class="feature-description">
+                        Zaawansowane techniki obronne, incident response, threat hunting i forensyka cyfrowa. 
+                        Zostań nieprzekraczalną tarczą.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔮</div>
+                    <h3 class="feature-title">Purple Team Integration</h3>
+                    <p class="feature-description">
+                        Holistyczne podejście łączące ofensywę z defensywą. 
+                        Maksymalizuj efektywność bezpieczeństwa poprzez współpracę.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧬</div>
+                    <h3 class="feature-title">AI Security</h3>
+                    <p class="feature-description">
+                        Testowanie bezpieczeństwa systemów AI/ML, adversarial attacks, 
+                        i obrona przed zagrożeniami sztucznej inteligencji.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚛️</div>
+                    <h3 class="feature-title">Quantum Cryptography</h3>
+                    <p class="feature-description">
+                        Post-quantum cryptography, quantum key distribution i przygotowanie 
+                        na erę komputerów kwantowych.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="feature-title">Blockchain Forensics</h3>
+                    <p class="feature-description">
+                        Analiza transakcji blockchain, śledzenie zagrożeń w kryptowalutach 
+                        i investigations w Web3.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Wiki/Intel Section -->
+    <section id="wiki" class="section wiki-section">
+        <div class="container">
+            <h2 class="section-title">BAZA WIEDZY SECFERRO</h2>
+            
+            <div class="wiki-tabs">
+                <button class="wiki-tab active" onclick="showWikiTab('overview')">PRZEGLĄD</button>
+                <button class="wiki-tab" onclick="showWikiTab('commands')">KOMENDY</button>
+                <button class="wiki-tab" onclick="showWikiTab('missions')">MISJE</button>
+                <button class="wiki-tab" onclick="showWikiTab('tools')">NARZĘDZIA</button>
+                <button class="wiki-tab" onclick="showWikiTab('threats')">ZAGROŻENIA</button>
+                <button class="wiki-tab" onclick="showWikiTab('ranking')">RANKING</button>
+            </div>
+
+            <div class="wiki-content">
+                <div id="overview" class="wiki-tab-content active">
+                    <h3>System Operacyjny SECFERRO</h3>
+                    <p>SECFERRO to zaawansowany symulator cyberbezpieczeństwa oparty na rzeczywistych scenariuszach zagrożeń. System został zaprojektowany przez zespół ekspertów ds. cyberbezpieczeństwa we współpracy z agencjami rządowymi.</p>
+                    
+                    <h4>Architektura Systemu</h4>
+                    <p>Platforma wykorzystuje:</p>
+                    <ul>
+                        <li>Wirtualny system plików z realistyczną strukturą Linuxa</li>
+                        <li>Symulowane środowisko sieciowe z różnymi typami hostów</li>
+                        <li>Bazy danych zagrożeń oparte na rzeczywistych IOC</li>
+                        <li>System reputacji i progresji oparty na osiągnięciach</li>
+                        <li>Zaawansowane algorytmy sztucznej inteligencji dla przeciwników</li>
+                    </ul>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Komend</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">50+</div>
+                            <div class="stat-label">Misji</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">1000+</div>
+                            <div class="stat-label">CVE</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">99.9%</div>
+                            <div class="stat-label">Realności</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="commands" class="wiki-tab-content">
+                    <h3>Interfejs Wiersza Poleceń</h3>
+                    <p>System SECFERRO wykorzystuje zaawansowany terminal z pełnym wsparciem dla komend cyberbezpieczeństwa.</p>
+
+                    <h4>Podstawowe Komendy Systemowe</h4>
+                    <div class="command-example">
+ls [ścieżka]          # Listowanie zawartości katalogu
+cd [katalog]          # Zmiana katalogu roboczego
+cat [plik]           # Wyświetlenie zawartości pliku
+pwd                  # Pokazuje bieżący katalog
+clear                # Czyszczenie terminala
+history              # Historia komend
+                    </div>
+
+                    <h4>Komendy Ofensywne (Red Team)</h4>
+                    <div class="command-example">
+nmap [cel]           # Skanowanie sieci i portów
+metasploit [exploit] # Framework eksploitacji
+burp [URL]           # Testowanie aplikacji web
+sqlmap [cel]         # Testowanie SQL injection
+gobuster [cel]       # Brute forcing katalogów
+hashcat [hash]       # Łamanie haseł
+                    </div>
+
+                    <h4>Komendy Defensywne (Blue Team)</h4>
+                    <div class="command-example">
+wireshark [interface] # Analiza ruchu sieciowego
+volatility [dump]    # Analiza pamięci
+threat-hunt [IOC]    # Polowanie na zagrożenia
+incident-response    # Reagowanie na incydenty
+forensics [evidence] # Kryminalistyka cyfrowa
+yara [rule]          # Skanowanie malware
+                    </div>
+
+                    <h4>Komendy Zaawansowane</h4>
+                    <div class="command-example">
+ai-security          # Testowanie bezpieczeństwa AI
+quantum-crypto       # Kryptografia kwantowa
+blockchain-analysis  # Analiza blockchain
+iot-security         # Bezpieczeństwo IoT
+cloud-security       # Audyt chmury
+zero-trust           # Implementacja Zero Trust
+                    </div>
+                </div>
+
+                <div id="missions" class="wiki-tab-content">
+                    <h3>System Misji SECFERRO</h3>
+                    <p>Misje w systemie SECFERRO są podzielone na kategorie zgodnie z metodologiami cyberbezpieczeństwa.</p>
+
+                    <h4>Red Team Operations</h4>
+                    <ul>
+                        <li><strong>Operation Crimson Shadow</strong> - Symulacja APT z pełnym cyklem ataku</li>
+                        <li><strong>Operation Dark Phoenix</strong> - Advanced persistent threat w środowisku korporacyjnym</li>
+                        <li><strong>Operation Silent Storm</strong> - Stealth penetration testing</li>
+                        <li><strong>Social Engineering Campaign</strong> - Phishing i pretexting</li>
+                        <li><strong>Zero-Day Research</strong> - Odkrywanie nowych podatności</li>
+                    </ul>
+
+                    <h4>Blue Team Operations</h4>
+                    <ul>
+                        <li><strong>Operation Blue Shield</strong> - Obrona przed wielopoziomowym atakiem</li>
+                        <li><strong>Incident Response Drill</strong> - Reagowanie na rzeczywiste zagrożenia</li>
+                        <li><strong>Threat Hunting Exercise</strong> - Proaktywne poszukiwanie zagrożeń</li>
+                        <li><strong>Forensic Investigation</strong> - Śledztwo cyfrowe post-incident</li>
+                        <li><strong>SOC Operations</strong> - Zarządzanie centrum bezpieczeństwa</li>
+                    </ul>
+
+                    <h4>Purple Team Exercises</h4>
+                    <ul>
+                        <li><strong>Collaborative Security Assessment</strong> - Wspólna ocena bezpieczeństwa</li>
+                        <li><strong>Red vs Blue Competition</strong> - Zawody drużynowe</li>
+                        <li><strong>Tabletop Exercises</strong> - Symulacje planszowe</li>
+                    </ul>
+
+                    <h4>Specialized Operations</h4>
+                    <ul>
+                        <li><strong>AI Security Testing</strong> - Testowanie systemów ML/AI</li>
+                        <li><strong>Quantum Cryptanalysis</strong> - Przygotowanie na era kwantowa</li>
+                        <li><strong>Blockchain Forensics</strong> - Śledztwa kryptowalutowe</li>
+                        <li><strong>IoT Penetration Testing</strong> - Bezpieczeństwo urządzeń IoT</li>
+                    </ul>
+                </div>
+
+                <div id="tools" class="wiki-tab-content">
+                    <h3>Arsenal Cyberbezpieczeństwa</h3>
+                    <p>SECFERRO zawiera symulacje najbardziej zaawansowanych narzędzi używanych przez profesjonalistów.</p>
+
+                    <h4>Narzędzia Rekonesansu</h4>
+                    <ul>
+                        <li><strong>OSINT Framework</strong> - Zbieranie informacji z otwartych źródeł</li>
+                        <li><strong>Nmap</strong> - Skanowanie sieci i wykrywanie usług</li>
+                        <li><strong>Masscan</strong> - Szybkie skanowanie portów</li>
+                        <li><strong>Shodan Integration</strong> - Wyszukiwanie urządzeń w internecie</li>
+                        <li><strong>TheHarvester</strong> - Zbieranie adresów email i subdomen</li>
+                    </ul>
+
+                    <h4>Frameworks Eksploitacji</h4>
+                    <ul>
+                        <li><strong>Metasploit Pro</strong> - Zaawansowany framework eksploitacji</li>
+                        <li><strong>Cobalt Strike</strong> - Symulacja adversarial operations</li>
+                        <li><strong>Empire</strong> - Post-exploitation framework</li>
+                        <li><strong>Custom Exploits</strong> - Rozwój własnych eksploitów</li>
+                    </ul>
+
+                    <h4>Analiza i Forensyka</h4>
+                    <ul>
+                        <li><strong>Volatility</strong> - Analiza obrazów pamięci</li>
+                        <li><strong>Autopsy</strong> - Platforma forensyki cyfrowej</li>
+                        <li><strong>Ghidra</strong> - Reverse engineering NSA</li>
+                        <li><strong>Wireshark</strong> - Analiza protokołów sieciowych</li>
+                        <li><strong>YARA</strong> - Wykrywanie i klasyfikacja malware</li>
+                    </ul>
+
+                    <h4>Narzędzia Defensywne</h4>
+                    <ul>
+                        <li><strong>SIEM Integration</strong> - Security Information Event Management</li>
+                        <li><strong>Threat Intelligence Platforms</strong> - Inteligencja zagrożeń</li>
+                        <li><strong>Honeypot Networks</strong> - Technologie zwodnicze</li>
+                        <li><strong>EDR Systems</strong> - Endpoint Detection and Response</li>
+                    </ul>
+                </div>
+
+                <div id="threats" class="wiki-tab-content">
+                    <h3>Baza Zagrożeń SECFERRO</h3>
+                    <p>System zawiera aktualne informacje o zagrożeniach cyberbezpieczeństwa z całego świata.</p>
+
+                    <h4>Advanced Persistent Threats (APT)</h4>
+                    <ul>
+                        <li><strong>APT29 (Cozy Bear)</strong> - Rosyjska grupa wywiadowcza</li>
+                        <li><strong>APT28 (Fancy Bear)</strong> - GRU cyber operations</li>
+                        <li><strong>Lazarus Group</strong> - Północnokoreańscy hakerzy</li>
+                        <li><strong>Equation Group</strong> - NSA cyber weapons</li>
+                        <li><strong>Comment Crew (APT1)</strong> - Chińska grupa PLA Unit 61398</li>
+                    </ul>
+
+                    <h4>Families Malware</h4>
+                    <ul>
+                        <li><strong>Stuxnet</strong> - Worm sabotujący systemy SCADA</li>
+                        <li><strong>WannaCry</strong> - Ransomware wykorzystujący EternalBlue</li>
+                        <li><strong>NotPetya</strong> - Destrukcyjny wiper ukraińskich systemów</li>
+                        <li><strong>Emotet</strong> - Modularny trojan bankowy</li>
+                        <li><strong>TrickBot</strong> - Banking trojan z funkcjami lateral movement</li>
+                    </ul>
+
+                    <h4>Techniki Ataku (MITRE ATT&CK)</h4>
+                    <ul>
+                        <li><strong>Initial Access</strong> - Spear phishing, drive-by downloads</li>
+                        <li><strong>Persistence</strong> - Registry run keys, services</li>
+                        <li><strong>Privilege Escalation</strong> - Token manipulation, exploits</li>
+                        <li><strong>Lateral Movement</strong> - Pass-the-hash, RDP</li>
+                        <li><strong>Data Exfiltration</strong> - DNS tunneling, encrypted channels</li>
+                    </ul>
+
+                    <h4>Emerging Threats</h4>
+                    <ul>
+                        <li><strong>AI-Powered Attacks</strong> - Deepfake, automated social engineering</li>
+                        <li><strong>Quantum Threats</strong> - Post-quantum cryptography</li>
+                        <li><strong>Supply Chain Attacks</strong> - SolarWinds, Codecov</li>
+                        <li><strong>Cloud Native Threats</strong> - Container escapes, serverless attacks</li>
+                    </ul>
+                </div>
+
+                <div id="ranking" class="wiki-tab-content">
+                    <h3>System Rangowy SECFERRO</h3>
+                    <p>Progresja w systemie SECFERRO opiera się na rzeczywistej wiedzy i umiejętnościach cyberbezpieczeństwa.</p>
+
+                    <h4>Hierarchia Rangowa</h4>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number">🟢</div>
+                            <div class="stat-label">Rekrut (0-25 pkt)</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">🔵</div>
+                            <div class="stat-label">Analityk (26-50 pkt)</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">🟡</div>
+                            <div class="stat-label">Specjalista (51-75 pkt)</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">🟠</div>
+                            <div class="stat-label">Ekspert (76-90 pkt)</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">🔴</div>
+                            <div class="stat-label">Master (91-99 pkt)</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">⚫</div>
+                            <div class="stat-label">Ghost Operative (100 pkt)</div>
+                        </div>
+                    </div>
+
+                    <h4>System Punktowy</h4>
+                    <ul>
+                        <li><strong>Wykonanie komendy</strong> - 1-3 punkty</li>
+                        <li><strong>Znalezienie podatności</strong> - 5-15 punktów</li>
+                        <li><strong>Ukończenie misji</strong> - 10-50 punktów</li>
+                        <li><strong>Neutralizacja zagrożenia</strong> - 15-30 punktów</li>
+                        <li><strong>Odkrycie nowych IOC</strong> - 20-40 punktów</li>
+                        <li><strong>Perfect stealth operation</strong> - 50+ punktów</li>
+                    </ul>
+
+                    <h4>Specializacje</h4>
+                    <ul>
+                        <li><strong>Red Team Specialist</strong> - Fokus na operacje ofensywne</li>
+                        <li><strong>Blue Team Guardian</strong> - Ekspert obrony i forensyki</li>
+                        <li><strong>Purple Team Orchestrator</strong> - Integracja red/blue</li>
+                        <li><strong>Threat Intelligence Analyst</strong> - Analiza zagrożeń</li>
+                        <li><strong>Incident Response Commander</strong> - Zarządzanie kryzysowe</li>
+                        <li><strong>AI Security Researcher</strong> - Bezpieczeństwo AI/ML</li>
+                    </ul>
+
+                    <h4>Osiągnięcia (Achievements)</h4>
+                    <ul>
+                        <li><strong>"Ghost in the Shell"</strong> - Ukończ misję bez wykrycia</li>
+                        <li><strong>"Digital Forensics Expert"</strong> - Rozwiąż 10 przypadków forensycznych</li>
+                        <li><strong>"Threat Hunter"</strong> - Znajdź 50 IOC</li>
+                        <li><strong>"Zero Day Hunter"</strong> - Odkryj nową podatność</li>
+                        <li><strong>"SOC Analyst"</strong> - Przeanalizuj 1000 alertów bezpieczeństwa</li>
+                        <li><strong>"Quantum Pioneer"</strong> - Ukończ misje kryptografii kwantowej</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gaming/Simulator Section -->
+    <section id="gaming" class="section gaming-section">
+        <div class="container">
+            <h2 class="section-title">SYMULATOR CYBERWOJNY</h2>
+            
+            <div class="game-preview">
+                <h3 style="color: var(--text-secondary); font-family: 'Orbitron', monospace; margin-bottom: 20px;">Live Terminal Preview</h3>
+                
+                <div class="terminal-preview">
+                    <div class="terminal-line"><span class="prompt">root@secferro:/#</span> nmap -sS -O target.secferro.local</div>
+                    <div class="terminal-line">Starting Nmap 7.94 ( https://nmap.org ) at 2024-01-15 14:32 UTC</div>
+                    <div class="terminal-line">Nmap scan report for target.secferro.local (192.168.1.100)</div>
+                    <div class="terminal-line">Host is up (0.00045s latency).</div>
+                    <div class="terminal-line">Not shown: 997 closed ports</div>
+                    <div class="terminal-line">PORT     STATE SERVICE</div>
+                    <div class="terminal-line">22/tcp   open  ssh</div>
+                    <div class="terminal-line">80/tcp   open  http</div>
+                    <div class="terminal-line">443/tcp  open  https</div>
+                    <div class="terminal-line" style="color: var(--text-danger);">[VULNERABILITY DETECTED] CVE-2023-0001 on port 22</div>
+                    <div class="terminal-line"><span class="prompt">root@secferro:/#</span> metasploit</div>
+                    <div class="terminal-line">[*] Starting Metasploit Framework...</div>
+                    <div class="terminal-line">[+] Exploit completed successfully!</div>
+                    <div class="terminal-line" style="color: var(--text-success);">[+] Meterpreter session 1 opened</div>
+                </div>
+
+                <p style="margin-top: 20px; color: rgba(255, 255, 255, 0.8);">
+                    Doświadcz realistycznych scenariuszy cyberbezpieczeństwa w bezpiecznym środowisku symulacyjnym. 
+                    Każda komenda, każde zagrożenie, każda reakcja - wszystko oparte na rzeczywistych przypadkach i narzędziach używanych przez profesjonalistów.
+                </p>
+
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="cta-button" onclick="startGame()">AKTYWUJ TERMINAL SECFERRO</button>
+                </div>
+            </div>
+
+            <div class="features-grid" style="margin-top: 50px;">
+                <div class="feature-card">
+                    <div class="feature-icon">🎮</div>
+                    <h3 class="feature-title">Immersive Gameplay</h3>
+                    <p class="feature-description">
+                        Pełna immersja w świecie cyberbezpieczeństwa z realistycznym interfejsem terminala 
+                        i autentycznymi narzędziami używanymi przez profesjonalistów.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3 class="feature-title">Competitive Ranking</h3>
+                    <p class="feature-description">
+                        System rankingowy oparty na rzeczywistych umiejętnościach cyberbezpieczeństwa. 
+                        Rywalizuj z innymi agentami o pozycję w globalnej tabeli.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Real-time Analytics</h3>
+                    <p class="feature-description">
+                        Szczegółowe analytics twojej wydajności, identyfikacja słabych punktów 
+                        i personalizowane rekomendacje rozwoju umiejętności.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Container (Hidden initially) -->
+    <div id="game-container">
+        <div style="padding: 20px; text-align: center; color: var(--text-primary); font-family: 'Orbitron', monospace;">
+            <h2>SECFERRO TERMINAL INITIALIZING...</h2>
+            <p>Loading quantum encryption modules...</p>
+            <div style="margin: 20px;">
+                <button onclick="hideGame()" style="background: var(--text-danger); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">ABORT MISSION</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Matrix Effect with Performance Optimization
+        class AdvancedMatrixEffect {
+            constructor() {
+                this.characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()';
+                this.columns = [];
+                this.isActive = true;
+                this.container = document.getElementById('matrix-bg');
+                this.particlesContainer = document.getElementById('cyber-particles');
+                this.init();
+            }
+
+            init() {
+                this.createMatrixColumns();
+                this.createCyberParticles();
+                this.startAnimation();
+            }
+
+            createMatrixColumns() {
+                const numColumns = Math.floor(window.innerWidth / 20);
+                for (let i = 0; i < numColumns; i++) {
+                    setTimeout(() => this.createColumn(i), i * 100);
+                }
+            }
+
+            createColumn(index) {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = (index * 20) + 'px';
+                column.style.animationDelay = Math.random() * 5 + 's';
+                column.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                
+                let text = '';
+                const length = Math.floor(Math.random() * 20) + 10;
+                for (let j = 0; j < length; j++) {
+                    text += this.characters[Math.floor(Math.random() * this.characters.length)] + '\n';
+                }
+                column.textContent = text;
+                
+                this.container.appendChild(column);
+                
+                // Remove column after animation completes
+                setTimeout(() => {
+                    if (this.container.contains(column)) {
+                        this.container.removeChild(column);
+                    }
+                }, 8000);
+            }
+
+            createCyberParticles() {
+                const numParticles = 50;
+                for (let i = 0; i < numParticles; i++) {
+                    setTimeout(() => this.createParticle(), i * 200);
+                }
+            }
+
+            createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                
+                this.particlesContainer.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (this.particlesContainer.contains(particle)) {
+                        this.particlesContainer.removeChild(particle);
+                    }
+                }, 8000);
+            }
+
+            startAnimation() {
+                if (!this.isActive) return;
+                
+                // Create new columns periodically
+                if (Math.random() < 0.3) {
+                    this.createColumn(Math.floor(Math.random() * Math.floor(window.innerWidth / 20)));
+                }
+                
+                // Create new particles periodically
+                if (Math.random() < 0.1) {
+                    this.createParticle();
+                }
+                
+                setTimeout(() => this.startAnimation(), 2000);
+            }
+
+            destroy() {
+                this.isActive = false;
+                this.container.innerHTML = '';
+                this.particlesContainer.innerHTML = '';
+            }
+        }
+
+        // Navigation Management
+        class NavigationManager {
+            constructor() {
+                this.navToggle = document.getElementById('nav-toggle');
+                this.navMenu = document.getElementById('nav-menu');
+                this.init();
+            }
+
+            init() {
+                this.navToggle.addEventListener('click', () => this.toggleMenu());
+                
+                // Close menu when clicking on a link
+                document.querySelectorAll('.nav-item a').forEach(link => {
+                    link.addEventListener('click', () => this.closeMenu());
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.nav-container')) {
+                        this.closeMenu();
+                    }
+                });
+            }
+
+            toggleMenu() {
+                this.navMenu.classList.toggle('active');
+                this.navToggle.classList.toggle('active');
+            }
+
+            closeMenu() {
+                this.navMenu.classList.remove('active');
+                this.navToggle.classList.remove('active');
+            }
+        }
+
+        // Wiki Tab Management
+        function showWikiTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.wiki-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.wiki-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Game Management
+        function startGame() {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // Initialize the actual game here
+            setTimeout(() => {
+                initializeSecFerroGame();
+            }, 2000);
+        }
+
+        function hideGame() {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function initializeSecFerroGame() {
+            // This would initialize the actual SECFERRO game system
+            document.getElementById('game-container').innerHTML = `
+                <div style="height: 100vh; background: var(--bg-primary); color: var(--text-primary); padding: 20px; font-family: 'VT323', monospace;">
+                    <div style="border: 2px solid var(--text-primary); border-radius: 8px; padding: 20px; height: calc(100vh - 40px); display: flex; flex-direction: column;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h1 style="font-family: 'Orbitron', monospace; color: var(--text-secondary); text-shadow: var(--matrix-glow);">SECFERRO E-OPS TERMINAL</h1>
+                            <div style="color: var(--text-danger); font-weight: bold; animation: blink 1s infinite;">CLASSIFIED ACCESS - AUTHORIZED PERSONNEL ONLY</div>
+                        </div>
+                        
+                        <div style="flex-grow: 1; background: rgba(0, 0, 0, 0.8); padding: 20px; border-radius: 8px; overflow-y: auto;" id="game-terminal">
+                            <div>[INIT] SECFERRO Kernel v5.2.0-classified loading...</div>
+                            <div>[INIT] Initializing quantum encryption modules...</div>
+                            <div>[INIT] Loading neural threat detection algorithms...</div>
+                            <div>[READY] All systems operational. Security level: MAXIMUM</div>
+                            <div style="margin: 20px 0; color: var(--text-success);">
+                                ╔══════════════════════════════════════════╗<br>
+                                ║          SECFERRO E-OPS PLATFORM         ║<br>
+                                ║            CLASSIFIED ACCESS             ║<br>
+                                ╚══════════════════════════════════════════╝
+                            </div>
+                            <div>Type "help" for available commands.</div>
+                            <div>Type "mission" to view active operations.</div>
+                            <div style="margin-top: 20px;">
+                                <span style="color: var(--text-secondary); font-weight: bold;">root@secferro:/#</span>
+                                <input type="text" id="terminal-input" style="background: transparent; border: none; color: var(--text-primary); font-family: inherit; outline: none; flex-grow: 1; margin-left: 10px;" placeholder="Enter command..." />
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: center;">
+                            <button onclick="hideGame()" style="background: var(--text-danger); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Orbitron', monospace; font-weight: bold;">TERMINATE SESSION</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Focus on terminal input
+            const terminalInput = document.getElementById('terminal-input');
+            terminalInput.focus();
+            
+            // Add basic command handling
+            terminalInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const command = e.target.value.trim();
+                    const terminal = document.getElementById('game-terminal');
+                    
+                    // Add command to terminal
+                    const commandLine = document.createElement('div');
+                    commandLine.innerHTML = `<span style="color: var(--text-secondary); font-weight: bold;">root@secferro:/#</span> ${command}`;
+                    terminal.appendChild(commandLine);
+                    
+                    // Process basic commands
+                    const response = document.createElement('div');
+                    response.style.marginBottom = '10px';
+                    
+                    switch(command.toLowerCase()) {
+                        case 'help':
+                            response.innerHTML = `
+                                <div style="color: var(--text-info);">SECFERRO Command Reference:</div>
+                                <div>help - Show this help message</div>
+                                <div>mission - View available operations</div>
+                                <div>nmap [target] - Network reconnaissance</div>
+                                <div>status - System status</div>
+                                <div>clear - Clear terminal</div>
+                            `;
+                            break;
+                        case 'mission':
+                            response.innerHTML = `
+                                <div style="color: var(--text-info);">Available Operations:</div>
+                                <div style="color: var(--text-success);">✓ Operation Crimson Shadow [ACTIVE]</div>
+                                <div style="color: var(--text-warning);">⚠ Operation Blue Shield [STANDBY]</div>
+                                <div style="color: var(--text-danger);">⚡ Operation Quantum Storm [CLASSIFIED]</div>
+                            `;
+                            break;
+                        case 'status':
+                            response.innerHTML = `
+                                <div style="color: var(--text-info);">System Status:</div>
+                                <div>Security Level: MAXIMUM</div>
+                                <div>Reputation: 100/100</div>
+                                <div>Active Threats: 3 detected</div>
+                                <div>Network Status: SECURE</div>
+                            `;
+                            break;
+                        case 'clear':
+                            terminal.innerHTML = `
+                                <div>Terminal cleared.</div>
+                                <div style="margin-top: 20px;">
+                                    <span style="color: var(--text-secondary); font-weight: bold;">root@secferro:/#</span>
+                                    <input type="text" id="terminal-input-new" style="background: transparent; border: none; color: var(--text-primary); font-family: inherit; outline: none; flex-grow: 1; margin-left: 10px;" placeholder="Enter command..." />
+                                </div>
+                            `;
+                            // Re-focus and re-attach event listener
+                            setTimeout(() => {
+                                const newInput = document.getElementById('terminal-input-new');
+                                newInput.focus();
+                                newInput.addEventListener('keydown', arguments.callee);
+                            }, 100);
+                            e.target.value = '';
+                            return;
+                        default:
+                            if (command) {
+                                response.innerHTML = `<div style="color: var(--text-warning);">secferro: command not found: ${command}</div>`;
+                            }
+                    }
+                    
+                    if (command !== 'clear') {
+                        terminal.appendChild(response);
+                        
+                        // Add new input line
+                        const newInputLine = document.createElement('div');
+                        newInputLine.style.marginTop = '10px';
+                        newInputLine.innerHTML = `<span style="color: var(--text-secondary); font-weight: bold;">root@secferro:/#</span>`;
+                        terminal.appendChild(newInputLine);
+                    }
+                    
+                    e.target.value = '';
+                    terminal.scrollTop = terminal.scrollHeight;
+                }
+            });
+        }
+
+        // Performance Optimization
+        class PerformanceManager {
+            constructor() {
+                this.isVisible = true;
+                this.matrixEffect = null;
+                this.init();
+            }
+
+            init() {
+                // Pause animations when page is not visible
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        this.pauseAnimations();
+                    } else {
+                        this.resumeAnimations();
+                    }
+                });
+
+                // Reduce animations on low-end devices
+                if (this.isLowEndDevice()) {
+                    this.optimizeForLowEnd();
+                }
+            }
+
+            isLowEndDevice() {
+                return navigator.hardwareConcurrency <= 4 || 
+                       navigator.deviceMemory <= 4 ||
+                       /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            }
+
+            optimizeForLowEnd() {
+                const matrixBg = document.getElementById('matrix-bg');
+                const particles = document.getElementById('cyber-particles');
+                
+                if (matrixBg) matrixBg.style.opacity = '0.03';
+                if (particles) particles.style.display = 'none';
+                
+                // Reduce animation frequency
+                document.documentElement.style.setProperty('--animation-speed', '0.5');
+            }
+
+            pauseAnimations() {
+                this.isVisible = false;
+                if (this.matrixEffect) {
+                    this.matrixEffect.destroy();
+                }
+            }
+
+            resumeAnimations() {
+                this.isVisible = true;
+                if (!this.matrixEffect) {
+                    this.matrixEffect = new AdvancedMatrixEffect();
+                }
+            }
+        }
+
+        // Accessibility Manager
+        class AccessibilityManager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                // Keyboard navigation
+                this.setupKeyboardNavigation();
+                
+                // Screen reader support
+                this.setupScreenReaderSupport();
+                
+                // High contrast mode detection
+                this.handleHighContrast();
+                
+                // Reduced motion support
+                this.handleReducedMotion();
+            }
+
+            setupKeyboardNavigation() {
+                document.addEventListener('keydown', (e) => {
+                    // ESC to close game
+                    if (e.key === 'Escape') {
+                        const gameContainer = document.getElementById('game-container');
+                        if (gameContainer.style.display !== 'none') {
+                            hideGame();
+                        }
+                    }
+                });
+            }
+
+            setupScreenReaderSupport() {
+                // Add ARIA labels
+                const navItems = document.querySelectorAll('.nav-item a');
+                navItems.forEach(item => {
+                    item.setAttribute('aria-label', item.textContent);
+                });
+
+                // Live regions for dynamic content
+                const dynamicElements = document.querySelectorAll('.wiki-tab-content');
+                dynamicElements.forEach(element => {
+                    element.setAttribute('aria-live', 'polite');
+                });
+            }
+
+            handleHighContrast() {
+                if (window.matchMedia('(prefers-contrast: high)').matches) {
+                    document.body.classList.add('high-contrast');
+                }
+            }
+
+            handleReducedMotion() {
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    document.body.classList.add('reduced-motion');
+                }
+            }
+        }
+
+        // Initialize all systems
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize core systems
+            const matrixEffect = new AdvancedMatrixEffect();
+            const navigation = new NavigationManager();
+            const performance = new PerformanceManager();
+            const accessibility = new AccessibilityManager();
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Intersection Observer for animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe sections for fade-in animations
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(30px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+
+            // Dynamic stats counter animation
+            const animateStats = () => {
+                document.querySelectorAll('.stat-number').forEach(stat => {
+                    const target = stat.textContent;
+                    const isNumber = /^\d+/.test(target);
+                    
+                    if (isNumber) {
+                        const finalNumber = parseInt(target);
+                        let current = 0;
+                        const increment = finalNumber / 50;
+                        const timer = setInterval(() => {
+                            current += increment;
+                            if (current >= finalNumber) {
+                                stat.textContent = target; // Restore original (with + or % if any)
+                                clearInterval(timer);
+                            } else {
+                                stat.textContent = Math.floor(current);
+                            }
+                        }, 30);
+                    }
+                });
+            };
+
+            // Trigger stats animation when visible
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateStats();
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.stats-grid').forEach(grid => {
+                statsObserver.observe(grid);
+            });
+
+            // Terminal typing effect for preview
+            const terminalLines = document.querySelectorAll('.terminal-preview .terminal-line');
+            let lineIndex = 0;
+
+            const typeNextLine = () => {
+                if (lineIndex < terminalLines.length) {
+                    const line = terminalLines[lineIndex];
+                    const text = line.textContent;
+                    line.textContent = '';
+                    line.style.opacity = '1';
+                    
+                    let charIndex = 0;
+                    const typingInterval = setInterval(() => {
+                        if (charIndex < text.length) {
+                            line.textContent += text[charIndex];
+                            charIndex++;
+                        } else {
+                            clearInterval(typingInterval);
+                            lineIndex++;
+                            setTimeout(typeNextLine, 500);
+                        }
+                    }, 50);
+                }
+            };
+
+            // Start terminal typing when in view
+            const terminalObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Hide all lines initially
+                        terminalLines.forEach(line => {
+                            line.style.opacity = '0';
+                        });
+                        
+                        setTimeout(typeNextLine, 1000);
+                        terminalObserver.unobserve(entry.target);
+                    }
+                });
+            });
+
+            const terminalPreview = document.querySelector('.terminal-preview');
+            if (terminalPreview) {
+                terminalObserver.observe(terminalPreview);
+            }
+
+            console.log('SECFERRO System Initialized - Classification: TOP SECRET');
+            console.log('All systems operational. Welcome, Agent.');
+        });
+
+        // Error handling and fallbacks
+        window.addEventListener('error', (e) => {
+            console.warn('SECFERRO: Non-critical error handled:', e.error);
+        });
+
+        // Prevent context menu on right-click for immersion
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
+        // Console easter egg
+        setTimeout(() => {
+            console.clear();
+            console.log('%c██████╗ ███████╗ ██████╗███████╗███████╗██████╗ ██████╗  ██████╗ ', 'color: #00ff41');
+            console.log('%c██╔═══╝ ██╔════╝██╔════╝██╔════╝██╔════╝██╔══██╗██╔══██╗██╔═══██╗', 'color: #00ff41');
+            console.log('%c███████╗█████╗  ██║     █████╗  █████╗  ██████╔╝██████╔╝██║   ██║', 'color: #00ff41');
+            console.log('%c╚════██║██╔══╝  ██║     ██╔══╝  ██╔══╝  ██╔══██╗██╔══██╗██║   ██║', 'color: #00ff41');
+            console.log('%c███████║███████╗╚██████╗██║     ███████╗██║  ██║██║  ██║╚██████╔╝', 'color: #00ff41');
+            console.log('%c╚══════╝╚══════╝ ╚═════╝╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ', 'color: #00ff41');
+            console.log('%c\nCLASSIFIED SYSTEM - AUTHORIZED PERSONNEL ONLY', 'color: #ff0040; font-weight: bold');
+            console.log('%cIf you can see this, you have the skills we need.', 'color: #00ffff');
+            console.log('%cContact: recruitment@secferro.classified', 'color: #00ff88');
+        }, 3000);
+    </script>
+</body>
+</html>
