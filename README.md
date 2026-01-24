@@ -1,4 +1,4 @@
-# ⚡ ƑERRටⱥའͳ | Anonymousik ⚡
+# ⚡ Anonymousik ⚡
 ### `Cyber-Security & Systems Auditor` | `Full-Stack Hobbyist` | `Creative Ghoster`
 
 <p align="center">
