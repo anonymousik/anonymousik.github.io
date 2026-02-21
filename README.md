@@ -1,83 +1,89 @@
-# ⚡ Anonymousik ⚡
-### `Cyber-Security & Systems Auditor` | `Full-Stack Hobbyist` | `Creative Ghoster`
-
+<div align="center"> 🌌 ƑERRට | THE CREATIVE ENGINEER 🌌 </div>
+<div align="center"> ARCHITECTING SYSTEMS • VISUALIZING SOUND • DECODING REALITY </div>
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-Active_Research-blueviolet?style=flat-square" alt="Status">
-  <img src="https://img.shields.io/badge/Core-UNIX_%2F_WINDOWS-blue?style=flat-square" alt="Core">
-  <img src="https://img.shields.io/badge/Vibe-Minimalism_&_Glitch-black?style=flat-square" alt="Vibe">
+<img src="https://www.google.com/search?q=https://img.shields.io/badge/AUTH-ROOT_VERIFIED-D4AF37%3Fstyle%3Dfor-the-badge%26logo%3Dlinux%26logoColor%3Dblack" alt="Root">
+<img src="https://www.google.com/search?q=https://img.shields.io/badge/ENV-PRODUCTION-00FF41%3Fstyle%3Dfor-the-badge%26logo%3Dterminal%26logoColor%3Dblack" alt="Env">
+<img src="https://www.google.com/search?q=https://img.shields.io/badge/VIBE-GLITCH_GOLD-black%3Fstyle%3Dfor-the-badge" alt="Vibe">
 </p>
+🌑 [01] SYSTEM IDENTITY / CORE LOGIC
+> "Inżynieria to sztuka panowania nad chaosem. Sztuka to chaos ujęty w ramy inżynierii."
+> 
+Jestem hybrydowym twórcą operującym na styku Cyber-Security, Systems Engineering oraz Audiovisual Arts. Moje podejście opiera się na bezkompromisowej optymalizacji – zarówno w kodzie binarnym, jak i w fali dźwiękowej. Nie naprawiam systemów; redefiniuję ich granice.
+📂 [02] DEPLOYED PROJECTS (KLIKNIJ, ABY ROZWINĄĆ)
+<details>
+<summary><b>🛠️ ADB-QUANTUM // SYSTEM HARDENING</b></summary>
 
----
 
-## 🇵🇱 O MNIE (POLSKI)
-Jestem specjalistą IT, który wierzy w rzetelną diagnostykę, a nie drogi na skróty. Moje projekty na **Anonymousik.is-a.dev** to zbiór luźnych eksperymentów, narzędzi i skryptów. 
+<blockquote>
+<b>Status:</b> Operacyjny / Publiczny
 
-> **Zasada nr 1:** Reinstalacja systemu (format) to dla mnie zawodowa porażka. Prawdziwy profesjonalista rozwiązuje problem u źródła, nie usuwając dowodów jego istnienia.
+<b>Stack:</b> Bash, Python, ADB Bridge
+</blockquote>
+Zaawansowane środowisko do optymalizacji i audytu urządzeń mobilnych oraz Smart TV. Projekt narodził się z frustracji nad zaśmieconymi systemami fabrycznymi.
+ * Funkcje: Głęboki debloating, optymalizacja pamięci RAM na poziomie jądra, automatyzacja wdrożeń masowych.
+ * Cel: Przywrócenie kontroli użytkownikowi nad jego własnym sprzętem.
+</details>
+<details>
+<summary><b>💽 BAŃKA 404 // AUDIO-VISUAL FORENSICS</b></summary>
 
-### 🎨 Hobbystyczna Zajawka: FerroART
-Poza kodem, realizuję się twórczo pod szyldem **FerroART**. To moja przestrzeń na "vaporization" rzeczywistości – od produkcji bitów, przez mastering, aż po zaawansowany montaż wideo.
 
----
+<blockquote>
+<b>Status:</b> W toku (R&D)
 
-## 🇬🇧 ABOUT ME (ENGLISH)
-I am an IT specialist who believes in thorough diagnostics rather than shortcuts. My projects at **Anonymousik.is-a.dev** are a collection of casual experiments, tools, and scripts.
+<b>Stack:</b> Ableton, FFmpeg, Premiere Pro, OSINT
+</blockquote>
+Projekt artystyczny, który przesuwa granice narracji. Wykorzystuję techniki śledcze (OSINT) do budowania tekstów i struktur wizualnych.
+ * Estetyka: Glitch Art, Vaporization, High-Contrast Cyber.
+ * Misja: Manifest cyfrowej alienacji ubrany w technicznie doskonały sound design.
+</details>
+<details>
+<summary><b>🤖 DUKAT-MAKER // AI AUTOMATION</b></summary>
 
-> **Rule #1:** System reinstallation (formatting) is a professional failure to me. A true pro solves the problem at its core without deleting the evidence.
 
-### 🎨 Creative Hobby: FerroART
-Beyond the code, I express myself through **FerroART**. This is my space for the "vaporization" of reality – from beat production and mastering to advanced video editing.
+<blockquote>
+<b>Status:</b> Aktywny Asystent
 
----
+<b>Stack:</b> Node.js, NLP, Cloud Infrastructure
+</blockquote>
+Autorski bot i ekosystem automatyzujący interakcje. To nie jest zwykły czatbot – to instancja zarządzająca procesami, od powiadomień systemowych po interakcję z Twoją społecznością.
+</details>
+<details>
+<summary><b>🧥 SECFERRO // FASHION-TECH INTERFACE</b></summary>
 
-## 🤝 COLLABORATION / WSPÓŁPRACA
 
-| Rola / Role | Forma / Form |
-| :--- | :--- |
-| **Artists** | Vaporization & Digital Alchemy |
-| **Production** | Ghosting (Support behind the scenes) |
-| **Mixing/Mastering** | Audio Engineering (Beats & more) |
-| **Content Creators** | Visual Design & Technical Video Editing |
-| **IT Support** | Cyber-Security Audits & System Modernizations |
+<blockquote>
+<b>Status:</b> Projekt Koncepcyjny
 
----
+<b>Stack:</b> Hardware, Wearables, Branding
+</blockquote>
+Eksperymentalna marka streetwearowa dla świata IT. Odzież zaprojektowana z myślą o prywatności (materiały blokujące sygnały) i estetyce "Urban Techwear".
+</details>
+📊 [03] TECH STACK & FREQUENCIES
+SYSTEM RESOURCES:
+[████████████████████] 100% - CYBER-SECURITY (AUDIT/HARDENING)
+[██████████████████▒▒] 90%  - AUDIO ENGINEERING (MIX/MASTER)
+[████████████████▒▒▒▒] 80%  - DEVOPS & INFRASTRUCTURE
+[████████████████████] 100% - CREATIVE PROBLEM SOLVING
 
-## 🛠️ TECH STACK & SERVICES
-
-| ✓ | **ADVANCED OPTIMIZATIONS** | `ARM` | `ARCH` | `APPLE` | `PC` |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-
-* **Diagnostics:** Precise troubleshooting and OS identification. / *Precyzyjne rozwiązywanie problemów i identyfikacja systemów.*
-* **Management:** Full range of Unix & Windows implementations. / *Pełny zakres wdrożeń Unix i Windows.*
-* **Audit:** Security and performance analysis for any scale. / *Audyty bezpieczeństwa i wydajności dla każdej skali biznesu.*
-
----
-
-## 🔗 QUICK LINKS / SZYBKIE LINKI
+🌐 [04] NETWORK INTERFACES / SZYBKIE LINKI
+<div align="center">
+| ⚡ TERMINAL (DEV) | 🔊 FREQUENCIES (ART) | 📩 UPLINK (CONTACT) |
+|---|---|---|
+| GitHub Source | YouTube Main | Secure Email |
+| Gist Repository | TikTok Vibes | TIPo Live Support |
+| Private Dev Env | BandLab HQ | Buy Me A Cookie 🍪 |
+</div>
+📜 [05] FINAL DISCLAMER / LOGS
+u0_a583@localhost:~$ tail -n 3 /var/log/ferroart.log
+[2024-02-21] CRITICAL: Estetyka przekracza dopuszczalne normy.
+[2024-02-21] SUCCESS: System identity fully integrated.
+[2024-02-21] STATUS: Scanning for next optimization...
 
 <div align="center">
 
-| 💰 Support | 📺 Media | 🌐 Projects |
-| :--- | :--- | :--- |
-| [TIPo FerroART!](https://tipo.live/p/nieznany-nikomu) | [YouTube](https://youtube.com/@ferroart) | [GitHub Page](https://github.com/anonymousik) |
-| [Buy Me A Cookie 🍪](https://buymeacoffee.com/anonymousx6f) | [TikTok](https://tiktok.com/@FerroARTy) | [Private Projects](https://anonymousik.is-a.dev) |
 
-**Dukat-Maker (Assistant):** [Messenger](https://m.me/DukatMaker) | **Live Chat:** [FB Messenger](https://m.me/@FerroARTy)
-**Contact:** `nieznanynikomuu@gmail.com`
+<b>© ALL RIGHTS RESERVED. ƑERRටⱥའͳ</b>
 
+<code>ENCRYPTED SESSION // NO BACKDOORS FOUND</code>
 </div>
-
----
-
-## 📜 LEGAL & DISCLAMER
-
-. • `• . • .`. • `• . • .`. • `• . • .`. • `• . `• .
-**❗ THX FOR WATCHING ❗**
-. • `• . • .``. • `• . • .``. • `• . • .``. • `• . • .`
-
-⚠️ **© ALL RIGHTS RESERVED. ƑERRටⱥའͳ** ⚠️
-
-> *PL:* Materiały niebędące moją własnością podlegają prawu cytatu i są zawsze oznaczone. Jeśli nie zgadzasz się na użycie Twoich materiałów – skontaktuj się ze mną.
-> *EN:* Materials not owned by me are subject to the right of quotation and are always marked. If you are the owner and do not consent to their use – please contact me via email.
-
----
-`#ferroart #secferro #cybersec #devops #artist #ghosting #troubleshooting`
+#ferroart #cybersec #creativeengineer #glitch #automation #iosint #mixing #mastering
