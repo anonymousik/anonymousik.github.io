@@ -101,12 +101,10 @@ u0_a583@localhost:~$ tail -n 3 /var/log/ferroart.log
 
 <div align="center">
 <b>© ALL RIGHTS RESERVED. ƑERRටⱥའͳ</b>
-
-<code>ENCRYPTED SESSION // NO BACKDOORS FOUND</code>
-
-
-
+<code>ENCRYPTED SESSION // NO BACKDOORS FOUND
+</code>
 <small>
 #ferroart #cybersec #creativeengineer #glitch #automation #iosint #mixing #mastering
+
 </small>
 </div>
