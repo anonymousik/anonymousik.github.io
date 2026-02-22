@@ -1,100 +1,538 @@
-<div align="center">
-<img src="https://www.google.com/search?q=https://capsule-render.vercel.app/api%3Ftype%3Dwaving%26color%3D0:050505,100:00FF41%26height%3D180%26section%3Dheader%26text%3D%C6%91ERR%E0%B6%A7%26fontSize%3D70%26fontAlignY%3D35%26desc%3DTHE%2520CREATIVE%2520ENGINEER%26descAlignY%3D60%26descSize%3D20%26fontColor%3Dffffff%26animation%3Dtwinkling" width="100%" />
-</div>
-<div align="center">
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ƑERRට | THE CREATIVE ENGINEER</title>
+    <!-- Tailwind CSS do struktury -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Monospace Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"Fira Code"', 'monospace'],
+                    },
+                    colors: {
+                        cyber: {
+                            green: '#00ff41',
+                            dark: '#050505',
+                            panel: '#0a0a0a',
+                            border: '#1a1a1a',
+                            gold: '#D4AF37',
+                            alert: '#ff003c'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
+    <style>
+        body {
+            background-color: #050505;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
 
-<code>ARCHITECTING SYSTEMS • VISUALIZING SOUND • DECODING REALITY</code>
+        /* --- EFEKTY WIZUALNE --- */
+        .crt::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 999;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
 
+        #matrix-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            opacity: 0.15;
+        }
 
+        .glitch-text {
+            position: relative;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: transparent;
+        }
+        
+        .glitch-text::before {
+            left: 2px; text-shadow: -2px 0 #ff003c;
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+        
+        .glitch-text::after {
+            left: -2px; text-shadow: -2px 0 #00ff41;
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
 
-<p align="center">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/AUTH-ROOT_VERIFIED-D4AF37%3Fstyle%3Dfor-the-badge%26logo%3Dlinux%26logoColor%3Dblack" alt="Root">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/ENV-PRODUCTION-00FF41%3Fstyle%3Dfor-the-badge%26logo%3Dterminal%26logoColor%3Dblack" alt="Env">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/VIBE-GLITCH_GOLD-black%3Fstyle%3Dfor-the-badge%26logo%3Dcodeforces%26logoColor%3DD4AF37" alt="Vibe">
-</p>
-</div>
-<div align="center">
-🌑 [01] SYSTEM IDENTITY / CORE LOGIC
-> "Inżynieria to sztuka panowania nad chaosem. Sztuka to chaos ujęty w ramy inżynierii."
-> 
-</div>
-Jestem hybrydowym twórcą operującym na styku Cyber-Security, Systems Engineering oraz Audiovisual Arts. Moje podejście opiera się na bezkompromisowej optymalizacji – zarówno w kodzie binarnym, jak i w fali dźwiękowej. Nie naprawiam systemów; redefiniuję ich granice.
-📂 [02] DEPLOYED PROJECTS (KLIKNIJ, ABY ROZWINĄĆ)
-<details>
-<summary><h3>🛠️ ADB-QUANTUM // SYSTEM HARDENING</h3></summary>
-> Status: 🟢 Operacyjny / Publiczny
-> Stack: Bash • Python • ADB Bridge
-> 
-Zaawansowane środowisko do optymalizacji i audytu urządzeń mobilnych oraz Smart TV. Projekt narodził się z frustracji nad zaśmieconymi systemami fabrycznymi.
- * Funkcje: Głęboki debloating, optymalizacja pamięci RAM na poziomie jądra, automatyzacja wdrożeń masowych.
- * Cel: Przywrócenie kontroli użytkownikowi nad jego własnym sprzętem.
+        @keyframes glitch-anim {
+            0% { clip: rect(11px, 9999px, 86px, 0); }
+            20% { clip: rect(44px, 9999px, 14px, 0); }
+            40% { clip: rect(98px, 9999px, 11px, 0); }
+            60% { clip: rect(22px, 9999px, 67px, 0); }
+            80% { clip: rect(88px, 9999px, 33px, 0); }
+            100% { clip: rect(55px, 9999px, 99px, 0); }
+        }
+        
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(65px, 9999px, 100px, 0); }
+            20% { clip: rect(15px, 9999px, 55px, 0); }
+            40% { clip: rect(85px, 9999px, 20px, 0); }
+            60% { clip: rect(35px, 9999px, 80px, 0); }
+            80% { clip: rect(10px, 9999px, 40px, 0); }
+            100% { clip: rect(90px, 9999px, 10px, 0); }
+        }
 
+        /* --- ELEMENTY UI --- */
+        .cyber-panel {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(5px);
+            border: 1px solid #1a1a1a;
+            position: relative;
+        }
+        
+        .cyber-panel:hover {
+            border-color: #00ff41;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+        }
 
-</details>
-<details>
-<summary><h3>💽 BAŃKA 404 // AUDIO-VISUAL FORENSICS</h3></summary>
-> Status: 🟣 W toku (R&D)
-> Stack: Ableton • FFmpeg • Premiere Pro • OSINT
-> 
-Projekt artystyczny, który przesuwa granice narracji. Wykorzystuję techniki śledcze (OSINT) do budowania tekstów i struktur wizualnych.
- * Estetyka: Glitch Art, Vaporization, High-Contrast Cyber.
- * Misja: Manifest cyfrowej alienacji ubrany w technicznie doskonały sound design.
+        .cyber-header {
+            border-bottom: 1px solid #1a1a1a;
+            background: #0a0a0a;
+        }
 
+        .neon-text-green { color: #00ff41; text-shadow: 0 0 5px rgba(0, 255, 65, 0.5); }
+        .neon-text-gold { color: #D4AF37; text-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
 
-</details>
-<details>
-<summary><h3>🤖 DUKAT-MAKER // AI AUTOMATION</h3></summary>
-> Status: 🟡 Aktywny Asystent
-> Stack: Node.js • NLP • Cloud Infrastructure
-> 
-Autorski bot i ekosystem automatyzujący interakcje. To nie jest zwykły czatbot – to instancja zarządzająca procesami, od powiadomień systemowych po interakcję z Twoją społecznością.
+        /* --- ACCORDION (ROZWIJANE MENU) --- */
+        .project-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.1, 1, 0.2, 1), opacity 0.3s ease;
+            opacity: 0;
+        }
+        
+        .project-item.active .project-content {
+            opacity: 1;
+        }
 
+        .project-item.active {
+            border-color: #00ff41;
+            background: rgba(0, 255, 65, 0.05);
+        }
 
-</details>
-<details>
-<summary><h3>🧥 SECFERRO // FASHION-TECH INTERFACE</h3></summary>
-> Status: 🔵 Projekt Koncepcyjny
-> Stack: Hardware • Wearables • Branding
-> 
-Eksperymentalna marka streetwearowa dla świata IT. Odzież zaprojektowana z myślą o prywatności (materiały blokujące sygnały) i estetyce "Urban Techwear".
+        .chevron {
+            transition: transform 0.3s ease;
+        }
 
+        .project-item.active .chevron {
+            transform: rotate(180deg);
+            color: #00ff41;
+        }
 
-</details>
-📊 [03] TECH STACK & FREQUENCIES
-SYSTEM RESOURCES:
-[████████████████████] 100% - CYBER-SECURITY (AUDIT/HARDENING)
-[██████████████████▒▒]  90% - AUDIO ENGINEERING (MIX/MASTER)
-[████████████████▒▒▒▒]  80% - DEVOPS & INFRASTRUCTURE
-[████████████████████] 100% - CREATIVE PROBLEM SOLVING
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; border-left: 1px solid #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+        ::-webkit-scrollbar-thumb:hover { background: #00ff41; }
+        
+        .typing-effect {
+            border-right: 2px solid #00ff41;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: blinkCursor 0.75s step-end infinite;
+        }
+        @keyframes blinkCursor { from, to { border-color: transparent } 50% { border-color: #00ff41; } }
+    </style>
+</head>
+<body class="font-mono crt">
 
-🌐 [04] NETWORK INTERFACES / SZYBKIE LINKI
-<div align="center">
-| ⚡ TERMINAL (DEV) | 🔊 FREQUENCIES (ART) | 📩 UPLINK (CONTACT) |
-|---|---|---|
-| GitHub Source | YouTube Main | Secure Email |
-| Gist Repository | TikTok Vibes | TIPo Live Support |
-| Private Dev Env | BandLab HQ | Buy Me A Cookie 🍪 |
-</div>
-📜 [05] FINAL DISCLAMER / LOGS
-u0_a583@localhost:~$ tail -n 3 /var/log/ferroart.log
-[2024-02-21] CRITICAL: Estetyka przekracza dopuszczalne normy.
-[2024-02-21] SUCCESS: System identity fully integrated.
-[2024-02-21] STATUS: Scanning for next optimization...
+    <!-- Matrix Background -->
+    <canvas id="matrix-canvas"></canvas>
 
+    <div class="max-w-4xl mx-auto p-4 md:p-8 relative z-10">
+        
+        <!-- HEADER -->
+        <header class="text-center mb-16 space-y-6 pt-10">
+            <div class="inline-block px-4 py-1 border border-cyber-border bg-cyber-panel text-xs text-gray-500 mb-2 shadow-lg">
+                <i data-lucide="terminal" class="inline w-3 h-3 mr-1"></i>
+                SESSION: u0_a583 | SYS_TIME: <span id="clock">00:00:00</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-bold uppercase tracking-widest glitch-text text-white" data-text="ƑERRට">
+                ƑERRට
+            </h1>
+            
+            <h2 class="text-xl md:text-2xl text-gray-400 tracking-[0.3em] uppercase">
+                The Creative Engineer
+            </h2>
+            
+            <p class="text-sm md:text-base neon-text-green tracking-[0.1em] md:tracking-[0.2em]">
+                ARCHITECTING SYSTEMS • VISUALIZING SOUND • DECODING REALITY
+            </p>
 
+            <!-- Badges -->
+            <div class="flex flex-wrap justify-center gap-4 mt-8">
+                <div class="flex items-center gap-2 px-3 py-1 border border-cyber-gold/50 bg-cyber-gold/10 text-cyber-gold text-xs font-bold">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i> AUTH: ROOT_VERIFIED
+                </div>
+                <div class="flex items-center gap-2 px-3 py-1 border border-cyber-green/50 bg-cyber-green/10 text-cyber-green text-xs font-bold">
+                    <i data-lucide="cpu" class="w-4 h-4"></i> ENV: PRODUCTION
+                </div>
+                <div class="flex items-center gap-2 px-3 py-1 border border-white/30 bg-white/5 text-white text-xs font-bold">
+                    <i data-lucide="radio" class="w-4 h-4"></i> VIBE: GLITCH_GOLD
+                </div>
+            </div>
+        </header>
 
-<div align="center">
-<b>© ALL RIGHTS RESERVED. ƑERRටⱥའͳ</b>
+        <!-- [01] SYSTEM IDENTITY -->
+        <section class="cyber-panel mb-12 shadow-2xl">
+            <div class="cyber-header p-2 flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-cyber-alert"></div>
+                <div class="w-3 h-3 rounded-full bg-cyber-gold"></div>
+                <div class="w-3 h-3 rounded-full bg-cyber-green"></div>
+                <span class="ml-2 text-xs text-gray-500">~/ferro/core_logic.sh</span>
+            </div>
+            <div class="p-6 md:p-8">
+                <h3 class="neon-text-green font-bold text-xl mb-6 flex items-center gap-3">
+                    <span class="text-gray-600">[01]</span> SYSTEM IDENTITY / CORE LOGIC
+                </h3>
+                
+                <blockquote class="border-l-2 border-cyber-green pl-4 py-2 italic text-gray-400 my-6 bg-cyber-green/5">
+                    "Inżynieria to sztuka panowania nad chaosem. Sztuka to chaos ujęty w ramy inżynierii."
+                </blockquote>
+                
+                <p class="leading-relaxed text-gray-300 text-sm md:text-base text-justify">
+                    Jestem hybrydowym twórcą operującym na styku <strong class="text-white">Cyber-Security</strong>, <strong class="text-white">Systems Engineering</strong> oraz <strong class="text-white">Audiovisual Arts</strong>. Moje podejście opiera się na bezkompromisowej optymalizacji – zarówno w kodzie binarnym, jak i w fali dźwiękowej. Nie naprawiam systemów; redefiniuję ich granice.
+                </p>
+            </div>
+        </section>
 
-<code>ENCRYPTED SESSION // NO BACKDOORS FOUND</code>
+        <!-- [02] DEPLOYED PROJECTS -->
+        <section class="mb-12">
+            <h3 class="neon-text-green font-bold text-xl mb-6 flex items-center gap-3 border-b border-cyber-border pb-3">
+                <span class="text-gray-600">[02]</span> DEPLOYED PROJECTS
+                <span class="text-xs text-gray-500 font-normal ml-auto animate-pulse">(KLIKNIJ, ABY ROZWINĄĆ)</span>
+            </h3>
+            
+            <div class="space-y-4">
+                
+                <!-- Projekt 1 -->
+                <div class="cyber-panel project-item transition-all duration-300 cursor-pointer" onclick="toggleProject(this)">
+                    <div class="p-5 flex justify-between items-center border-b border-transparent">
+                        <div class="flex items-center gap-4">
+                            <i data-lucide="wrench" class="w-6 h-6 text-cyber-green"></i>
+                            <h4 class="font-bold text-white tracking-wide">ADB-QUANTUM // SYSTEM HARDENING</h4>
+                        </div>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 chevron"></i>
+                    </div>
+                    <div class="project-content px-5">
+                        <div class="py-4 border-t border-cyber-border">
+                            <div class="flex flex-wrap gap-4 mb-5 bg-black/50 p-3 rounded border border-cyber-border/50 text-xs md:text-sm">
+                                <div><span class="text-gray-500">Status:</span> <span class="neon-text-green">Operacyjny / Publiczny</span></div>
+                                <div><span class="text-gray-500">Stack:</span> <span class="text-cyber-green">[Bash] [Python] [ADB Bridge]</span></div>
+                            </div>
+                            <p class="text-gray-300 mb-4 text-sm leading-relaxed">
+                                Zaawansowane środowisko do optymalizacji i audytu urządzeń mobilnych oraz Smart TV. Projekt narodził się z frustracji nad zaśmieconymi systemami fabrycznymi.
+                            </p>
+                            <ul class="space-y-2 text-sm text-gray-400">
+                                <li><strong class="text-white">▹ Funkcje:</strong> Głęboki debloating, optymalizacja pamięci RAM na poziomie jądra, automatyzacja wdrożeń masowych.</li>
+                                <li><strong class="text-white">▹ Cel:</strong> Przywrócenie kontroli użytkownikowi nad jego własnym sprzętem.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Projekt 2 -->
+                <div class="cyber-panel project-item transition-all duration-300 cursor-pointer" onclick="toggleProject(this)">
+                    <div class="p-5 flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <i data-lucide="disc-3" class="w-6 h-6 text-purple-500"></i>
+                            <h4 class="font-bold text-white tracking-wide">BAŃKA 404 // AUDIO-VISUAL FORENSICS</h4>
+                        </div>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 chevron"></i>
+                    </div>
+                    <div class="project-content px-5">
+                        <div class="py-4 border-t border-cyber-border">
+                            <div class="flex flex-wrap gap-4 mb-5 bg-black/50 p-3 rounded border border-cyber-border/50 text-xs md:text-sm">
+                                <div><span class="text-gray-500">Status:</span> <span class="text-purple-400">W toku (R&D)</span></div>
+                                <div><span class="text-gray-500">Stack:</span> <span class="text-purple-400">[Ableton] [FFmpeg] [Premiere Pro] [OSINT]</span></div>
+                            </div>
+                            <p class="text-gray-300 mb-4 text-sm leading-relaxed">
+                                Projekt artystyczny, który przesuwa granice narracji. Wykorzystuję techniki śledcze (OSINT) do budowania tekstów i struktur wizualnych.
+                            </p>
+                            <ul class="space-y-2 text-sm text-gray-400">
+                                <li><strong class="text-white">▹ Estetyka:</strong> Glitch Art, Vaporization, High-Contrast Cyber.</li>
+                                <li><strong class="text-white">▹ Misja:</strong> Manifest cyfrowej alienacji ubrany w technicznie doskonały sound design.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Projekt 3 -->
+                <div class="cyber-panel project-item transition-all duration-300 cursor-pointer" onclick="toggleProject(this)">
+                    <div class="p-5 flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <i data-lucide="bot" class="w-6 h-6 text-cyber-gold"></i>
+                            <h4 class="font-bold text-white tracking-wide">DUKAT-MAKER // AI AUTOMATION</h4>
+                        </div>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 chevron"></i>
+                    </div>
+                    <div class="project-content px-5">
+                        <div class="py-4 border-t border-cyber-border">
+                            <div class="flex flex-wrap gap-4 mb-5 bg-black/50 p-3 rounded border border-cyber-border/50 text-xs md:text-sm">
+                                <div><span class="text-gray-500">Status:</span> <span class="text-cyber-gold">Aktywny Asystent</span></div>
+                                <div><span class="text-gray-500">Stack:</span> <span class="text-cyber-gold">[Node.js] [NLP] [Cloud Infrastructure]</span></div>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                Autorski bot i ekosystem automatyzujący interakcje. To nie jest zwykły czatbot – to instancja zarządzająca procesami, od powiadomień systemowych po interakcję z Twoją społecznością.
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-<p align="center">
-<img src="https://img.shields.io/badge/ferroart-000?style=flat-square&color=050505&logoColor=fff" />
-<img src="https://img.shields.io/badge/cybersec-000?style=flat-square&color=050505&logoColor=fff" />
-<img src="https://img.shields.io/badge/creativeengineer-000?style=flat-square&color=050505&logoColor=fff" />
-<img src="https://img.shields.io/badge/glitch-000?style=flat-square&color=050505&logoColor=fff" />
-</p>
-</div>
+                <!-- Projekt 4 -->
+                <div class="cyber-panel project-item transition-all duration-300 cursor-pointer" onclick="toggleProject(this)">
+                    <div class="p-5 flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <i data-lucide="shirt" class="w-6 h-6 text-blue-500"></i>
+                            <h4 class="font-bold text-white tracking-wide">SECFERRO // FASHION-TECH INTERFACE</h4>
+                        </div>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 chevron"></i>
+                    </div>
+                    <div class="project-content px-5">
+                        <div class="py-4 border-t border-cyber-border">
+                            <div class="flex flex-wrap gap-4 mb-5 bg-black/50 p-3 rounded border border-cyber-border/50 text-xs md:text-sm">
+                                <div><span class="text-gray-500">Status:</span> <span class="text-blue-400">Projekt Koncepcyjny</span></div>
+                                <div><span class="text-gray-500">Stack:</span> <span class="text-blue-400">[Hardware] [Wearables] [Branding]</span></div>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                Eksperymentalna marka streetwearowa dla świata IT. Odzież zaprojektowana z myślą o prywatności (materiały blokujące sygnały) i estetyce "Urban Techwear".
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- [03] TECH STACK -->
+        <section class="mb-12">
+            <h3 class="neon-text-green font-bold text-xl mb-6 flex items-center gap-3 border-b border-cyber-border pb-3">
+                <span class="text-gray-600">[03]</span> TECH STACK & FREQUENCIES
+            </h3>
+            
+            <div class="cyber-panel p-6">
+                <div class="text-xs text-gray-500 mb-6 font-bold tracking-widest border-b border-cyber-border/50 pb-2">SYSTEM RESOURCES:</div>
+                
+                <div class="space-y-5">
+                    <!-- Bar 1 -->
+                    <div>
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
+                            <span class="text-white">CYBER-SECURITY (AUDIT/HARDENING)</span>
+                            <span class="text-cyber-green">100%</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-cyber-dark overflow-hidden">
+                            <div class="h-full bg-cyber-green shadow-[0_0_10px_#00ff41]" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <!-- Bar 2 -->
+                    <div>
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
+                            <span class="text-white">AUDIO ENGINEERING (MIX/MASTER)</span>
+                            <span class="text-purple-400">90%</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-cyber-dark overflow-hidden">
+                            <div class="h-full bg-purple-500 shadow-[0_0_10px_#a855f7]" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <!-- Bar 3 -->
+                    <div>
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
+                            <span class="text-white">DEVOPS & INFRASTRUCTURE</span>
+                            <span class="text-blue-400">80%</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-cyber-dark overflow-hidden">
+                            <div class="h-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" style="width: 80%"></div>
+                        </div>
+                    </div>
+                    <!-- Bar 4 -->
+                    <div>
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
+                            <span class="text-white">CREATIVE PROBLEM SOLVING</span>
+                            <span class="text-cyber-gold">100%</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-cyber-dark overflow-hidden">
+                            <div class="h-full bg-cyber-gold shadow-[0_0_10px_#D4AF37]" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [04] NETWORK INTERFACES -->
+        <section class="mb-12">
+            <h3 class="neon-text-green font-bold text-xl mb-6 flex items-center gap-3 border-b border-cyber-border pb-3">
+                <span class="text-gray-600">[04]</span> NETWORK INTERFACES / SZYBKIE LINKI
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- COL 1 -->
+                <div class="cyber-panel p-5 text-center group">
+                    <div class="font-bold text-white mb-4 flex items-center justify-center gap-2 border-b border-cyber-border pb-2">
+                        <i data-lucide="terminal-square" class="w-4 h-4 text-cyber-green"></i> TERMINAL (DEV)
+                    </div>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li class="hover:text-cyber-green cursor-pointer transition-colors">GitHub Source</li>
+                        <li class="hover:text-cyber-green cursor-pointer transition-colors">Gist Repository</li>
+                        <li class="hover:text-cyber-green cursor-pointer transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="lock" class="w-3 h-3"></i> Private Dev Env
+                        </li>
+                    </ul>
+                </div>
+                <!-- COL 2 -->
+                <div class="cyber-panel p-5 text-center group">
+                    <div class="font-bold text-white mb-4 flex items-center justify-center gap-2 border-b border-cyber-border pb-2">
+                        <i data-lucide="activity" class="w-4 h-4 text-purple-500"></i> FREQUENCIES (ART)
+                    </div>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li class="hover:text-purple-400 cursor-pointer transition-colors">YouTube Main</li>
+                        <li class="hover:text-purple-400 cursor-pointer transition-colors">TikTok Vibes</li>
+                        <li class="hover:text-purple-400 cursor-pointer transition-colors">BandLab HQ</li>
+                    </ul>
+                </div>
+                <!-- COL 3 -->
+                <div class="cyber-panel p-5 text-center group">
+                    <div class="font-bold text-white mb-4 flex items-center justify-center gap-2 border-b border-cyber-border pb-2">
+                        <i data-lucide="mail" class="w-4 h-4 text-cyber-gold"></i> UPLINK (CONTACT)
+                    </div>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li class="hover:text-cyber-gold cursor-pointer transition-colors">Secure Email</li>
+                        <li class="hover:text-cyber-gold cursor-pointer transition-colors">TIPo Live Support</li>
+                        <li class="hover:text-yellow-400 cursor-pointer transition-colors font-bold text-cyber-gold">Buy Me A Cookie 🍪</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- [05] LOGS & FOOTER -->
+        <section class="mt-20 pt-8 border-t border-cyber-border">
+            <h3 class="text-gray-600 font-bold text-sm mb-4 flex items-center gap-3">
+                [05] FINAL DISCLAMER / LOGS
+            </h3>
+            
+            <div class="bg-black/80 border border-cyber-border p-4 rounded font-mono text-xs md:text-sm shadow-[inset_0_0_20px_rgba(0,0,0,1)]">
+                <div class="text-gray-500 mb-2">u0_a583@localhost:~$ tail -n 3 /var/log/ferroart.log</div>
+                <div class="text-cyber-alert">[2024-02-21] CRITICAL: Estetyka przekracza dopuszczalne normy.</div>
+                <div class="text-cyber-green">[2024-02-21] SUCCESS: System identity fully integrated.</div>
+                <div class="text-blue-400 typing-effect inline-block">[2024-02-21] STATUS: Scanning for next optimization...</div>
+            </div>
+
+            <div class="text-center mt-16 mb-8">
+                <div class="text-white font-bold tracking-[0.4em] mb-4">© ALL RIGHTS RESERVED. ƑERRටⱥའͳ</div>
+                <div class="inline-block border border-cyber-border bg-black px-6 py-2 text-cyber-green text-xs font-bold shadow-[0_0_10px_rgba(0,255,65,0.2)]">
+                    ENCRYPTED SESSION // NO BACKDOORS FOUND
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3 text-xs text-gray-600 font-bold opacity-50">
+                <span>#ferroart</span>
+                <span>#cybersec</span>
+                <span>#creativeengineer</span>
+                <span>#glitch</span>
+                <span>#automation</span>
+                <span>#iosint</span>
+                <span>#mixing</span>
+                <span>#mastering</span>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- SKRYPTY LOGIKI UI -->
+    <script>
+        // Inicjalizacja ikon
+        lucide.createIcons();
+
+        // Zegar systemowy
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString('pl-PL', { hour12: false });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Logika Accordionu (Rozwijane projekty)
+        function toggleProject(element) {
+            const content = element.querySelector('.project-content');
+            const isActive = element.classList.contains('active');
+            
+            // Zamykamy wszystkie inne
+            document.querySelectorAll('.project-item').forEach(item => {
+                item.classList.remove('active');
+                item.querySelector('.project-content').style.maxHeight = null;
+            });
+
+            // Otwieramy kliknięty, jeśli nie był aktywny
+            if (!isActive) {
+                element.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+
+        // Efekt opadającego kodu "Matrix" na płótnie w tle
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=~[]{}|;:,.<>/?'.split('');
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for (let x = 0; x < columns; x++) drops[x] = 1;
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
+
