@@ -1,67 +1,46 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ƑERRට | THE CREATIVE ENGINEER</title>
-    <!-- Tailwind CSS do struktury -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Monospace Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        mono: ['"Fira Code"', 'monospace'],
-                    },
-                    colors: {
-                        cyber: {
-                            green: '#00ff41',
-                            dark: '#050505',
-                            panel: '#0a0a0a',
-                            border: '#1a1a1a',
-                            gold: '#D4AF37',
-                            alert: '#ff003c'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
+    <title>ƑERRට | Cybersecurity Specialist & Creative Engineer</title>
+    <meta name="description" content="Krzysztof 'Ferro' - Cybersecurity Specialist, Systems Architect, Audio Engineer & Creative Developer">
+    <meta name="keywords" content="cybersecurity, systems engineering, audio engineering, devops, automation, glitch art">
+    <meta name="author" content="Krzysztof 'Ferro'">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            background-color: #050505;
+            font-family: 'Roboto Mono', 'JetBrains Mono', monospace;
+            background: #0a0e27;
             color: #e0e0e0;
+            line-height: 1.6;
             overflow-x: hidden;
         }
-
-        /* --- EFEKTY WIZUALNE --- */
-        .crt::before {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 999;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
+        
+        .terminal-header {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border-bottom: 2px solid #00ff88;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
         }
-
-        #matrix-canvas {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-            opacity: 0.15;
+        
+        .session-info {
+            color: #00ff88;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
         }
-
-        .glitch-text {
-            position: relative;
+        
             color: white;
             font-weight: bold;
         }
