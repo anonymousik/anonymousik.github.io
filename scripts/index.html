@@ -1,1294 +1,717 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCRIPTS // SecFerro Division Series | Anonymousik</title>
-    <meta name="description" content="SecFerro Division Series — profesjonalne skrypty do konfiguracji środowisk Termux. Modularny, idempotentny setup dla WebDev, Android, CyberSec i więcej.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scripts — SecFerro Division Series · Anonymousik</title>
+  <meta name="description" content="SecFerro Division Series: modular Termux setup scripts for WebDev, Android, CyberSec, Data Science, DevOps, OSINT and more. v5.0.0 IRONCLAD.">
+  <meta name="author" content="Anonymousik">
+  <meta property="og:title" content="Scripts · SecFerro Division Series">
+  <meta property="og:description" content="Modular Termux environment setup. 12 stacks, zero configuration required.">
+  <link rel="canonical" href="https://anonymousik.is-a.dev/scripts">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: { mono: ['"Fira Code"','monospace'], dm: ['"DM Mono"','monospace'] }
+      }}
+    }
+  </script>
+<style>
+/* ── TOKENS ────────────────────────────────────────────────────────────────── */
+:root {
+  --g:  #00ff41; --gold: #D4AF37; --red:  #ff003c;
+  --bl: #00aaff; --pur: #9b59ff;  --bg:   #050505;
+  --p1: #0a0a0a; --brd: #1a1a1a;  --txt:  #e0e0e0;
+}
 
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+/* ── BASE ──────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 56px; }
+body { background: var(--bg); color: var(--txt); font-family: 'Fira Code', monospace; overflow-x: hidden; }
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        mono: ['"Fira Code"', 'monospace'],
-                        sans: ['"Space Grotesk"', 'sans-serif'],
-                    },
-                    colors: {
-                        cyber: {
-                            green:  '#00ff41',
-                            dark:   '#050505',
-                            panel:  '#0a0a0a',
-                            border: '#1a1a1a',
-                            gold:   '#D4AF37',
-                            alert:  '#ff003c',
-                            blue:   '#00aaff',
-                            purple: '#9b59ff',
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in': 'fadeIn 0.6s ease forwards',
-                    },
-                    keyframes: {
-                        fadeIn: { from: { opacity: 0, transform: 'translateY(12px)' }, to: { opacity: 1, transform: 'translateY(0)' } }
-                    }
-                }
-            }
-        }
-    </script>
+/* ── CRT ───────────────────────────────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,.15) 50%),
+              linear-gradient(90deg, rgba(255,0,0,.03), rgba(0,255,0,.01), rgba(0,0,255,.03));
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none; z-index: 9999;
+}
+#matrix-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 0; opacity: .05; }
 
-    <style>
-        /* ── BASE ─────────────────────────────────────────────────────────── */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── SCROLLBAR ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--g); }
 
-        :root {
-            --g: #00ff41;
-            --gold: #D4AF37;
-            --red: #ff003c;
-            --blue: #00aaff;
-            --purple: #9b59ff;
-            --bg: #050505;
-            --panel: #0a0a0a;
-            --border: #1a1a1a;
-        }
+/* ── LAYOUT ────────────────────────────────────────────────────────────────── */
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 1.5rem 6rem; position: relative; z-index: 10; }
 
-        html { scroll-behavior: smooth; }
+/* ── GLITCH ────────────────────────────────────────────────────────────────── */
+.glitch { position: relative; display: inline-block; }
+.glitch::before, .glitch::after { content: attr(data-text); position: absolute; top:0;left:0;width:100%;height:100%; }
+.glitch::before { left:2px; color:var(--red); opacity:.65; clip-path:polygon(0 25%,100% 25%,100% 45%,0 45%); animation: ga 3.5s infinite; }
+.glitch::after  { left:-2px;color:var(--g);   opacity:.65; clip-path:polygon(0 70%,100% 70%,100% 85%,0 85%); animation: gb 2.8s infinite; }
+@keyframes ga { 0%,88%,100%{transform:translateX(0)} 90%{transform:translateX(-3px)} 94%{transform:translateX(2px)} }
+@keyframes gb { 0%,82%,100%{transform:translateX(0)} 84%{transform:translateX(3px)} 88%{transform:translateX(-2px)} }
 
-        body {
-            background: var(--bg);
-            color: #e0e0e0;
-            font-family: 'Fira Code', monospace;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+/* ── HELPERS ───────────────────────────────────────────────────────────────── */
+.ng { color:var(--g);    text-shadow:0 0 6px rgba(0,255,65,.35); }
+.ng2{ color:var(--gold); text-shadow:0 0 6px rgba(212,175,55,.35); }
+.nb { color:var(--bl);   text-shadow:0 0 6px rgba(0,170,255,.35); }
+.nr { color:var(--red);  text-shadow:0 0 6px rgba(255,0,60,.35); }
+.np { color:var(--pur);  text-shadow:0 0 6px rgba(155,89,255,.35); }
 
-        /* ── CRT OVERLAY ──────────────────────────────────────────────────── */
-        body::before {
-            content: '';
-            display: block;
-            position: fixed;
-            inset: 0;
-            background:
-                linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.18) 50%),
-                linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.015), rgba(0,0,255,0.04));
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-            z-index: 9999;
-        }
+/* ── PANEL ─────────────────────────────────────────────────────────────────── */
+.panel { background:rgba(10,10,10,.88); border:1px solid var(--brd); backdrop-filter:blur(4px); }
+.panel:hover { border-color:rgba(0,255,65,.18); }
 
-        /* ── MATRIX CANVAS ────────────────────────────────────────────────── */
-        #matrix-canvas {
-            position: fixed;
-            inset: 0;
-            width: 100vw; height: 100vh;
-            z-index: 0;
-            opacity: 0.06;
-        }
+/* ── TERM CHROME ───────────────────────────────────────────────────────────── */
+.tc { background:#0d0d0d; border-bottom:1px solid var(--brd); padding:.45rem .75rem; display:flex; align-items:center; gap:.4rem; }
+.dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.dt { font-size:.58rem; color:#444; margin-left:.4rem; letter-spacing:.06em; }
 
-        /* ── LAYOUT ────────────────────────────────────────────────────────── */
-        .content-wrap {
-            position: relative;
-            z-index: 10;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 1.5rem 6rem;
-        }
+/* ── CODE ──────────────────────────────────────────────────────────────────── */
+.codeblock { background:#000; border:1px solid var(--brd); position:relative; overflow:hidden; }
+.codeblock pre { padding:.9rem 1.1rem; font-size:.75rem; line-height:1.75; overflow-x:auto; color:#bbb; }
+.pr { color:#444; user-select:none; }
+.cm { color:var(--g); }
+.fl { color:var(--gold); }
+.ag { color:var(--bl); }
+.co { color:#3a3a3a; font-style:italic; }
 
-        /* ── SCROLLBAR ────────────────────────────────────────────────────── */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--g); }
+/* ── COPY BTN ──────────────────────────────────────────────────────────────── */
+.cpbtn {
+  position:absolute; top:.45rem; right:.45rem;
+  background:transparent; border:1px solid var(--brd);
+  color:#444; font-family:'Fira Code',monospace; font-size:.58rem;
+  padding:.2rem .5rem; cursor:pointer; letter-spacing:.1em;
+  text-transform:uppercase; transition:all .2s;
+}
+.cpbtn:hover { border-color:var(--g); color:var(--g); box-shadow:0 0 8px rgba(0,255,65,.15); }
+.cpbtn.ok { border-color:var(--g); color:var(--g); box-shadow:0 0 12px rgba(0,255,65,.25); }
 
-        /* ── NEON HELPERS ─────────────────────────────────────────────────── */
-        .neon-g    { color: var(--g);     text-shadow: 0 0 6px rgba(0,255,65,.4); }
-        .neon-gold { color: var(--gold);  text-shadow: 0 0 6px rgba(212,175,55,.4); }
-        .neon-blue { color: var(--blue);  text-shadow: 0 0 6px rgba(0,170,255,.4); }
-        .neon-red  { color: var(--red);   text-shadow: 0 0 6px rgba(255,0,60,.4); }
-        .neon-pur  { color: var(--purple);text-shadow: 0 0 6px rgba(155,89,255,.4); }
+/* ── BADGE ─────────────────────────────────────────────────────────────────── */
+.badge { display:inline-flex;align-items:center;gap:.25rem;padding:.12rem .45rem;border:1px solid;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase; }
+.bg   { border-color:rgba(0,255,65,.35);   color:var(--g);    background:rgba(0,255,65,.05); }
+.bgold{ border-color:rgba(212,175,55,.35); color:var(--gold); background:rgba(212,175,55,.05); }
+.bbl  { border-color:rgba(0,170,255,.35);  color:var(--bl);   background:rgba(0,170,255,.05); }
+.bred { border-color:rgba(255,0,60,.35);   color:var(--red);  background:rgba(255,0,60,.05); }
+.bpur { border-color:rgba(155,89,255,.35); color:var(--pur);  background:rgba(155,89,255,.05); }
+.bdim { border-color:#222; color:#555; background:rgba(255,255,255,.02); }
 
-        /* ── GLITCH ────────────────────────────────────────────────────────── */
-        .glitch {
-            position: relative;
-            display: inline-block;
-        }
-        .glitch::before, .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-        }
-        .glitch::before {
-            left: 2px; color: var(--red); opacity: .7;
-            clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
-            animation: gb 3.5s infinite;
-        }
-        .glitch::after {
-            left: -2px; color: var(--g); opacity: .7;
-            clip-path: polygon(0 65%, 100% 65%, 100% 80%, 0 80%);
-            animation: ga 2.8s infinite;
-        }
-        @keyframes ga {
-            0%,90%,100% { transform: translateX(0); }
-            92% { transform: translateX(-3px); }
-            95% { transform: translateX(2px); }
-        }
-        @keyframes gb {
-            0%,85%,100% { transform: translateX(0); }
-            87% { transform: translateX(3px); }
-            91% { transform: translateX(-2px); }
-        }
+/* ── SECTION HEADER ────────────────────────────────────────────────────────── */
+.sh { display:flex;align-items:center;gap:.65rem;border-bottom:1px solid var(--brd);padding-bottom:.7rem;margin-bottom:1.75rem; }
+.sh-num { color:#2a2a2a; font-size:.82rem; }
+.sh-title { color:var(--g); font-weight:700; font-size:.95rem; letter-spacing:.06em; }
 
-        /* ── PANEL ─────────────────────────────────────────────────────────── */
-        .panel {
-            background: rgba(10,10,10,.9);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(4px);
-            transition: border-color .3s, box-shadow .3s;
-        }
-        .panel:hover { border-color: rgba(0,255,65,.25); }
+/* ── MODULE CARD ───────────────────────────────────────────────────────────── */
+.mcard { border:1px solid var(--brd); background:rgba(10,10,10,.8); transition:border-color .25s,box-shadow .25s,transform .2s; }
+.mcard:hover { border-color:var(--c,var(--g)); box-shadow:0 4px 24px rgba(0,0,0,.5),0 0 0 1px var(--c,var(--g)) inset; transform:translateY(-1px); }
+.mcard .abar { height:2px; background:var(--c,var(--g)); box-shadow:0 0 8px var(--c,var(--g)); }
 
-        /* ── TERMINAL WINDOW CHROME ───────────────────────────────────────── */
-        .term-chrome {
-            background: #0d0d0d;
-            border-bottom: 1px solid var(--border);
-            padding: .5rem .75rem;
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-        }
-        .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-        .dot-r { background: var(--red); }
-        .dot-y { background: var(--gold); }
-        .dot-g { background: var(--g); }
-        .term-title { font-size: .65rem; color: #555; margin-left: .5rem; letter-spacing: .05em; }
+/* ── TABLE ─────────────────────────────────────────────────────────────────── */
+.tbl { width:100%; border-collapse:collapse; font-size:.75rem; }
+.tbl th { text-align:left; padding:.55rem .75rem; color:#444; border-bottom:1px solid var(--brd); font-weight:500; letter-spacing:.08em; text-transform:uppercase; font-size:.6rem; }
+.tbl td { padding:.6rem .75rem; border-bottom:1px solid rgba(26,26,26,.5); color:#bbb; vertical-align:top; line-height:1.6; }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:rgba(0,255,65,.02); }
+.tbl .key { color:var(--g); font-weight:600; }
 
-        /* ── CODE BLOCK ────────────────────────────────────────────────────── */
-        .code-block {
-            background: #000;
-            border: 1px solid var(--border);
-            border-radius: 2px;
-            position: relative;
-            overflow: hidden;
-        }
-        .code-block pre {
-            padding: 1rem 1.25rem;
-            font-size: .8rem;
-            line-height: 1.7;
-            overflow-x: auto;
-            color: #ccc;
-        }
-        .code-block .prompt { color: #555; user-select: none; }
-        .code-block .cmd    { color: var(--g); }
-        .code-block .flag   { color: var(--gold); }
-        .code-block .arg    { color: var(--blue); }
-        .code-block .comment{ color: #444; font-style: italic; }
+/* ── MODULE TOGGLE / BUILDER ───────────────────────────────────────────────── */
+.mtog { display:none; }
+.mlbl {
+  cursor:pointer; border:1px solid var(--brd); padding:.35rem .7rem;
+  font-size:.65rem; color:#555; transition:all .2s; user-select:none;
+  letter-spacing:.06em; display:inline-block;
+}
+.mtog:checked + .mlbl { border-color:var(--g); color:var(--g); background:rgba(0,255,65,.07); box-shadow:0 0 8px rgba(0,255,65,.12); }
 
-        /* ── COPY BUTTON ───────────────────────────────────────────────────── */
-        .copy-btn {
-            position: absolute;
-            top: .5rem; right: .5rem;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: #555;
-            font-family: 'Fira Code', monospace;
-            font-size: .65rem;
-            padding: .25rem .6rem;
-            cursor: pointer;
-            letter-spacing: .08em;
-            transition: all .2s;
-            text-transform: uppercase;
-        }
-        .copy-btn:hover {
-            border-color: var(--g);
-            color: var(--g);
-            box-shadow: 0 0 8px rgba(0,255,65,.2);
-        }
-        .copy-btn.copied {
-            border-color: var(--g);
-            color: var(--g);
-            box-shadow: 0 0 12px rgba(0,255,65,.3);
-        }
+/* ── STEP ──────────────────────────────────────────────────────────────────── */
+.step-n { width:1.3rem;height:1.3rem; border:1px solid var(--g); color:var(--g); font-size:.6rem; display:flex;align-items:center;justify-content:center; flex-shrink:0; }
 
-        /* ── MODULE CARD ───────────────────────────────────────────────────── */
-        .mod-card {
-            border: 1px solid var(--border);
-            background: rgba(10,10,10,.8);
-            transition: border-color .25s, box-shadow .25s, transform .2s;
-        }
-        .mod-card:hover {
-            border-color: var(--card-accent, var(--g));
-            box-shadow: 0 0 20px rgba(0,0,0,.6), inset 0 0 30px rgba(0,0,0,.3);
-            transform: translateY(-1px);
-        }
-        .mod-card .accent-bar {
-            height: 2px;
-            background: var(--card-accent, var(--g));
-            box-shadow: 0 0 8px var(--card-accent, var(--g));
-        }
+/* ── CHANGELOG ITEM ────────────────────────────────────────────────────────── */
+.cl-item { border-left:2px solid var(--brd); padding-left:1.25rem; }
+.cl-item.major { border-color:var(--g); }
 
-        /* ── BADGE ─────────────────────────────────────────────────────────── */
-        .badge {
-            display: inline-flex; align-items: center; gap: .3rem;
-            padding: .15rem .5rem;
-            border: 1px solid;
-            font-size: .6rem;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-        }
-        .badge-g      { border-color: rgba(0,255,65,.4);   color: var(--g);      background: rgba(0,255,65,.06); }
-        .badge-gold   { border-color: rgba(212,175,55,.4); color: var(--gold);   background: rgba(212,175,55,.06); }
-        .badge-blue   { border-color: rgba(0,170,255,.4);  color: var(--blue);   background: rgba(0,170,255,.06); }
-        .badge-red    { border-color: rgba(255,0,60,.4);   color: var(--red);    background: rgba(255,0,60,.06); }
-        .badge-purple { border-color: rgba(155,89,255,.4); color: var(--purple); background: rgba(155,89,255,.06); }
+/* ── FAQ ───────────────────────────────────────────────────────────────────── */
+details { border:1px solid var(--brd); background:rgba(8,8,8,.8); }
+details summary { padding:.85rem 1.25rem; cursor:pointer; color:#aaa; font-size:.75rem; list-style:none; display:flex; justify-content:space-between; align-items:center; letter-spacing:.03em; }
+details summary::-webkit-details-marker { display:none; }
+details[open] summary { color:var(--g); border-bottom:1px solid var(--brd); }
+details .inner { padding:.85rem 1.25rem; font-size:.7rem; color:#666; line-height:1.75; }
+details .inner code { color:var(--g); font-size:.68rem; }
 
-        /* ── SECTION HEADER ────────────────────────────────────────────────── */
-        .sec-header {
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: .75rem;
-            margin-bottom: 1.75rem;
-        }
-        .sec-num  { color: #333; font-size: .9rem; }
-        .sec-title{ color: var(--g); font-weight: 700; font-size: 1.05rem; letter-spacing: .05em; }
+/* ── STICKY TOC ────────────────────────────────────────────────────────────── */
+.toc-link { color:#444; font-size:.7rem; text-decoration:none; display:flex; align-items:center; gap:.45rem; padding:.32rem .5rem; border-left:2px solid transparent; transition:all .2s; letter-spacing:.04em; }
+.toc-link:hover { color:var(--g); border-color:var(--g); background:rgba(0,255,65,.03); }
+.toc-link.on { color:var(--g); border-color:var(--g); }
 
-        /* ── TOC LINK ──────────────────────────────────────────────────────── */
-        .toc-link {
-            color: #555;
-            font-size: .75rem;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-            padding: .35rem .5rem;
-            border-left: 2px solid transparent;
-            transition: all .2s;
-            letter-spacing: .05em;
-        }
-        .toc-link:hover {
-            color: var(--g);
-            border-left-color: var(--g);
-            background: rgba(0,255,65,.04);
-        }
-        .toc-link.active {
-            color: var(--g);
-            border-left-color: var(--g);
-        }
+/* ── ANIM ──────────────────────────────────────────────────────────────────── */
+.fu { opacity:0; transform:translateY(14px); animation:fu .5s ease forwards; }
+@keyframes fu { to { opacity:1; transform:translateY(0); } }
+.d1{animation-delay:.1s} .d2{animation-delay:.2s} .d3{animation-delay:.3s}
 
-        /* ── STICKY NAV ────────────────────────────────────────────────────── */
-        .sticky-nav {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(5,5,5,.95);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid var(--border);
-        }
+/* ── BLINK ─────────────────────────────────────────────────────────────────── */
+.blink { animation:blink 1.1s step-end infinite; }
+@keyframes blink { 50%{opacity:0} }
 
-        /* ── CLOCK BLINK ───────────────────────────────────────────────────── */
-        .blink { animation: blink 1s step-end infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
-
-        /* ── WARNING BOX ───────────────────────────────────────────────────── */
-        .warn-box {
-            border-left: 3px solid var(--red);
-            background: rgba(255,0,60,.06);
-            padding: .75rem 1rem;
-            font-size: .78rem;
-            color: #aaa;
-        }
-        .info-box {
-            border-left: 3px solid var(--g);
-            background: rgba(0,255,65,.04);
-            padding: .75rem 1rem;
-            font-size: .78rem;
-            color: #aaa;
-        }
-
-        /* ── STEP INDICATOR ────────────────────────────────────────────────── */
-        .step-num {
-            width: 1.4rem; height: 1.4rem;
-            border: 1px solid var(--g);
-            color: var(--g);
-            font-size: .65rem;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-
-        /* ── SELECTOR TABLE ────────────────────────────────────────────────── */
-        .sel-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
-        .sel-table th {
-            text-align: left;
-            padding: .6rem .75rem;
-            color: #555;
-            border-bottom: 1px solid var(--border);
-            font-weight: 500;
-            letter-spacing: .06em;
-            text-transform: uppercase;
-            font-size: .65rem;
-        }
-        .sel-table td {
-            padding: .65rem .75rem;
-            border-bottom: 1px solid rgba(26,26,26,.6);
-            vertical-align: top;
-            color: #bbb;
-        }
-        .sel-table tr:last-child td { border-bottom: none; }
-        .sel-table tr:hover td { background: rgba(0,255,65,.025); }
-        .sel-table .key { color: var(--g); font-weight: 600; }
-
-        /* ── INTERACTIVE BUILDER ───────────────────────────────────────────── */
-        .module-toggle {
-            display: none;
-        }
-        .module-label {
-            cursor: pointer;
-            border: 1px solid var(--border);
-            padding: .4rem .75rem;
-            font-size: .7rem;
-            color: #666;
-            transition: all .2s;
-            user-select: none;
-            letter-spacing: .05em;
-        }
-        .module-toggle:checked + .module-label {
-            border-color: var(--g);
-            color: var(--g);
-            background: rgba(0,255,65,.08);
-            box-shadow: 0 0 8px rgba(0,255,65,.15);
-        }
-
-        /* ── PROGRESS BARS ─────────────────────────────────────────────────── */
-        .prog-bar {
-            height: 2px;
-            background: var(--border);
-            overflow: hidden;
-        }
-        .prog-bar-fill {
-            height: 100%;
-            transition: width 1.2s cubic-bezier(.1,1,.2,1);
-        }
-
-        /* ── ANIMATIONS ────────────────────────────────────────────────────── */
-        .fade-in-up {
-            opacity: 0;
-            transform: translateY(16px);
-            animation: fadeUp .5s ease forwards;
-        }
-        @keyframes fadeUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .delay-1 { animation-delay: .1s; }
-        .delay-2 { animation-delay: .2s; }
-        .delay-3 { animation-delay: .3s; }
-        .delay-4 { animation-delay: .4s; }
-
-        /* ── PIPELINE VISUAL ───────────────────────────────────────────────── */
-        .pipeline-step {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-start;
-        }
-        .pipeline-line {
-            width: 1px;
-            flex-shrink: 0;
-            background: var(--border);
-            margin: .5rem auto 0;
-            flex-grow: 1;
-            min-height: 2rem;
-        }
-    </style>
+/* ── WARN / INFO BOX ───────────────────────────────────────────────────────── */
+.wbox { border-left:3px solid var(--red); background:rgba(255,0,60,.05); padding:.7rem 1rem; font-size:.7rem; color:#aaa; }
+.ibox { border-left:3px solid var(--g);   background:rgba(0,255,65,.04);  padding:.7rem 1rem; font-size:.7rem; color:#aaa; }
+.ibox code, .wbox code { color:var(--g); }
+</style>
 </head>
 <body>
 
-<!-- ── MATRIX BG ──────────────────────────────────────────────────────────── -->
 <canvas id="matrix-canvas"></canvas>
 
-<!-- ── STICKY NAV ─────────────────────────────────────────────────────────── -->
-<nav class="sticky-nav">
-    <div style="max-width:900px;margin:0 auto;padding:0 1.5rem;">
-        <div style="display:flex;align-items:center;justify-content:space-between;height:48px;">
-            <div style="display:flex;align-items:center;gap:.75rem;">
-                <a href="/" style="color:#555;font-size:.65rem;text-decoration:none;letter-spacing:.08em;transition:color .2s;"
-                   onmouseover="this.style.color='#00ff41'" onmouseout="this.style.color='#555'">
-                    ← ANONYMOUSIK.IS-A.DEV
-                </a>
-                <span style="color:#2a2a2a;">│</span>
-                <span style="color:#00ff41;font-size:.65rem;letter-spacing:.1em;">SCRIPTS</span>
-                <span style="color:#2a2a2a;">│</span>
-                <span style="color:#555;font-size:.65rem;">SECFERRO DIVISION</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:.5rem;">
-                <span class="blink" style="width:6px;height:6px;background:#00ff41;border-radius:50%;display:inline-block;box-shadow:0 0 8px #00ff41;"></span>
-                <span style="color:#444;font-size:.6rem;" id="nav-clock">--:--:--</span>
-            </div>
-        </div>
+<!-- ╔══════════════════════════════════════════════════════════════╗
+     ║  NAV INCLUDE — paste nav-component.html here               ║
+     ╚══════════════════════════════════════════════════════════════╝ -->
+<!-- NAV_COMPONENT_PLACEHOLDER -->
+
+<div class="wrap">
+
+<!-- ── HERO ─────────────────────────────────────────────────────────────── -->
+<header style="padding:3.5rem 0 2.5rem;text-align:center" class="fu">
+  <nav aria-label="Breadcrumb" style="font-size:.6rem;color:#333;letter-spacing:.14em;margin-bottom:1.5rem">
+    <a href="/" style="color:#333;text-decoration:none;transition:color .2s" onmouseover="this.style.color='#00ff41'" onmouseout="this.style.color='#333'">ANONYMOUSIK.IS-A.DEV</a>
+    <span style="margin:0 .5rem">›</span>
+    <span style="color:#555">SCRIPTS</span>
+  </nav>
+
+  <div style="font-size:.6rem;color:#2a2a2a;letter-spacing:.2em;margin-bottom:1.2rem">
+    SECFERRO DIVISION SERIES · OPEN SOURCE · MIT LICENSE
+  </div>
+
+  <h1 class="glitch" data-text="TMUX_SETUP"
+      style="font-size:clamp(2.2rem,7vw,4.5rem);font-weight:700;color:#fff;letter-spacing:.04em;line-height:1;margin-bottom:.9rem">
+    TMUX_SETUP
+  </h1>
+
+  <p style="color:#444;font-size:.7rem;letter-spacing:.18em;margin-bottom:2rem">
+    v5.0.0 · IRONCLAD · PRODUCTION READY
+  </p>
+
+  <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin-bottom:2.5rem">
+    <span class="badge bg"><span class="blink" style="width:5px;height:5px;border-radius:50%;background:var(--g);display:inline-block"></span>Live</span>
+    <span class="badge bgold">12 Modules</span>
+    <span class="badge bbl">Idempotent</span>
+    <span class="badge bpur">Unattended Mode</span>
+    <span class="badge bred">Auto Pre-Flight</span>
+    <span class="badge bdim">MIT</span>
+  </div>
+
+  <!-- QUICKSTART -->
+  <div style="max-width:700px;margin:0 auto">
+    <div style="font-size:.6rem;color:#444;letter-spacing:.12em;margin-bottom:.5rem;text-align:left">▸ QUICKSTART — interactive mode</div>
+    <div class="codeblock">
+      <div class="tc"><div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div><span class="dt">termux · bash</span></div>
+      <pre><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span></pre>
+      <button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)')">COPY</button>
     </div>
-</nav>
+  </div>
+</header>
 
-<!-- ── MAIN CONTENT ───────────────────────────────────────────────────────── -->
-<div class="content-wrap">
+<!-- ── TOC ────────────────────────────────────────────────────────────────── -->
+<div class="panel fu d1" style="margin-bottom:3rem;padding:1.25rem 1.5rem">
+  <div style="font-size:.58rem;color:#333;letter-spacing:.14em;margin-bottom:.85rem">▸ CONTENTS</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.05rem">
+    <a href="#quickstart"  class="toc-link">01 · Installation</a>
+    <a href="#modules"     class="toc-link">02 · Module Reference</a>
+    <a href="#builder"     class="toc-link">03 · Command Builder</a>
+    <a href="#flags"       class="toc-link">04 · CLI Reference</a>
+    <a href="#pipeline"    class="toc-link">05 · Execution Pipeline</a>
+    <a href="#environment" class="toc-link">06 · Shell Environment</a>
+    <a href="#deploy"      class="toc-link">07 · Deployment</a>
+    <a href="#changelog"   class="toc-link">08 · Changelog</a>
+    <a href="#faq"         class="toc-link">09 · FAQ</a>
+  </div>
+</div>
 
-    <!-- ── HERO ─────────────────────────────────────────────────────────── -->
-    <header style="padding:4rem 0 3rem;text-align:center;" class="fade-in-up">
-        <div style="font-size:.65rem;color:#444;letter-spacing:.15em;margin-bottom:1.5rem;">
-            ANONYMOUSIK.IS-A.DEV / SCRIPTS / SECFERRO
-        </div>
+<!-- ══ 01 INSTALLATION ══════════════════════════════════════════════════════ -->
+<section id="quickstart" style="margin-bottom:3.5rem" class="fu d2">
+  <div class="sh"><span class="sh-num">[01]</span><span class="sh-title">INSTALLATION</span></div>
 
-        <h1 class="glitch" data-text="TMUX_SETUP"
-            style="font-size:clamp(2.5rem,8vw,5rem);font-weight:700;color:#fff;letter-spacing:.05em;line-height:1;margin-bottom:1rem;">
-            TMUX_SETUP
-        </h1>
+  <div class="ibox" style="margin-bottom:1.5rem">
+    <strong style="color:var(--g)">Requirements:</strong> Termux (Android 7+, API 24+) · min. 400 MB free · network connection.<br>
+    Pre-flight runs automatically — verifies environment, repairs locks, establishes connectivity.
+  </div>
 
-        <p style="color:#555;font-size:.75rem;letter-spacing:.2em;margin-bottom:2rem;">
-            SECFERRO DIVISION SERIES · v4.0.0 · PRODUCTION READY
-        </p>
-
-        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem;margin-bottom:3rem;">
-            <span class="badge badge-g">● LIVE</span>
-            <span class="badge badge-gold">Modular</span>
-            <span class="badge badge-blue">Idempotent</span>
-            <span class="badge badge-purple">Unattended Mode</span>
-            <span class="badge" style="border-color:rgba(255,255,255,.2);color:#888;">MIT License</span>
-        </div>
-
-        <!-- QUICK INSTALL -->
-        <div style="max-width:680px;margin:0 auto;">
-            <div class="code-block">
-                <div class="term-chrome">
-                    <div class="dot dot-r"></div>
-                    <div class="dot dot-y"></div>
-                    <div class="dot dot-g"></div>
-                    <span class="term-title">termux · quick install</span>
-                </div>
-                <pre><span class="prompt">$ </span><span class="cmd">bash</span> <span class="arg">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span></pre>
-                <button class="copy-btn" onclick="copyCode(this, 'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)')">COPY</button>
-            </div>
-        </div>
-    </header>
-
-    <!-- ── TOC ──────────────────────────────────────────────────────────── -->
-    <div class="panel fade-in-up delay-1" style="margin-bottom:3rem;padding:1.25rem 1.5rem;">
-        <div style="font-size:.62rem;color:#444;letter-spacing:.12em;margin-bottom:1rem;text-transform:uppercase;">
-            ▸ Spis treści
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.1rem;">
-            <a href="#install" class="toc-link">01 · Szybka instalacja</a>
-            <a href="#modules" class="toc-link">02 · Moduły</a>
-            <a href="#builder" class="toc-link">03 · Konfigurator poleceń</a>
-            <a href="#flags" class="toc-link">04 · Flagi i opcje</a>
-            <a href="#pipeline" class="toc-link">05 · Pipeline instalacji</a>
-            <a href="#deploy" class="toc-link">06 · Wdrożenie na domenę</a>
-            <a href="#faq" class="toc-link">07 · FAQ</a>
-            <a href="#changelog" class="toc-link">08 · Changelog</a>
-        </div>
+  <div style="display:grid;gap:1rem">
+    <!-- Interactive -->
+    <div>
+      <div style="font-size:.6rem;color:#444;letter-spacing:.1em;margin-bottom:.4rem">▸ INTERACTIVE — displays module selector menu</div>
+      <div class="codeblock"><div class="tc"><div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div><span class="dt">interactive mode</span></div>
+      <pre><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span>
+<span class="co"># Wyświetla menu 1–12 · wielokrotny wybór: 1,3,5 · pełna: all</span></pre>
+      <button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)')">COPY</button></div>
     </div>
+    <!-- Unattended -->
+    <div>
+      <div style="font-size:.6rem;color:#444;letter-spacing:.1em;margin-bottom:.4rem">▸ UNATTENDED — zero interaction, CI/CD compatible</div>
+      <div class="codeblock"><div class="tc"><div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div><span class="dt">automated / unattended</span></div>
+      <pre><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="fl">--dev</span> <span class="ag">Cyber,Tor,Media</span>
+<span class="co"># Pełna automatyczna instalacja — brak pytań, brak interakcji</span></pre>
+      <button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Cyber,Tor,Media')">COPY</button></div>
+    </div>
+    <!-- Dry-run -->
+    <div>
+      <div style="font-size:.6rem;color:#444;letter-spacing:.1em;margin-bottom:.4rem">▸ DRY-RUN — simulation, nothing installed</div>
+      <div class="codeblock"><div class="tc"><div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div><span class="dt">dry-run simulation</span></div>
+      <pre><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="fl">--dry-run --dev</span> <span class="ag">Data,DevOps</span>
+<span class="co"># Wypisuje każde polecenie bez wykonania — idealny do testów pipeline</span></pre>
+      <button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dry-run --dev Data,DevOps')">COPY</button></div>
+    </div>
+  </div>
+</section>
 
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- [01] QUICK INSTALL                                                  -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="install" style="margin-bottom:3.5rem;" class="fade-in-up delay-2">
-        <div class="sec-header">
-            <span class="sec-num">[01]</span>
-            <span class="sec-title">SZYBKA INSTALACJA</span>
-        </div>
+<!-- ══ 02 MODULES ════════════════════════════════════════════════════════════ -->
+<section id="modules" style="margin-bottom:3.5rem">
+  <div class="sh"><span class="sh-num">[02]</span><span class="sh-title">MODULE REFERENCE</span><span style="font-size:.6rem;color:#333;margin-left:auto">12 available</span></div>
+  <div style="display:grid;gap:.9rem">
 
-        <div class="info-box" style="margin-bottom:1.5rem;">
-            <strong style="color:var(--g);">Wymagania:</strong> Termux (Android 7+), połączenie sieciowe, min. 512 MB wolnego miejsca.
-            Skrypt automatycznie weryfikuje środowisko przed startem.
-        </div>
-
-        <!-- Tryb interaktywny -->
-        <div style="margin-bottom:1.25rem;">
-            <div style="font-size:.65rem;color:#555;letter-spacing:.1em;margin-bottom:.5rem;">
-                ▸ TRYB INTERAKTYWNY — wyświetla menu wyboru modułów
-            </div>
-            <div class="code-block">
-                <div class="term-chrome">
-                    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-                    <span class="term-title">interactive mode</span>
-                </div>
-                <pre><span class="prompt">$ </span><span class="cmd">bash</span> <span class="arg">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span>
-<span class="comment"># Wyświetla numerowane menu — wybierz moduły np. 1,3,5</span></pre>
-                <button class="copy-btn" onclick="copyCode(this, 'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)')">COPY</button>
-            </div>
-        </div>
-
-        <!-- Tryb automatyczny -->
-        <div style="margin-bottom:1.25rem;">
-            <div style="font-size:.65rem;color:#555;letter-spacing:.1em;margin-bottom:.5rem;">
-                ▸ TRYB AUTOMATYCZNY (UNATTENDED) — idealne do skryptów CI/CD i masowych wdrożeń
-            </div>
-            <div class="code-block">
-                <div class="term-chrome">
-                    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-                    <span class="term-title">unattended / automated mode</span>
-                </div>
-                <pre><span class="prompt">$ </span><span class="cmd">bash</span> <span class="arg">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="flag">--dev</span> <span class="arg">WebDev,Android,Cyber,Fullstack</span>
-<span class="comment"># Pełna instalacja bez żadnych interakcji. Zero pytań, zero przerw.</span></pre>
-                <button class="copy-btn" onclick="copyCode(this, 'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev WebDev,Android,Cyber,Fullstack')">COPY</button>
-            </div>
-        </div>
-
-        <!-- Dry-run -->
+    <!-- Helper macro as repeated pattern -->
+    <!-- MODULE: WebDev -->
+    <div class="mcard" style="--c:var(--g)"><div class="abar"></div>
+    <div style="padding:1.1rem 1.4rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem">
         <div>
-            <div style="font-size:.65rem;color:#555;letter-spacing:.1em;margin-bottom:.5rem;">
-                ▸ DRY-RUN — symulacja bez instalacji, idealna do testowania
-            </div>
-            <div class="code-block">
-                <div class="term-chrome">
-                    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-                    <span class="term-title">dry-run simulation</span>
-                </div>
-                <pre><span class="prompt">$ </span><span class="cmd">bash</span> <span class="arg">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="flag">--dry-run</span> <span class="flag">--dev</span> <span class="arg">Cyber</span>
-<span class="comment"># Wypisze wszystkie polecenia bez ich wykonywania</span></pre>
-                <button class="copy-btn" onclick="copyCode(this, 'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dry-run --dev Cyber')">COPY</button>
-            </div>
+          <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.35rem">
+            <span style="color:var(--g);font-size:.6rem;font-weight:700;border:1px solid rgba(0,255,65,.3);padding:.1rem .35rem">01</span>
+            <h3 style="color:#fff;font-weight:700;letter-spacing:.05em;font-size:.9rem">WEBDEV</h3>
+            <span class="badge bg" style="font-size:.55rem">--dev WebDev</span>
+          </div>
+          <p style="color:#666;font-size:.7rem;line-height:1.65;max-width:520px">Full-stack runtime environment. Node.js LTS with TypeScript, Vite and ESLint for modern JS development. PHP with Composer for server-side scripting. Python with FastAPI, Pydantic and Uvicorn for REST APIs. Deno as a secure Node alternative.</p>
         </div>
-    </section>
+        <div style="text-align:right;flex-shrink:0"><div style="font-size:.55rem;color:#333">EST. SIZE</div><div style="color:var(--g);font-weight:700">~620 MB</div></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.9rem">
+        <span class="badge bg">Node.js LTS</span><span class="badge bg">TypeScript</span><span class="badge bg">Vite</span><span class="badge bg">ESLint</span><span class="badge bg">Biome</span><span class="badge bg">Yarn</span><span class="badge bg">PHP 8</span><span class="badge bg">Composer</span><span class="badge bg">Python 3</span><span class="badge bg">FastAPI</span><span class="badge bg">Deno</span><span class="badge bg">pm2</span>
+      </div>
+      <div class="codeblock"><pre style="font-size:.7rem"><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="fl">--dev</span> <span class="ag">WebDev</span></pre><button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev WebDev')">COPY</button></div>
+    </div></div>
 
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- [02] MODULES                                                        -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="modules" style="margin-bottom:3.5rem;">
-        <div class="sec-header">
-            <span class="sec-num">[02]</span>
-            <span class="sec-title">MODUŁY</span>
-            <span style="font-size:.65rem;color:#444;margin-left:auto;">6 dostępnych</span>
+    <!-- Android -->
+    <div class="mcard" style="--c:#3b82f6"><div class="abar"></div>
+    <div style="padding:1.1rem 1.4rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem">
+        <div>
+          <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.35rem">
+            <span style="color:#3b82f6;font-size:.6rem;font-weight:700;border:1px solid rgba(59,130,246,.3);padding:.1rem .35rem">02</span>
+            <h3 style="color:#fff;font-weight:700;letter-spacing:.05em;font-size:.9rem">ANDROID DEV</h3>
+            <span class="badge bbl" style="font-size:.55rem">--dev Android</span>
+          </div>
+          <p style="color:#666;font-size:.7rem;line-height:1.65;max-width:520px">JVM stack for Android build tooling directly in Termux. OpenJDK 17 LTS with Gradle daemon caching, Kotlin compiler, optional aapt for resource compilation.</p>
         </div>
+        <div style="text-align:right;flex-shrink:0"><div style="font-size:.55rem;color:#333">EST. SIZE</div><div style="color:#3b82f6;font-weight:700">~450 MB</div></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.9rem">
+        <span class="badge bbl">OpenJDK 17</span><span class="badge bbl">Gradle</span><span class="badge bbl">Kotlin</span><span class="badge bbl">aapt</span>
+      </div>
+      <div class="codeblock"><pre style="font-size:.7rem"><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="fl">--dev</span> <span class="ag">Android</span></pre><button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Android')">COPY</button></div>
+    </div></div>
 
-        <div style="display:grid;gap:1rem;">
-
-            <!-- WebDev -->
-            <div class="mod-card" style="--card-accent:var(--g);">
-                <div class="accent-bar"></div>
-                <div style="padding:1.25rem 1.5rem;">
-                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
-                        <div>
-                            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem;">
-                                <span style="color:var(--g);font-size:.7rem;font-weight:700;">W</span>
-                                <h3 style="color:#fff;font-weight:700;letter-spacing:.05em;">WEBDEV</h3>
-                                <span class="badge badge-g">--dev WebDev</span>
-                            </div>
-                            <p style="color:#777;font-size:.72rem;line-height:1.6;max-width:520px;">
-                                Kompletny stos frontendowy i backendowy. Node.js LTS, globalny TypeScript i Vite dla szybkiego startu projektu, PHP dla legacy i skryptów serwerowych, Python z FastAPI i Flask dla serwisów REST, Deno jako bezpieczna alternatywa Node.
-                            </p>
-                        </div>
-                        <div style="flex-shrink:0;">
-                            <div style="font-size:.6rem;color:#444;margin-bottom:.4rem;">ROZMIAR</div>
-                            <div style="color:var(--g);font-size:.9rem;font-weight:700;">~620 MB</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;">
-                        <span class="badge badge-g">Node.js LTS</span>
-                        <span class="badge badge-g">TypeScript</span>
-                        <span class="badge badge-g">Vite</span>
-                        <span class="badge badge-g">Yarn</span>
-                        <span class="badge badge-g">PHP</span>
-                        <span class="badge badge-g">Python 3</span>
-                        <span class="badge badge-g">FastAPI</span>
-                        <span class="badge badge-g">Deno</span>
-                        <span class="badge badge-g">ESLint</span>
-                        <span class="badge badge-g">Prettier</span>
-                    </div>
-                    <div class="code-block">
-                        <pre style="font-size:.73rem;"><span class="prompt">$ </span><span class="cmd">bash</span> <span class="arg">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="flag">--dev</span> <span class="arg">WebDev</span></pre>
-                        <button class="copy-btn" onclick="copyCode(this, 'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev WebDev')">COPY</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Android -->
-            <div class="mod-card" style="--card-accent:#3b82f6;">
-                <div class="accent-bar"></div>
-                <div style="padding:1.25rem 1.5rem;">
-                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
-                        <div>
-                            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem;">
-                                <span style="color:#3b82f6;font-size:.7rem;font-weight:700;">A</span>
-                                <h3 style="color:#fff;font-weight:700;letter-spacing:.05em;">ANDROID DEV</h3>
-                                <span class="badge badge-blue">--dev Android</span>
-                            </div>
-                            <p style="color:#777;font-size:.72rem;line-height:1.6;max-width:520px;">
-                                Środowisko JVM do budowania i analizy aplikacji Android bezpośrednio w Termuxie. OpenJDK 17 LTS, Gradle z cache'owaniem, Kotlin — kompiluj projekty bez komputera.
-                            </p>
-                        </div>
-                        <div style="flex-shrink:0;">
-                            <div style="font-size:.6rem;color:#444;margin-bottom:.4rem;">ROZMIAR</div>
-                            <div style="color:#3b82f6;font-size:.9rem;font-weight:700;">~450 MB</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;">
-                        <span class="badge badge-blue">OpenJDK 17</span>
-                        <span class="badge badge-blue">Gradle</span>
-                        <span class="badge badge-blue">Kotlin</span>
-                        <span class="badge badge-blue">aapt</span>
-                    </div>
-                    <div class="code-block">
-                        <pre style="font-size:.73rem;"><span class="prompt">$ </span><span class="cmd">bash</span> <span class="arg">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="flag">--dev</span> <span class="arg">Android</span></pre>
-                        <button class="copy-btn" onclick="copyCode(this, 'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Android')">COPY</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cyber -->
-            <div class="mod-card" style="--card-accent:var(--red);">
-                <div class="accent-bar"></div>
-                <div style="padding:1.25rem 1.5rem;">
-                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
-                        <div>
-                            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem;">
-                                <span style="color:var(--red);font-size:.7rem;font-weight:700;">C</span>
-                                <h3 style="color:#fff;font-weight:700;letter-spacing:.05em;">CYBERSECURITY</h3>
-                                <span class="badge badge-red">--dev Cyber</span>
-                            </div>
-                            <p style="color:#777;font-size:.72rem;line-height:1.6;max-width:520px;">
-                                Arsenał narzędzi ofensywnych i defensywnych. Nmap, SQLMap, Hydra do testów penetracyjnych. Nikto jako skaner web. Scapy i pwntools w Pythonie dla zaawansowanej analizy pakietów i exploitacji.
-                            </p>
-                        </div>
-                        <div style="flex-shrink:0;">
-                            <div style="font-size:.6rem;color:#444;margin-bottom:.4rem;">ROZMIAR</div>
-                            <div style="color:var(--red);font-size:.9rem;font-weight:700;">~380 MB</div>
-                        </div>
-                    </div>
-                    <div class="warn-box" style="margin-bottom:1rem;font-size:.65rem;">
-                        <strong style="color:var(--red);">⚠ Disclaimer:</strong> Narzędzia przeznaczone wyłącznie do legalnych testów penetracyjnych i celów edukacyjnych. Używaj wyłącznie na systemach, do których masz pisemne upoważnienie.
-                    </div>
-                    <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;">
-                        <span class="badge badge-red">nmap</span>
-                        <span class="badge badge-red">sqlmap</span>
-                        <span class="badge badge-red">hydra</span>
-                        <span class="badge badge-red">nikto</span>
-                        <span class="badge badge-red">scapy</span>
-                        <span class="badge badge-red">pwntools</span>
-                        <span class="badge badge-red">tcpdump</span>
-                        <span class="badge badge-red">aircrack-ng</span>
-                        <span class="badge badge-red">whois</span>
-                    </div>
-                    <div class="code-block">
-                        <pre style="font-size:.73rem;"><span class="prompt">$ </span><span class="cmd">bash</span> <span class="arg">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="flag">--dev</span> <span class="arg">Cyber</span></pre>
-                        <button class="copy-btn" onclick="copyCode(this, 'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Cyber')">COPY</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Fullstack -->
-            <div class="mod-card" style="--card-accent:var(--gold);">
-                <div class="accent-bar"></div>
-                <div style="padding:1.25rem 1.5rem;">
-                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
-                        <div>
-                            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem;">
-                                <span style="color:var(--gold);font-size:.7rem;font-weight:700;">F</span>
-                                <h3 style="color:#fff;font-weight:700;letter-spacing:.05em;">FULLSTACK COMPILED</h3>
-                                <span class="badge badge-gold">--dev Fullstack</span>
-                            </div>
-                            <p style="color:#777;font-size:.72rem;line-height:1.6;max-width:520px;">
-                                Języki systemowe i kompilowane. Rust z cargo-watch dla hot-reload, Go dla microservices, C/C++ z Clang i CMake, Lua dla skryptów wbudowanych.
-                            </p>
-                        </div>
-                        <div style="flex-shrink:0;">
-                            <div style="font-size:.6rem;color:#444;margin-bottom:.4rem;">ROZMIAR</div>
-                            <div style="color:var(--gold);font-size:.9rem;font-weight:700;">~1.1 GB</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;">
-                        <span class="badge badge-gold">Rust</span>
-                        <span class="badge badge-gold">cargo-watch</span>
-                        <span class="badge badge-gold">Go</span>
-                        <span class="badge badge-gold">Clang/C++</span>
-                        <span class="badge badge-gold">CMake</span>
-                        <span class="badge badge-gold">Lua 5.4</span>
-                        <span class="badge badge-gold">Make</span>
-                    </div>
-                    <div class="code-block">
-                        <pre style="font-size:.73rem;"><span class="prompt">$ </span><span class="cmd">bash</span> <span class="arg">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="flag">--dev</span> <span class="arg">Fullstack</span></pre>
-                        <button class="copy-btn" onclick="copyCode(this, 'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Fullstack')">COPY</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tor -->
-            <div class="mod-card" style="--card-accent:var(--purple);">
-                <div class="accent-bar"></div>
-                <div style="padding:1.25rem 1.5rem;">
-                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
-                        <div>
-                            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem;">
-                                <span style="color:var(--purple);font-size:.7rem;font-weight:700;">T</span>
-                                <h3 style="color:#fff;font-weight:700;letter-spacing:.05em;">TOR + PROXYCHAINS</h3>
-                                <span class="badge badge-purple">--dev Tor</span>
-                            </div>
-                            <p style="color:#777;font-size:.72rem;line-height:1.6;max-width:520px;">
-                                Anonimowość sieciowa klasy operacyjnej. Tor skonfigurowany jako SOCKS5 proxy na :9050. ProxyChains w trybie <em>dynamic chain</em> — łańcuch automatycznie omija niedostępne węzły. Wbudowane aliasy: <code style="color:var(--purple);">tor-start</code>, <code style="color:var(--purple);">tor-check</code>, <code style="color:var(--purple);">prox</code>.
-                            </p>
-                        </div>
-                        <div style="flex-shrink:0;">
-                            <div style="font-size:.6rem;color:#444;margin-bottom:.4rem;">ROZMIAR</div>
-                            <div style="color:var(--purple);font-size:.9rem;font-weight:700;">~45 MB</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;">
-                        <span class="badge badge-purple">Tor Daemon</span>
-                        <span class="badge badge-purple">ProxyChains-ng</span>
-                        <span class="badge badge-purple">SOCKS5 :9050</span>
-                        <span class="badge badge-purple">Dynamic Chain</span>
-                    </div>
-                    <div class="code-block" style="margin-bottom:.75rem;">
-                        <pre style="font-size:.73rem;"><span class="prompt">$ </span><span class="cmd">bash</span> <span class="arg">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="flag">--dev</span> <span class="arg">Tor</span></pre>
-                        <button class="copy-btn" onclick="copyCode(this, 'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Tor')">COPY</button>
-                    </div>
-                    <div style="font-size:.65rem;color:#555;margin-bottom:.4rem;">UŻYCIE PO INSTALACJI:</div>
-                    <div class="code-block">
-                        <pre style="font-size:.71rem;"><span class="prompt">$ </span><span class="cmd">tor-start</span>                       <span class="comment"># uruchamia Tor w tle</span>
-<span class="prompt">$ </span><span class="cmd">tor-check</span>                       <span class="comment"># weryfikuje anonimowość przez Tor API</span>
-<span class="prompt">$ </span><span class="cmd">prox</span> <span class="arg">nmap -sV 192.168.1.1</span>        <span class="comment"># dowolna komenda przez Tor</span>
-<span class="prompt">$ </span><span class="cmd">tor-stop</span>                        <span class="comment"># zatrzymuje daemon Tora</span></pre>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Docker / Proot -->
-            <div class="mod-card" style="--card-accent:var(--blue);">
-                <div class="accent-bar"></div>
-                <div style="padding:1.25rem 1.5rem;">
-                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
-                        <div>
-                            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem;">
-                                <span style="color:var(--blue);font-size:.7rem;font-weight:700;">D</span>
-                                <h3 style="color:#fff;font-weight:700;letter-spacing:.05em;">PROOT-DISTRO / DOCKER</h3>
-                                <span class="badge badge-blue">--dev Docker</span>
-                            </div>
-                            <p style="color:#777;font-size:.72rem;line-height:1.6;max-width:520px;">
-                                Pełne środowisko Linux wewnątrz Termuksa bez roota. Proot-distro instaluje Ubuntu z dostępem do <code style="color:var(--blue);">apt</code>, pełnych narzędzi GNU i natywnych binarek x86_64. Alias <code style="color:var(--blue);">ubuntu</code> — jednym poleceniem w systemie.
-                            </p>
-                        </div>
-                        <div style="flex-shrink:0;">
-                            <div style="font-size:.6rem;color:#444;margin-bottom:.4rem;">ROZMIAR</div>
-                            <div style="color:var(--blue);font-size:.9rem;font-weight:700;">~800 MB</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;">
-                        <span class="badge badge-blue">proot-distro</span>
-                        <span class="badge badge-blue">Ubuntu 22.04</span>
-                        <span class="badge badge-blue">apt ecosystem</span>
-                        <span class="badge badge-blue">GNU tools</span>
-                    </div>
-                    <div class="code-block">
-                        <pre style="font-size:.73rem;"><span class="prompt">$ </span><span class="cmd">bash</span> <span class="arg">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="flag">--dev</span> <span class="arg">Docker</span></pre>
-                        <button class="copy-btn" onclick="copyCode(this, 'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Docker')">COPY</button>
-                    </div>
-                </div>
-            </div>
-
-        </div><!-- /grid -->
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- [03] COMMAND BUILDER                                                -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="builder" style="margin-bottom:3.5rem;">
-        <div class="sec-header">
-            <span class="sec-num">[03]</span>
-            <span class="sec-title">KONFIGURATOR POLECEŃ</span>
-            <span style="font-size:.65rem;color:#444;margin-left:auto;">interaktywny</span>
+    <!-- CyberSec -->
+    <div class="mcard" style="--c:var(--red)"><div class="abar"></div>
+    <div style="padding:1.1rem 1.4rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem">
+        <div>
+          <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.35rem">
+            <span style="color:var(--red);font-size:.6rem;font-weight:700;border:1px solid rgba(255,0,60,.3);padding:.1rem .35rem">03</span>
+            <h3 style="color:#fff;font-weight:700;letter-spacing:.05em;font-size:.9rem">CYBERSECURITY</h3>
+            <span class="badge bred" style="font-size:.55rem">--dev Cyber</span>
+          </div>
+          <p style="color:#666;font-size:.7rem;line-height:1.65;max-width:520px">Offensive and defensive security toolkit. Network recon, vulnerability assessment, credential auditing, traffic analysis. Python security arsenal: Scapy, Impacket, pwntools, Shodan/Censys APIs.</p>
         </div>
+        <div style="text-align:right;flex-shrink:0"><div style="font-size:.55rem;color:#333">EST. SIZE</div><div style="color:var(--red);font-weight:700">~380 MB</div></div>
+      </div>
+      <div class="wbox" style="margin-bottom:.9rem;font-size:.62rem"><strong style="color:var(--red)">⚠ Legal Notice:</strong> For authorized penetration testing and educational use only. Unauthorized use is illegal.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.9rem">
+        <span class="badge bred">nmap</span><span class="badge bred">masscan</span><span class="badge bred">sqlmap</span><span class="badge bred">hydra</span><span class="badge bred">hashcat</span><span class="badge bred">john</span><span class="badge bred">nikto</span><span class="badge bred">tcpdump</span><span class="badge bred">scapy</span><span class="badge bred">impacket</span><span class="badge bred">pwntools</span><span class="badge bred">shodan</span>
+      </div>
+      <div class="codeblock"><pre style="font-size:.7rem"><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="fl">--dev</span> <span class="ag">Cyber</span></pre><button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Cyber')">COPY</button></div>
+    </div></div>
 
-        <div class="panel" style="padding:1.5rem;">
-            <p style="font-size:.72rem;color:#666;margin-bottom:1.25rem;">
-                Zaznacz moduły, które chcesz zainstalować — polecenie generuje się automatycznie.
-            </p>
-
-            <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem;">
-                <input type="checkbox" id="m-web"      class="module-toggle" onchange="buildCommand()">
-                <label for="m-web"      class="module-label">WebDev</label>
-
-                <input type="checkbox" id="m-android"  class="module-toggle" onchange="buildCommand()">
-                <label for="m-android"  class="module-label">Android</label>
-
-                <input type="checkbox" id="m-cyber"    class="module-toggle" onchange="buildCommand()">
-                <label for="m-cyber"    class="module-label">Cyber</label>
-
-                <input type="checkbox" id="m-full"     class="module-toggle" onchange="buildCommand()">
-                <label for="m-full"     class="module-label">Fullstack</label>
-
-                <input type="checkbox" id="m-tor"      class="module-toggle" onchange="buildCommand()">
-                <label for="m-tor"      class="module-label">Tor</label>
-
-                <input type="checkbox" id="m-docker"   class="module-toggle" onchange="buildCommand()">
-                <label for="m-docker"   class="module-label">Docker</label>
-            </div>
-
-            <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem;">
-                <input type="checkbox" id="o-dryrun"   class="module-toggle" onchange="buildCommand()">
-                <label for="o-dryrun"   class="module-label" style="border-color:rgba(212,175,55,.3);color:#888;">--dry-run</label>
-
-                <input type="checkbox" id="o-noui"     class="module-toggle" onchange="buildCommand()">
-                <label for="o-noui"     class="module-label" style="border-color:rgba(212,175,55,.3);color:#888;">--no-ui</label>
-
-                <input type="checkbox" id="o-verbose"  class="module-toggle" onchange="buildCommand()">
-                <label for="o-verbose"  class="module-label" style="border-color:rgba(212,175,55,.3);color:#888;">--verbose</label>
-            </div>
-
-            <div class="code-block">
-                <div class="term-chrome">
-                    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-                    <span class="term-title">generated command</span>
-                </div>
-                <pre><span class="prompt">$ </span><span id="generated-cmd" class="cmd">bash &lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span></pre>
-                <button class="copy-btn" id="builder-copy-btn" onclick="copyBuilderCmd()">COPY</button>
-            </div>
+    <!-- Fullstack -->
+    <div class="mcard" style="--c:var(--gold)"><div class="abar"></div>
+    <div style="padding:1.1rem 1.4rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem">
+        <div>
+          <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.35rem">
+            <span style="color:var(--gold);font-size:.6rem;font-weight:700;border:1px solid rgba(212,175,55,.3);padding:.1rem .35rem">04</span>
+            <h3 style="color:#fff;font-weight:700;letter-spacing:.05em;font-size:.9rem">FULLSTACK COMPILED</h3>
+            <span class="badge bgold" style="font-size:.55rem">--dev Fullstack</span>
+          </div>
+          <p style="color:#666;font-size:.7rem;line-height:1.65;max-width:520px">Systems-level compiled language toolchain. Rust with cargo-watch for hot-reload, Go for microservices and CLI tooling, Clang/C++ with CMake and Ninja for native builds, Lua 5.4 for embedded scripting.</p>
         </div>
-    </section>
+        <div style="text-align:right;flex-shrink:0"><div style="font-size:.55rem;color:#333">EST. SIZE</div><div style="color:var(--gold);font-weight:700">~1.1 GB</div></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.9rem">
+        <span class="badge bgold">Rust</span><span class="badge bgold">cargo-watch</span><span class="badge bgold">Go</span><span class="badge bgold">Clang</span><span class="badge bgold">C++</span><span class="badge bgold">CMake</span><span class="badge bgold">Ninja</span><span class="badge bgold">Lua 5.4</span><span class="badge bgold">Make</span>
+      </div>
+      <div class="codeblock"><pre style="font-size:.7rem"><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="fl">--dev</span> <span class="ag">Fullstack</span></pre><button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Fullstack')">COPY</button></div>
+    </div></div>
 
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- [04] FLAGS                                                          -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="flags" style="margin-bottom:3.5rem;">
-        <div class="sec-header">
-            <span class="sec-num">[04]</span>
-            <span class="sec-title">FLAGI I OPCJE</span>
+    <!-- Tor -->
+    <div class="mcard" style="--c:var(--pur)"><div class="abar"></div>
+    <div style="padding:1.1rem 1.4rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem">
+        <div>
+          <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.35rem">
+            <span style="color:var(--pur);font-size:.6rem;font-weight:700;border:1px solid rgba(155,89,255,.3);padding:.1rem .35rem">05</span>
+            <h3 style="color:#fff;font-weight:700;letter-spacing:.05em;font-size:.9rem">TOR + PROXYCHAINS</h3>
+            <span class="badge bpur" style="font-size:.55rem">--dev Tor</span>
+          </div>
+          <p style="color:#666;font-size:.7rem;line-height:1.65;max-width:520px">Operational anonymity layer. Tor daemon with hardened <code style="color:var(--pur)">torrc</code>: exit node exclusions (RU, CN, BY, KP, IR), DNS-over-Tor via DNSPort 5353. ProxyChains-ng in dynamic chain mode routes any command through the network transparently.</p>
         </div>
+        <div style="text-align:right;flex-shrink:0"><div style="font-size:.55rem;color:#333">EST. SIZE</div><div style="color:var(--pur);font-weight:700">~45 MB</div></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.9rem">
+        <span class="badge bpur">Tor Daemon</span><span class="badge bpur">ProxyChains-ng</span><span class="badge bpur">SOCKS5 :9050</span><span class="badge bpur">Dynamic Chain</span><span class="badge bpur">DNS :5353</span>
+      </div>
+      <div class="codeblock" style="margin-bottom:.6rem"><pre style="font-size:.7rem"><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span> <span class="fl">--dev</span> <span class="ag">Tor</span></pre><button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Tor')">COPY</button></div>
+      <div class="codeblock"><div class="tc"><div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div><span class="dt">post-install usage</span></div>
+      <pre style="font-size:.68rem"><span class="pr">$ </span><span class="cm">tor-start</span>                    <span class="co"># uruchamia Tor daemon w tle</span>
+<span class="pr">$ </span><span class="cm">tor-check</span>                    <span class="co"># weryfikuje anonimowość (Tor Project API)</span>
+<span class="pr">$ </span><span class="cm">prox</span> <span class="ag">nmap -sV 10.0.0.1</span>       <span class="co"># dowolna komenda przez Tor</span>
+<span class="pr">$ </span><span class="cm">tor-ip</span>                       <span class="co"># sprawdza wyjściowy adres IP</span></pre></div>
+    </div></div>
 
-        <div class="panel" style="overflow:hidden;">
-            <table class="sel-table">
-                <thead>
-                    <tr>
-                        <th>FLAGA</th>
-                        <th>ARGUMENT</th>
-                        <th>OPIS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="key">--dev</td>
-                        <td><code style="color:var(--blue);font-size:.72rem;">&lt;moduły&gt;</code></td>
-                        <td>Lista modułów oddzielona przecinkami. Możliwe wartości: <code style="color:var(--g);">WebDev</code>, <code style="color:var(--g);">Android</code>, <code style="color:var(--g);">Cyber</code>, <code style="color:var(--g);">Fullstack</code>, <code style="color:var(--g);">Tor</code>, <code style="color:var(--g);">Docker</code></td>
-                    </tr>
-                    <tr>
-                        <td class="key">--dry-run</td>
-                        <td><span style="color:#444;">—</span></td>
-                        <td>Symulacja — wypisuje wszystkie polecenia bez ich wykonywania. Idealne do podglądu i CI/CD</td>
-                    </tr>
-                    <tr>
-                        <td class="key">--no-ui</td>
-                        <td><span style="color:#444;">—</span></td>
-                        <td>Pomija instalację Zsh, Oh-My-Zsh i Powerlevel10k. Przydatne na minimalistycznych deploymentach</td>
-                    </tr>
-                    <tr>
-                        <td class="key">--verbose</td>
-                        <td><span style="color:#444;">—</span></td>
-                        <td>Tryb debugowania — wyświetla każde wykonywane polecenie z pełnym outputem</td>
-                    </tr>
-                    <tr>
-                        <td class="key">--uninstall</td>
-                        <td><span style="color:#444;">—</span></td>
-                        <td>Usuwa konfiguracje SecFerro (Oh-My-Zsh, .zshrc, aliasy). Wymaga potwierdzenia</td>
-                    </tr>
-                    <tr>
-                        <td class="key">--version</td>
-                        <td><span style="color:#444;">—</span></td>
-                        <td>Wyświetla numer wersji skryptu i wychodzi</td>
-                    </tr>
-                    <tr>
-                        <td class="key">--help</td>
-                        <td><span style="color:#444;">—</span></td>
-                        <td>Wyświetla pełną pomoc z przykładami użycia</td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- 3-column grid for remaining modules -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.9rem">
+
+      <!-- Docker -->
+      <div class="mcard" style="--c:var(--bl)"><div class="abar"></div>
+      <div style="padding:1rem 1.1rem">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+          <span style="color:var(--bl);font-size:.58rem;font-weight:700;border:1px solid rgba(0,170,255,.3);padding:.08rem .3rem">06</span>
+          <h3 style="color:#fff;font-weight:700;font-size:.82rem;letter-spacing:.04em">PROOT-DISTRO</h3>
+          <span class="badge bbl" style="font-size:.52rem;margin-left:auto">--dev Docker</span>
         </div>
-    </section>
+        <p style="color:#666;font-size:.67rem;line-height:1.6;margin-bottom:.7rem">Ubuntu 22.04 LTS rootfs via proot — full apt ecosystem, GNU tools, x86_64 binaries. No root required.</p>
+        <div class="codeblock"><pre style="font-size:.66rem"><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL ...)</span> <span class="fl">--dev</span> <span class="ag">Docker</span></pre><button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Docker')">COPY</button></div>
+      </div></div>
 
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- [05] PIPELINE                                                       -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="pipeline" style="margin-bottom:3.5rem;">
-        <div class="sec-header">
-            <span class="sec-num">[05]</span>
-            <span class="sec-title">PIPELINE INSTALACJI</span>
+      <!-- Data -->
+      <div class="mcard" style="--c:#f59e0b"><div class="abar"></div>
+      <div style="padding:1rem 1.1rem">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+          <span style="color:#f59e0b;font-size:.58rem;font-weight:700;border:1px solid rgba(245,158,11,.3);padding:.08rem .3rem">07</span>
+          <h3 style="color:#fff;font-weight:700;font-size:.82rem;letter-spacing:.04em">DATA SCIENCE / ML</h3>
+          <span style="border:1px solid rgba(245,158,11,.3);color:#f59e0b;background:rgba(245,158,11,.05);font-size:.52rem;padding:.1rem .4rem;margin-left:auto;letter-spacing:.07em">--dev Data</span>
         </div>
+        <p style="color:#666;font-size:.67rem;line-height:1.6;margin-bottom:.7rem">numpy, pandas, sklearn, Jupyter, polars, DuckDB, HuggingFace Transformers. Modern analytics stack.</p>
+        <div class="codeblock"><pre style="font-size:.66rem"><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL ...)</span> <span class="fl">--dev</span> <span class="ag">Data</span></pre><button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Data')">COPY</button></div>
+      </div></div>
 
-        <div class="panel" style="padding:1.5rem;">
-            <p style="font-size:.7rem;color:#555;margin-bottom:1.5rem;">Co dzieje się po uruchomieniu skryptu — w kolejności wykonania.</p>
-
-            <div style="display:flex;flex-direction:column;gap:0;">
-
-                <div style="display:flex;gap:1rem;align-items:flex-start;">
-                    <div style="display:flex;flex-direction:column;align-items:center;width:2rem;flex-shrink:0;">
-                        <div class="step-num">1</div>
-                        <div style="width:1px;background:var(--border);flex-grow:1;min-height:2rem;margin-top:.25rem;"></div>
-                    </div>
-                    <div style="padding-bottom:1.25rem;">
-                        <div style="color:#fff;font-size:.78rem;font-weight:600;margin-bottom:.3rem;">Weryfikacja środowiska</div>
-                        <div style="color:#666;font-size:.7rem;line-height:1.6;">Sprawdza obecność Termuksa, połączenie sieciowe (ping 8.8.8.8), wolne miejsce (min. 512 MB) i wersję Bash.</div>
-                    </div>
-                </div>
-
-                <div style="display:flex;gap:1rem;align-items:flex-start;">
-                    <div style="display:flex;flex-direction:column;align-items:center;width:2rem;flex-shrink:0;">
-                        <div class="step-num">2</div>
-                        <div style="width:1px;background:var(--border);flex-grow:1;min-height:2rem;margin-top:.25rem;"></div>
-                    </div>
-                    <div style="padding-bottom:1.25rem;">
-                        <div style="color:#fff;font-size:.78rem;font-weight:600;margin-bottom:.3rem;">Aktualizacja bazy paczek</div>
-                        <div style="color:#666;font-size:.7rem;line-height:1.6;"><code style="color:var(--g);">pkg update && pkg upgrade</code> + instalacja paczek bazowych: git, curl, wget, zsh, tmux, openssh, nano.</div>
-                    </div>
-                </div>
-
-                <div style="display:flex;gap:1rem;align-items:flex-start;">
-                    <div style="display:flex;flex-direction:column;align-items:center;width:2rem;flex-shrink:0;">
-                        <div class="step-num">3</div>
-                        <div style="width:1px;background:var(--border);flex-grow:1;min-height:2rem;margin-top:.25rem;"></div>
-                    </div>
-                    <div style="padding-bottom:1.25rem;">
-                        <div style="color:#fff;font-size:.78rem;font-weight:600;margin-bottom:.3rem;">Instalacja wybranych modułów</div>
-                        <div style="color:#666;font-size:.7rem;line-height:1.6;">Każdy moduł instalowany sekwencyjnie z paskiem postępu. Błędy opcjonalne (soft-fail) nie przerywają całości — skrypt kontynuuje z ostrzeżeniem.</div>
-                    </div>
-                </div>
-
-                <div style="display:flex;gap:1rem;align-items:flex-start;">
-                    <div style="display:flex;flex-direction:column;align-items:center;width:2rem;flex-shrink:0;">
-                        <div class="step-num">4</div>
-                        <div style="width:1px;background:var(--border);flex-grow:1;min-height:2rem;margin-top:.25rem;"></div>
-                    </div>
-                    <div style="padding-bottom:1.25rem;">
-                        <div style="color:#fff;font-size:.78rem;font-weight:600;margin-bottom:.3rem;">Konfiguracja środowiska Zsh</div>
-                        <div style="color:#666;font-size:.7rem;line-height:1.6;">Oh-My-Zsh + Powerlevel10k theme + pluginy autosuggestions i syntax-highlighting. Backup istniejącego .zshrc. Wstrzyknięcie SecFerro MOTD.</div>
-                    </div>
-                </div>
-
-                <div style="display:flex;gap:1rem;align-items:flex-start;">
-                    <div style="display:flex;flex-direction:column;align-items:center;width:2rem;flex-shrink:0;">
-                        <div class="step-num">5</div>
-                        <div style="width:1px;background:var(--border);flex-grow:1;min-height:2rem;margin-top:.25rem;"></div>
-                    </div>
-                    <div style="padding-bottom:1.25rem;">
-                        <div style="color:#fff;font-size:.78rem;font-weight:600;margin-bottom:.3rem;">Generowanie klucza SSH</div>
-                        <div style="color:#666;font-size:.7rem;line-height:1.6;">Klucz ed25519 z komentarzem <code style="color:var(--g);">secferro@termux</code> — tylko jeśli jeszcze nie istnieje (idempotentne).</div>
-                    </div>
-                </div>
-
-                <div style="display:flex;gap:1rem;align-items:flex-start;">
-                    <div style="display:flex;flex-direction:column;align-items:center;width:2rem;flex-shrink:0;">
-                        <div class="step-num">6</div>
-                    </div>
-                    <div style="padding-bottom:0;">
-                        <div style="color:#fff;font-size:.78rem;font-weight:600;margin-bottom:.3rem;">Podsumowanie i zapis konfiguracji</div>
-                        <div style="color:#666;font-size:.7rem;line-height:1.6;">Wyświetla zainstalowane moduły, następne kroki. Zapisuje manifest instalacji do <code style="color:var(--g);">~/.secferro.conf</code>.</div>
-                    </div>
-                </div>
-
-            </div>
+      <!-- DevOps -->
+      <div class="mcard" style="--c:#22c55e"><div class="abar"></div>
+      <div style="padding:1rem 1.1rem">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+          <span style="color:#22c55e;font-size:.58rem;font-weight:700;border:1px solid rgba(34,197,94,.3);padding:.08rem .3rem">08</span>
+          <h3 style="color:#fff;font-weight:700;font-size:.82rem;letter-spacing:.04em">DEVOPS / CLOUD</h3>
+          <span style="border:1px solid rgba(34,197,94,.3);color:#22c55e;background:rgba(34,197,94,.05);font-size:.52rem;padding:.1rem .4rem;margin-left:auto;letter-spacing:.07em">--dev DevOps</span>
         </div>
-    </section>
+        <p style="color:#666;font-size:.67rem;line-height:1.6;margin-bottom:.7rem">kubectl, Helm, Ansible, Terraform, GitHub CLI, jq, yq, glances, autossh, WireGuard.</p>
+        <div class="codeblock"><pre style="font-size:.66rem"><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL ...)</span> <span class="fl">--dev</span> <span class="ag">DevOps</span></pre><button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev DevOps')">COPY</button></div>
+      </div></div>
 
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- [06] DEPLOY                                                         -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="deploy" style="margin-bottom:3.5rem;">
-        <div class="sec-header">
-            <span class="sec-num">[06]</span>
-            <span class="sec-title">WDROŻENIE NA DOMENĘ</span>
+      <!-- Media -->
+      <div class="mcard" style="--c:#ec4899"><div class="abar"></div>
+      <div style="padding:1rem 1.1rem">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+          <span style="color:#ec4899;font-size:.58rem;font-weight:700;border:1px solid rgba(236,72,153,.3);padding:.08rem .3rem">09</span>
+          <h3 style="color:#fff;font-weight:700;font-size:.82rem;letter-spacing:.04em">MEDIA / OSINT</h3>
+          <span style="border:1px solid rgba(236,72,153,.3);color:#ec4899;background:rgba(236,72,153,.05);font-size:.52rem;padding:.1rem .4rem;margin-left:auto;letter-spacing:.07em">--dev Media</span>
         </div>
+        <p style="color:#666;font-size:.67rem;line-height:1.6;margin-bottom:.7rem">FFmpeg, exiftool, yt-dlp, Sherlock (username recon), Holehe (email OSINT). Metadata forensics.</p>
+        <div class="codeblock"><pre style="font-size:.66rem"><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL ...)</span> <span class="fl">--dev</span> <span class="ag">Media</span></pre><button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev Media')">COPY</button></div>
+      </div></div>
 
-        <div style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));">
+      <!-- DB -->
+      <div class="mcard" style="--c:#f97316"><div class="abar"></div>
+      <div style="padding:1rem 1.1rem">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+          <span style="color:#f97316;font-size:.58rem;font-weight:700;border:1px solid rgba(249,115,22,.3);padding:.08rem .3rem">10</span>
+          <h3 style="color:#fff;font-weight:700;font-size:.82rem;letter-spacing:.04em">DATABASES</h3>
+          <span style="border:1px solid rgba(249,115,22,.3);color:#f97316;background:rgba(249,115,22,.05);font-size:.52rem;padding:.1rem .4rem;margin-left:auto;letter-spacing:.07em">--dev DB</span>
+        </div>
+        <p style="color:#666;font-size:.67rem;line-height:1.6;margin-bottom:.7rem">SQLite, MariaDB, Redis + SQLAlchemy, Alembic, Peewee, pgcli, mycli with auto-complete.</p>
+        <div class="codeblock"><pre style="font-size:.66rem"><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL ...)</span> <span class="fl">--dev</span> <span class="ag">DB</span></pre><button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev DB')">COPY</button></div>
+      </div></div>
 
-            <!-- Opcja A -->
-            <div class="panel" style="padding:1.25rem;">
-                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
-                    <span class="badge badge-g">OPCJA A</span>
-                    <span style="color:#fff;font-size:.8rem;font-weight:600;">GitHub Pages</span>
-                </div>
-                <p style="font-size:.7rem;color:#666;line-height:1.6;margin-bottom:1rem;">
-                    Najprostsza opcja — statyczny plik bez rozszerzenia w repozytorium GitHub Pages.
-                </p>
-                <div class="code-block">
-                    <pre style="font-size:.69rem;"><span class="comment"># Struktura repozytorium:</span>
-<span class="cmd">your-repo/</span>
-<span class="arg">  scripts/</span>
-<span class="arg">    tmux_setup</span>    <span class="comment"># bez .sh</span>
-<span class="arg">    script.html</span>   <span class="comment"># ta strona</span></pre>
-                </div>
-            </div>
+      <!-- IoT -->
+      <div class="mcard" style="--c:#06b6d4"><div class="abar"></div>
+      <div style="padding:1rem 1.1rem">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
+          <span style="color:#06b6d4;font-size:.58rem;font-weight:700;border:1px solid rgba(6,182,212,.3);padding:.08rem .3rem">11</span>
+          <h3 style="color:#fff;font-weight:700;font-size:.82rem;letter-spacing:.04em">IoT / EMBEDDED</h3>
+          <span style="border:1px solid rgba(6,182,212,.3);color:#06b6d4;background:rgba(6,182,212,.05);font-size:.52rem;padding:.1rem .4rem;margin-left:auto;letter-spacing:.07em">--dev IoT</span>
+        </div>
+        <p style="color:#666;font-size:.67rem;line-height:1.6;margin-bottom:.7rem">esptool, pyserial, PlatformIO, paho-mqtt (MQTT), aiocoap (CoAP). ESP32/ESP8266 flashing.</p>
+        <div class="codeblock"><pre style="font-size:.66rem"><span class="pr">$ </span><span class="cm">bash</span> <span class="ag">&lt;(curl -sL ...)</span> <span class="fl">--dev</span> <span class="ag">IoT</span></pre><button class="cpbtn" onclick="cp(this,'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup) --dev IoT')">COPY</button></div>
+      </div></div>
 
-            <!-- Opcja B -->
-            <div class="panel" style="padding:1.25rem;">
-                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
-                    <span class="badge badge-blue">OPCJA B</span>
-                    <span style="color:#fff;font-size:.8rem;font-weight:600;">Nginx Redirect</span>
-                </div>
-                <p style="font-size:.7rem;color:#666;line-height:1.6;margin-bottom:1rem;">
-                    VPS z Nginxem — redirect do raw GitHub Gist lub innego CDN.
-                </p>
-                <div class="code-block">
-                    <pre style="font-size:.69rem;"><span class="comment"># /etc/nginx/sites-available/anonymousik</span>
-<span class="cmd">location</span> <span class="arg">/scripts/tmux_setup</span> {
-    <span class="flag">return</span> <span class="arg">301</span>
-    <span class="arg">https://raw.github.../tmux_setup</span>;
+    </div><!-- /3-col grid -->
+  </div>
+</section>
+
+<!-- ══ 03 BUILDER ════════════════════════════════════════════════════════════ -->
+<section id="builder" style="margin-bottom:3.5rem">
+  <div class="sh"><span class="sh-num">[03]</span><span class="sh-title">COMMAND BUILDER</span><span style="font-size:.6rem;color:#333;margin-left:auto">interactive</span></div>
+  <div class="panel" style="padding:1.5rem">
+    <p style="font-size:.7rem;color:#555;margin-bottom:1.2rem">Select modules → command generates automatically.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.2rem">
+      <input type="checkbox" id="bm1" class="mtog" onchange="build()"><label for="bm1" class="mlbl">WebDev</label>
+      <input type="checkbox" id="bm2" class="mtog" onchange="build()"><label for="bm2" class="mlbl">Android</label>
+      <input type="checkbox" id="bm3" class="mtog" onchange="build()"><label for="bm3" class="mlbl">Cyber</label>
+      <input type="checkbox" id="bm4" class="mtog" onchange="build()"><label for="bm4" class="mlbl">Fullstack</label>
+      <input type="checkbox" id="bm5" class="mtog" onchange="build()"><label for="bm5" class="mlbl">Tor</label>
+      <input type="checkbox" id="bm6" class="mtog" onchange="build()"><label for="bm6" class="mlbl">Docker</label>
+      <input type="checkbox" id="bm7" class="mtog" onchange="build()"><label for="bm7" class="mlbl">Data</label>
+      <input type="checkbox" id="bm8" class="mtog" onchange="build()"><label for="bm8" class="mlbl">DevOps</label>
+      <input type="checkbox" id="bm9" class="mtog" onchange="build()"><label for="bm9" class="mlbl">Media</label>
+      <input type="checkbox" id="bm10" class="mtog" onchange="build()"><label for="bm10" class="mlbl">DB</label>
+      <input type="checkbox" id="bm11" class="mtog" onchange="build()"><label for="bm11" class="mlbl">IoT</label>
+      <input type="checkbox" id="bm12" class="mtog" onchange="build()"><label for="bm12" class="mlbl">Game</label>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.25rem;padding-top:.75rem;border-top:1px solid var(--brd)">
+      <input type="checkbox" id="bo1" class="mtog" onchange="build()"><label for="bo1" class="mlbl" style="border-color:#222;color:#444">--dry-run</label>
+      <input type="checkbox" id="bo2" class="mtog" onchange="build()"><label for="bo2" class="mlbl" style="border-color:#222;color:#444">--no-ui</label>
+      <input type="checkbox" id="bo3" class="mtog" onchange="build()"><label for="bo3" class="mlbl" style="border-color:#222;color:#444">--verbose</label>
+    </div>
+    <div class="codeblock">
+      <div class="tc"><div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div><span class="dt">generated command</span></div>
+      <pre><span class="pr">$ </span><span id="gen-cmd" class="cm">bash &lt;(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)</span></pre>
+      <button class="cpbtn" id="bcpbtn" onclick="cpBuilt()">COPY</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 04 CLI REFERENCE ══════════════════════════════════════════════════════ -->
+<section id="flags" style="margin-bottom:3.5rem">
+  <div class="sh"><span class="sh-num">[04]</span><span class="sh-title">CLI REFERENCE</span></div>
+  <div class="panel" style="overflow:hidden">
+    <table class="tbl">
+      <thead><tr><th>Flag</th><th>Argument</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="key">--dev</td><td><code style="color:var(--bl);font-size:.68rem">&lt;modules&gt;</code></td><td>Comma-separated module list. Values: <code style="color:var(--g)">WebDev Android Cyber Fullstack Tor Docker Data DevOps Media DB IoT Game</code></td></tr>
+        <tr><td class="key">--dry-run</td><td>—</td><td>Simulation mode — prints all commands without execution. Safe for CI/CD pipeline inspection</td></tr>
+        <tr><td class="key">--no-ui</td><td>—</td><td>Skips Zsh / Oh-My-Zsh / Powerlevel10k setup. Recommended for headless / server deployments</td></tr>
+        <tr><td class="key">--verbose</td><td>—</td><td>Debug mode — passes full stdout of each command through <code style="color:var(--g)">tee</code> to terminal and log</td></tr>
+        <tr><td class="key">--uninstall</td><td>—</td><td>Removes SecFerro configs, Oh-My-Zsh, <code style="color:var(--g)">~/tools</code>. Requires typing <code style="color:var(--g)">tak</code> to confirm</td></tr>
+        <tr><td class="key">--version</td><td>—</td><td>Prints version string and exits immediately</td></tr>
+        <tr><td class="key">--help</td><td>—</td><td>Displays full usage reference with examples</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══ 05 PIPELINE ══════════════════════════════════════════════════════════ -->
+<section id="pipeline" style="margin-bottom:3.5rem">
+  <div class="sh"><span class="sh-num">[05]</span><span class="sh-title">EXECUTION PIPELINE</span></div>
+  <div class="panel" style="padding:1.5rem">
+    <p style="font-size:.68rem;color:#444;margin-bottom:1.5rem">Sequence of operations executed on every invocation.</p>
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div style="display:flex;gap:1rem;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;align-items:center;width:2rem;flex-shrink:0">
+          <div class="step-n">1</div><div style="width:1px;background:var(--brd);flex-grow:1;min-height:2rem;margin-top:.2rem"></div>
+        </div>
+        <div style="padding-bottom:1.1rem">
+          <div style="color:#fff;font-size:.76rem;font-weight:600;margin-bottom:.25rem">Pre-Flight System Check</div>
+          <div style="color:#555;font-size:.68rem;line-height:1.65">9 automated checks: Termux detection, Android API level, <code style="color:var(--g)">~/storage</code> access, network reachability via curl, disk space, dpkg lock removal, apt mirror validation, HOME permissions, scaffolding of <code style="color:var(--g)">~/tools</code> and <code style="color:var(--g)">~/bin</code>.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;align-items:center;width:2rem;flex-shrink:0">
+          <div class="step-n">2</div><div style="width:1px;background:var(--brd);flex-grow:1;min-height:2rem;margin-top:.2rem"></div>
+        </div>
+        <div style="padding-bottom:1.1rem">
+          <div style="color:#fff;font-size:.76rem;font-weight:600;margin-bottom:.25rem">Base System Update</div>
+          <div style="color:#555;font-size:.68rem;line-height:1.65"><code style="color:var(--g)">pkg update && pkg upgrade</code> with live output. Core packages: git, curl, wget, zsh, tmux, openssh, man, procps, diffutils.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;align-items:center;width:2rem;flex-shrink:0">
+          <div class="step-n">3</div><div style="width:1px;background:var(--brd);flex-grow:1;min-height:2rem;margin-top:.2rem"></div>
+        </div>
+        <div style="padding-bottom:1.1rem">
+          <div style="color:#fff;font-size:.76rem;font-weight:600;margin-bottom:.25rem">Module Installation</div>
+          <div style="color:#555;font-size:.68rem;line-height:1.65">Each module runs sequentially with <code style="color:var(--g)">sf_run</code> (critical, logs errors) and <code style="color:var(--g)">sf_try</code> (optional, soft-fail). Animated spinner for git clones and rootfs downloads.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;align-items:center;width:2rem;flex-shrink:0">
+          <div class="step-n">4</div><div style="width:1px;background:var(--brd);flex-grow:1;min-height:2rem;margin-top:.2rem"></div>
+        </div>
+        <div style="padding-bottom:1.1rem">
+          <div style="color:#fff;font-size:.76rem;font-weight:600;margin-bottom:.25rem">Shell Environment Configuration</div>
+          <div style="color:#555;font-size:.68rem;line-height:1.65">Oh-My-Zsh + Powerlevel10k + 3 plugins (autosuggestions, syntax-highlighting, history-substring-search). Existing <code style="color:var(--g)">.zshrc</code> backed up with epoch timestamp. MOTD injected as shell function.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;align-items:center;width:2rem;flex-shrink:0">
+          <div class="step-n">5</div><div style="width:1px;background:var(--brd);flex-grow:1;min-height:2rem;margin-top:.2rem"></div>
+        </div>
+        <div style="padding-bottom:0">
+          <div style="color:#fff;font-size:.76rem;font-weight:600;margin-bottom:.25rem">Finalization</div>
+          <div style="color:#555;font-size:.68rem;line-height:1.65">SSH ed25519 key generation (idempotent). Manifest written to <code style="color:var(--g)">~/.secferro.conf</code>. Full install log at <code style="color:var(--g)">~/.secferro_install.log</code>. Summary with context-aware next steps.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 06 ENVIRONMENT ════════════════════════════════════════════════════════ -->
+<section id="environment" style="margin-bottom:3.5rem">
+  <div class="sh"><span class="sh-num">[06]</span><span class="sh-title">SHELL ENVIRONMENT</span></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.9rem">
+    <div class="panel" style="padding:1.1rem">
+      <div style="font-size:.62rem;color:var(--g);margin-bottom:.6rem;letter-spacing:.1em">THEME</div>
+      <p style="font-size:.68rem;color:#666;line-height:1.6">Powerlevel10k with instant prompt. Full Git status, execution time, exit codes and battery in prompt segments.</p>
+    </div>
+    <div class="panel" style="padding:1.1rem">
+      <div style="font-size:.62rem;color:var(--g);margin-bottom:.6rem;letter-spacing:.1em">PLUGINS</div>
+      <p style="font-size:.68rem;color:#666;line-height:1.6">zsh-autosuggestions, zsh-syntax-highlighting, zsh-history-substring-search, colored-man-pages, sudo, extract.</p>
+    </div>
+    <div class="panel" style="padding:1.1rem">
+      <div style="font-size:.62rem;color:var(--g);margin-bottom:.6rem;letter-spacing:.1em">ALIASES</div>
+      <p style="font-size:.68rem;color:#666;line-height:1.6">40+ pre-configured: system (ll, df, duh), git (gs, ga, glog), network (myip, ports, http-serve), module-specific per installed stack.</p>
+    </div>
+    <div class="panel" style="padding:1.1rem">
+      <div style="font-size:.62rem;color:var(--g);margin-bottom:.6rem;letter-spacing:.1em">PATH</div>
+      <p style="font-size:.68rem;color:#666;line-height:1.6"><code style="color:var(--g);font-size:.65rem">~/.npm-global/bin</code> · <code style="color:var(--g);font-size:.65rem">~/go/bin</code> · <code style="color:var(--g);font-size:.65rem">~/.cargo/bin</code> · <code style="color:var(--g);font-size:.65rem">~/bin</code> · <code style="color:var(--g);font-size:.65rem">~/.local/bin</code></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 07 DEPLOYMENT ═════════════════════════════════════════════════════════ -->
+<section id="deploy" style="margin-bottom:3.5rem">
+  <div class="sh"><span class="sh-num">[07]</span><span class="sh-title">DEPLOYMENT</span></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:.9rem">
+    <div class="panel" style="padding:1.2rem">
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem"><span class="badge bg">Option A</span><span style="color:#fff;font-size:.8rem;font-weight:600">GitHub Pages</span></div>
+      <p style="font-size:.68rem;color:#555;line-height:1.6;margin-bottom:.8rem">Static file without extension served as <code style="color:var(--g)">text/plain</code>.</p>
+      <div class="codeblock"><pre style="font-size:.65rem"><span class="co"># Repository structure:</span>
+<span class="cm">your-repo/</span>
+<span class="ag">  scripts/</span>
+<span class="ag">    tmux_setup</span>    <span class="co"># no .sh extension</span>
+<span class="ag">    index.html</span>    <span class="co"># this page</span>
+<span class="ag">  CHANGELOG.md</span></pre></div>
+    </div>
+    <div class="panel" style="padding:1.2rem">
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem"><span class="badge bbl">Option B</span><span style="color:#fff;font-size:.8rem;font-weight:600">Nginx Redirect</span></div>
+      <p style="font-size:.68rem;color:#555;line-height:1.6;margin-bottom:.8rem">VPS with Nginx redirect to raw GitHub Gist or CDN.</p>
+      <div class="codeblock"><pre style="font-size:.65rem"><span class="cm">location</span> <span class="ag">/scripts/tmux_setup</span> {
+    <span class="fl">add_header</span> <span class="ag">Content-Type text/plain</span>;
+    <span class="fl">return</span> <span class="ag">301</span> https://raw.github...;
 }
-<span class="cmd">location</span> <span class="arg">/script</span> {
-    <span class="flag">try_files</span> <span class="arg">$uri</span> /script.html;
-}</pre>
-                </div>
-            </div>
+<span class="cm">location</span> <span class="ag">/scripts</span> {
+    <span class="fl">try_files</span> <span class="ag">$uri</span> /scripts/index.html;
+}</pre></div>
+    </div>
+  </div>
+</section>
 
+<!-- ══ 08 CHANGELOG ══════════════════════════════════════════════════════════ -->
+<section id="changelog" style="margin-bottom:3.5rem">
+  <div class="sh"><span class="sh-num">[08]</span><span class="sh-title">CHANGELOG</span><a href="/CHANGELOG" style="font-size:.6rem;color:#444;text-decoration:none;margin-left:auto;transition:color .2s" onmouseover="this.style.color='var(--g)'" onmouseout="this.style.color='#444'">Full CHANGELOG.md ↗</a></div>
+  <div class="panel" style="padding:1.4rem">
+    <div style="display:flex;flex-direction:column;gap:1.2rem">
+      <div class="cl-item major">
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem">
+          <span class="badge bg">v5.0.0</span>
+          <span style="color:#fff;font-weight:600;font-size:.78rem">IRONCLAD</span>
+          <span style="font-size:.62rem;color:#444;margin-left:auto">2026-03-08</span>
         </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- [07] FAQ                                                            -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="faq" style="margin-bottom:3.5rem;">
-        <div class="sec-header">
-            <span class="sec-num">[07]</span>
-            <span class="sec-title">FAQ</span>
+        <p style="font-size:.7rem;color:#666;line-height:1.65">Added 6 new modules (Data, DevOps, Media, DB, IoT, Game). Intelligent Pre-Flight system with 9 automated checks and self-healing. Replaced <code style="color:var(--g)">set -e</code> with per-command error isolation. Animated spinners, SECFERRO DIVISION messaging, hardened Tor config.</p>
+      </div>
+      <div class="cl-item" style="border-color:#2a2a2a">
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem">
+          <span class="badge bdim">v4.0.0</span>
+          <span style="color:#777;font-weight:600;font-size:.78rem">—</span>
+          <span style="font-size:.62rem;color:#333;margin-left:auto">2025</span>
         </div>
-
-        <div style="display:flex;flex-direction:column;gap:.75rem;">
-
-            <details style="border:1px solid var(--border);background:rgba(10,10,10,.8);">
-                <summary style="padding:1rem 1.25rem;cursor:pointer;color:#bbb;font-size:.78rem;list-style:none;display:flex;justify-content:space-between;align-items:center;letter-spacing:.03em;">
-                    Czy skrypt jest idempotentny — mogę go uruchomić wielokrotnie?
-                    <span style="color:#444;font-size:.65rem;flex-shrink:0;margin-left:1rem;">▾</span>
-                </summary>
-                <div style="padding:0 1.25rem 1rem;font-size:.72rem;color:#666;line-height:1.7;border-top:1px solid var(--border);">
-                    <br>Tak. Skrypt sprawdza stan przed każdą operacją: Oh-My-Zsh instaluje się tylko gdy <code style="color:var(--g);">~/.oh-my-zsh</code> nie istnieje, klucz SSH — gdy <code style="color:var(--g);">~/.ssh/id_ed25519</code> nie istnieje, proot-distro Ubuntu — gdy nie jest jeszcze zarejestrowane. Bezpiecznie wielokrotnie do użycia.
-                </div>
-            </details>
-
-            <details style="border:1px solid var(--border);background:rgba(10,10,10,.8);">
-                <summary style="padding:1rem 1.25rem;cursor:pointer;color:#bbb;font-size:.78rem;list-style:none;display:flex;justify-content:space-between;align-items:center;letter-spacing:.03em;">
-                    Co się stanie gdy jeden pakiet nie zainstaluje się poprawnie?
-                    <span style="color:#444;font-size:.65rem;flex-shrink:0;margin-left:1rem;">▾</span>
-                </summary>
-                <div style="padding:0 1.25rem 1rem;font-size:.72rem;color:#666;line-height:1.7;border-top:1px solid var(--border);">
-                    <br>Pakiety opcjonalne (np. <code style="color:var(--g);">aapt</code>, <code style="color:var(--g);">aircrack-ng</code>) używają soft-fail — błąd generuje WARN w logu ale nie przerywa instalacji. Krytyczne polecenia (np. <code style="color:var(--g);">pkg update</code>) kończą skrypt z kodem błędu. Log dostępny w <code style="color:var(--g);">~/.secferro_install.log</code>.
-                </div>
-            </details>
-
-            <details style="border:1px solid var(--border);background:rgba(10,10,10,.8);">
-                <summary style="padding:1rem 1.25rem;cursor:pointer;color:#bbb;font-size:.78rem;list-style:none;display:flex;justify-content:space-between;align-items:center;letter-spacing:.03em;">
-                    Czy można używać skryptu w automatycznych pipeline'ach CI/CD?
-                    <span style="color:#444;font-size:.65rem;flex-shrink:0;margin-left:1rem;">▾</span>
-                </summary>
-                <div style="padding:0 1.25rem 1rem;font-size:.72rem;color:#666;line-height:1.7;border-top:1px solid var(--border);">
-                    <br>Tak — to jeden z głównych przypadków użycia. Flaga <code style="color:var(--g);">--dev</code> włącza tryb unattended (zero interakcji). Dodaj <code style="color:var(--g);">--no-ui</code> dla headless deploymentów bez Zsh. Użyj <code style="color:var(--g);">--dry-run</code> w fazie testowej pipeline'u.
-                </div>
-            </details>
-
-            <details style="border:1px solid var(--border);background:rgba(10,10,10,.8);">
-                <summary style="padding:1rem 1.25rem;cursor:pointer;color:#bbb;font-size:.78rem;list-style:none;display:flex;justify-content:space-between;align-items:center;letter-spacing:.03em;">
-                    Jak sprawdzić co zostało zainstalowane przez skrypt?
-                    <span style="color:#444;font-size:.65rem;flex-shrink:0;margin-left:1rem;">▾</span>
-                </summary>
-                <div style="padding:0 1.25rem 1rem;font-size:.72rem;color:#666;line-height:1.7;border-top:1px solid var(--border);">
-                    <br>Skrypt zapisuje manifest do <code style="color:var(--g);">~/.secferro.conf</code> — zawiera wersję, datę i zainstalowane moduły. Pełny log operacji dostępny w <code style="color:var(--g);">~/.secferro_install.log</code> z timestampami i poziomami logowania.
-                </div>
-            </details>
-
+        <p style="font-size:.7rem;color:#444;line-height:1.65">Tor + ProxyChains, proot-distro / Ubuntu, dry-run, verbose, uninstall flags. Powerlevel10k theme. SSH key generation. Install manifest.</p>
+      </div>
+      <div class="cl-item" style="border-color:#1a1a1a">
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem">
+          <span class="badge bdim">v3.0.0</span>
+          <span style="font-size:.62rem;color:#333;margin-left:auto">2024</span>
         </div>
-    </section>
+        <p style="font-size:.7rem;color:#333;line-height:1.65">--dev flag, unattended mode, modular architecture, ANSI banner.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- [08] CHANGELOG                                                      -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="changelog" style="margin-bottom:3.5rem;">
-        <div class="sec-header">
-            <span class="sec-num">[08]</span>
-            <span class="sec-title">CHANGELOG</span>
-        </div>
+<!-- ══ 09 FAQ ════════════════════════════════════════════════════════════════ -->
+<section id="faq" style="margin-bottom:3.5rem">
+  <div class="sh"><span class="sh-num">[09]</span><span class="sh-title">FAQ</span></div>
+  <div style="display:flex;flex-direction:column;gap:.6rem">
+    <details><summary>Is the script idempotent — safe to run multiple times?<span style="color:#333;font-size:.6rem">▾</span></summary><div class="inner">Yes. Every operation checks state before executing: Oh-My-Zsh installs only when <code>~/.oh-my-zsh</code> is absent, SSH key only when <code>~/.ssh/id_ed25519</code> is absent, Powerlevel10k and plugins only when their directories don't exist. Running the script again adds nothing if already complete.</div></details>
+    <details><summary>Why was <code>set -euo pipefail</code> removed?<span style="color:#333;font-size:.6rem">▾</span></summary><div class="inner">Android's restricted execution environment causes <code>set -e</code> to trigger false aborts on utilities like <code>getprop</code> (returns non-zero outside shell context) and any command using <code>PIPESTATUS</code>. v5.0.0 uses <code>sf_run</code> and <code>sf_try</code> wrappers that handle error codes per-command without aborting the script.</div></details>
+    <details><summary>Why <code>curl</code> instead of <code>ping</code> for connectivity checks?<span style="color:#333;font-size:.6rem">▾</span></summary><div class="inner">Android blocks ICMP (ping) without <code>CAP_NET_RAW</code>, which requires root. Without root the <code>ping</code> call hangs indefinitely rather than returning an error, causing the script to silently freeze. <code>curl --max-time 8</code> to <code>packages.termux.dev</code> is reliable in all Android environments.</div></details>
+    <details><summary>Can the script be used in CI/CD pipelines and mass deployments?<span style="color:#333;font-size:.6rem">▾</span></summary><div class="inner">Yes — the primary design intent includes automation. Use <code>--dev</code> for fully unattended mode (no prompts), <code>--no-ui</code> for headless environments without Zsh, <code>--dry-run</code> in pipeline test phases. The script writes its manifest to <code>~/.secferro.conf</code> for state introspection.</div></details>
+    <details><summary>How do I check what was installed?<span style="color:#333;font-size:.6rem">▾</span></summary><div class="inner">Install manifest: <code>cat ~/.secferro.conf</code> — lists version, codename, each module flag, and total non-critical error count. Full timestamped log: <code>cat ~/.secferro_install.log</code>.</div></details>
+  </div>
+</section>
 
-        <div class="panel" style="padding:1.25rem 1.5rem;">
-            <div style="display:flex;flex-direction:column;gap:1.25rem;">
+<!-- FOOTER -->
+<footer style="border-top:1px solid var(--brd);padding-top:2rem;text-align:center">
+  <div style="font-size:.6rem;color:#222;letter-spacing:.14em;margin-bottom:.65rem">ANONYMOUSIK.IS-A.DEV · SECFERRO DIVISION SERIES</div>
+  <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:.85rem">
+    <a href="/" style="color:#333;font-size:.6rem;text-decoration:none;letter-spacing:.09em;transition:color .2s" onmouseover="this.style.color='#00ff41'" onmouseout="this.style.color='#333'">HOME</a>
+    <a href="/scripts" style="color:#00ff41;font-size:.6rem;text-decoration:none;letter-spacing:.09em">SCRIPTS</a>
+    <a href="/CHANGELOG" style="color:#333;font-size:.6rem;text-decoration:none;letter-spacing:.09em;transition:color .2s" onmouseover="this.style.color='#00ff41'" onmouseout="this.style.color='#333'">CHANGELOG</a>
+    <a href="https://github.com/Anonymousik" target="_blank" rel="noopener" style="color:#333;font-size:.6rem;text-decoration:none;letter-spacing:.09em;transition:color .2s" onmouseover="this.style.color='#00ff41'" onmouseout="this.style.color='#333'">GITHUB ↗</a>
+  </div>
+  <div style="font-size:.58rem;color:#1a1a1a">MIT LICENSE · v5.0.0 IRONCLAD</div>
+</footer>
 
-                <div style="display:flex;gap:1.25rem;align-items:flex-start;">
-                    <div style="flex-shrink:0;min-width:4rem;">
-                        <span class="badge badge-g">v4.0.0</span>
-                    </div>
-                    <div>
-                        <div style="font-size:.7rem;color:#444;margin-bottom:.4rem;">2025 · current</div>
-                        <div style="font-size:.75rem;color:#bbb;line-height:1.7;">Dodano moduły Tor+ProxyChains i Docker/proot-distro. Wprowadzono <code style="color:var(--g);">set -euo pipefail</code>, ujednolicony logger, dry-run, pasek postępu. Powerlevel10k + autosuggestions + syntax-highlighting. Generowanie klucza SSH ed25519.</div>
-                    </div>
-                </div>
+</div><!-- /wrap -->
 
-                <div style="border-top:1px solid var(--border);padding-top:1.25rem;display:flex;gap:1.25rem;align-items:flex-start;">
-                    <div style="flex-shrink:0;min-width:4rem;">
-                        <span class="badge" style="border-color:#333;color:#555;">v3.0.0</span>
-                    </div>
-                    <div>
-                        <div style="font-size:.7rem;color:#444;margin-bottom:.4rem;">2024</div>
-                        <div style="font-size:.75rem;color:#666;line-height:1.7;">Parser argumentów <code>--dev</code>. Tryb unattended. Interaktywne menu. Modularyzacja funkcji instalacyjnych. ANSI art banner.</div>
-                    </div>
-                </div>
-
-                <div style="border-top:1px solid var(--border);padding-top:1.25rem;display:flex;gap:1.25rem;align-items:flex-start;">
-                    <div style="flex-shrink:0;min-width:4rem;">
-                        <span class="badge" style="border-color:#222;color:#444;">v1–2.x</span>
-                    </div>
-                    <div>
-                        <div style="font-size:.7rem;color:#333;margin-bottom:.4rem;">legacy</div>
-                        <div style="font-size:.75rem;color:#444;line-height:1.7;">Pierwsze wersje skryptu — monolityczny setup Termuksa bez modularyzacji.</div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- ── FOOTER ────────────────────────────────────────────────────────── -->
-    <footer style="border-top:1px solid var(--border);padding-top:2rem;text-align:center;">
-        <div style="font-size:.65rem;color:#333;letter-spacing:.12em;margin-bottom:.75rem;">
-            ANONYMOUSIK.IS-A.DEV // SECFERRO DIVISION SERIES
-        </div>
-        <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:1rem;">
-            <a href="/" style="color:#444;font-size:.65rem;text-decoration:none;letter-spacing:.08em;transition:color .2s;"
-               onmouseover="this.style.color='#00ff41'" onmouseout="this.style.color='#444'">HOME</a>
-            <a href="https://github.com/Anonymousik" target="_blank" style="color:#444;font-size:.65rem;text-decoration:none;letter-spacing:.08em;transition:color .2s;"
-               onmouseover="this.style.color='#00ff41'" onmouseout="this.style.color='#444'">GITHUB</a>
-        </div>
-        <div style="font-size:.6rem;color:#222;">MIT LICENSE · MADE WITH TERMINAL ENERGY</div>
-    </footer>
-
-</div><!-- /content-wrap -->
-
-<!-- ── JAVASCRIPT ─────────────────────────────────────────────────────────── -->
 <script>
-/* ── MATRIX RAIN ─────────────────────────────────────────────────────────── */
-(function () {
-    const canvas = document.getElementById('matrix-canvas');
-    const ctx = canvas.getContext('2d');
-    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ01アノ'.split('');
-    let drops = [];
-
-    function resize() {
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const cols = Math.floor(canvas.width / 18);
-        drops = Array.from({ length: cols }, () => Math.floor(Math.random() * -50));
-    }
-
-    function draw() {
-        ctx.fillStyle = 'rgba(5,5,5,.04)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#00ff41';
-        ctx.font = '13px "Fira Code", monospace';
-        drops.forEach((y, i) => {
-            ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * 18, y * 18);
-            drops[i] = (y > canvas.height / 18 + 20 && Math.random() > 0.975) ? 0 : y + 1;
-        });
-    }
-
-    resize();
-    window.addEventListener('resize', resize);
-    setInterval(draw, 55);
+/* ── MATRIX ──────────────────────────────────────────────────────────────── */
+(function(){
+  var c=document.getElementById('matrix-canvas'),x=c.getContext('2d');
+  var ch='アイウエオカキクケコサシスセソ01アノ'.split('');
+  var drops=[];
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;var cols=Math.floor(c.width/18);drops=Array.from({length:cols},function(){return Math.floor(Math.random()*-50);});}
+  function draw(){x.fillStyle='rgba(5,5,5,.04)';x.fillRect(0,0,c.width,c.height);x.fillStyle='#00ff41';x.font='13px "Fira Code",monospace';drops.forEach(function(y,i){x.fillText(ch[Math.floor(Math.random()*ch.length)],i*18,y*18);drops[i]=(y>c.height/18+20&&Math.random()>.975)?0:y+1;});}
+  resize();window.addEventListener('resize',resize);setInterval(draw,60);
 })();
 
-/* ── CLOCK ───────────────────────────────────────────────────────────────── */
-function updateClock() {
-    const t = new Date().toLocaleTimeString('pl-PL', { hour12: false });
-    document.querySelectorAll('#nav-clock, #clock').forEach(el => { if (el) el.textContent = t; });
-}
-updateClock();
-setInterval(updateClock, 1000);
-
-/* ── COPY TO CLIPBOARD ───────────────────────────────────────────────────── */
-function copyCode(btn, text) {
-    navigator.clipboard.writeText(text).then(() => {
-        const orig = btn.textContent;
-        btn.textContent = 'COPIED ✓';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
-    }).catch(() => {
-        // Fallback for environments without clipboard API
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        const orig = btn.textContent;
-        btn.textContent = 'COPIED ✓';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
-    });
+/* ── COPY ────────────────────────────────────────────────────────────────── */
+function cp(btn,text){
+  navigator.clipboard.writeText(text).catch(function(){var t=document.createElement('textarea');t.value=text;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);});
+  var o=btn.textContent; btn.textContent='COPIED ✓'; btn.classList.add('ok');
+  setTimeout(function(){btn.textContent=o;btn.classList.remove('ok');},2000);
 }
 
-/* ── COMMAND BUILDER ─────────────────────────────────────────────────────── */
-function buildCommand() {
-    const mods = [
-        ['m-web',     'WebDev'],
-        ['m-android', 'Android'],
-        ['m-cyber',   'Cyber'],
-        ['m-full',    'Fullstack'],
-        ['m-tor',     'Tor'],
-        ['m-docker',  'Docker'],
-    ].filter(([id]) => document.getElementById(id).checked)
-     .map(([,name]) => name);
-
-    const opts = [
-        ['o-dryrun',  '--dry-run'],
-        ['o-noui',    '--no-ui'],
-        ['o-verbose', '--verbose'],
-    ].filter(([id]) => document.getElementById(id).checked)
-     .map(([,flag]) => flag);
-
-    let cmd = 'bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)';
-    if (mods.length) cmd += ` --dev ${mods.join(',')}`;
-    opts.forEach(o => cmd += ` ${o}`);
-
-    document.getElementById('generated-cmd').textContent = cmd;
+/* ── BUILDER ─────────────────────────────────────────────────────────────── */
+var modMap={bm1:'WebDev',bm2:'Android',bm3:'Cyber',bm4:'Fullstack',bm5:'Tor',bm6:'Docker',bm7:'Data',bm8:'DevOps',bm9:'Media',bm10:'DB',bm11:'IoT',bm12:'Game'};
+function build(){
+  var mods=Object.keys(modMap).filter(function(id){return document.getElementById(id).checked;}).map(function(id){return modMap[id];});
+  var opts=['bo1','bo2','bo3'].filter(function(id){return document.getElementById(id).checked;}).map(function(id){return id==='bo1'?'--dry-run':id==='bo2'?'--no-ui':'--verbose';});
+  var cmd='bash <(curl -sL anonymousik.is-a.dev/scripts/tmux_setup)';
+  if(mods.length) cmd+=' --dev '+mods.join(',');
+  opts.forEach(function(f){cmd+=' '+f;});
+  document.getElementById('gen-cmd').textContent=cmd;
 }
+function cpBuilt(){cp(document.getElementById('bcpbtn'),document.getElementById('gen-cmd').textContent);}
 
-/* ── COPY BUILDER CMD ────────────────────────────────────────────────────── */
-function copyBuilderCmd() {
-    const text = document.getElementById('generated-cmd').textContent;
-    copyCode(document.getElementById('builder-copy-btn'), text);
-}
-
-/* ── ACTIVE TOC ──────────────────────────────────────────────────────────── */
-(function () {
-    const sections = document.querySelectorAll('section[id]');
-    const links    = document.querySelectorAll('.toc-link');
-    const obs = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-            if (e.isIntersecting) {
-                links.forEach(l => l.classList.remove('active'));
-                const active = document.querySelector(`.toc-link[href="#${e.target.id}"]`);
-                if (active) active.classList.add('active');
-            }
-        });
-    }, { rootMargin: '-30% 0px -60% 0px' });
-    sections.forEach(s => obs.observe(s));
-})();
-
-/* ── PROGRESS BAR ANIMATION ──────────────────────────────────────────────── */
-(function () {
-    const bars = document.querySelectorAll('.prog-bar-fill');
-    const obs = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-            if (e.isIntersecting) {
-                e.target.style.width = e.target.dataset.width || '0%';
-                obs.unobserve(e.target);
-            }
-        });
-    }, { threshold: .3 });
-    bars.forEach(b => {
-        const w = b.style.width;
-        b.dataset.width = w;
-        b.style.width = '0%';
-        obs.observe(b);
-    });
-})();
+/* ── TOC ACTIVE ──────────────────────────────────────────────────────────── */
+var secs=document.querySelectorAll('section[id]');
+var tocs=document.querySelectorAll('.toc-link');
+var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){tocs.forEach(function(l){l.classList.remove('on');});var a=document.querySelector('.toc-link[href="#'+e.target.id+'"]');if(a)a.classList.add('on');}});},{rootMargin:'-25% 0px -65% 0px'});
+secs.forEach(function(s){obs.observe(s);});
 </script>
 </body>
 </html>
