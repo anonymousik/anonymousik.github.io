@@ -1,560 +1,1149 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ƑERRට | THE CREATIVE ENGINEER</title>
-    <!-- Tailwind CSS do struktury -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Monospace Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        mono: ['"Fira Code"', 'monospace'],
-                    },
-                    colors: {
-                        cyber: {
-                            green: '#00ff41',
-                            dark: '#050505',
-                            panel: '#0a0a0a',
-                            border: '#1a1a1a',
-                            gold: '#D4AF37',
-                            alert: '#ff003c'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Anonymousik — Hybrid engineer operating at the intersection of Cyber-Security, Systems Engineering and Audiovisual Arts. SECFERRO DIVISION SERIES.">
+  <meta name="author" content="Anonymousik">
+  <meta property="og:title" content="ƑERRට | THE CREATIVE ENGINEER">
+  <meta property="og:description" content="Architecting Systems · Visualizing Sound · Decoding Reality">
+  <meta property="og:url" content="https://anonymousik.is-a.dev">
+  <title>ƑERRට | THE CREATIVE ENGINEER</title>
 
-    <style>
-        body {
-            background-color: #050505;
-            color: #e0e0e0;
-            overflow-x: hidden;
-        }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-        /* --- EFEKTY WIZUALNE --- */
-        .crt::before {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 999;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { mono: ['"Fira Code"','monospace'], dm: ['"DM Mono"','monospace'] },
+          colors: {
+            g: '#00ff41', gold: '#D4AF37', alert: '#ff003c',
+            bl: '#00aaff', pur: '#9b59ff',
+            p: { 0: '#050505', 1: '#0a0a0a', 2: '#111', 3: '#1a1a1a' }
+          }
         }
+      }
+    }
+  </script>
 
-        #matrix-canvas {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-            opacity: 0.15;
-        }
+<style>
+/* ── TOKENS ──────────────────────────────────────────────────────────────── */
+:root {
+  --g:  #00ff41; --gold:#D4AF37; --red:#ff003c;
+  --bl: #00aaff; --pur: #9b59ff; --bg: #050505;
+  --p1: #0a0a0a; --brd:#1a1a1a;  --txt:#e0e0e0;
+}
 
-        .glitch-text {
-            position: relative;
-            color: white;
-            font-weight: bold;
-        }
-        
-        .glitch-text::before, .glitch-text::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: transparent;
-        }
-        
-        .glitch-text::before {
-            left: 2px; text-shadow: -2px 0 #ff003c;
-            clip: rect(24px, 550px, 90px, 0);
-            animation: glitch-anim-2 3s infinite linear alternate-reverse;
-        }
-        
-        .glitch-text::after {
-            left: -2px; text-shadow: -2px 0 #00ff41;
-            clip: rect(85px, 550px, 140px, 0);
-            animation: glitch-anim 2.5s infinite linear alternate-reverse;
-        }
+/* ── RESET / BASE ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 52px; }
+body { background: var(--bg); color: var(--txt); font-family: 'Fira Code', monospace; overflow-x: hidden; }
 
-        @keyframes glitch-anim {
-            0% { clip: rect(11px, 9999px, 86px, 0); }
-            20% { clip: rect(44px, 9999px, 14px, 0); }
-            40% { clip: rect(98px, 9999px, 11px, 0); }
-            60% { clip: rect(22px, 9999px, 67px, 0); }
-            80% { clip: rect(88px, 9999px, 33px, 0); }
-            100% { clip: rect(55px, 9999px, 99px, 0); }
-        }
-        
-        @keyframes glitch-anim-2 {
-            0% { clip: rect(65px, 9999px, 100px, 0); }
-            20% { clip: rect(15px, 9999px, 55px, 0); }
-            40% { clip: rect(85px, 9999px, 20px, 0); }
-            60% { clip: rect(35px, 9999px, 80px, 0); }
-            80% { clip: rect(10px, 9999px, 40px, 0); }
-            100% { clip: rect(90px, 9999px, 10px, 0); }
-        }
+/* ── CRT OVERLAY ─────────────────────────────────────────────────────────── */
+#crt {
+  position: fixed; inset: 0;
+  background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,.18) 50%),
+              linear-gradient(90deg, rgba(255,0,0,.04), rgba(0,255,0,.015), rgba(0,0,255,.04));
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none; z-index: 9999;
+  animation: crtJitter 8s infinite;
+}
+@keyframes crtJitter {
+  0%,98%,100% { transform: none; }
+  99% { transform: translateX(2px) skewX(.3deg); }
+}
 
-        /* --- ELEMENTY UI --- */
-        .cyber-panel {
-            background: rgba(10, 10, 10, 0.85);
-            backdrop-filter: blur(5px);
-            border: 1px solid #1a1a1a;
-            position: relative;
-        }
-        
-        .cyber-panel:hover {
-            border-color: #00ff41;
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
-        }
+/* ── MATRIX ──────────────────────────────────────────────────────────────── */
+#matrix-canvas { position:fixed; inset:0; width:100vw; height:100vh; z-index:0; opacity:.12; }
 
-        .cyber-header {
-            border-bottom: 1px solid #1a1a1a;
-            background: #0a0a0a;
-        }
+/* ── CUSTOM CURSOR ───────────────────────────────────────────────────────── */
+body { cursor: none; }
+#cursor { position:fixed; width:16px; height:16px; border:1px solid var(--g); pointer-events:none; z-index:10000; transform:translate(-50%,-50%); transition:width .15s,height .15s,border-color .15s; mix-blend-mode:difference; }
+#cursor.big { width:40px; height:40px; border-color:var(--gold); }
+#cursor::after { content:''; position:absolute; inset:4px; background:var(--g); opacity:.4; }
 
-        .neon-text-green { color: #00ff41; text-shadow: 0 0 5px rgba(0, 255, 65, 0.5); }
-        .neon-text-gold { color: #D4AF37; text-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
+/* ── SCROLLBAR ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:#222; }
+::-webkit-scrollbar-thumb:hover { background:var(--g); }
 
-        /* --- ACCORDION (ROZWIJANE MENU) --- */
-        .project-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.1, 1, 0.2, 1), opacity 0.3s ease;
-            opacity: 0;
-        }
-        
-        .project-item.active .project-content {
-            opacity: 1;
-        }
+/* ── SELECTION ───────────────────────────────────────────────────────────── */
+::selection { background:rgba(0,255,65,.2); color:var(--g); }
 
-        .project-item.active {
-            border-color: #00ff41;
-            background: rgba(0, 255, 65, 0.05);
-        }
+/* ── GLITCH ──────────────────────────────────────────────────────────────── */
+.glitch { position:relative; display:inline-block; }
+.glitch::before, .glitch::after { content:attr(data-text); position:absolute; top:0;left:0;width:100%;height:100%; }
+.glitch::before { left:3px; color:var(--red); opacity:.7; clip-path:polygon(0 20%,100% 20%,100% 40%,0 40%); animation:gA 4s infinite; }
+.glitch::after  { left:-3px;color:var(--g);   opacity:.7; clip-path:polygon(0 65%,100% 65%,100% 80%,0 80%); animation:gB 3s infinite; }
+@keyframes gA { 0%,90%,100%{transform:none} 91%{transform:translateX(-4px) skewX(3deg)} 93%{transform:translateX(3px)} }
+@keyframes gB { 0%,85%,100%{transform:none} 86%{transform:translateX(4px) skewX(-2deg)} 88%{transform:translateX(-2px)} }
 
-        .chevron {
-            transition: transform 0.3s ease;
-        }
+/* ── PANEL ───────────────────────────────────────────────────────────────── */
+.panel { background:rgba(10,10,10,.88); border:1px solid var(--brd); backdrop-filter:blur(6px); transition:border-color .3s,box-shadow .3s; }
+.panel:hover { border-color:rgba(0,255,65,.22); }
 
-        .project-item.active .chevron {
-            transform: rotate(180deg);
-            color: #00ff41;
-        }
+/* ── TERMINAL CHROME ─────────────────────────────────────────────────────── */
+.tc { background:#0d0d0d; border-bottom:1px solid var(--brd); padding:.4rem .75rem; display:flex; align-items:center; gap:.4rem; }
+.dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.dt { font-size:.58rem; color:#444; margin-left:.4rem; letter-spacing:.06em; }
 
-        /* --- SCROLLBAR --- */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #050505; border-left: 1px solid #1a1a1a; }
-        ::-webkit-scrollbar-thumb { background: #333; }
-        ::-webkit-scrollbar-thumb:hover { background: #00ff41; }
-        
-        .typing-effect {
-            border-right: 2px solid #00ff41;
-            white-space: nowrap;
-            overflow: hidden;
-            animation: blinkCursor 0.75s step-end infinite;
-        }
-        @keyframes blinkCursor { from, to { border-color: transparent } 50% { border-color: #00ff41; } }
-    </style>
+/* ── SECTION HEADER ──────────────────────────────────────────────────────── */
+.sh { display:flex; align-items:center; gap:.75rem; border-bottom:1px solid var(--brd); padding-bottom:.75rem; margin-bottom:2rem; }
+.sh-num { color:#2d2d2d; font-size:.85rem; font-weight:700; }
+.sh-title { color:var(--g); font-weight:700; font-size:1rem; letter-spacing:.06em; text-shadow:0 0 8px rgba(0,255,65,.3); }
+
+/* ── NEON HELPERS ────────────────────────────────────────────────────────── */
+.ng  { color:var(--g);    text-shadow:0 0 7px rgba(0,255,65,.4); }
+.ng2 { color:var(--gold); text-shadow:0 0 7px rgba(212,175,55,.4); }
+.nb  { color:var(--bl);   text-shadow:0 0 7px rgba(0,170,255,.4); }
+.nr  { color:var(--red);  text-shadow:0 0 7px rgba(255,0,60,.4); }
+.np  { color:var(--pur);  text-shadow:0 0 7px rgba(155,89,255,.4); }
+
+/* ── BADGE ───────────────────────────────────────────────────────────────── */
+.badge { display:inline-flex; align-items:center; gap:.3rem; padding:.15rem .55rem; border:1px solid; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; font-weight:500; }
+.bg   { border-color:rgba(0,255,65,.4);   color:var(--g);    background:rgba(0,255,65,.06); }
+.bgold{ border-color:rgba(212,175,55,.4); color:var(--gold); background:rgba(212,175,55,.06); }
+.bbl  { border-color:rgba(0,170,255,.4);  color:var(--bl);   background:rgba(0,170,255,.06); }
+.bred { border-color:rgba(255,0,60,.4);   color:var(--red);  background:rgba(255,0,60,.06); }
+.bpur { border-color:rgba(155,89,255,.4); color:var(--pur);  background:rgba(155,89,255,.06); }
+.bdim { border-color:#282828; color:#555; background:rgba(255,255,255,.02); }
+
+/* ── PROGRESS BAR ────────────────────────────────────────────────────────── */
+.bar-track { height:3px; background:#111; overflow:hidden; position:relative; }
+.bar-fill  { height:100%; width:0; transition:width 1.6s cubic-bezier(.1,1,.2,1); position:relative; }
+.bar-fill::after { content:''; position:absolute; right:0; top:0; bottom:0; width:12px; background:rgba(255,255,255,.4); filter:blur(4px); }
+.bar-fill.green  { background:var(--g);    box-shadow:0 0 8px var(--g); }
+.bar-fill.purple { background:var(--pur);  box-shadow:0 0 8px var(--pur); }
+.bar-fill.blue   { background:var(--bl);   box-shadow:0 0 8px var(--bl); }
+.bar-fill.gold   { background:var(--gold); box-shadow:0 0 8px var(--gold); }
+.bar-fill.red    { background:var(--red);  box-shadow:0 0 8px var(--red); }
+
+/* ── ACCORDION ───────────────────────────────────────────────────────────── */
+.acc-body { max-height:0; overflow:hidden; transition:max-height .45s cubic-bezier(.1,1,.2,1); }
+.acc-item.open .acc-body { max-height:800px; }
+.acc-item { border:1px solid var(--brd); background:rgba(8,8,8,.9); transition:border-color .25s; }
+.acc-item:hover { border-color:rgba(0,255,65,.15); }
+.acc-item.open { border-color:rgba(0,255,65,.35); background:rgba(0,255,65,.025); }
+.chevron { transition:transform .3s; }
+.acc-item.open .chevron { transform:rotate(180deg); color:var(--g); }
+
+/* ── PULSE INDICATOR ─────────────────────────────────────────────────────── */
+.pulse { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--g); box-shadow:0 0 6px var(--g); animation:pulse 2s ease-in-out infinite; }
+.pulse.gold { background:var(--gold); box-shadow:0 0 6px var(--gold); }
+.pulse.red  { background:var(--red);  box-shadow:0 0 6px var(--red); animation-delay:.3s; }
+.pulse.off  { background:#333; box-shadow:none; animation:none; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.65)} }
+
+/* ── TYPING ──────────────────────────────────────────────────────────────── */
+.typing-cursor { border-right:2px solid var(--g); animation:cur .75s step-end infinite; }
+@keyframes cur { from,to{border-color:transparent} 50%{border-color:var(--g)} }
+
+/* ── SOCIAL LINK ─────────────────────────────────────────────────────────── */
+.slink { display:flex; align-items:center; gap:.75rem; padding:.75rem 1rem; border:1px solid var(--brd); background:rgba(8,8,8,.8); text-decoration:none; transition:border-color .2s,background .2s,transform .2s; }
+.slink:hover { border-color:var(--accent,var(--g)); background:rgba(0,255,65,.04); transform:translateX(4px); }
+
+/* ── STAT BOX ────────────────────────────────────────────────────────────── */
+.stat { border:1px solid var(--brd); padding:.85rem 1.1rem; background:rgba(8,8,8,.8); text-align:center; }
+.stat-val { font-size:1.6rem; font-weight:700; line-height:1; margin-bottom:.3rem; }
+.stat-lbl { font-size:.58rem; color:#444; letter-spacing:.12em; text-transform:uppercase; }
+
+/* ── WAVEFORM ────────────────────────────────────────────────────────────── */
+#waveform { width:100%; height:60px; }
+
+/* ── SCROLL REVEAL ───────────────────────────────────────────────────────── */
+.reveal { opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal.d1 { transition-delay:.1s; }
+.reveal.d2 { transition-delay:.2s; }
+.reveal.d3 { transition-delay:.3s; }
+.reveal.d4 { transition-delay:.4s; }
+
+/* ── TERMINAL LOG ────────────────────────────────────────────────────────── */
+#term-log { max-height:220px; overflow-y:auto; }
+#term-log::-webkit-scrollbar { width:3px; }
+#term-log::-webkit-scrollbar-thumb { background:#1e1e1e; }
+.log-line { font-size:.65rem; line-height:1.9; display:flex; gap:.6rem; }
+.log-ts { color:#2a2a2a; flex-shrink:0; }
+.log-ok  { color:var(--g); }
+.log-warn{ color:var(--gold); }
+.log-err { color:var(--red); }
+.log-info{ color:var(--bl); }
+
+/* ── HEX GRID DECO ───────────────────────────────────────────────────────── */
+.hex-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52' viewBox='0 0 60 52'%3E%3Cpath d='M30 2L58 18v16L30 50 2 34V18z' fill='none' stroke='%231a1a1a' stroke-width='.5'/%3E%3C/svg%3E");
+  background-size: 60px 52px;
+}
+
+/* ── GRID CORNER DECO ────────────────────────────────────────────────────── */
+.corner-tl, .corner-tr, .corner-bl, .corner-br { position:absolute; width:12px; height:12px; }
+.corner-tl { top:-1px; left:-1px; border-top:2px solid var(--g); border-left:2px solid var(--g); }
+.corner-tr { top:-1px; right:-1px; border-top:2px solid var(--g); border-right:2px solid var(--g); }
+.corner-bl { bottom:-1px; left:-1px; border-bottom:2px solid var(--g); border-left:2px solid var(--g); }
+.corner-br { bottom:-1px; right:-1px; border-bottom:2px solid var(--g); border-right:2px solid var(--g); }
+
+/* ── SCANLINE HERO ───────────────────────────────────────────────────────── */
+.hero-bg {
+  background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0,255,65,.05) 0%, transparent 70%);
+}
+
+/* ── NAV OVERRIDE: embed nav styles here ────────────────────────────────── */
+:root {
+  --sfn-bg:     rgba(5,5,5,.97);
+  --sfn-border: #1a1a1a;
+  --sfn-green:  #00ff41;
+  --sfn-gold:   #D4AF37;
+  --sfn-red:    #ff003c;
+  --sfn-blue:   #00aaff;
+  --sfn-purple: #9b59ff;
+  --sfn-text:   #555;
+  --sfn-hover:  #aaa;
+  --sfn-h:      48px;
+}
+.sf-nav { position:sticky;top:0;z-index:9000;height:var(--sfn-h);background:var(--sfn-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--sfn-border);transition:border-color .3s; }
+.sf-nav:hover { border-color:rgba(0,255,65,.2); }
+.sf-nav__inner { max-width:960px;margin:0 auto;padding:0 1.5rem;height:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem; }
+.sf-nav__logo { display:flex;align-items:center;gap:.6rem;text-decoration:none;flex-shrink:0; }
+.sf-nav__logo-mark { font-size:1rem;font-weight:700;color:#fff;letter-spacing:.03em;line-height:1;position:relative; }
+.sf-nav__logo-mark::after { content:attr(data-text);position:absolute;top:0;left:1px;color:var(--sfn-green);opacity:0;transition:opacity .2s;text-shadow:0 0 8px var(--sfn-green);clip-path:polygon(0 40%,100% 40%,100% 60%,0 60%); }
+.sf-nav__logo:hover .sf-nav__logo-mark::after { opacity:.6; }
+.sf-nav__logo-sub { font-size:.55rem;color:#333;letter-spacing:.14em;text-transform:uppercase;padding-left:.6rem;border-left:1px solid #1f1f1f; }
+.sf-nav__menu { display:flex;align-items:center;gap:.1rem;list-style:none;margin:0;padding:0; }
+.sf-nav__menu-item { position:relative; }
+.sf-nav__link { display:flex;align-items:center;gap:.35rem;padding:.3rem .65rem;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sfn-text);text-decoration:none;border:1px solid transparent;transition:color .2s,border-color .2s,background .2s;white-space:nowrap; }
+.sf-nav__link:hover { color:var(--sfn-hover);border-color:var(--sfn-border);background:rgba(255,255,255,.03); }
+.sf-nav__link.is-active { color:var(--sfn-green);border-color:rgba(0,255,65,.3);background:rgba(0,255,65,.05);text-shadow:0 0 6px rgba(0,255,65,.4); }
+.sf-nav__link-dot { width:4px;height:4px;border-radius:50%;background:currentColor;opacity:0;transition:opacity .2s;flex-shrink:0; }
+.sf-nav__link.is-active .sf-nav__link-dot { opacity:1; }
+.sf-nav__link[data-accent="gold"]:hover,.sf-nav__link[data-accent="gold"].is-active{color:var(--sfn-gold);border-color:rgba(212,175,55,.3);background:rgba(212,175,55,.05);}
+.sf-nav__link[data-accent="blue"]:hover,.sf-nav__link[data-accent="blue"].is-active{color:var(--sfn-blue);border-color:rgba(0,170,255,.3);background:rgba(0,170,255,.05);}
+.sf-nav__link[data-accent="red"]:hover,.sf-nav__link[data-accent="red"].is-active{color:var(--sfn-red);border-color:rgba(255,0,60,.3);background:rgba(255,0,60,.05);}
+.sf-nav__dropdown { position:absolute;top:calc(100% + 6px);left:0;min-width:200px;background:rgba(5,5,5,.98);border:1px solid var(--sfn-border);backdrop-filter:blur(16px);padding:.5rem 0;opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .2s,transform .2s,visibility .2s;pointer-events:none;z-index:100; }
+.sf-nav__menu-item:hover .sf-nav__dropdown { opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto; }
+.sf-nav__dropdown-item { display:flex;align-items:center;gap:.5rem;padding:.45rem 1rem;font-size:.6rem;letter-spacing:.07em;text-transform:uppercase;color:#555;text-decoration:none;transition:color .15s,background .15s; }
+.sf-nav__dropdown-item:hover { color:var(--sfn-green);background:rgba(0,255,65,.05); }
+.sf-nav__dropdown-divider { border:none;border-top:1px solid var(--sfn-border);margin:.4rem 0; }
+.sf-nav__dropdown-label { padding:.35rem 1rem .2rem;font-size:.52rem;letter-spacing:.14em;color:#333;text-transform:uppercase; }
+.sf-nav__status { display:flex;align-items:center;gap:.75rem;flex-shrink:0; }
+.sf-nav__clock { font-size:.58rem;color:#333;letter-spacing:.08em;display:none; }
+@media(min-width:640px){.sf-nav__clock{display:block;}}
+.sf-nav__badge { display:flex;align-items:center;gap:.3rem;padding:.15rem .5rem;border:1px solid rgba(0,255,65,.25);background:rgba(0,255,65,.05);font-size:.55rem;letter-spacing:.1em;color:var(--sfn-green);text-transform:uppercase; }
+.sf-nav__pulse { width:5px;height:5px;border-radius:50%;background:var(--sfn-green);animation:sfP 2s ease-in-out infinite;box-shadow:0 0 6px var(--sfn-green); }
+@keyframes sfP { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+.sf-nav__hamburger { display:none;flex-direction:column;gap:4px;padding:.4rem;cursor:pointer;background:none;border:1px solid transparent;transition:border-color .2s; }
+.sf-nav__hamburger:hover { border-color:var(--sfn-border); }
+.sf-nav__hamburger span { display:block;width:18px;height:1px;background:#555;transition:background .2s,transform .3s,opacity .2s; }
+.sf-nav__hamburger.is-open span:nth-child(1){transform:translateY(5px) rotate(45deg);background:var(--sfn-green);}
+.sf-nav__hamburger.is-open span:nth-child(2){opacity:0;}
+.sf-nav__hamburger.is-open span:nth-child(3){transform:translateY(-5px) rotate(-45deg);background:var(--sfn-green);}
+.sf-nav__mobile { display:none;position:fixed;top:var(--sfn-h);left:0;right:0;background:rgba(5,5,5,.99);backdrop-filter:blur(20px);border-bottom:1px solid var(--sfn-border);padding:1rem 1.5rem 1.5rem;z-index:8999;transform:translateY(-8px);opacity:0;transition:transform .25s cubic-bezier(.1,1,.2,1),opacity .2s; }
+.sf-nav__mobile.is-open { display:block;transform:translateY(0);opacity:1; }
+.sf-nav__mobile-section { margin-bottom:1.25rem; }
+.sf-nav__mobile-label { font-size:.55rem;letter-spacing:.15em;color:#333;text-transform:uppercase;padding-bottom:.5rem;border-bottom:1px solid var(--sfn-border);margin-bottom:.5rem; }
+.sf-nav__mobile-link { display:flex;align-items:center;gap:.5rem;padding:.4rem 0;font-size:.65rem;letter-spacing:.07em;text-transform:uppercase;color:#555;text-decoration:none;border-left:2px solid transparent;padding-left:.5rem;transition:color .2s,border-color .2s; }
+.sf-nav__mobile-link:hover,.sf-nav__mobile-link.is-active{color:var(--sfn-green);border-color:var(--sfn-green);}
+@media(max-width:768px){.sf-nav__menu{display:none;}.sf-nav__hamburger{display:flex;}.sf-nav__badge{display:none;}}
+
+/* ── FOOTER ──────────────────────────────────────────────────────────────── */
+footer { border-top:1px solid var(--brd); }
+
+/* ── MISC ────────────────────────────────────────────────────────────────── */
+a { text-decoration:none; }
+strong { color:#e8e8e8; }
+code { color:var(--g); font-size:.85em; }
+
+/* ── MODULE GRID ─────────────────────────────────────────────────────────── */
+.mod-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:.5rem; }
+.mod-pill { border:1px solid var(--brd); padding:.45rem .65rem; font-size:.62rem; color:#555; text-align:center; letter-spacing:.05em; transition:all .2s; cursor:default; }
+.mod-pill:hover { border-color:var(--c,var(--g)); color:var(--c,var(--g)); background:rgba(0,255,65,.04); transform:translateY(-1px); }
+
+/* ── QUOTE ───────────────────────────────────────────────────────────────── */
+blockquote { border-left:2px solid var(--g); padding-left:1rem; margin:1.5rem 0; color:#888; font-size:.82rem; line-height:1.7; font-style:italic; background:rgba(0,255,65,.03); padding:1rem 1.25rem; }
+blockquote strong { color:var(--g); }
+
+/* ── TIMELINE ────────────────────────────────────────────────────────────── */
+.tl-item { display:flex; gap:1rem; padding-bottom:1.5rem; position:relative; }
+.tl-item::before { content:''; position:absolute; left:11px; top:22px; bottom:0; width:1px; background:var(--brd); }
+.tl-item:last-child::before { display:none; }
+.tl-dot { width:24px; height:24px; border:1px solid var(--brd); background:var(--p1); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:.55rem; color:#444; transition:border-color .2s; }
+.tl-item:hover .tl-dot { border-color:var(--g); color:var(--g); }
+
+/* ── CONTACT FORM ────────────────────────────────────────────────────────── */
+.sf-input { background:#000; border:1px solid var(--brd); color:var(--txt); font-family:'Fira Code',monospace; font-size:.75rem; padding:.65rem .9rem; width:100%; transition:border-color .2s,box-shadow .2s; outline:none; }
+.sf-input:focus { border-color:rgba(0,255,65,.5); box-shadow:0 0 0 1px rgba(0,255,65,.15); }
+.sf-input::placeholder { color:#333; }
+.sf-btn { background:transparent; border:1px solid var(--g); color:var(--g); font-family:'Fira Code',monospace; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; padding:.65rem 1.5rem; cursor:pointer; transition:background .2s,box-shadow .2s,transform .15s; }
+.sf-btn:hover { background:rgba(0,255,65,.08); box-shadow:0 0 16px rgba(0,255,65,.2); transform:translateY(-1px); }
+.sf-btn:active { transform:translateY(0); }
+
+/* ── TOP PROGRESS BAR ────────────────────────────────────────────────────── */
+#scroll-prog { position:fixed; top:0; left:0; height:1px; background:var(--g); box-shadow:0 0 8px var(--g); z-index:10001; transition:width .1s; }
+
+@media(max-width:640px){
+  .glitch::before,.glitch::after { display:none; }
+  .hero-title { font-size:clamp(3rem,16vw,6rem); }
+}
+</style>
 </head>
-<body class="font-mono crt">
+<body>
 
-    <!-- Matrix Background -->
-    <canvas id="matrix-canvas"></canvas>
+<div id="cursor"></div>
+<div id="crt"></div>
+<div id="scroll-prog"></div>
+<canvas id="matrix-canvas"></canvas>
 
-    <div class="max-w-4xl mx-auto p-4 md:p-8 relative z-10">
-        
-        <!-- HEADER -->
-        <header class="text-center mb-16 space-y-6 pt-10">
-            <div class="inline-block px-4 py-1 border border-cyber-border bg-cyber-panel text-xs text-gray-500 mb-2 shadow-lg">
-                <i data-lucide="terminal" class="inline w-3 h-3 mr-1"></i>
-                SESSION: u0_a583 | SYS_TIME: <span id="clock">00:00:00</span>
-            </div>
-            
-            <h1 class="text-5xl md:text-7xl font-bold uppercase tracking-widest glitch-text text-white" data-text="ƑERRට">
-                ƑERRට
-            </h1>
-            
-            <h2 class="text-xl md:text-2xl text-gray-400 tracking-[0.3em] uppercase">
-                The Creative Engineer
-            </h2>
-            
-            <p class="text-sm md:text-base neon-text-green tracking-[0.1em] md:tracking-[0.2em]">
-                ARCHITECTING SYSTEMS • VISUALIZING SOUND • DECODING REALITY
-            </p>
-
-            <!-- Badges -->
-            <div class="flex flex-wrap justify-center gap-4 mt-8">
-                <div class="flex items-center gap-2 px-3 py-1 border border-cyber-gold/50 bg-cyber-gold/10 text-cyber-gold text-xs font-bold">
-                    <i data-lucide="shield-check" class="w-4 h-4"></i> AUTH: ROOT_VERIFIED
-                </div>
-                <div class="flex items-center gap-2 px-3 py-1 border border-cyber-green/50 bg-cyber-green/10 text-cyber-green text-xs font-bold">
-                    <i data-lucide="cpu" class="w-4 h-4"></i> ENV: PRODUCTION
-                </div>
-                <div class="flex items-center gap-2 px-3 py-1 border border-white/30 bg-white/5 text-white text-xs font-bold">
-                    <i data-lucide="radio" class="w-4 h-4"></i> VIBE: GLITCH_GOLD
-                </div>
-            </div>
-        </header>
-
-        <!-- [01] SYSTEM IDENTITY -->
-        <section class="cyber-panel mb-12 shadow-2xl">
-            <div class="cyber-header p-2 flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-cyber-alert"></div>
-                <div class="w-3 h-3 rounded-full bg-cyber-gold"></div>
-                <div class="w-3 h-3 rounded-full bg-cyber-green"></div>
-                <span class="ml-2 text-xs text-gray-500">~/ferro/core_logic.sh</span>
-            </div>
-            <div class="p-6 md:p-8">
-                <h3 class="neon-text-green font-bold text-xl mb-6 flex items-center gap-3">
-                    <span class="text-gray-600">[01]</span> SYSTEM IDENTITY / CORE LOGIC
-                </h3>
-                
-                <blockquote class="border-l-2 border-cyber-green pl-4 py-2 italic text-gray-400 my-6 bg-cyber-green/5">
-                    "Inżynieria to sztuka panowania nad chaosem. Sztuka to chaos ujęty w ramy inżynierii."
-                </blockquote>
-                
-                <p class="leading-relaxed text-gray-300 text-sm md:text-base text-justify">
-                    Jestem hybrydowym twórcą operującym na styku <strong class="text-white">Cyber-Security</strong>, <strong class="text-white">Systems Engineering</strong> oraz <strong class="text-white">Audiovisual Arts</strong>. Moje podejście opiera się na bezkompromisowej optymalizacji – zarówno w kodzie binarnym, jak i w fali dźwiękowej. Nie naprawiam systemów; redefiniuję ich granice.
-                </p>
-            </div>
-        </section>
-
-        <!-- [02] DEPLOYED PROJECTS -->
-        <section class="mb-12">
-            <h3 class="neon-text-green font-bold text-xl mb-6 flex items-center gap-3 border-b border-cyber-border pb-3">
-                <span class="text-gray-600">[02]</span> DEPLOYED PROJECTS
-                <span class="text-xs text-gray-500 font-normal ml-auto animate-pulse">(KLIKNIJ, ABY ROZWINĄĆ)</span>
-            </h3>
-            
-            <div class="space-y-4">
-                
-                <!-- Projekt 1 -->
-                <div class="cyber-panel project-item transition-all duration-300 cursor-pointer" onclick="toggleProject(this)">
-                    <div class="p-5 flex justify-between items-center border-b border-transparent">
-                        <div class="flex items-center gap-4">
-                            <i data-lucide="wrench" class="w-6 h-6 text-cyber-green"></i>
-                            <h4 class="font-bold text-white tracking-wide">ADB-QUANTUM // SYSTEM HARDENING</h4>
-                        </div>
-                        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 chevron"></i>
-                    </div>
-                    <div class="project-content px-5">
-                        <div class="py-4 border-t border-cyber-border">
-                            <div class="flex flex-wrap gap-4 mb-5 bg-black/50 p-3 rounded border border-cyber-border/50 text-xs md:text-sm">
-                                <div><span class="text-gray-500">Status:</span> <span class="neon-text-green">Operacyjny / Publiczny</span></div>
-                                <div><span class="text-gray-500">Stack:</span> <span class="text-cyber-green">[Bash] [Python] [ADB Bridge]</span></div>
-                            </div>
-                            <p class="text-gray-300 mb-4 text-sm leading-relaxed">
-                                Zaawansowane środowisko do optymalizacji i audytu urządzeń mobilnych oraz Smart TV. Projekt narodził się z frustracji nad zaśmieconymi systemami fabrycznymi.
-                            </p>
-                            <ul class="space-y-2 text-sm text-gray-400">
-                                <li><strong class="text-white">▹ Funkcje:</strong> Głęboki debloating, optymalizacja pamięci RAM na poziomie jądra, automatyzacja wdrożeń masowych.</li>
-                                <li><strong class="text-white">▹ Cel:</strong> Przywrócenie kontroli użytkownikowi nad jego własnym sprzętem.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Projekt 2 -->
-                <div class="cyber-panel project-item transition-all duration-300 cursor-pointer" onclick="toggleProject(this)">
-                    <div class="p-5 flex justify-between items-center">
-                        <div class="flex items-center gap-4">
-                            <i data-lucide="disc-3" class="w-6 h-6 text-purple-500"></i>
-                            <h4 class="font-bold text-white tracking-wide">BAŃKA 404 // AUDIO-VISUAL FORENSICS</h4>
-                        </div>
-                        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 chevron"></i>
-                    </div>
-                    <div class="project-content px-5">
-                        <div class="py-4 border-t border-cyber-border">
-                            <div class="flex flex-wrap gap-4 mb-5 bg-black/50 p-3 rounded border border-cyber-border/50 text-xs md:text-sm">
-                                <div><span class="text-gray-500">Status:</span> <span class="text-purple-400">W toku (R&D)</span></div>
-                                <div><span class="text-gray-500">Stack:</span> <span class="text-purple-400">[Ableton] [FFmpeg] [Premiere Pro] [OSINT]</span></div>
-                            </div>
-                            <p class="text-gray-300 mb-4 text-sm leading-relaxed">
-                                Projekt artystyczny, który przesuwa granice narracji. Wykorzystuję techniki śledcze (OSINT) do budowania tekstów i struktur wizualnych.
-                            </p>
-                            <ul class="space-y-2 text-sm text-gray-400">
-                                <li><strong class="text-white">▹ Estetyka:</strong> Glitch Art, Vaporization, High-Contrast Cyber.</li>
-                                <li><strong class="text-white">▹ Misja:</strong> Manifest cyfrowej alienacji ubrany w technicznie doskonały sound design.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Projekt 3 -->
-                <div class="cyber-panel project-item transition-all duration-300 cursor-pointer" onclick="toggleProject(this)">
-                    <div class="p-5 flex justify-between items-center">
-                        <div class="flex items-center gap-4">
-                            <i data-lucide="bot" class="w-6 h-6 text-cyber-gold"></i>
-                            <h4 class="font-bold text-white tracking-wide">DUKAT-MAKER // AI AUTOMATION</h4>
-                        </div>
-                        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 chevron"></i>
-                    </div>
-                    <div class="project-content px-5">
-                        <div class="py-4 border-t border-cyber-border">
-                            <div class="flex flex-wrap gap-4 mb-5 bg-black/50 p-3 rounded border border-cyber-border/50 text-xs md:text-sm">
-                                <div><span class="text-gray-500">Status:</span> <span class="text-cyber-gold">Aktywny Asystent</span></div>
-                                <div><span class="text-gray-500">Stack:</span> <span class="text-cyber-gold">[Node.js] [NLP] [Cloud Infrastructure]</span></div>
-                            </div>
-                            <p class="text-gray-300 text-sm leading-relaxed">
-                                Autorski bot i ekosystem automatyzujący interakcje. To nie jest zwykły czatbot – to instancja zarządzająca procesami, od powiadomień systemowych po interakcję z Twoją społecznością.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Projekt 4 -->
-                <div class="cyber-panel project-item transition-all duration-300 cursor-pointer" onclick="toggleProject(this)">
-                    <div class="p-5 flex justify-between items-center">
-                        <div class="flex items-center gap-4">
-                            <i data-lucide="shirt" class="w-6 h-6 text-blue-500"></i>
-                            <h4 class="font-bold text-white tracking-wide">SECFERRO // FASHION-TECH INTERFACE</h4>
-                        </div>
-                        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 chevron"></i>
-                    </div>
-                    <div class="project-content px-5">
-                        <div class="py-4 border-t border-cyber-border">
-                            <div class="flex flex-wrap gap-4 mb-5 bg-black/50 p-3 rounded border border-cyber-border/50 text-xs md:text-sm">
-                                <div><span class="text-gray-500">Status:</span> <span class="text-blue-400">Projekt Koncepcyjny</span></div>
-                                <div><span class="text-gray-500">Stack:</span> <span class="text-blue-400">[Hardware] [Wearables] [Branding]</span></div>
-                            </div>
-                            <p class="text-gray-300 text-sm leading-relaxed">
-                                Eksperymentalna marka streetwearowa dla świata IT. Odzież zaprojektowana z myślą o prywatności (materiały blokujące sygnały) i estetyce "Urban Techwear".
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- [03] TECH STACK -->
-        <section class="mb-12">
-            <h3 class="neon-text-green font-bold text-xl mb-6 flex items-center gap-3 border-b border-cyber-border pb-3">
-                <span class="text-gray-600">[03]</span> TECH STACK & FREQUENCIES
-            </h3>
-            
-            <div class="cyber-panel p-6">
-                <div class="text-xs text-gray-500 mb-6 font-bold tracking-widest border-b border-cyber-border/50 pb-2">SYSTEM RESOURCES:</div>
-                
-                <div class="space-y-5">
-                    <!-- Bar 1 -->
-                    <div>
-                        <div class="flex justify-between text-xs md:text-sm mb-2">
-                            <span class="text-white">CYBER-SECURITY (AUDIT/HARDENING)</span>
-                            <span class="text-cyber-green">100%</span>
-                        </div>
-                        <div class="h-1.5 w-full bg-cyber-dark overflow-hidden">
-                            <div class="h-full bg-cyber-green shadow-[0_0_10px_#00ff41]" style="width: 100%"></div>
-                        </div>
-                    </div>
-                    <!-- Bar 2 -->
-                    <div>
-                        <div class="flex justify-between text-xs md:text-sm mb-2">
-                            <span class="text-white">AUDIO ENGINEERING (MIX/MASTER)</span>
-                            <span class="text-purple-400">90%</span>
-                        </div>
-                        <div class="h-1.5 w-full bg-cyber-dark overflow-hidden">
-                            <div class="h-full bg-purple-500 shadow-[0_0_10px_#a855f7]" style="width: 90%"></div>
-                        </div>
-                    </div>
-                    <!-- Bar 3 -->
-                    <div>
-                        <div class="flex justify-between text-xs md:text-sm mb-2">
-                            <span class="text-white">DEVOPS & INFRASTRUCTURE</span>
-                            <span class="text-blue-400">80%</span>
-                        </div>
-                        <div class="h-1.5 w-full bg-cyber-dark overflow-hidden">
-                            <div class="h-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" style="width: 80%"></div>
-                        </div>
-                    </div>
-                    <!-- Bar 4 -->
-                    <div>
-                        <div class="flex justify-between text-xs md:text-sm mb-2">
-                            <span class="text-white">CREATIVE PROBLEM SOLVING</span>
-                            <span class="text-cyber-gold">100%</span>
-                        </div>
-                        <div class="h-1.5 w-full bg-cyber-dark overflow-hidden">
-                            <div class="h-full bg-cyber-gold shadow-[0_0_10px_#D4AF37]" style="width: 100%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- [04] NETWORK INTERFACES -->
-        <section class="mb-12">
-            <h3 class="neon-text-green font-bold text-xl mb-6 flex items-center gap-3 border-b border-cyber-border pb-3">
-                <span class="text-gray-600">[04]</span> NETWORK INTERFACES / SZYBKIE LINKI
-            </h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- COL 1 -->
-                <div class="cyber-panel p-5 text-center group">
-                    <div class="font-bold text-white mb-4 flex items-center justify-center gap-2 border-b border-cyber-border pb-2">
-                        <i data-lucide="terminal-square" class="w-4 h-4 text-cyber-green"></i> TERMINAL (DEV)
-                    </div>
-                    <ul class="space-y-3 text-sm text-gray-400">
-                        <li class="hover:text-cyber-green cursor-pointer transition-colors">GitHub Source</li>
-                        <li class="hover:text-cyber-green cursor-pointer transition-colors">Gist Repository</li>
-                        <li class="hover:text-cyber-green cursor-pointer transition-colors flex items-center justify-center gap-2">
-                            <i data-lucide="lock" class="w-3 h-3"></i> Private Dev Env
-                        </li>
-                    </ul>
-                </div>
-                <!-- COL 2 -->
-                <div class="cyber-panel p-5 text-center group">
-                    <div class="font-bold text-white mb-4 flex items-center justify-center gap-2 border-b border-cyber-border pb-2">
-                        <i data-lucide="activity" class="w-4 h-4 text-purple-500"></i> FREQUENCIES (ART)
-                    </div>
-                    <ul class="space-y-3 text-sm text-gray-400">
-                        <li class="hover:text-purple-400 cursor-pointer transition-colors">YouTube Main</li>
-                        <li class="hover:text-purple-400 cursor-pointer transition-colors">TikTok Vibes</li>
-                        <li class="hover:text-purple-400 cursor-pointer transition-colors">BandLab HQ</li>
-                    </ul>
-                </div>
-                
-                <div class="mt-8 cyber-panel p-6 border-l-4 border-l-cyber-gold shadow-2xl transition-all duration-300 hover:border-l-cyber-green">
-    <div class="text-xs text-cyber-gold mb-4 font-bold tracking-widest flex items-center gap-2">
-        <i data-lucide="badge-check" class="w-4 h-4"></i> OFFICIAL SECFERRO SIGNATURE // VERIFIED
-    </div>
-    <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
-        <div class="w-16 h-16 bg-cyber-dark border border-cyber-border rounded flex items-center justify-center shrink-0">
-            <span class="text-cyber-gold font-bold text-2xl drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]">Ƒ</span>
+<!-- ╔══════════════════════════════════════════════════╗ -->
+<!-- ║  NAV                                             ║ -->
+<!-- ╚══════════════════════════════════════════════════╝ -->
+<nav class="sf-nav" role="navigation" aria-label="SecFerro Division Navigation">
+  <div class="sf-nav__inner">
+    <a class="sf-nav__logo" href="/" aria-label="Anonymousik — Home">
+      <span class="sf-nav__logo-mark" data-text="ƑERRට">ƑERRට</span>
+      <span class="sf-nav__logo-sub">Anonymousik</span>
+    </a>
+    <ul class="sf-nav__menu" role="list">
+      <li class="sf-nav__menu-item">
+        <a class="sf-nav__link is-active" href="/" data-path="/"><span class="sf-nav__link-dot"></span>Home</a>
+      </li>
+      <li class="sf-nav__menu-item">
+        <a class="sf-nav__link" href="#projects" data-accent="gold"><span class="sf-nav__link-dot"></span>Projects<svg width="8" height="5" viewBox="0 0 8 5" fill="none" style="opacity:.4;margin-left:.15rem"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+        <div class="sf-nav__dropdown" role="menu">
+          <div class="sf-nav__dropdown-label">Deployed</div>
+          <a class="sf-nav__dropdown-item" href="#adb">ADB-Quantum</a>
+          <a class="sf-nav__dropdown-item" href="#banka">Bańka 404</a>
+          <a class="sf-nav__dropdown-item" href="#dukat">Dukat-Maker</a>
+          <hr class="sf-nav__dropdown-divider">
+          <div class="sf-nav__dropdown-label">Concept</div>
+          <a class="sf-nav__dropdown-item" href="#secferro-fashion">SecFerro Fashion</a>
         </div>
-        <div class="border-l border-cyber-border pl-6">
-            <h4 class="text-white font-bold text-lg tracking-wider">Krzysztof "Ferro"</h4>
-            <p class="text-gray-400 text-sm mb-2">Cybersecurity Specialist & Systems Architect</p>
-            <p class="text-xs text-cyber-gold tracking-widest mb-3">CCNA • CBROPS • CCNP • LINUX EXPERT</p>
-            <div class="flex gap-4 text-sm">
-                <a href="mailto:im@anonymousik.is-a.dev" class="text-gray-400 hover:text-white transition-colors flex items-center gap-1">
-                    <i data-lucide="mail" class="w-3 h-3 text-cyber-green"></i> im@anonymousik.is-a.dev
-                </a>
-            </div>
+      </li>
+      <li class="sf-nav__menu-item">
+        <a class="sf-nav__link" href="/scripts" data-accent="blue"><span class="sf-nav__link-dot"></span>Scripts<svg width="8" height="5" viewBox="0 0 8 5" fill="none" style="opacity:.4;margin-left:.15rem"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+        <div class="sf-nav__dropdown" role="menu">
+          <div class="sf-nav__dropdown-label">SecFerro Division Series</div>
+          <a class="sf-nav__dropdown-item" href="/scripts/tmux_setup">tmux_setup · v5.0.0</a>
+          <a class="sf-nav__dropdown-item" href="/scripts">Module Reference</a>
+          <a class="sf-nav__dropdown-item" href="/CHANGELOG">Changelog</a>
         </div>
+      </li>
+      <li class="sf-nav__menu-item">
+        <a class="sf-nav__link" href="#stack"><span class="sf-nav__link-dot"></span>Stack</a>
+      </li>
+      <li class="sf-nav__menu-item">
+        <a class="sf-nav__link" href="#contact"><span class="sf-nav__link-dot"></span>Contact</a>
+      </li>
+      <li class="sf-nav__menu-item">
+        <a class="sf-nav__link" href="https://github.com/Anonymousik" target="_blank" rel="noopener" data-accent="red"><span class="sf-nav__link-dot"></span>GitHub<svg width="8" height="8" viewBox="0 0 8 8" fill="none" style="opacity:.35;margin-left:.1rem"><path d="M2 1h5v5M7 1L1 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+      </li>
+    </ul>
+    <div class="sf-nav__status">
+      <span class="sf-nav__clock" id="sf-nav-clock"></span>
+      <span class="sf-nav__badge"><span class="sf-nav__pulse"></span><span>Online</span></span>
+      <button class="sf-nav__hamburger" id="sf-nav-hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sf-nav-mobile">
+        <span></span><span></span><span></span>
+      </button>
     </div>
+  </div>
+</nav>
+
+<div class="sf-nav__mobile" id="sf-nav-mobile" aria-hidden="true">
+  <div class="sf-nav__mobile-section">
+    <div class="sf-nav__mobile-label">Navigation</div>
+    <a class="sf-nav__mobile-link is-active" href="/">Home</a>
+    <a class="sf-nav__mobile-link" href="#projects">Projects</a>
+    <a class="sf-nav__mobile-link" href="/scripts">Scripts</a>
+    <a class="sf-nav__mobile-link" href="#stack">Stack</a>
+    <a class="sf-nav__mobile-link" href="#contact">Contact</a>
+  </div>
+  <div class="sf-nav__mobile-section">
+    <div class="sf-nav__mobile-label">SecFerro Division</div>
+    <a class="sf-nav__mobile-link" href="/scripts/tmux_setup">tmux_setup v5.0.0</a>
+    <a class="sf-nav__mobile-link" href="/CHANGELOG">Changelog</a>
+  </div>
+  <div class="sf-nav__mobile-section">
+    <div class="sf-nav__mobile-label">External</div>
+    <a class="sf-nav__mobile-link" href="https://github.com/Anonymousik" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
 </div>
 
-                <!-- COL 3 -->
-                <div class="cyber-panel p-5 text-center group">
-                    <div class="font-bold text-white mb-4 flex items-center justify-center gap-2 border-b border-cyber-border pb-2">
-                        <i data-lucide="mail" class="w-4 h-4 text-cyber-gold"></i> UPLINK (CONTACT)
-                    </div>
-                    <ul class="space-y-3 text-sm text-gray-400">
-                        <li class="hover:text-cyber-gold cursor-pointer transition-colors">Secure Email</li>
-                        <li class="hover:text-cyber-gold cursor-pointer transition-colors">TIPo Live Support</li>
-                        <li class="hover:text-yellow-400 cursor-pointer transition-colors font-bold text-cyber-gold">Buy Me A Cookie 🍪</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
+<!-- ╔══════════════════════════════════════════════════╗ -->
+<!-- ║  CONTENT                                         ║ -->
+<!-- ╚══════════════════════════════════════════════════╝ -->
+<main style="position:relative;z-index:10">
+<div style="max-width:960px;margin:0 auto;padding:0 1.5rem 6rem">
 
-        <!-- [05] LOGS & FOOTER -->
-        <section class="mt-20 pt-8 border-t border-cyber-border">
-            <h3 class="text-gray-600 font-bold text-sm mb-4 flex items-center gap-3">
-                [05] FINAL DISCLAMER / LOGS
-            </h3>
-            
-            <div class="bg-black/80 border border-cyber-border p-4 rounded font-mono text-xs md:text-sm shadow-[inset_0_0_20px_rgba(0,0,0,1)]">
-                <div class="text-gray-500 mb-2">u0_a583@localhost:~$ tail -n 3 /var/log/ferroart.log</div>
-                <div class="text-cyber-alert">[2024-02-21] CRITICAL: Estetyka przekracza dopuszczalne normy.</div>
-                <div class="text-cyber-green">[2024-02-21] SUCCESS: System identity fully integrated.</div>
-                <div class="text-blue-400 typing-effect inline-block">[2024-02-21] STATUS: Scanning for next optimization...</div>
-            </div>
+<!-- ── HERO ───────────────────────────────────────────────────────────────── -->
+<section class="hero-bg" style="padding:5rem 0 4rem;text-align:center">
+  <div style="font-size:.58rem;color:#2a2a2a;letter-spacing:.2em;margin-bottom:1.2rem">
+    SESSION: u0_a583 &nbsp;|&nbsp; SYS_TIME: <span id="clock-hero" class="ng">00:00:00</span> &nbsp;|&nbsp; ENV: PRODUCTION
+  </div>
 
-            <div class="text-center mt-16 mb-8">
-                <div class="text-white font-bold tracking-[0.4em] mb-4">© ALL RIGHTS RESERVED. ƑERRටⱥའͳ</div>
-                <div class="inline-block border border-cyber-border bg-black px-6 py-2 text-cyber-green text-xs font-bold shadow-[0_0_10px_rgba(0,255,65,0.2)]">
-                    ENCRYPTED SESSION // NO BACKDOORS FOUND
-                </div>
-            </div>
+  <div style="margin-bottom:1rem">
+    <span class="badge bg reveal"><span class="pulse"></span>&nbsp;SYSTEMS ONLINE</span>
+  </div>
 
-            <div class="flex flex-wrap justify-center gap-3 text-xs text-gray-600 font-bold opacity-50">
-                <span>#ferroart</span>
-                <span>#cybersec</span>
-                <span>#creativeengineer</span>
-                <span>#glitch</span>
-                <span>#automation</span>
-                <span>#iosint</span>
-                <span>#mixing</span>
-                <span>#mastering</span>
-            </div>
-        </section>
+  <h1 class="glitch hero-title reveal d1"
+      data-text="ƑERRට"
+      style="font-size:clamp(4rem,16vw,8rem);font-weight:700;color:#fff;letter-spacing:.08em;line-height:1;margin-bottom:.6rem;display:inline-block">
+    ƑERRට
+  </h1>
 
+  <div class="reveal d2" style="font-size:clamp(.7rem,2.5vw,1.1rem);color:#555;letter-spacing:.3em;text-transform:uppercase;margin-bottom:1rem">
+    THE CREATIVE ENGINEER
+  </div>
+
+  <div class="reveal d2" style="display:flex;justify-content:center;align-items:center;gap:.6rem;margin-bottom:2.5rem;font-size:.65rem;color:#444;letter-spacing:.15em;flex-wrap:wrap">
+    <span>ARCHITECTING SYSTEMS</span>
+    <span style="color:var(--brd)">·</span>
+    <span>VISUALIZING SOUND</span>
+    <span style="color:var(--brd)">·</span>
+    <span>DECODING REALITY</span>
+  </div>
+
+  <!-- Terminal typing intro -->
+  <div class="panel reveal d3" style="max-width:600px;margin:0 auto 2.5rem;text-align:left">
+    <div class="tc"><div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div><span class="dt">anonymousik@ferro:~</span></div>
+    <div style="padding:.75rem 1rem;font-size:.7rem;line-height:1.9">
+      <div style="color:#444"><span style="color:var(--g)">$</span> whoami</div>
+      <div id="typing-output" style="color:#bbb;min-height:1.4em" class="typing-cursor"></div>
+      <div id="typing-line2" style="color:#444;display:none"><span style="color:var(--g)">$</span> cat /etc/identity</div>
+      <div id="typing-line3" style="color:#777;display:none;font-size:.65rem">hybrid_engineer :: cyber_security | audio_visual | systems_design<br>status :: operational | projects :: 4_active | division :: SECFERRO</div>
+    </div>
+  </div>
+
+  <!-- Hero badges -->
+  <div class="reveal d3" style="display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin-bottom:2.5rem">
+    <span class="badge bgold"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 3.6L14 5.4l-3 2.9.7 4.1L8 10.3l-3.7 2.1.7-4.1-3-2.9 4.2-.8z" stroke="currentColor" stroke-width="1.4"/></svg>AUTH: ROOT_VERIFIED</span>
+    <span class="badge bg"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M5 8h6M8 5v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>ENV: PRODUCTION</span>
+    <span class="badge bpur"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v4l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>UPTIME: 99.8%</span>
+    <span class="badge bbl">VIBE: GLITCH_GOLD</span>
+  </div>
+
+  <!-- CTA -->
+  <div class="reveal d4" style="display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem">
+    <a href="#projects" style="border:1px solid var(--g);color:var(--g);padding:.6rem 1.4rem;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;transition:all .2s;display:inline-block" onmouseover="this.style.background='rgba(0,255,65,.08)';this.style.boxShadow='0 0 16px rgba(0,255,65,.2)'" onmouseout="this.style.background='transparent';this.style.boxShadow='none'">
+      VIEW PROJECTS
+    </a>
+    <a href="/scripts" style="border:1px solid #333;color:#666;padding:.6rem 1.4rem;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;transition:all .2s;display:inline-block" onmouseover="this.style.borderColor='#555';this.style.color='#aaa'" onmouseout="this.style.borderColor='#333';this.style.color='#666'">
+      SECFERRO SCRIPTS
+    </a>
+  </div>
+</section>
+
+<!-- ── STATS ROW ───────────────────────────────────────────────────────────── -->
+<div class="reveal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:4rem">
+  <div class="stat"><div class="stat-val ng">4+</div><div class="stat-lbl">Projects</div></div>
+  <div class="stat"><div class="stat-val ng2">12</div><div class="stat-lbl">SF Modules</div></div>
+  <div class="stat"><div class="stat-val np">3</div><div class="stat-lbl">Domains</div></div>
+  <div class="stat"><div class="stat-val nb">v5</div><div class="stat-lbl">Ironclad</div></div>
+</div>
+
+<!-- ══ [01] SYSTEM IDENTITY ════════════════════════════════════════════════ -->
+<section style="margin-bottom:4rem" class="reveal">
+  <div class="sh"><span class="sh-num">[01]</span><span class="sh-title">SYSTEM IDENTITY</span><span style="font-size:.6rem;color:#333;margin-left:auto">core_logic.sh</span></div>
+  <div class="panel" style="position:relative;overflow:hidden">
+    <div class="tc"><div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div><span class="dt">~/ferro/core_logic.sh</span></div>
+    <div style="position:absolute;top:0;right:0;width:300px;height:100%;background:radial-gradient(ellipse at top right,rgba(0,255,65,.04) 0%,transparent 65%);pointer-events:none"></div>
+    <div style="padding:2rem">
+      <blockquote>
+        „Inżynieria to sztuka panowania nad chaosem.<br>
+        <strong>Sztuka to chaos ujęty w ramy inżynierii.</strong>"
+      </blockquote>
+      <p style="color:#aaa;font-size:.78rem;line-height:1.85;margin-bottom:1.25rem">
+        Jestem hybrydowym twórcą operującym na styku <strong>Cyber-Security</strong>, <strong>Systems Engineering</strong> oraz <strong>Audiovisual Arts</strong>. Moje podejście opiera się na bezkompromisowej optymalizacji — zarówno w kodzie binarnym, jak i w fali dźwiękowej.
+      </p>
+      <p style="color:#888;font-size:.75rem;line-height:1.85;margin-bottom:1.5rem">
+        Nie naprawiam systemów — <strong style="color:var(--g)">redefiniuję ich granice</strong>. Każdy projekt to eksperyment na styku bezpieczeństwa, automatyzacji i percepcji wizualnej. Zbuduję to, czego jeszcze nie ma; złamię to, co miało być niezłamalne; opiszę to, czego nie da się opisać bez dźwięku.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:.45rem">
+        <span class="badge bg">Cyber-Security</span>
+        <span class="badge bpur">Audio Engineering</span>
+        <span class="badge bgold">Systems Design</span>
+        <span class="badge bbl">DevOps / IaC</span>
+        <span class="badge bred">OSINT</span>
+        <span class="badge bdim">Open Source</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [02] DEPLOYED PROJECTS ══════════════════════════════════════════════ -->
+<section id="projects" style="margin-bottom:4rem" class="reveal">
+  <div class="sh"><span class="sh-num">[02]</span><span class="sh-title">DEPLOYED PROJECTS</span><span style="font-size:.6rem;color:#333;margin-left:auto;animation:sfP 2s ease-in-out infinite">KLIKNIJ ABY ROZWINĄĆ ▾</span></div>
+
+  <div style="display:flex;flex-direction:column;gap:.75rem">
+
+    <!-- ADB-QUANTUM -->
+    <div class="acc-item" id="adb">
+      <div style="padding:1.1rem 1.4rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleAcc(this.closest('.acc-item'))">
+        <div style="display:flex;align-items:center;gap:.9rem">
+          <span style="color:var(--g);font-size:.6rem;font-weight:700;border:1px solid rgba(0,255,65,.3);padding:.1rem .35rem;flex-shrink:0">01</span>
+          <div>
+            <div style="color:#fff;font-weight:700;font-size:.85rem;letter-spacing:.05em">ADB-QUANTUM</div>
+            <div style="font-size:.62rem;color:#555;letter-spacing:.08em">SYSTEM HARDENING & MOBILE AUDIT</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <span class="badge bg" style="display:none" id="adb-badge">Operacyjny</span>
+          <span class="pulse" style="flex-shrink:0"></span>
+          <svg class="chevron" width="14" height="8" viewBox="0 0 14 8" fill="none"><path d="M1 1l6 6 6-6" stroke="#555" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="acc-body">
+        <div style="padding:0 1.4rem 1.4rem;border-top:1px solid var(--brd)">
+          <div style="display:flex;flex-wrap:wrap;gap:.75rem;padding:.75rem;background:rgba(0,0,0,.5);border:1px solid rgba(0,255,65,.08);font-size:.65rem;margin:.9rem 0">
+            <span><span style="color:#444">STATUS:</span>&nbsp;<span class="ng">Operacyjny / Publiczny</span></span>
+            <span><span style="color:#444">STACK:</span>&nbsp;<span style="color:#bbb">Bash · Python · ADB Bridge · Shell</span></span>
+            <span><span style="color:#444">PLATFORM:</span>&nbsp;<span style="color:#bbb">Android · Smart TV · Termux</span></span>
+          </div>
+          <p style="color:#888;font-size:.73rem;line-height:1.8;margin-bottom:1rem">
+            Zaawansowane środowisko do optymalizacji i audytu urządzeń mobilnych oraz Smart TV. Projekt narodził się z frustracji nad zaśmieconymi systemami fabrycznymi i brakiem narzędzi dostępnych dla zwykłych użytkowników.
+          </p>
+          <ul style="font-size:.7rem;color:#666;line-height:1;display:flex;flex-direction:column;gap:.7rem">
+            <li style="display:flex;gap:.6rem"><span style="color:var(--g);flex-shrink:0">▹</span><span><strong>Głęboki debloating</strong> — usuwanie systemowych bloatware bez roota przez interfejs ADB</span></li>
+            <li style="display:flex;gap:.6rem"><span style="color:var(--g);flex-shrink:0">▹</span><span><strong>Optymalizacja kernel-level</strong> — zarządzanie pamięcią RAM, procesami tła, wakelockami</span></li>
+            <li style="display:flex;gap:.6rem"><span style="color:var(--g);flex-shrink:0">▹</span><span><strong>Masowe wdrożenia</strong> — automatyczne skrypty dla flot urządzeń korporacyjnych</span></li>
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <!-- SKRYPTY LOGIKI UI -->
-    <script>
-        // Inicjalizacja ikon
-        lucide.createIcons();
+    <!-- BAŃKA 404 -->
+    <div class="acc-item" id="banka">
+      <div style="padding:1.1rem 1.4rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleAcc(this.closest('.acc-item'))">
+        <div style="display:flex;align-items:center;gap:.9rem">
+          <span style="color:var(--pur);font-size:.6rem;font-weight:700;border:1px solid rgba(155,89,255,.3);padding:.1rem .35rem;flex-shrink:0">02</span>
+          <div>
+            <div style="color:#fff;font-weight:700;font-size:.85rem;letter-spacing:.05em">BAŃKA 404</div>
+            <div style="font-size:.62rem;color:#555;letter-spacing:.08em">AUDIO-VISUAL FORENSICS / ART PROJECT</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <span class="pulse" style="background:var(--pur);box-shadow:0 0 6px var(--pur);flex-shrink:0"></span>
+          <svg class="chevron" width="14" height="8" viewBox="0 0 14 8" fill="none"><path d="M1 1l6 6 6-6" stroke="#555" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="acc-body">
+        <div style="padding:0 1.4rem 1.4rem;border-top:1px solid var(--brd)">
+          <div style="display:flex;flex-wrap:wrap;gap:.75rem;padding:.75rem;background:rgba(0,0,0,.5);border:1px solid rgba(155,89,255,.08);font-size:.65rem;margin:.9rem 0">
+            <span><span style="color:#444">STATUS:</span>&nbsp;<span class="np">R&D / W toku</span></span>
+            <span><span style="color:#444">STACK:</span>&nbsp;<span style="color:#bbb">Ableton Live · FFmpeg · Premiere Pro · OSINT</span></span>
+            <span><span style="color:#444">GENRE:</span>&nbsp;<span style="color:#bbb">Glitch · Vaporwave · Industrial</span></span>
+          </div>
+          <p style="color:#888;font-size:.73rem;line-height:1.8;margin-bottom:1rem">
+            Projekt artystyczny przekraczający granice narracji. Techniki śledcze OSINT jako narzędzie budowania tekstów i struktur wizualnych. Dźwięk jako dowód. Obraz jako raport.
+          </p>
+          <ul style="font-size:.7rem;color:#666;line-height:1;display:flex;flex-direction:column;gap:.7rem">
+            <li style="display:flex;gap:.6rem"><span style="color:var(--pur);flex-shrink:0">▹</span><span><strong>Glitch Art / Datamoshing</strong> — celowe korupcje danych jako medium artystyczne</span></li>
+            <li style="display:flex;gap:.6rem"><span style="color:var(--pur);flex-shrink:0">▹</span><span><strong>OSINT jako liryka</strong> — otwarte źródła jako fundament narracji twórczej</span></li>
+            <li style="display:flex;gap:.6rem"><span style="color:var(--pur);flex-shrink:0">▹</span><span><strong>Sound Design</strong> — manifest cyfrowej alienacji w technicznie doskonałym audio</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
-        // Zegar systemowy
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString('pl-PL', { hour12: false });
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+    <!-- DUKAT-MAKER -->
+    <div class="acc-item" id="dukat">
+      <div style="padding:1.1rem 1.4rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleAcc(this.closest('.acc-item'))">
+        <div style="display:flex;align-items:center;gap:.9rem">
+          <span style="color:var(--gold);font-size:.6rem;font-weight:700;border:1px solid rgba(212,175,55,.3);padding:.1rem .35rem;flex-shrink:0">03</span>
+          <div>
+            <div style="color:#fff;font-weight:700;font-size:.85rem;letter-spacing:.05em">DUKAT-MAKER</div>
+            <div style="font-size:.62rem;color:#555;letter-spacing:.08em">AI AUTOMATION ECOSYSTEM</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <span class="pulse gold" style="flex-shrink:0"></span>
+          <svg class="chevron" width="14" height="8" viewBox="0 0 14 8" fill="none"><path d="M1 1l6 6 6-6" stroke="#555" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="acc-body">
+        <div style="padding:0 1.4rem 1.4rem;border-top:1px solid var(--brd)">
+          <div style="display:flex;flex-wrap:wrap;gap:.75rem;padding:.75rem;background:rgba(0,0,0,.5);border:1px solid rgba(212,175,55,.08);font-size:.65rem;margin:.9rem 0">
+            <span><span style="color:#444">STATUS:</span>&nbsp;<span class="ng2">Aktywny Asystent</span></span>
+            <span><span style="color:#444">STACK:</span>&nbsp;<span style="color:#bbb">Node.js · NLP · Cloud Infrastructure</span></span>
+            <span><span style="color:#444">TYPE:</span>&nbsp;<span style="color:#bbb">Process Manager / Community Bot</span></span>
+          </div>
+          <p style="color:#888;font-size:.73rem;line-height:1.8;margin-bottom:1rem">
+            To nie jest zwykły chatbot. To instancja zarządzająca procesami — od powiadomień systemowych po interakcję ze społecznością. Ekosystem automatyzujący to, co nie powinno być robione ręcznie.
+          </p>
+          <ul style="font-size:.7rem;color:#666;line-height:1;display:flex;flex-direction:column;gap:.7rem">
+            <li style="display:flex;gap:.6rem"><span style="color:var(--gold);flex-shrink:0">▹</span><span><strong>Process orchestration</strong> — zarządzanie wieloma procesami asynchronicznie</span></li>
+            <li style="display:flex;gap:.6rem"><span style="color:var(--gold);flex-shrink:0">▹</span><span><strong>NLP pipeline</strong> — rozumienie kontekstu, wielojęzyczne odpowiedzi</span></li>
+            <li style="display:flex;gap:.6rem"><span style="color:var(--gold);flex-shrink:0">▹</span><span><strong>Community interface</strong> — spójny punkt kontaktu między systemem a użytkownikiem</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
-        // Logika Accordionu (Rozwijane projekty)
-        function toggleProject(element) {
-            const content = element.querySelector('.project-content');
-            const isActive = element.classList.contains('active');
-            
-            // Zamykamy wszystkie inne
-            document.querySelectorAll('.project-item').forEach(item => {
-                item.classList.remove('active');
-                item.querySelector('.project-content').style.maxHeight = null;
-            });
+    <!-- SECFERRO FASHION -->
+    <div class="acc-item" id="secferro-fashion">
+      <div style="padding:1.1rem 1.4rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleAcc(this.closest('.acc-item'))">
+        <div style="display:flex;align-items:center;gap:.9rem">
+          <span style="color:var(--bl);font-size:.6rem;font-weight:700;border:1px solid rgba(0,170,255,.3);padding:.1rem .35rem;flex-shrink:0">04</span>
+          <div>
+            <div style="color:#fff;font-weight:700;font-size:.85rem;letter-spacing:.05em">SECFERRO FASHION</div>
+            <div style="font-size:.62rem;color:#555;letter-spacing:.08em">FASHION-TECH INTERFACE / WEARABLES</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <span class="badge bdim" style="font-size:.52rem">Concept</span>
+          <span class="pulse off" style="flex-shrink:0"></span>
+          <svg class="chevron" width="14" height="8" viewBox="0 0 14 8" fill="none"><path d="M1 1l6 6 6-6" stroke="#555" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="acc-body">
+        <div style="padding:0 1.4rem 1.4rem;border-top:1px solid var(--brd)">
+          <div style="display:flex;flex-wrap:wrap;gap:.75rem;padding:.75rem;background:rgba(0,0,0,.5);border:1px solid rgba(0,170,255,.08);font-size:.65rem;margin:.9rem 0">
+            <span><span style="color:#444">STATUS:</span>&nbsp;<span class="nb">Projekt Koncepcyjny</span></span>
+            <span><span style="color:#444">STACK:</span>&nbsp;<span style="color:#bbb">Hardware · Wearables · Branding</span></span>
+            <span><span style="color:#444">VERTICAL:</span>&nbsp;<span style="color:#bbb">Urban Techwear · Privacy Tech</span></span>
+          </div>
+          <p style="color:#888;font-size:.73rem;line-height:1.8;margin-bottom:1rem">
+            Eksperymentalna marka streetwearowa dla środowisk IT. Odzież zaprojektowana z myślą o prywatności i estetyce „Urban Techwear" — tam, gdzie hardware spotyka haute couture.
+          </p>
+          <ul style="font-size:.7rem;color:#666;line-height:1;display:flex;flex-direction:column;gap:.7rem">
+            <li style="display:flex;gap:.6rem"><span style="color:var(--bl);flex-shrink:0">▹</span><span><strong>RF Shielding</strong> — materiały blokujące sygnały RFID/NFC jako feature, nie dodatek</span></li>
+            <li style="display:flex;gap:.6rem"><span style="color:var(--bl);flex-shrink:0">▹</span><span><strong>Identity branding</strong> — sublimacja estetyki SecFerro Division na materiał fizyczny</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
-            // Otwieramy kliknięty, jeśli nie był aktywny
-            if (!isActive) {
-                element.classList.add('active');
-                content.style.maxHeight = content.scrollHeight + "px";
-            }
-        }
+  </div>
+</section>
 
-        // Efekt opadającego kodu "Matrix" na płótnie w tle
-        const canvas = document.getElementById('matrix-canvas');
-        const ctx = canvas.getContext('2d');
-        
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+<!-- ══ [03] TECH STACK & FREQUENCIES ═══════════════════════════════════════ -->
+<section id="stack" style="margin-bottom:4rem" class="reveal">
+  <div class="sh"><span class="sh-num">[03]</span><span class="sh-title">TECH STACK & FREQUENCIES</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
 
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=~[]{}|;:,.<>/?'.split('');
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = [];
-        for (let x = 0; x < columns; x++) drops[x] = 1;
+    <!-- Bars column -->
+    <div class="panel" style="padding:1.5rem;grid-column:1/-1">
+      <div style="font-size:.58rem;color:#333;letter-spacing:.15em;margin-bottom:1.25rem;padding-bottom:.6rem;border-bottom:1px solid var(--brd)">▸ PROFICIENCY INDEX</div>
+      <div style="display:flex;flex-direction:column;gap:1.25rem" id="bar-container">
 
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(5, 5, 5, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00ff41';
-            ctx.font = fontSize + 'px monospace';
+        <div class="bar-row" data-pct="100" data-color="green">
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:.4rem">
+            <span style="color:#ccc">CYBER-SECURITY <span style="color:#444;font-size:.6rem">/ Audit · Hardening · Pentest</span></span>
+            <span class="ng font-bold">100%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill green"></div></div>
+        </div>
 
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-        setInterval(drawMatrix, 33);
+        <div class="bar-row" data-pct="90" data-color="purple">
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:.4rem">
+            <span style="color:#ccc">AUDIO ENGINEERING <span style="color:#444;font-size:.6rem">/ Mix · Master · Sound Design</span></span>
+            <span class="np font-bold">90%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill purple"></div></div>
+        </div>
 
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-    </script>
+        <div class="bar-row" data-pct="85" data-color="blue">
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:.4rem">
+            <span style="color:#ccc">DEVOPS & INFRASTRUCTURE <span style="color:#444;font-size:.6rem">/ IaC · Containers · CI/CD</span></span>
+            <span class="nb font-bold">85%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill blue"></div></div>
+        </div>
+
+        <div class="bar-row" data-pct="80" data-color="gold">
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:.4rem">
+            <span style="color:#ccc">FRONTEND / UI ENGINEERING <span style="color:#444;font-size:.6rem">/ HTML · CSS · JS</span></span>
+            <span class="ng2 font-bold">80%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill gold"></div></div>
+        </div>
+
+        <div class="bar-row" data-pct="75" data-color="red">
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:.4rem">
+            <span style="color:#ccc">PYTHON / SCRIPTING <span style="color:#444;font-size:.6rem">/ Automation · OSINT · ML APIs</span></span>
+            <span class="nr font-bold">75%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill red"></div></div>
+        </div>
+
+        <div class="bar-row" data-pct="100" data-color="gold">
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:.4rem">
+            <span style="color:#ccc">CREATIVE PROBLEM SOLVING <span style="color:#444;font-size:.6rem">/ Systems Thinking · Architecture</span></span>
+            <span class="ng2 font-bold">100%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill gold"></div></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tech grid -->
+    <div class="panel" style="padding:1.25rem">
+      <div style="font-size:.58rem;color:#333;letter-spacing:.15em;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--brd)">▸ LANGUAGES</div>
+      <div class="mod-grid">
+        <div class="mod-pill" style="--c:var(--g)">Bash</div>
+        <div class="mod-pill" style="--c:var(--g)">Python 3</div>
+        <div class="mod-pill" style="--c:var(--g)">JavaScript</div>
+        <div class="mod-pill" style="--c:var(--g)">TypeScript</div>
+        <div class="mod-pill" style="--c:var(--g)">Rust</div>
+        <div class="mod-pill" style="--c:var(--g)">Go</div>
+        <div class="mod-pill" style="--c:var(--g)">Lua 5.4</div>
+        <div class="mod-pill" style="--c:var(--g)">PHP</div>
+      </div>
+    </div>
+
+    <div class="panel" style="padding:1.25rem">
+      <div style="font-size:.58rem;color:#333;letter-spacing:.15em;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--brd)">▸ TOOLS & PLATFORMS</div>
+      <div class="mod-grid">
+        <div class="mod-pill" style="--c:var(--pur)">nmap</div>
+        <div class="mod-pill" style="--c:var(--pur)">Metasploit</div>
+        <div class="mod-pill" style="--c:var(--pur)">Burp Suite</div>
+        <div class="mod-pill" style="--c:var(--pur)">Wireshark</div>
+        <div class="mod-pill" style="--c:var(--bl)">Docker</div>
+        <div class="mod-pill" style="--c:var(--bl)">kubectl</div>
+        <div class="mod-pill" style="--c:var(--bl)">Ansible</div>
+        <div class="mod-pill" style="--c:var(--bl)">Terraform</div>
+        <div class="mod-pill" style="--c:var(--gold)">Ableton</div>
+        <div class="mod-pill" style="--c:var(--gold)">FFmpeg</div>
+        <div class="mod-pill" style="--c:var(--gold)">Premiere</div>
+        <div class="mod-pill" style="--c:var(--gold)">Audacity</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ [04] SECFERRO DIVISION ═══════════════════════════════════════════════ -->
+<section style="margin-bottom:4rem" class="reveal">
+  <div class="sh"><span class="sh-num">[04]</span><span class="sh-title">SECFERRO DIVISION SERIES</span><a href="/scripts" style="font-size:.6rem;color:#444;margin-left:auto;transition:color .2s;letter-spacing:.08em" onmouseover="this.style.color='var(--g)'" onmouseout="this.style.color='#444'">DOCS ↗</a></div>
+
+  <div class="panel" style="position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 0% 50%,rgba(0,255,65,.04) 0%,transparent 60%);pointer-events:none"></div>
+    <div class="tc"><div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div><span class="dt">anonymousik.is-a.dev/scripts/tmux_setup · v5.0.0 IRONCLAD</span></div>
+    <div style="padding:1.5rem">
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:1.25rem;margin-bottom:1.5rem">
+        <div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem">
+            <span class="badge bg">v5.0.0</span>
+            <span class="badge bg">IRONCLAD</span>
+            <span class="badge bgold">12 Modules</span>
+          </div>
+          <p style="color:#888;font-size:.72rem;line-height:1.75;max-width:480px">Modularny skrypt konfiguracji środowiska Termux. Inteligentny pre-flight system, 9 automatycznych napraw, kompletny stack dla 12 profili branżowych. Zero konfiguracji wymagane.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.35rem;text-align:right;flex-shrink:0">
+          <div style="font-size:.58rem;color:#333;letter-spacing:.1em">QUICK INSTALL</div>
+          <div style="font-size:.62rem;color:var(--g);letter-spacing:.04em">bash &lt;(curl -sL&nbsp;<span style="color:#bbb">anonymousik.is-a.dev</span>/scripts/tmux_setup)</div>
+        </div>
+      </div>
+      <!-- Module pills -->
+      <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1.25rem">
+        <a href="/scripts#modules" class="mod-pill" style="--c:var(--g);font-size:.58rem">WebDev</a>
+        <a href="/scripts#modules" class="mod-pill" style="--c:var(--bl);font-size:.58rem">Android</a>
+        <a href="/scripts#modules" class="mod-pill" style="--c:var(--red);font-size:.58rem">Cyber</a>
+        <a href="/scripts#modules" class="mod-pill" style="--c:var(--gold);font-size:.58rem">Fullstack</a>
+        <a href="/scripts#modules" class="mod-pill" style="--c:var(--pur);font-size:.58rem">Tor</a>
+        <a href="/scripts#modules" class="mod-pill" style="--c:var(--bl);font-size:.58rem">Docker</a>
+        <a href="/scripts#modules" class="mod-pill" style="--c:#f59e0b;font-size:.58rem">Data/ML</a>
+        <a href="/scripts#modules" class="mod-pill" style="--c:#22c55e;font-size:.58rem">DevOps</a>
+        <a href="/scripts#modules" class="mod-pill" style="--c:#ec4899;font-size:.58rem">Media/OSINT</a>
+        <a href="/scripts#modules" class="mod-pill" style="--c:#f97316;font-size:.58rem">Database</a>
+        <a href="/scripts#modules" class="mod-pill" style="--c:#06b6d4;font-size:.58rem">IoT</a>
+        <a href="/scripts#modules" class="mod-pill" style="--c:#a78bfa;font-size:.58rem">Game</a>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.6rem">
+        <a href="/scripts" style="border:1px solid rgba(0,255,65,.4);color:var(--g);padding:.5rem 1.1rem;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem" onmouseover="this.style.background='rgba(0,255,65,.07)'" onmouseout="this.style.background='transparent'">
+          DOKUMENTACJA ↗
+        </a>
+        <a href="/CHANGELOG" style="border:1px solid #333;color:#555;padding:.5rem 1.1rem;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem" onmouseover="this.style.borderColor='#555';this.style.color='#888'" onmouseout="this.style.borderColor='#333';this.style.color='#555'">
+          CHANGELOG
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [05] LIVE TERMINAL FEED ════════════════════════════════════════════ -->
+<section style="margin-bottom:4rem" class="reveal">
+  <div class="sh"><span class="sh-num">[05]</span><span class="sh-title">LIVE TERMINAL FEED</span><span class="pulse" style="margin-left:auto"></span></div>
+  <div class="panel">
+    <div class="tc"><div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div><span class="dt">secferro-monitor.sh — live</span><span style="margin-left:auto;font-size:.55rem;color:#2a2a2a" id="feed-ts"></span></div>
+    <div style="padding:.75rem 1rem">
+      <div id="term-log"></div>
+      <div style="display:flex;align-items:center;gap:.4rem;margin-top:.5rem;padding-top:.5rem;border-top:1px solid #111">
+        <span style="color:var(--g);font-size:.65rem">$</span>
+        <span style="font-size:.65rem;color:#333;flex:1" id="fake-input"></span>
+        <span class="typing-cursor" style="width:1px;height:.8rem;background:var(--g);display:inline-block"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [06] AUDIO-VISUAL ══════════════════════════════════════════════════ -->
+<section style="margin-bottom:4rem" class="reveal">
+  <div class="sh"><span class="sh-num">[06]</span><span class="sh-title">AUDIO-VISUAL ENGINE</span><span class="badge bpur" style="margin-left:auto">BAŃKA 404</span></div>
+
+  <div class="panel" style="padding:1.5rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem">
+      <div>
+        <div style="font-size:.62rem;color:#444;letter-spacing:.1em;margin-bottom:.25rem">▸ WAVEFORM MONITOR</div>
+        <div style="font-size:.7rem;color:#888">Glitch-Industrial sound architecture</div>
+      </div>
+      <div style="display:flex;gap:.5rem">
+        <span class="badge bpur">Ableton Live</span>
+        <span class="badge bdim">96kHz / 32bit</span>
+      </div>
+    </div>
+    <canvas id="waveform"></canvas>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.5rem;margin-top:1.25rem;font-size:.62rem">
+      <div style="border:1px solid #111;padding:.65rem;text-align:center">
+        <div style="color:#444;margin-bottom:.25rem;letter-spacing:.1em">BPM</div>
+        <div class="np font-bold" style="font-size:1.1rem">144</div>
+      </div>
+      <div style="border:1px solid #111;padding:.65rem;text-align:center">
+        <div style="color:#444;margin-bottom:.25rem;letter-spacing:.1em">KEY</div>
+        <div class="ng font-bold" style="font-size:1.1rem">D♭m</div>
+      </div>
+      <div style="border:1px solid #111;padding:.65rem;text-align:center">
+        <div style="color:#444;margin-bottom:.25rem;letter-spacing:.1em">GENRE</div>
+        <div style="color:#ccc;font-size:.85rem;font-weight:700">GLITCH</div>
+      </div>
+      <div style="border:1px solid #111;padding:.65rem;text-align:center">
+        <div style="color:#444;margin-bottom:.25rem;letter-spacing:.1em">STATUS</div>
+        <div class="ng2 font-bold" style="font-size:.85rem">R&D</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [07] TIMELINE ═════════════════════════════════════════════════════ -->
+<section style="margin-bottom:4rem" class="reveal">
+  <div class="sh"><span class="sh-num">[07]</span><span class="sh-title">DEVELOPMENT TIMELINE</span></div>
+  <div class="panel" style="padding:1.5rem">
+    <div class="tl-item">
+      <div class="tl-dot">▸</div>
+      <div><div style="font-size:.7rem;color:var(--g);font-weight:700;margin-bottom:.2rem">2026 · v5.0.0 IRONCLAD <span class="badge bg" style="margin-left:.5rem;font-size:.52rem">CURRENT</span></div><div style="font-size:.68rem;color:#666;line-height:1.7">SecFerro Division Series: 12 modułów, inteligentny pre-flight, auto-naprawa środowiska, kompletny stack branżowy.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot">▸</div>
+      <div><div style="font-size:.7rem;color:#bbb;font-weight:700;margin-bottom:.2rem">2025 · v4.0.0</div><div style="font-size:.68rem;color:#666;line-height:1.7">Tor + ProxyChains, proot-distro / Ubuntu, tryby: dry-run, verbose, uninstall. Powerlevel10k MOTD.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot">▸</div>
+      <div><div style="font-size:.7rem;color:#888;font-weight:700;margin-bottom:.2rem">2024 · Bańka 404 Init</div><div style="font-size:.68rem;color:#555;line-height:1.7">Projekt audio-visual. OSINT jako medium artystyczne. Pierwsze eksperymenty z datamoshingiem.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot">▸</div>
+      <div><div style="font-size:.7rem;color:#666;font-weight:700;margin-bottom:.2rem">2023 · ADB-Quantum / Origins</div><div style="font-size:.68rem;color:#444;line-height:1.7">Pierwsza publiczna wersja skryptów ADB. Fundament pod SecFerro Division. Poczatki automatyzacji mobilnej.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [08] NETWORK INTERFACES ════════════════════════════════════════════ -->
+<section id="contact" style="margin-bottom:4rem" class="reveal">
+  <div class="sh"><span class="sh-num">[08]</span><span class="sh-title">NETWORK INTERFACES</span></div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.6rem;margin-bottom:2rem">
+
+    <a class="slink" href="https://github.com/Anonymousik" target="_blank" rel="noopener" style="--accent:var(--g)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="color:var(--g);flex-shrink:0"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0112 6.8c.85.004 1.71.115 2.51.337 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10.01 10.01 0 0022 12c0-5.52-4.48-10-10-10z"/></svg>
+      <div style="flex:1">
+        <div style="font-size:.7rem;color:#ccc;font-weight:600">GitHub</div>
+        <div style="font-size:.6rem;color:#444">github.com/Anonymousik</div>
+      </div>
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="color:#333"><path d="M2 1h7v7M9 1L1 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </a>
+
+    <a class="slink" href="https://anonymousik.is-a.dev" target="_blank" rel="noopener" style="--accent:var(--gold)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:var(--gold);flex-shrink:0"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 3c-2.4 3-3.5 5.5-3.5 9s1.1 6 3.5 9M12 3c2.4 3 3.5 5.5 3.5 9s-1.1 6-3.5 9M3 12h18" stroke="currentColor" stroke-width="1.4"/></svg>
+      <div style="flex:1">
+        <div style="font-size:.7rem;color:#ccc;font-weight:600">Website</div>
+        <div style="font-size:.6rem;color:#444">anonymousik.is-a.dev</div>
+      </div>
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="color:#333"><path d="M2 1h7v7M9 1L1 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </a>
+
+    <a class="slink" href="/scripts" style="--accent:var(--bl)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:var(--bl);flex-shrink:0"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M7 9l4 4-4 4M12 17h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div style="flex:1">
+        <div style="font-size:.7rem;color:#ccc;font-weight:600">Scripts / SecFerro Division</div>
+        <div style="font-size:.6rem;color:#444">anonymousik.is-a.dev/scripts</div>
+      </div>
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="color:#333"><path d="M2 1h7v7M9 1L1 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </a>
+
+    <div class="slink" style="--accent:var(--pur);cursor:not-allowed;opacity:.6">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:var(--pur);flex-shrink:0"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div style="flex:1">
+        <div style="font-size:.7rem;color:#666;font-weight:600">Discord / Community</div>
+        <div style="font-size:.6rem;color:#333">Wkrótce dostępne</div>
+      </div>
+      <span class="badge bdim" style="font-size:.52rem">SOON</span>
+    </div>
+
+  </div>
+
+  <!-- Contact form -->
+  <div class="panel">
+    <div class="tc"><div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div><span class="dt">contact.sh — encrypted channel</span></div>
+    <div style="padding:1.5rem">
+      <div style="font-size:.6rem;color:#333;letter-spacing:.14em;margin-bottom:1.25rem">▸ ESTABLISH SECURE CONNECTION</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem">
+        <input class="sf-input" type="text" placeholder="IDENTYFIKATOR // nickname" aria-label="Nickname">
+        <input class="sf-input" type="email" placeholder="ADRES ZWROTNY // e-mail" aria-label="Email">
+      </div>
+      <input class="sf-input" type="text" placeholder="TEMAT // projekt / kolaboracja / cokolwiek" style="margin-bottom:.75rem" aria-label="Subject">
+      <textarea class="sf-input" rows="4" placeholder="WIADOMOŚĆ // opisz cel połączenia..." style="resize:vertical;margin-bottom:1rem" aria-label="Message"></textarea>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+        <div style="font-size:.6rem;color:#333;letter-spacing:.06em">Wiadomość zostanie przekazana bezpiecznie &nbsp;·&nbsp; <span style="color:var(--g)">END-TO-END</span></div>
+        <button class="sf-btn" onclick="handleContact(event)">TRANSMIT &nbsp;↗</button>
+      </div>
+      <div id="contact-status" style="font-size:.65rem;color:var(--g);margin-top:.75rem;display:none;padding:.5rem .75rem;border:1px solid rgba(0,255,65,.25);background:rgba(0,255,65,.04)"></div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+</main>
+
+<!-- ╔══════════════════════════════════════════════════╗ -->
+<!-- ║  FOOTER                                          ║ -->
+<!-- ╚══════════════════════════════════════════════════╝ -->
+<footer style="position:relative;z-index:10;padding:2rem 0">
+  <div style="max-width:960px;margin:0 auto;padding:0 1.5rem">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem">
+      <div>
+        <div style="font-size:.9rem;font-weight:700;color:#fff;letter-spacing:.04em;margin-bottom:.2rem">ƑERRට</div>
+        <div style="font-size:.58rem;color:#333;letter-spacing:.14em">SECFERRO DIVISION SERIES · Anonymousik.is-a.dev</div>
+      </div>
+      <div style="display:flex;gap:1.5rem">
+        <a href="/" style="color:#333;font-size:.6rem;letter-spacing:.1em;text-decoration:none;transition:color .2s;text-transform:uppercase" onmouseover="this.style.color='var(--g)'" onmouseout="this.style.color='#333'">Home</a>
+        <a href="#projects" style="color:#333;font-size:.6rem;letter-spacing:.1em;text-decoration:none;transition:color .2s;text-transform:uppercase" onmouseover="this.style.color='var(--g)'" onmouseout="this.style.color='#333'">Projects</a>
+        <a href="/scripts" style="color:#333;font-size:.6rem;letter-spacing:.1em;text-decoration:none;transition:color .2s;text-transform:uppercase" onmouseover="this.style.color='var(--g)'" onmouseout="this.style.color='#333'">Scripts</a>
+        <a href="https://github.com/Anonymousik" target="_blank" rel="noopener" style="color:#333;font-size:.6rem;letter-spacing:.1em;text-decoration:none;transition:color .2s;text-transform:uppercase" onmouseover="this.style.color='var(--g)'" onmouseout="this.style.color='#333'">GitHub</a>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--brd);padding-top:1rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.5rem">
+      <div style="font-size:.58rem;color:#222;letter-spacing:.08em">© 2026 Anonymousik · MIT License · github.com/Anonymousik</div>
+      <div style="font-size:.58rem;color:#222;letter-spacing:.06em">SECFERRO DIVISION SERIES · v5.0.0 IRONCLAD</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ╔══════════════════════════════════════════════════╗ -->
+<!-- ║  SCRIPTS                                         ║ -->
+<!-- ╚══════════════════════════════════════════════════╝ -->
+<script>
+/* ── MATRIX ──────────────────────────────────────────────────────────────── */
+(function(){
+  var c=document.getElementById('matrix-canvas'),x=c.getContext('2d');
+  var ch='アイウエオカキクケコ01ABCDEFXZアノ'.split('');
+  var drops=[];
+  function resize(){c.width=innerWidth;c.height=innerHeight;var cols=Math.floor(c.width/18);drops=Array.from({length:cols},function(){return Math.floor(Math.random()*-60);});}
+  function draw(){x.fillStyle='rgba(5,5,5,.05)';x.fillRect(0,0,c.width,c.height);x.fillStyle='#00ff41';x.font='13px "Fira Code",monospace';drops.forEach(function(y,i){x.fillText(ch[Math.floor(Math.random()*ch.length)],i*18,y*18);drops[i]=(y>c.height/18+30&&Math.random()>.978)?0:y+1;});}
+  resize();addEventListener('resize',resize);setInterval(draw,55);
+})();
+
+/* ── CUSTOM CURSOR ───────────────────────────────────────────────────────── */
+var cur=document.getElementById('cursor');
+document.addEventListener('mousemove',function(e){cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
+document.querySelectorAll('a,button,.acc-item,[onclick]').forEach(function(el){
+  el.addEventListener('mouseenter',function(){cur.classList.add('big');});
+  el.addEventListener('mouseleave',function(){cur.classList.remove('big');});
+});
+
+/* ── SCROLL PROGRESS ─────────────────────────────────────────────────────── */
+var prog=document.getElementById('scroll-prog');
+document.addEventListener('scroll',function(){
+  var pct=scrollY/(document.body.scrollHeight-innerHeight)*100;
+  prog.style.width=Math.min(pct,100)+'%';
+});
+
+/* ── CLOCK ───────────────────────────────────────────────────────────────── */
+function tick(){
+  var t=new Date().toLocaleTimeString('pl-PL',{hour12:false});
+  var h=document.getElementById('clock-hero');
+  var n=document.getElementById('sf-nav-clock');
+  if(h)h.textContent=t;
+  if(n)n.textContent=t;
+  if(document.getElementById('feed-ts')) document.getElementById('feed-ts').textContent=t;
+}
+tick(); setInterval(tick,1000);
+
+/* ── TYPING EFFECT ───────────────────────────────────────────────────────── */
+(function(){
+  var out=document.getElementById('typing-output');
+  var l2=document.getElementById('typing-line2');
+  var l3=document.getElementById('typing-line3');
+  if(!out)return;
+  var text='anonymousik :: hybrid_engineer';
+  var i=0;
+  function type(){
+    if(i<=text.length){out.textContent=text.slice(0,i);i++;setTimeout(type,55);}
+    else{out.classList.remove('typing-cursor');setTimeout(function(){l2.style.display='block';setTimeout(function(){l3.style.display='block';},400);},600);}
+  }
+  setTimeout(type,800);
+})();
+
+/* ── ACCORDION ───────────────────────────────────────────────────────────── */
+function toggleAcc(el){
+  var isOpen=el.classList.contains('open');
+  document.querySelectorAll('.acc-item.open').forEach(function(a){a.classList.remove('open');a.querySelector('.acc-body').style.maxHeight='0';});
+  if(!isOpen){el.classList.add('open');el.querySelector('.acc-body').style.maxHeight=el.querySelector('.acc-body').scrollHeight+32+'px';}
+}
+// Open first on load
+setTimeout(function(){toggleAcc(document.querySelector('.acc-item'));},400);
+
+/* ── PROGRESS BARS (scroll trigger) ─────────────────────────────────────── */
+var barsAnimated=false;
+var barObs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting&&!barsAnimated){
+      barsAnimated=true;
+      document.querySelectorAll('.bar-row').forEach(function(row,i){
+        var pct=row.getAttribute('data-pct');
+        var fill=row.querySelector('.bar-fill');
+        setTimeout(function(){fill.style.width=pct+'%';},i*120);
+      });
+    }
+  });
+},{threshold:.3});
+var barSec=document.getElementById('bar-container');
+if(barSec)barObs.observe(barSec);
+
+/* ── SCROLL REVEAL ───────────────────────────────────────────────────────── */
+var revObs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(function(el){revObs.observe(el);});
+
+/* ── NAV HAMBURGER ───────────────────────────────────────────────────────── */
+var burger=document.getElementById('sf-nav-hamburger');
+var mPanel=document.getElementById('sf-nav-mobile');
+if(burger&&mPanel){
+  burger.addEventListener('click',function(){
+    var open=burger.classList.toggle('is-open');
+    mPanel.classList.toggle('is-open',open);
+    burger.setAttribute('aria-expanded',String(open));
+    mPanel.setAttribute('aria-hidden',String(!open));
+  });
+  document.addEventListener('click',function(e){
+    if(!burger.contains(e.target)&&!mPanel.contains(e.target)){
+      burger.classList.remove('is-open');mPanel.classList.remove('is-open');
+      burger.setAttribute('aria-expanded','false');mPanel.setAttribute('aria-hidden','true');
+    }
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){burger.classList.remove('is-open');mPanel.classList.remove('is-open');}});
+}
+
+/* ── WAVEFORM CANVAS ─────────────────────────────────────────────────────── */
+(function(){
+  var c=document.getElementById('waveform');
+  if(!c)return;
+  var x=c.getContext('2d');
+  var phase=0;
+  function draw(){
+    c.width=c.offsetWidth; c.height=60;
+    x.clearRect(0,0,c.width,c.height);
+    x.strokeStyle='#9b59ff'; x.lineWidth=1.5; x.shadowBlur=8; x.shadowColor='#9b59ff';
+    x.beginPath();
+    for(var i=0;i<c.width;i++){
+      var t=i/c.width*Math.PI*8+phase;
+      var amp=18+Math.sin(i/c.width*Math.PI)*12;
+      var glitch=(Math.random()>.97)?Math.random()*20-10:0;
+      var y=30+Math.sin(t)*amp*Math.cos(t*.3)*1.4+glitch;
+      i===0?x.moveTo(i,y):x.lineTo(i,y);
+    }
+    x.stroke();
+    // second layer
+    x.strokeStyle='rgba(0,255,65,.25)'; x.lineWidth=1; x.shadowColor='#00ff41';
+    x.beginPath();
+    for(var j=0;j<c.width;j++){
+      var t2=j/c.width*Math.PI*12+phase*1.3;
+      var y2=30+Math.sin(t2)*8+Math.cos(t2*.5)*5;
+      j===0?x.moveTo(j,y2):x.lineTo(j,y2);
+    }
+    x.stroke();
+    phase+=0.04;
+  }
+  function loop(){draw();requestAnimationFrame(loop);}
+  loop();
+  addEventListener('resize',function(){c.width=c.offsetWidth;});
+})();
+
+/* ── TERMINAL FEED ───────────────────────────────────────────────────────── */
+(function(){
+  var log=document.getElementById('term-log');
+  if(!log)return;
+  var msgs=[
+    {t:'ok',m:'[PRE-FLIGHT] System check passed — 9/9 assertions OK'},
+    {t:'info',m:'[NETWORK] packages.termux.dev reachable (204ms RTT)'},
+    {t:'ok',m:'[BASE] pkg update completed — 312 packages current'},
+    {t:'ok',m:'[MODULE:Cyber] nmap 7.95 installed'},
+    {t:'ok',m:'[MODULE:Cyber] sqlmap 1.8.5 operational'},
+    {t:'info',m:'[MODULE:Tor] ProxyChains: dynamic_chain → SOCKS5:9050'},
+    {t:'warn',m:'[MODULE:IoT] minicom optional — soft-fail, continuing'},
+    {t:'ok',m:'[MODULE:Data] HuggingFace Transformers loaded'},
+    {t:'ok',m:'[UI] Oh-My-Zsh + Powerlevel10k + 3 plugins configured'},
+    {t:'ok',m:'[SSH] ed25519 key generated: ~/.ssh/id_ed25519'},
+    {t:'info',m:'[MANIFEST] ~/.secferro.conf written — errors: 0'},
+    {t:'ok',m:'[SECFERRO] Installation complete · v5.0.0 IRONCLAD'},
+  ];
+  var inputs=['ls -la ~/tools','cat ~/.secferro.conf','tor-status','myip','scan localhost'];
+  var fi=document.getElementById('fake-input');
+  var shown=0;
+  function addLine(msg,delay){
+    setTimeout(function(){
+      var d=document.createElement('div');
+      d.className='log-line';
+      var ts=new Date().toLocaleTimeString('pl-PL',{hour12:false});
+      var cls=msg.t==='ok'?'log-ok':msg.t==='warn'?'log-warn':msg.t==='err'?'log-err':'log-info';
+      d.innerHTML='<span class="log-ts">'+ts+'</span><span class="'+cls+'">['+msg.t.toUpperCase()+']</span><span style="color:#666">'+msg.m+'</span>';
+      log.appendChild(d);
+      log.scrollTop=log.scrollHeight;
+      shown++;
+    },delay);
+  }
+  msgs.forEach(function(m,i){addLine(m,i*900+500);});
+  // Fake input cycling
+  var ii=0;
+  function nextInput(){
+    var cmd=inputs[ii%inputs.length]; ii++;
+    var j=0;
+    function typeCmd(){
+      if(j<=cmd.length){if(fi)fi.textContent=cmd.slice(0,j);j++;setTimeout(typeCmd,60);}
+      else{setTimeout(function(){if(fi)fi.textContent='';setTimeout(nextInput,2200);},1800);}
+    }
+    typeCmd();
+  }
+  setTimeout(nextInput,2000);
+  // Continue cycling feed msgs
+  var extra=[
+    {t:'info',m:'[MONITOR] CPU idle — no active processes'},
+    {t:'ok',m:'[TOR] Circuit established — 3 hops'},
+    {t:'info',m:'[NET] External IP rotated via exit node: DE'},
+    {t:'ok',m:'[DOCKER] Ubuntu 22.04 LTS rootfs healthy'},
+    {t:'warn',m:'[AUDIT] 1 deprecated dependency in WebDev module'},
+    {t:'ok',m:'[CRON] Auto-update check — all modules current'},
+  ];
+  var ei=0;
+  function addExtra(){addLine(extra[ei%extra.length],0);ei++;setTimeout(addExtra,7000+Math.random()*5000);}
+  setTimeout(addExtra,msgs.length*900+2000);
+})();
+
+/* ── CONTACT ─────────────────────────────────────────────────────────────── */
+function handleContact(e){
+  e.preventDefault();
+  var s=document.getElementById('contact-status');
+  s.style.display='block';
+  s.textContent='[TRANSMITTING] Nawiązuję połączenie...';
+  s.style.color='var(--gold)';
+  setTimeout(function(){
+    s.textContent='[OK] Wiadomość odebrana. Odpowiedź nastąpi w ciągu 24h.';
+    s.style.color='var(--g)';
+  },1800);
+}
+</script>
 </body>
 </html>
-
