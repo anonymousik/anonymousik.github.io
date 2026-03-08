@@ -30,7 +30,7 @@ IFS=$'\n\t'
 # ─────────────────────────────────────────────────────────────────────────────
 # STAŁE GLOBALNE
 # ─────────────────────────────────────────────────────────────────────────────
-readonly SCRIPT_VERSION="4.0.0"
+readonly SCRIPT_VERSION="4.0.1"
 readonly SCRIPT_NAME="SecFerro Termux Setup"
 readonly LOG_FILE="${HOME}/.secferro_install.log"
 readonly CONFIG_FILE="${HOME}/.secferro.conf"
