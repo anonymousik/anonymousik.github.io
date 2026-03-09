@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="OSINT Fraud Analyzer — Advanced IP/Domain fraud intelligence aggregator. SecFerro Division Series. Tool for law enforcement evidence gathering.">
+  <meta name="author" content="Anonymousik">
+  <meta property="og:title" content="OSINT Fraud Analyzer · SecFerro Division">
+  <meta property="og:description" content="Advanced 6-source intelligence aggregation for fraud detection, phishing analysis & cyber threat reporting.">
+  <meta property="og:url" content="https://anonymousik.is-a.dev/scripts/osint">
+  <title>OSINT Fraud Analyzer · SecFerro Division</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { mono: ['"Fira Code"','monospace'], dm: ['"DM Mono"','monospace'] },
+          colors: {
+            g: '#00ff41', gold: '#D4AF37', alert: '#ff003c',
+            bl: '#00aaff', pur: '#9b59ff',
+            p: { 0: '#050505', 1: '#0a0a0a', 2: '#111', 3: '#1a1a1a' }
+          }
+        }
+      }
+    }
+  </script>
+
+<style>
+/* ── TOKENS ──────────────────────────────────────────────────────────────── */
+:root {
+  --g:#00ff41; --gold:#D4AF37; --red:#ff003c;
+  --bl:#00aaff; --pur:#9b59ff; --bg:#050505;
+  --p1:#0a0a0a; --brd:#1a1a1a; --txt:#e0e0e0;
+  --sfn-bg:rgba(5,5,5,.97); --sfn-border:#1a1a1a;
+  --sfn-green:#00ff41; --sfn-gold:#D4AF37; --sfn-red:#ff003c;
+  --sfn-blue:#00aaff; --sfn-purple:#9b59ff;
+  --sfn-text:#555; --sfn-hover:#aaa; --sfn-h:48px;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:52px;}
+body{background:var(--bg);color:var(--txt);font-family:'Fira Code',monospace;overflow-x:hidden;}
+
+/* CRT */
+#crt{position:fixed;inset:0;background:linear-gradient(rgba(0,0,0,0) 50%,rgba(0,0,0,.18) 50%),linear-gradient(90deg,rgba(255,0,0,.04),rgba(0,255,0,.015),rgba(0,0,255,.04));background-size:100% 2px,3px 100%;pointer-events:none;z-index:9999;animation:crtJitter 8s infinite;}
+@keyframes crtJitter{0%,98%,100%{transform:none}99%{transform:translateX(2px) skewX(.3deg)}}
+#matrix-canvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;opacity:.1;}
+
+/* CURSOR */
+body{cursor:none;}
+#cursor{position:fixed;width:16px;height:16px;border:1px solid var(--g);pointer-events:none;z-index:10000;transform:translate(-50%,-50%);transition:width .15s,height .15s,border-color .15s;mix-blend-mode:difference;}
+#cursor.big{width:40px;height:40px;border-color:var(--red);}
+#cursor::after{content:'';position:absolute;inset:4px;background:var(--g);opacity:.4;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:#222;}
+::-webkit-scrollbar-thumb:hover{background:var(--g);}
+::selection{background:rgba(0,255,65,.2);color:var(--g);}
+
+/* TOP PROG */
+#scroll-prog{position:fixed;top:0;left:0;height:1px;background:var(--red);box-shadow:0 0 8px var(--red);z-index:10001;transition:width .1s;}
+
+/* NAV */
+.sf-nav{position:sticky;top:0;z-index:9000;height:var(--sfn-h);background:var(--sfn-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--sfn-border);transition:border-color .3s;}
+.sf-nav:hover{border-color:rgba(0,255,65,.2);}
+.sf-nav__inner{max-width:960px;margin:0 auto;padding:0 1.5rem;height:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.sf-nav__logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;flex-shrink:0;}
+.sf-nav__logo-mark{font-size:1rem;font-weight:700;color:#fff;letter-spacing:.03em;line-height:1;position:relative;}
+.sf-nav__logo-mark::after{content:attr(data-text);position:absolute;top:0;left:1px;color:var(--sfn-green);opacity:0;transition:opacity .2s;text-shadow:0 0 8px var(--sfn-green);clip-path:polygon(0 40%,100% 40%,100% 60%,0 60%);}
+.sf-nav__logo:hover .sf-nav__logo-mark::after{opacity:.6;}
+.sf-nav__logo-sub{font-size:.55rem;color:#333;letter-spacing:.14em;text-transform:uppercase;padding-left:.6rem;border-left:1px solid #1f1f1f;}
+.sf-nav__menu{display:flex;align-items:center;gap:.1rem;list-style:none;margin:0;padding:0;}
+.sf-nav__menu-item{position:relative;}
+.sf-nav__link{display:flex;align-items:center;gap:.35rem;padding:.3rem .65rem;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sfn-text);text-decoration:none;border:1px solid transparent;transition:color .2s,border-color .2s,background .2s;white-space:nowrap;}
+.sf-nav__link:hover{color:var(--sfn-hover);border-color:var(--sfn-border);background:rgba(255,255,255,.03);}
+.sf-nav__link.is-active{color:var(--sfn-red);border-color:rgba(255,0,60,.3);background:rgba(255,0,60,.05);text-shadow:0 0 6px rgba(255,0,60,.4);}
+.sf-nav__link-dot{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:0;transition:opacity .2s;flex-shrink:0;}
+.sf-nav__link.is-active .sf-nav__link-dot{opacity:1;}
+.sf-nav__link[data-accent="gold"]:hover,.sf-nav__link[data-accent="gold"].is-active{color:var(--sfn-gold);border-color:rgba(212,175,55,.3);background:rgba(212,175,55,.05);}
+.sf-nav__link[data-accent="blue"]:hover,.sf-nav__link[data-accent="blue"].is-active{color:var(--sfn-blue);border-color:rgba(0,170,255,.3);background:rgba(0,170,255,.05);}
+.sf-nav__dropdown{position:absolute;top:calc(100% + 6px);left:0;min-width:200px;background:rgba(5,5,5,.98);border:1px solid var(--sfn-border);backdrop-filter:blur(16px);padding:.5rem 0;opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .2s,transform .2s,visibility .2s;pointer-events:none;z-index:100;}
+.sf-nav__menu-item:hover .sf-nav__dropdown{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;}
+.sf-nav__dropdown-item{display:flex;align-items:center;gap:.5rem;padding:.45rem 1rem;font-size:.6rem;letter-spacing:.07em;text-transform:uppercase;color:#555;text-decoration:none;transition:color .15s,background .15s;}
+.sf-nav__dropdown-item:hover{color:var(--sfn-red);background:rgba(255,0,60,.05);}
+.sf-nav__dropdown-label{padding:.35rem 1rem .2rem;font-size:.52rem;letter-spacing:.14em;color:#333;text-transform:uppercase;}
+.sf-nav__dropdown-divider{border:none;border-top:1px solid var(--sfn-border);margin:.4rem 0;}
+.sf-nav__status{display:flex;align-items:center;gap:.75rem;flex-shrink:0;}
+.sf-nav__clock{font-size:.58rem;color:#333;letter-spacing:.08em;display:none;}
+@media(min-width:640px){.sf-nav__clock{display:block;}}
+.sf-nav__badge{display:flex;align-items:center;gap:.3rem;padding:.15rem .5rem;border:1px solid rgba(255,0,60,.25);background:rgba(255,0,60,.05);font-size:.55rem;letter-spacing:.1em;color:var(--sfn-red);text-transform:uppercase;}
+.sf-nav__pulse{width:5px;height:5px;border-radius:50%;background:var(--sfn-red);animation:sfP 1.5s ease-in-out infinite;box-shadow:0 0 6px var(--sfn-red);}
+@keyframes sfP{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.sf-nav__hamburger{display:none;flex-direction:column;gap:4px;padding:.4rem;cursor:pointer;background:none;border:1px solid transparent;transition:border-color .2s;}
+.sf-nav__hamburger:hover{border-color:var(--sfn-border);}
+.sf-nav__hamburger span{display:block;width:18px;height:1px;background:#555;transition:background .2s,transform .3s,opacity .2s;}
+.sf-nav__hamburger.is-open span:nth-child(1){transform:translateY(5px) rotate(45deg);background:var(--sfn-red);}
+.sf-nav__hamburger.is-open span:nth-child(2){opacity:0;}
+.sf-nav__hamburger.is-open span:nth-child(3){transform:translateY(-5px) rotate(-45deg);background:var(--sfn-red);}
+.sf-nav__mobile{display:none;position:fixed;top:var(--sfn-h);left:0;right:0;background:rgba(5,5,5,.99);backdrop-filter:blur(20px);border-bottom:1px solid var(--sfn-border);padding:1rem 1.5rem 1.5rem;z-index:8999;}
+.sf-nav__mobile.is-open{display:block;}
+.sf-nav__mobile-section{margin-bottom:1.25rem;}
+.sf-nav__mobile-label{font-size:.55rem;letter-spacing:.15em;color:#333;text-transform:uppercase;padding-bottom:.5rem;border-bottom:1px solid var(--sfn-border);margin-bottom:.5rem;}
+.sf-nav__mobile-link{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;font-size:.65rem;letter-spacing:.07em;text-transform:uppercase;color:#555;text-decoration:none;border-left:2px solid transparent;padding-left:.5rem;transition:color .2s,border-color .2s;}
+.sf-nav__mobile-link:hover,.sf-nav__mobile-link.is-active{color:var(--sfn-red);border-color:var(--sfn-red);}
+@media(max-width:768px){.sf-nav__menu{display:none;}.sf-nav__hamburger{display:flex;}.sf-nav__badge{display:none;}}
+
+/* GLITCH */
+.glitch{position:relative;display:inline-block;}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;}
+.glitch::before{left:3px;color:var(--red);opacity:.7;clip-path:polygon(0 20%,100% 20%,100% 40%,0 40%);animation:gA 4s infinite;}
+.glitch::after{left:-3px;color:var(--g);opacity:.7;clip-path:polygon(0 65%,100% 65%,100% 80%,0 80%);animation:gB 3s infinite;}
+@keyframes gA{0%,90%,100%{transform:none}91%{transform:translateX(-4px) skewX(3deg)}93%{transform:translateX(3px)}}
+@keyframes gB{0%,85%,100%{transform:none}86%{transform:translateX(4px) skewX(-2deg)}88%{transform:translateX(-2px)}}
+
+/* PANEL */
+.panel{background:rgba(10,10,10,.88);border:1px solid var(--brd);backdrop-filter:blur(6px);transition:border-color .3s,box-shadow .3s;}
+.panel:hover{border-color:rgba(255,0,60,.18);}
+
+/* TERMINAL CHROME */
+.tc{background:#0d0d0d;border-bottom:1px solid var(--brd);padding:.4rem .75rem;display:flex;align-items:center;gap:.4rem;}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.dt{font-size:.58rem;color:#444;margin-left:.4rem;letter-spacing:.06em;}
+
+/* SECTION HEADER */
+.sh{display:flex;align-items:center;gap:.75rem;border-bottom:1px solid var(--brd);padding-bottom:.75rem;margin-bottom:2rem;}
+.sh-num{color:#2d2d2d;font-size:.85rem;font-weight:700;}
+.sh-title{color:var(--red);font-weight:700;font-size:1rem;letter-spacing:.06em;text-shadow:0 0 8px rgba(255,0,60,.3);}
+
+/* NEON */
+.ng{color:var(--g);text-shadow:0 0 7px rgba(0,255,65,.4);}
+.ng2{color:var(--gold);text-shadow:0 0 7px rgba(212,175,55,.4);}
+.nb{color:var(--bl);text-shadow:0 0 7px rgba(0,170,255,.4);}
+.nr{color:var(--red);text-shadow:0 0 7px rgba(255,0,60,.4);}
+.np{color:var(--pur);text-shadow:0 0 7px rgba(155,89,255,.4);}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.15rem .55rem;border:1px solid;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;}
+.bg{border-color:rgba(0,255,65,.4);color:var(--g);background:rgba(0,255,65,.06);}
+.bgold{border-color:rgba(212,175,55,.4);color:var(--gold);background:rgba(212,175,55,.06);}
+.bbl{border-color:rgba(0,170,255,.4);color:var(--bl);background:rgba(0,170,255,.06);}
+.bred{border-color:rgba(255,0,60,.4);color:var(--red);background:rgba(255,0,60,.06);}
+.bpur{border-color:rgba(155,89,255,.4);color:var(--pur);background:rgba(155,89,255,.06);}
+.bdim{border-color:#282828;color:#555;background:rgba(255,255,255,.02);}
+
+/* BARS */
+.bar-track{height:3px;background:#111;overflow:hidden;position:relative;}
+.bar-fill{height:100%;width:0;transition:width 1.8s cubic-bezier(.1,1,.2,1);position:relative;}
+.bar-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:12px;background:rgba(255,255,255,.4);filter:blur(4px);}
+.bar-fill.green{background:var(--g);box-shadow:0 0 8px var(--g);}
+.bar-fill.purple{background:var(--pur);box-shadow:0 0 8px var(--pur);}
+.bar-fill.blue{background:var(--bl);box-shadow:0 0 8px var(--bl);}
+.bar-fill.gold{background:var(--gold);box-shadow:0 0 8px var(--gold);}
+.bar-fill.red{background:var(--red);box-shadow:0 0 8px var(--red);}
+
+/* PULSE */
+.pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 6px var(--g);animation:pulse 2s ease-in-out infinite;}
+.pulse.red{background:var(--red);box-shadow:0 0 6px var(--red);}
+.pulse.gold{background:var(--gold);box-shadow:0 0 6px var(--gold);}
+.pulse.blue{background:var(--bl);box-shadow:0 0 6px var(--bl);}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
+
+/* STAT */
+.stat{border:1px solid var(--brd);padding:.85rem 1.1rem;background:rgba(8,8,8,.8);text-align:center;}
+.stat-val{font-size:1.6rem;font-weight:700;line-height:1;margin-bottom:.3rem;}
+.stat-lbl{font-size:.58rem;color:#444;letter-spacing:.12em;text-transform:uppercase;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal.d1{transition-delay:.1s;}.reveal.d2{transition-delay:.2s;}.reveal.d3{transition-delay:.3s;}.reveal.d4{transition-delay:.4s;}
+
+/* LOG */
+.log-line{font-size:.65rem;line-height:1.9;display:flex;gap:.6rem;}
+.log-ts{color:#2a2a2a;flex-shrink:0;}
+.log-ok{color:var(--g);}.log-warn{color:var(--gold);}.log-err{color:var(--red);}.log-info{color:var(--bl);}
+
+/* HERO BG */
+.hero-bg{background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(255,0,60,.05) 0%,transparent 70%);}
+
+/* CORNERS */
+.corner-tl,.corner-tr,.corner-bl,.corner-br{position:absolute;width:12px;height:12px;}
+.corner-tl{top:-1px;left:-1px;border-top:2px solid var(--red);border-left:2px solid var(--red);}
+.corner-tr{top:-1px;right:-1px;border-top:2px solid var(--red);border-right:2px solid var(--red);}
+.corner-bl{bottom:-1px;left:-1px;border-bottom:2px solid var(--red);border-left:2px solid var(--red);}
+.corner-br{bottom:-1px;right:-1px;border-bottom:2px solid var(--red);border-right:2px solid var(--red);}
+
+/* MODULE CARD */
+.mod-card{border:1px solid var(--brd);background:rgba(8,8,8,.9);padding:1.25rem;transition:border-color .3s,transform .2s,box-shadow .3s;cursor:default;position:relative;overflow:hidden;}
+.mod-card::before{content:'';position:absolute;inset:0;background:var(--mod-glow,rgba(255,0,60,.03));opacity:0;transition:opacity .3s;}
+.mod-card:hover{border-color:var(--mod-color,var(--red));transform:translateY(-2px);box-shadow:0 4px 24px var(--mod-shadow,rgba(255,0,60,.1));}
+.mod-card:hover::before{opacity:1;}
+.mod-num{font-size:.6rem;font-weight:700;border:1px solid;padding:.1rem .4rem;flex-shrink:0;margin-bottom:.75rem;display:inline-block;}
+
+/* TYPING CURSOR */
+.typing-cursor{border-right:2px solid var(--red);animation:cur .75s step-end infinite;}
+@keyframes cur{from,to{border-color:transparent}50%{border-color:var(--red)}}
+
+/* THREAT METER */
+.threat-meter{height:8px;background:#111;border:1px solid #1a1a1a;position:relative;overflow:hidden;}
+.threat-fill{height:100%;transition:width 2s cubic-bezier(.1,1,.2,1);}
+
+/* SCAN OUTPUT */
+.scan-line{animation:scanAppear .3s ease forwards;opacity:0;}
+@keyframes scanAppear{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+
+/* INPUT */
+.sf-input{background:#000;border:1px solid var(--brd);color:var(--txt);font-family:'Fira Code',monospace;font-size:.75rem;padding:.65rem .9rem;width:100%;transition:border-color .2s,box-shadow .2s;outline:none;}
+.sf-input:focus{border-color:rgba(255,0,60,.5);box-shadow:0 0 0 1px rgba(255,0,60,.15);}
+.sf-input::placeholder{color:#333;}
+.sf-btn{background:transparent;border:1px solid var(--red);color:var(--red);font-family:'Fira Code',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;padding:.65rem 1.5rem;cursor:pointer;transition:background .2s,box-shadow .2s,transform .15s;}
+.sf-btn:hover{background:rgba(255,0,60,.08);box-shadow:0 0 16px rgba(255,0,60,.2);transform:translateY(-1px);}
+.sf-btn:active{transform:translateY(0);}
+.sf-btn.green{border-color:var(--g);color:var(--g);}
+.sf-btn.green:hover{background:rgba(0,255,65,.08);box-shadow:0 0 16px rgba(0,255,65,.2);}
+
+/* BREADCRUMB */
+.breadcrumb{display:flex;align-items:center;gap:.4rem;font-size:.6rem;color:#333;letter-spacing:.08em;}
+.breadcrumb a{color:#444;text-decoration:none;transition:color .2s;}
+.breadcrumb a:hover{color:var(--red);}
+
+/* CODE BLOCK */
+.code-block{background:#080808;border:1px solid #1a1a1a;overflow-x:auto;position:relative;}
+.code-block pre{padding:1.25rem;font-size:.68rem;line-height:1.75;color:#888;margin:0;white-space:pre;}
+.code-block::-webkit-scrollbar{height:4px;}
+.code-block::-webkit-scrollbar-thumb{background:#222;}
+
+/* COPY BTN */
+.copy-btn{position:absolute;top:.5rem;right:.5rem;background:rgba(0,0,0,.8);border:1px solid #222;color:#555;font-size:.55rem;letter-spacing:.1em;padding:.2rem .5rem;cursor:pointer;text-transform:uppercase;transition:all .2s;font-family:'Fira Code',monospace;}
+.copy-btn:hover{border-color:var(--g);color:var(--g);}
+
+/* PIPELINE */
+.pipe-step{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 0;}
+.pipe-step:not(:last-child){border-bottom:1px solid #111;}
+.pipe-icon{width:28px;height:28px;border:1px solid;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.65rem;font-weight:700;}
+
+/* ALERT BOX */
+.alert-box{border-left:3px solid;padding:.75rem 1rem;background:rgba(0,0,0,.4);font-size:.72rem;line-height:1.75;}
+.alert-box.info{border-color:var(--bl);background:rgba(0,170,255,.04);}
+.alert-box.warn{border-color:var(--gold);background:rgba(212,175,55,.04);}
+.alert-box.danger{border-color:var(--red);background:rgba(255,0,60,.04);}
+.alert-box.success{border-color:var(--g);background:rgba(0,255,65,.04);}
+
+/* RADAR */
+#radar-canvas{display:block;}
+
+/* TABLE */
+.osint-table{width:100%;border-collapse:collapse;font-size:.68rem;}
+.osint-table th{color:#444;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:.5rem .75rem;border-bottom:1px solid #1a1a1a;text-align:left;font-weight:400;}
+.osint-table td{padding:.55rem .75rem;border-bottom:1px solid #111;color:#888;vertical-align:top;}
+.osint-table tr:hover td{background:rgba(255,255,255,.01);}
+
+a{text-decoration:none;}
+strong{color:#e8e8e8;}
+code{color:var(--g);font-size:.85em;}
+footer{border-top:1px solid var(--brd);}
+@media(max-width:640px){.glitch::before,.glitch::after{display:none;}}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="crt"></div>
+<div id="scroll-prog"></div>
+<canvas id="matrix-canvas"></canvas>
+
+<!-- NAV -->
+<nav class="sf-nav" role="navigation" aria-label="SecFerro Division Navigation">
+  <div class="sf-nav__inner">
+    <a class="sf-nav__logo" href="/" aria-label="Anonymousik — Home">
+      <span class="sf-nav__logo-mark" data-text="ƑERRට">ƑERRට</span>
+      <span class="sf-nav__logo-sub">Anonymousik</span>
+    </a>
+    <ul class="sf-nav__menu" role="list">
+      <li class="sf-nav__menu-item"><a class="sf-nav__link" href="/"><span class="sf-nav__link-dot"></span>Home</a></li>
+      <li class="sf-nav__menu-item">
+        <a class="sf-nav__link" href="/#projects" data-accent="gold"><span class="sf-nav__link-dot"></span>Projects<svg width="8" height="5" viewBox="0 0 8 5" fill="none" style="opacity:.4;margin-left:.15rem"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+      </li>
+      <li class="sf-nav__menu-item">
+        <a class="sf-nav__link is-active" href="/scripts" data-accent="red"><span class="sf-nav__link-dot"></span>Scripts<svg width="8" height="5" viewBox="0 0 8 5" fill="none" style="opacity:.4;margin-left:.15rem"><path d="M1 1l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+        <div class="sf-nav__dropdown" role="menu">
+          <div class="sf-nav__dropdown-label">SecFerro Division</div>
+          <a class="sf-nav__dropdown-item" href="/scripts/tmux_setup">tmux_setup · v5.0.0</a>
+          <a class="sf-nav__dropdown-item" style="color:var(--red)" href="/scripts/osint">⚠ OSINT Fraud Analyzer · v1.0</a>
+          <hr class="sf-nav__dropdown-divider">
+          <a class="sf-nav__dropdown-item" href="/CHANGELOG">Changelog</a>
+        </div>
+      </li>
+      <li class="sf-nav__menu-item"><a class="sf-nav__link" href="/#stack"><span class="sf-nav__link-dot"></span>Stack</a></li>
+      <li class="sf-nav__menu-item"><a class="sf-nav__link" href="/#contact"><span class="sf-nav__link-dot"></span>Contact</a></li>
+      <li class="sf-nav__menu-item"><a class="sf-nav__link" href="https://github.com/Anonymousik" target="_blank" rel="noopener"><span class="sf-nav__link-dot"></span>GitHub<svg width="8" height="8" viewBox="0 0 8 8" fill="none" style="opacity:.35;margin-left:.1rem"><path d="M2 1h5v5M7 1L1 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a></li>
+    </ul>
+    <div class="sf-nav__status">
+      <span class="sf-nav__clock" id="sf-nav-clock"></span>
+      <span class="sf-nav__badge"><span class="sf-nav__pulse"></span><span>THREAT&nbsp;INTEL</span></span>
+      <button class="sf-nav__hamburger" id="sf-nav-hamburger" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+<div class="sf-nav__mobile" id="sf-nav-mobile">
+  <div class="sf-nav__mobile-section">
+    <div class="sf-nav__mobile-label">Navigation</div>
+    <a class="sf-nav__mobile-link" href="/">Home</a>
+    <a class="sf-nav__mobile-link" href="/#projects">Projects</a>
+    <a class="sf-nav__mobile-link is-active" href="/scripts">Scripts</a>
+    <a class="sf-nav__mobile-link" href="/#stack">Stack</a>
+  </div>
+  <div class="sf-nav__mobile-section">
+    <div class="sf-nav__mobile-label">Scripts</div>
+    <a class="sf-nav__mobile-link" href="/scripts/tmux_setup">tmux_setup v5.0.0</a>
+    <a class="sf-nav__mobile-link" href="/scripts/osint" style="color:var(--red)">OSINT Fraud Analyzer</a>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main style="position:relative;z-index:10">
+<div style="max-width:960px;margin:0 auto;padding:0 1.5rem 6rem">
+
+<!-- BREADCRUMB -->
+<div style="padding:1.25rem 0 0" class="reveal">
+  <div class="breadcrumb">
+    <a href="/">anonymousik.is-a.dev</a>
+    <span>›</span>
+    <a href="/scripts">scripts</a>
+    <span>›</span>
+    <span style="color:var(--red)">osint</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero-bg" style="padding:3.5rem 0 3rem;text-align:center">
+  <div style="font-size:.58rem;color:#2a2a2a;letter-spacing:.2em;margin-bottom:1.2rem">
+    MODULE: OSINT_FRAUD_ANALYZER &nbsp;|&nbsp; VER: v1.0.0 &nbsp;|&nbsp; DATE: <span id="clock-hero" class="nr">00:00:00</span> &nbsp;|&nbsp; CLASS: PUBLIC_SAFETY
+  </div>
+
+  <div style="margin-bottom:1rem">
+    <span class="badge bred reveal"><span class="pulse red"></span>&nbsp;THREAT INTELLIGENCE ACTIVE</span>
+  </div>
+
+  <h1 class="glitch reveal d1"
+      data-text="OSINT"
+      style="font-size:clamp(3rem,14vw,7rem);font-weight:700;color:#fff;letter-spacing:.08em;line-height:1;margin-bottom:.4rem;display:inline-block">
+    OSINT
+  </h1>
+
+  <div class="reveal d2" style="font-size:clamp(.65rem,2.5vw,.9rem);color:#555;letter-spacing:.25em;text-transform:uppercase;margin-bottom:.5rem">
+    FRAUD ANALYZER &nbsp;·&nbsp; SECFERRO DIVISION
+  </div>
+
+  <div class="reveal d2" style="display:flex;justify-content:center;align-items:center;gap:.6rem;margin-bottom:2.5rem;font-size:.62rem;color:#333;letter-spacing:.12em;flex-wrap:wrap">
+    <span>IP · DOMAIN · URL ANALYSIS</span>
+    <span style="color:var(--brd)">·</span>
+    <span>6-SOURCE INTELLIGENCE</span>
+    <span style="color:var(--brd)">·</span>
+    <span>LAW ENFORCEMENT READY</span>
+  </div>
+
+  <!-- Terminal init -->
+  <div class="panel reveal d3" style="max-width:640px;margin:0 auto 2.5rem;text-align:left">
+    <div class="tc">
+      <div class="dot" style="background:var(--red)"></div>
+      <div class="dot" style="background:var(--gold)"></div>
+      <div class="dot" style="background:var(--g)"></div>
+      <span class="dt">anonymousik@ferro:~/tools/osint</span>
+    </div>
+    <div style="padding:.75rem 1rem;font-size:.68rem;line-height:1.9">
+      <div style="color:#444"><span style="color:var(--red)">$</span> ./osint_fraud_analyzer.sh 185.220.101.45</div>
+      <div id="hero-typing" style="color:#bbb;min-height:1.4em" class="typing-cursor"></div>
+      <div id="hero-out" style="display:none">
+        <div style="color:#333">══════════════════════════════</div>
+        <div style="color:var(--red)">&nbsp;&nbsp;FRAUD INTELLIGENCE REPORT</div>
+        <div style="color:var(--gold)">&nbsp;&nbsp;Target : 185.220.101.45</div>
+        <div style="color:#555">&nbsp;&nbsp;Date   : <span id="hero-date"></span></div>
+        <div style="color:#333">══════════════════════════════</div>
+        <div style="color:var(--bl)">[INFO]</div><div style="color:#666">&nbsp;→ 1/6 GEO + ASN — ipinfo.io ...</div>
+        <div style="color:var(--g)">[OK]&nbsp;</div><div style="color:#666">&nbsp;→ Country: DE · Org: Tor Project</div>
+        <div style="color:var(--red)">[!!!] ABUSE SCORE: 98/100 — 4721 zgłoszeń!</div>
+        <div style="color:var(--red)">[!!!] WYKRYTO: TOR EXIT NODE + PROXY</div>
+        <div style="color:var(--red)">[!!!] 31 silników AV: MALICIOUS</div>
+        <div style="color:var(--g)">[+] Raport zapisany → ./fraud_reports/</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero badges -->
+  <div class="reveal d3" style="display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin-bottom:2.5rem">
+    <span class="badge bred">⚡ AbuseIPDB</span>
+    <span class="badge bg">✓ VirusTotal</span>
+    <span class="badge bbl">◎ Shodan</span>
+    <span class="badge bpur">⊕ ipinfo.io</span>
+    <span class="badge bgold">⚑ StopForumSpam</span>
+    <span class="badge bdim">⊞ ip-api.com</span>
+  </div>
+
+  <!-- CTA -->
+  <div class="reveal d4" style="display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem">
+    <a href="#demo" style="border:1px solid var(--red);color:var(--red);padding:.6rem 1.4rem;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;transition:all .2s;display:inline-block" onmouseover="this.style.background='rgba(255,0,60,.08)';this.style.boxShadow='0 0 16px rgba(255,0,60,.2)'" onmouseout="this.style.background='transparent';this.style.boxShadow='none'">
+      DEMO SCANER
+    </a>
+    <a href="#script" style="border:1px solid #333;color:#666;padding:.6rem 1.4rem;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;transition:all .2s;display:inline-block" onmouseover="this.style.borderColor='#555';this.style.color='#aaa'" onmouseout="this.style.borderColor='#333';this.style.color='#666'">
+      POBIERZ SKRYPT
+    </a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="reveal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:4rem">
+  <div class="stat"><div class="stat-val nr">6</div><div class="stat-lbl">Intel Sources</div></div>
+  <div class="stat"><div class="stat-val ng2">100</div><div class="stat-lbl">Abuse Score</div></div>
+  <div class="stat"><div class="stat-val nb">70+</div><div class="stat-lbl">AV Engines</div></div>
+  <div class="stat"><div class="stat-val np">v1.0</div><div class="stat-lbl">Release</div></div>
+</div>
+
+<!-- ══ [01] LEGAL DISCLAIMER ═══════════════════════════════════════════════ -->
+<section style="margin-bottom:3.5rem" class="reveal">
+  <div class="sh"><span class="sh-num">[01]</span><span class="sh-title">DISCLAIMER PRAWNY</span><span style="font-size:.6rem;color:#333;margin-left:auto">legal_compliance.sh</span></div>
+  <div class="alert-box danger" style="margin-bottom:1rem">
+    <strong style="color:var(--red)">⚠ WYŁĄCZNIE DO LEGALNYCH CELÓW</strong><br>
+    Narzędzie przeznaczone do zbierania dowodów w celu zgłoszenia oszustw do organów ścigania (CERT.PL, Policja, Europol). Używanie do inwigilacji, stalkingu lub atakowania systemów bez autoryzacji jest <strong>nielegalne</strong> i karalne. Autor nie ponosi odpowiedzialności za nadużycia.
+  </div>
+  <div class="alert-box success">
+    <strong style="color:var(--g)">✓ LEGALNE ZASTOSOWANIA</strong> — Weryfikacja IP/domeny, z której otrzymałeś phishing · Analiza infrastruktury atakującej Twój system · Zbieranie dowodów do raportu dla CERT/Policji · Blokowanie złośliwych adresów w firewall · Investigative journalism
+  </div>
+</section>
+
+<!-- ══ [02] SYSTEM ARCHITECTURE ════════════════════════════════════════════ -->
+<section style="margin-bottom:3.5rem" class="reveal">
+  <div class="sh"><span class="sh-num">[02]</span><span class="sh-title">ARCHITEKTURA SYSTEMU</span><span style="font-size:.6rem;color:#333;margin-left:auto">architecture.sh</span></div>
+
+  <div class="panel" style="padding:1.5rem;margin-bottom:1rem">
+    <!-- Pipeline diagram -->
+    <div style="font-size:.62rem;color:#444;letter-spacing:.1em;margin-bottom:1.25rem;text-transform:uppercase">Przepływ danych</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:.3rem;flex-wrap:wrap;margin-bottom:2rem">
+      <div style="border:1px solid rgba(255,0,60,.3);background:rgba(255,0,60,.05);padding:.4rem .8rem;font-size:.62rem;color:var(--red);letter-spacing:.08em">INPUT<br><span style="color:#444;font-size:.55rem">IP / DOMAIN</span></div>
+      <div style="color:#333;font-size:.8rem">→</div>
+      <div style="border:1px solid #222;background:rgba(255,255,255,.02);padding:.4rem .8rem;font-size:.62rem;color:#666;letter-spacing:.08em;text-align:center">VALIDATE<br><span style="color:#444;font-size:.55rem">SANITIZE</span></div>
+      <div style="color:#333;font-size:.8rem">→</div>
+      <div style="border:1px solid rgba(0,170,255,.3);background:rgba(0,170,255,.05);padding:.4rem .8rem;font-size:.62rem;color:var(--bl);letter-spacing:.08em;text-align:center">6 APIs<br><span style="color:#444;font-size:.55rem">PARALLEL</span></div>
+      <div style="color:#333;font-size:.8rem">→</div>
+      <div style="border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.05);padding:.4rem .8rem;font-size:.62rem;color:var(--gold);letter-spacing:.08em;text-align:center">ANALYZE<br><span style="color:#444;font-size:.55rem">RISK SCORE</span></div>
+      <div style="color:#333;font-size:.8rem">→</div>
+      <div style="border:1px solid rgba(0,255,65,.3);background:rgba(0,255,65,.05);padding:.4rem .8rem;font-size:.62rem;color:var(--g);letter-spacing:.08em;text-align:center">REPORT<br><span style="color:#444;font-size:.55rem">+ CHANNELS</span></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem">
+      <div style="padding:.75rem;border:1px solid #111;background:#050505">
+        <div style="font-size:.6rem;color:#444;letter-spacing:.1em;margin-bottom:.5rem">REQUIREMENTS</div>
+        <div style="font-size:.68rem;color:#666;line-height:1.8">
+          <code>curl</code> · <code>jq</code> · <code>date</code><br>
+          Bash 4.0+ / Termux sh<br>
+          API keys (opcjonalne)
+        </div>
+      </div>
+      <div style="padding:.75rem;border:1px solid #111;background:#050505">
+        <div style="font-size:.6rem;color:#444;letter-spacing:.1em;margin-bottom:.5rem">SECURITY MODEL</div>
+        <div style="font-size:.68rem;color:#666;line-height:1.8">
+          Input sanitization<br>
+          No shell injection risk<br>
+          Keys via ENV vars only
+        </div>
+      </div>
+      <div style="padding:.75rem;border:1px solid #111;background:#050505">
+        <div style="font-size:.6rem;color:#444;letter-spacing:.1em;margin-bottom:.5rem">OUTPUT</div>
+        <div style="font-size:.68rem;color:#666;line-height:1.8">
+          Pliki <code>./fraud_reports/</code><br>
+          Timestamped TXT<br>
+          JSON per module
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [03] INTELLIGENCE MODULES ═══════════════════════════════════════════ -->
+<section style="margin-bottom:3.5rem" class="reveal">
+  <div class="sh"><span class="sh-num">[03]</span><span class="sh-title">MODUŁY INTELIGENCJI</span><span style="font-size:.6rem;color:#333;margin-left:auto">6 active sources</span></div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.75rem">
+
+    <!-- M1 GEO+ASN -->
+    <div class="mod-card" style="--mod-color:rgba(0,170,255,.6);--mod-glow:rgba(0,170,255,.03);--mod-shadow:rgba(0,170,255,.1)">
+      <div class="mod-num" style="border-color:rgba(0,170,255,.4);color:var(--bl)">M1</div>
+      <div style="font-weight:700;font-size:.82rem;letter-spacing:.04em;margin-bottom:.4rem">GEO + ASN</div>
+      <div style="font-size:.6rem;color:#555;letter-spacing:.08em;margin-bottom:.85rem;text-transform:uppercase">ipinfo.io</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75;margin-bottom:1rem">
+        Geolokalizacja IP, organizacja (<code>ASN</code>), hostname, strefa czasowa, wykrywanie <code>bogon</code> addresses i prywatnych zakresów.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+        <span class="badge bbl" style="font-size:.55rem">IP · HOSTNAME</span>
+        <span class="badge bbl" style="font-size:.55rem">ORG · ASN</span>
+        <span class="badge bdim" style="font-size:.55rem">FREE TIER</span>
+      </div>
+    </div>
+
+    <!-- M2 VPN/TOR -->
+    <div class="mod-card" style="--mod-color:rgba(255,0,60,.6);--mod-glow:rgba(255,0,60,.03);--mod-shadow:rgba(255,0,60,.1)">
+      <div class="mod-num" style="border-color:rgba(255,0,60,.4);color:var(--red)">M2</div>
+      <div style="font-weight:700;font-size:.82rem;letter-spacing:.04em;margin-bottom:.4rem">VPN / TOR / PROXY</div>
+      <div style="font-size:.6rem;color:#555;letter-spacing:.08em;margin-bottom:.85rem;text-transform:uppercase">ip-api.com</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75;margin-bottom:1rem">
+        Wykrywanie anonimizacji: proxy, VPN, Tor exit nodes, datacenter hosting. Kluczowe przy analizie phishingu i scamu.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+        <span class="badge bred" style="font-size:.55rem">PROXY DETECT</span>
+        <span class="badge bred" style="font-size:.55rem">TOR EXIT</span>
+        <span class="badge bred" style="font-size:.55rem">HOSTING FLAG</span>
+      </div>
+    </div>
+
+    <!-- M3 ABUSE -->
+    <div class="mod-card" style="--mod-color:rgba(212,175,55,.6);--mod-glow:rgba(212,175,55,.03);--mod-shadow:rgba(212,175,55,.1)">
+      <div class="mod-num" style="border-color:rgba(212,175,55,.4);color:var(--gold)">M3</div>
+      <div style="font-weight:700;font-size:.82rem;letter-spacing:.04em;margin-bottom:.4rem">ABUSE HISTORY</div>
+      <div style="font-size:.6rem;color:#555;letter-spacing:.08em;margin-bottom:.85rem;text-transform:uppercase">AbuseIPDB</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75;margin-bottom:1rem">
+        Globalna baza zgłoszeń nadużyć. Confidence score 0-100, historia ostatnich 90 dni, kategorie ataków (DDoS, SSH brute-force, phishing...).
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+        <span class="badge bgold" style="font-size:.55rem">SCORE 0-100</span>
+        <span class="badge bgold" style="font-size:.55rem">REPORTS COUNT</span>
+        <span class="badge bdim" style="font-size:.55rem">API KEY REQ</span>
+      </div>
+    </div>
+
+    <!-- M4 SHODAN -->
+    <div class="mod-card" style="--mod-color:rgba(155,89,255,.6);--mod-glow:rgba(155,89,255,.03);--mod-shadow:rgba(155,89,255,.1)">
+      <div class="mod-num" style="border-color:rgba(155,89,255,.4);color:var(--pur)">M4</div>
+      <div style="font-weight:700;font-size:.82rem;letter-spacing:.04em;margin-bottom:.4rem">OPEN PORTS / CVE</div>
+      <div style="font-size:.6rem;color:#555;letter-spacing:.08em;margin-bottom:.85rem;text-transform:uppercase">Shodan</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75;margin-bottom:1rem">
+        Otwarte porty, bannery serwisów, system operacyjny, tagi (<code>honeypot</code>, <code>tor</code>), oraz lista powiązanych <strong>CVE</strong>.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+        <span class="badge bpur" style="font-size:.55rem">OPEN PORTS</span>
+        <span class="badge bpur" style="font-size:.55rem">CVE LIST</span>
+        <span class="badge bdim" style="font-size:.55rem">API KEY REQ</span>
+      </div>
+    </div>
+
+    <!-- M5 VT -->
+    <div class="mod-card" style="--mod-color:rgba(0,255,65,.6);--mod-glow:rgba(0,255,65,.03);--mod-shadow:rgba(0,255,65,.1)">
+      <div class="mod-num" style="border-color:rgba(0,255,65,.4);color:var(--g)">M5</div>
+      <div style="font-weight:700;font-size:.82rem;letter-spacing:.04em;margin-bottom:.4rem">MALWARE / PHISHING</div>
+      <div style="font-size:.6rem;color:#555;letter-spacing:.08em;margin-bottom:.85rem;text-transform:uppercase">VirusTotal</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75;margin-bottom:1rem">
+        Skanowanie przez <strong>70+ silników AV</strong>. Wyniki: malicious, suspicious, harmless. Obsługa IP, domen i URL. Werdykt zbiorczy.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+        <span class="badge bg" style="font-size:.55rem">70+ AV ENGINES</span>
+        <span class="badge bg" style="font-size:.55rem">URL/DOMAIN/IP</span>
+        <span class="badge bdim" style="font-size:.55rem">API KEY REQ</span>
+      </div>
+    </div>
+
+    <!-- M6 SPAM -->
+    <div class="mod-card" style="--mod-color:rgba(0,170,255,.4);--mod-glow:rgba(0,170,255,.02);--mod-shadow:rgba(0,170,255,.08)">
+      <div class="mod-num" style="border-color:rgba(0,170,255,.3);color:#4488aa">M6</div>
+      <div style="font-weight:700;font-size:.82rem;letter-spacing:.04em;margin-bottom:.4rem">SPAM REPUTATION</div>
+      <div style="font-size:.6rem;color:#555;letter-spacing:.08em;margin-bottom:.85rem;text-transform:uppercase">StopForumSpam</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75;margin-bottom:1rem">
+        Baza spamu forumowego i e-mail fraud. Frequency score, data ostatniego zgłoszenia, confidence level. Bez klucza API.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+        <span class="badge bbl" style="font-size:.55rem">SPAM DB</span>
+        <span class="badge bbl" style="font-size:.55rem">CONFIDENCE</span>
+        <span class="badge bg" style="font-size:.55rem">FREE · NO KEY</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Threat coverage bars -->
+  <div class="panel" style="margin-top:1rem;padding:1.25rem">
+    <div style="font-size:.6rem;color:#444;letter-spacing:.1em;margin-bottom:1rem;text-transform:uppercase">Pokrycie analizy</div>
+    <div style="display:flex;flex-direction:column;gap:.85rem" id="coverage-bars">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:.62rem;margin-bottom:.35rem"><span style="color:#666">Phishing Detection</span><span class="ng">94%</span></div>
+        <div class="bar-track"><div class="bar-fill green" data-w="94"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:.62rem;margin-bottom:.35rem"><span style="color:#666">Malware / C2 Infrastructure</span><span class="ng">88%</span></div>
+        <div class="bar-track"><div class="bar-fill green" data-w="88"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:.62rem;margin-bottom:.35rem"><span style="color:#666">VPN / Tor Anonymization</span><span style="color:var(--bl)">96%</span></div>
+        <div class="bar-track"><div class="bar-fill blue" data-w="96"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:.62rem;margin-bottom:.35rem"><span style="color:#666">Spam / Email Fraud</span><span style="color:var(--gold)">82%</span></div>
+        <div class="bar-track"><div class="bar-fill gold" data-w="82"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:.62rem;margin-bottom:.35rem"><span style="color:#666">Open Port / CVE Exposure</span><span style="color:var(--pur)">75%</span></div>
+        <div class="bar-track"><div class="bar-fill purple" data-w="75"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:.62rem;margin-bottom:.35rem"><span style="color:#666">Scam / Financial Fraud</span><span class="nr">70%</span></div>
+        <div class="bar-track"><div class="bar-fill red" data-w="70"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [04] INTERACTIVE DEMO SCANNER ══════════════════════════════════════ -->
+<section id="demo" style="margin-bottom:3.5rem" class="reveal">
+  <div class="sh"><span class="sh-num">[04]</span><span class="sh-title">DEMO SCANNER</span><span style="font-size:.6rem;color:#333;margin-left:auto">interactive_simulation.js</span></div>
+
+  <div class="panel" style="overflow:hidden">
+    <div class="tc">
+      <div class="dot" style="background:var(--red)"></div>
+      <div class="dot" style="background:var(--gold)"></div>
+      <div class="dot" style="background:var(--g)"></div>
+      <span class="dt">anonymousik@ferro:~/tools/osint — DEMO MODE (simulated)</span>
+    </div>
+
+    <!-- Input area -->
+    <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--brd);display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end">
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:.58rem;color:#444;letter-spacing:.1em;margin-bottom:.4rem;text-transform:uppercase">Cel analizy (IP lub domena)</div>
+        <input type="text" id="demo-input" class="sf-input" placeholder="np. 185.220.101.45 lub malware.example.com" maxlength="100" style="border-color:rgba(255,0,60,.2)">
+      </div>
+      <button class="sf-btn" onclick="runDemoScan()" style="white-space:nowrap;flex-shrink:0">
+        <span id="scan-btn-text">▶ SKANUJ</span>
+      </button>
+      <button class="sf-btn green" onclick="loadExampleTarget()" style="white-space:nowrap;flex-shrink:0">PRZYKŁAD</button>
+    </div>
+
+    <!-- Preset targets -->
+    <div style="padding:.6rem 1.25rem;border-bottom:1px solid #0d0d0d;display:flex;gap:.4rem;flex-wrap:wrap">
+      <span style="font-size:.58rem;color:#333;letter-spacing:.08em;margin-right:.25rem">SZYBKI TEST:</span>
+      <button onclick="setTarget('185.220.101.45')" style="background:none;border:1px solid #1a1a1a;color:#444;font-size:.57rem;padding:.1rem .4rem;cursor:pointer;font-family:'Fira Code',monospace;letter-spacing:.05em;transition:all .2s" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='#1a1a1a';this.style.color='#444'">185.220.101.45 [TOR]</button>
+      <button onclick="setTarget('phishing-example.ru')" style="background:none;border:1px solid #1a1a1a;color:#444;font-size:.57rem;padding:.1rem .4rem;cursor:pointer;font-family:'Fira Code',monospace;letter-spacing:.05em;transition:all .2s" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='#1a1a1a';this.style.color='#444'">phishing-example.ru</button>
+      <button onclick="setTarget('8.8.8.8')" style="background:none;border:1px solid #1a1a1a;color:#444;font-size:.57rem;padding:.1rem .4rem;cursor:pointer;font-family:'Fira Code',monospace;letter-spacing:.05em;transition:all .2s" onmouseover="this.style.borderColor='var(--g)';this.style.color='var(--g)'" onmouseout="this.style.borderColor='#1a1a1a';this.style.color='#444'">8.8.8.8 [CLEAN]</button>
+      <button onclick="setTarget('45.33.32.156')" style="background:none;border:1px solid #1a1a1a;color:#444;font-size:.57rem;padding:.1rem .4rem;cursor:pointer;font-family:'Fira Code',monospace;letter-spacing:.05em;transition:all .2s" onmouseover="this.style.borderColor='var(--pur)';this.style.color='var(--pur)'" onmouseout="this.style.borderColor='#1a1a1a';this.style.color='#444'">45.33.32.156 [SHODAN]</button>
+    </div>
+
+    <!-- Output terminal -->
+    <div id="demo-output" style="min-height:260px;padding:1rem 1.25rem;font-size:.67rem;line-height:1.8;max-height:480px;overflow-y:auto">
+      <div style="color:#2a2a2a;font-style:italic">// Podaj cel i kliknij SKANUJ — wyniki pojawią się tutaj (symulacja edukacyjna)</div>
+      <div style="color:#1a1a1a;margin-top:.5rem">// Narzędzie uruchamia się lokalnie w Twojej powłoce z prawdziwymi API</div>
+    </div>
+
+    <!-- Threat meter -->
+    <div style="padding:.75rem 1.25rem;border-top:1px solid var(--brd)" id="threat-bar-section" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+        <span style="font-size:.6rem;color:#444;letter-spacing:.1em;text-transform:uppercase">Threat Level</span>
+        <span id="threat-label" style="font-size:.65rem;font-weight:700">—</span>
+      </div>
+      <div class="threat-meter">
+        <div id="threat-fill" class="threat-fill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [05] LEGAL RESPONSE PIPELINE ════════════════════════════════════════ -->
+<section style="margin-bottom:3.5rem" class="reveal">
+  <div class="sh"><span class="sh-num">[05]</span><span class="sh-title">LEGALNA ŚCIEŻKA NEUTRALIZACJI</span><span style="font-size:.6rem;color:#333;margin-left:auto">response_pipeline.sh</span></div>
+
+  <div class="alert-box info" style="margin-bottom:1.25rem">
+    <strong style="color:var(--bl)">Strategia 5-stopniowa</strong> — zebrane przez skrypt dane stanowią gotową bazę dowodową. Postępuj chronologicznie dla maksymalnej skuteczności.
+  </div>
+
+  <div class="panel" style="padding:1.25rem">
+    <div class="pipe-step">
+      <div class="pipe-icon" style="border-color:rgba(255,0,60,.4);color:var(--red)">01</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:.8rem;margin-bottom:.3rem">DOKUMENTACJA <span class="nr">↑ PRIORYTET KRYTYCZNY</span></div>
+        <div style="font-size:.7rem;color:#777;line-height:1.7;margin-bottom:.5rem">Zbierz: screenshoty wiadomości, nagłówki e-mail (<code>Received:</code>), logi serwera, adresy URL. Uruchom skrypt — raport w <code>./fraud_reports/</code> jest Twoim dowodem.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap"><span class="badge bred">./osint_fraud_analyzer.sh &lt;ip&gt;</span></div>
+      </div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-icon" style="border-color:rgba(212,175,55,.4);color:var(--gold)">02</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:.8rem;margin-bottom:.3rem">ZGŁOSZENIE DO CERT.PL</div>
+        <div style="font-size:.7rem;color:#777;line-height:1.7;margin-bottom:.5rem">CERT Polska reaguje na incydenty w polskiej infrastrukturze. Formularz online + raport z narzędzia. Czas reakcji: 24-48h dla krytycznych przypadków.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <a href="https://incydent.cert.pl" target="_blank" rel="noopener" class="badge bgold" style="cursor:pointer">incydent.cert.pl ↗</a>
+          <span class="badge bdim">🇵🇱 PL</span>
+        </div>
+      </div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-icon" style="border-color:rgba(0,255,65,.4);color:var(--g)">03</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:.8rem;margin-bottom:.3rem">POLICJA · CYBERPRZESTĘPCZOŚĆ</div>
+        <div style="font-size:.7rem;color:#777;line-height:1.7;margin-bottom:.5rem">Sekcja ds. cyberprzestępczości Policji. Zgłoszenie online lub wizyta na komisariacie. Wydruk raportu ze skryptu jako załącznik dowodowy.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <a href="https://www.policja.pl" target="_blank" rel="noopener" class="badge bg" style="cursor:pointer">policja.pl ↗</a>
+          <span class="badge bdim">Art. 267-269 KK</span>
+        </div>
+      </div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-icon" style="border-color:rgba(0,170,255,.4);color:var(--bl)">04</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:.8rem;margin-bottom:.3rem">SPOŁECZNOŚCIOWE BLOKOWANIE</div>
+        <div style="font-size:.7rem;color:#777;line-height:1.7;margin-bottom:.5rem">Zgłoś IP do AbuseIPDB — blokujesz atak dla całej społeczności. Flaguj URL w Google Safe Browsing i Microsoft SmartScreen. Prześlij próbki malware do VirusTotal.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <a href="https://www.abuseipdb.com/report" target="_blank" rel="noopener" class="badge bbl" style="cursor:pointer">AbuseIPDB Report ↗</a>
+          <a href="https://safebrowsing.google.com/safebrowsing/report_phish/" target="_blank" rel="noopener" class="badge bbl" style="cursor:pointer">Google SB ↗</a>
+        </div>
+      </div>
+    </div>
+    <div class="pipe-step" style="border:none;padding-bottom:0">
+      <div class="pipe-icon" style="border-color:rgba(155,89,255,.4);color:var(--pur)">05</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:.8rem;margin-bottom:.3rem">ABUSE DO PROVIDERA / HOSTINGU</div>
+        <div style="font-size:.7rem;color:#777;line-height:1.7;margin-bottom:.5rem">Skontaktuj się z ISP lub hostingiem via <code>abuse@[isp-domain]</code>. Wiele hostingów reaguje w 2-4h przy dobrze udokumentowanym zgłoszeniu z raportem OSINT.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <span class="badge bpur">abuse@[isp]</span>
+          <span class="badge bdim">RFC 2142</span>
+          <a href="https://www.europol.europa.eu/report-a-crime" target="_blank" rel="noopener" class="badge bpur" style="cursor:pointer">Europol EC3 ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [06] REPORTING TABLE ═════════════════════════════════════════════════ -->
+<section style="margin-bottom:3.5rem" class="reveal">
+  <div class="sh"><span class="sh-num">[06]</span><span class="sh-title">KANAŁY ZGŁASZANIA — MAPA</span><span style="font-size:.6rem;color:#333;margin-left:auto">reporting_channels.sh</span></div>
+
+  <div class="panel" style="overflow:hidden">
+    <div class="tc">
+      <div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div>
+      <span class="dt">LEGAL_REPORTING_CHANNELS // v1.0</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="osint-table">
+        <thead>
+          <tr><th>Organizacja</th><th>Zakres</th><th>Czas reakcji</th><th>Link</th><th>Skuteczność</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:var(--g)">CERT Polska</strong></td>
+            <td>PL incydenty, phishing, złośliwe domeny</td>
+            <td><span class="ng">24-48h</span></td>
+            <td><a href="https://incydent.cert.pl" target="_blank" rel="noopener" class="ng" style="font-size:.65rem">incydent.cert.pl ↗</a></td>
+            <td><div style="display:flex;gap:.25rem;align-items:center"><div style="width:45px;height:4px;background:#111;position:relative;overflow:hidden"><div style="position:absolute;height:100%;background:var(--g);box-shadow:0 0 4px var(--g);width:90%"></div></div><span class="ng" style="font-size:.6rem">90%</span></div></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--red)">Policja PL</strong></td>
+            <td>Cyberprzestępczość, fraudy finansowe</td>
+            <td><span style="color:var(--gold)">1-7 dni</span></td>
+            <td><a href="https://www.policja.pl" target="_blank" rel="noopener" class="nr" style="font-size:.65rem">policja.pl ↗</a></td>
+            <td><div style="display:flex;gap:.25rem;align-items:center"><div style="width:45px;height:4px;background:#111;position:relative;overflow:hidden"><div style="position:absolute;height:100%;background:var(--gold);box-shadow:0 0 4px var(--gold);width:65%"></div></div><span class="ng2" style="font-size:.6rem">65%</span></div></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--bl)">AbuseIPDB</strong></td>
+            <td>Community IP blacklisting, globalne</td>
+            <td><span class="ng">Natychmiast</span></td>
+            <td><a href="https://www.abuseipdb.com/report" target="_blank" rel="noopener" class="nb" style="font-size:.65rem">abuseipdb.com ↗</a></td>
+            <td><div style="display:flex;gap:.25rem;align-items:center"><div style="width:45px;height:4px;background:#111;position:relative;overflow:hidden"><div style="position:absolute;height:100%;background:var(--bl);box-shadow:0 0 4px var(--bl);width:85%"></div></div><span class="nb" style="font-size:.6rem">85%</span></div></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--pur)">Google Safe Browsing</strong></td>
+            <td>Phishing URLs, malware distribution</td>
+            <td><span class="ng">1-24h</span></td>
+            <td><a href="https://safebrowsing.google.com/safebrowsing/report_phish/" target="_blank" rel="noopener" class="np" style="font-size:.65rem">report_phish ↗</a></td>
+            <td><div style="display:flex;gap:.25rem;align-items:center"><div style="width:45px;height:4px;background:#111;position:relative;overflow:hidden"><div style="position:absolute;height:100%;background:var(--pur);box-shadow:0 0 4px var(--pur);width:95%"></div></div><span class="np" style="font-size:.6rem">95%</span></div></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--gold)">Europol EC3</strong></td>
+            <td>Zorganizowana cyberprzestępczość, EU</td>
+            <td><span style="color:#666">7-30 dni</span></td>
+            <td><a href="https://www.europol.europa.eu/report-a-crime" target="_blank" rel="noopener" class="ng2" style="font-size:.65rem">europol.europa.eu ↗</a></td>
+            <td><div style="display:flex;gap:.25rem;align-items:center"><div style="width:45px;height:4px;background:#111;position:relative;overflow:hidden"><div style="position:absolute;height:100%;background:var(--gold);box-shadow:0 0 4px var(--gold);width:55%"></div></div><span class="ng2" style="font-size:.6rem">55%</span></div></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--g)">Microsoft MSRC</strong></td>
+            <td>Malware, SmartScreen block requests</td>
+            <td><span class="ng">2-48h</span></td>
+            <td><a href="https://www.microsoft.com/en-us/wdsi/support/report-unsafe-site-guest" target="_blank" rel="noopener" class="ng" style="font-size:.65rem">microsoft.com ↗</a></td>
+            <td><div style="display:flex;gap:.25rem;align-items:center"><div style="width:45px;height:4px;background:#111;position:relative;overflow:hidden"><div style="position:absolute;height:100%;background:var(--g);box-shadow:0 0 4px var(--g);width:80%"></div></div><span class="ng" style="font-size:.6rem">80%</span></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [07] SCRIPT SOURCE ════════════════════════════════════════════════════ -->
+<section id="script" style="margin-bottom:3.5rem" class="reveal">
+  <div class="sh"><span class="sh-num">[07]</span><span class="sh-title">ŹRÓDŁO SKRYPTU</span><span style="font-size:.6rem;color:#333;margin-left:auto">osint_fraud_analyzer.sh · v1.0.0</span></div>
+
+  <!-- Quick install -->
+  <div class="panel" style="margin-bottom:1rem;overflow:hidden">
+    <div class="tc">
+      <div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div>
+      <span class="dt">quick_install.sh</span>
+    </div>
+    <div class="code-block" style="border:none">
+      <button class="copy-btn" onclick="copyCode(this,'install-code')">COPY</button>
+      <pre id="install-code"><span style="color:#444"># Pobierz i uruchom</span>
+<span style="color:var(--g)">wget</span> <span style="color:var(--gold)">https://anonymousik.is-a.dev/scripts/osint/osint_fraud_analyzer.sh</span>
+<span style="color:var(--g)">chmod</span> +x osint_fraud_analyzer.sh
+
+<span style="color:#444"># Opcjonalnie: ustaw klucze API</span>
+<span style="color:var(--bl)">export</span> ABUSEIPDB_KEY=<span style="color:var(--gold)">"twój_klucz"</span>
+<span style="color:var(--bl)">export</span> VIRUSTOTAL_KEY=<span style="color:var(--gold)">"twój_klucz"</span>
+<span style="color:var(--bl)">export</span> SHODAN_KEY=<span style="color:var(--gold)">"twój_klucz"</span>
+<span style="color:var(--bl)">export</span> IPINFO_TOKEN=<span style="color:var(--gold)">"twój_token"</span>
+
+<span style="color:#444"># Uruchom analizę</span>
+./osint_fraud_analyzer.sh <span style="color:var(--red)">185.220.101.45</span>
+./osint_fraud_analyzer.sh <span style="color:var(--red)">malware.example.com</span></pre>
+    </div>
+  </div>
+
+  <!-- Full script -->
+  <div class="panel" style="overflow:hidden">
+    <div style="padding:.6rem 1.25rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #111">
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <span class="badge bred">BASH</span>
+        <span style="font-size:.65rem;color:#555">osint_fraud_analyzer.sh</span>
+        <span class="badge bdim">254 linii</span>
+      </div>
+      <div style="display:flex;gap:.5rem">
+        <button class="copy-btn" style="position:static" onclick="copyCode(this,'full-script')">COPY ALL</button>
+        <a href="data:text/plain;charset=utf-8," id="dl-link" download="osint_fraud_analyzer.sh" class="copy-btn" style="position:static;display:inline-block">DL</a>
+      </div>
+    </div>
+    <div class="code-block" style="border:none;max-height:480px;overflow-y:auto">
+      <pre id="full-script" style="color:#555"><span style="color:#333">#!/usr/bin/env bash</span>
+<span style="color:#2a2a2a"># ═══════════════════════════════════════════════════════════════════</span>
+<span style="color:#2a2a2a"># osint_fraud_analyzer.sh · SecFerro Division Series · v1.0.0</span>
+<span style="color:#2a2a2a"># Advanced IP/Domain fraud intelligence aggregator</span>
+<span style="color:#2a2a2a"># Sources: ipinfo.io · ip-api.com · AbuseIPDB · Shodan</span>
+<span style="color:#2a2a2a">#          VirusTotal · StopForumSpam</span>
+<span style="color:#2a2a2a"># Author: Anonymousik — anonymousik.is-a.dev/scripts/osint</span>
+<span style="color:#2a2a2a"># Legal: Evidence gathering for law enforcement reports ONLY</span>
+<span style="color:#2a2a2a"># ═══════════════════════════════════════════════════════════════════</span>
+<span style="color:#2a2a2a">## (Termux: set -euo pipefail disabled for compatibility)</span>
+<span style="color:#2a2a2a">## (Standard Bash: uncomment the line below)</span>
+<span style="color:#2a2a2a">#set -euo pipefail</span>
+
+<span style="color:#333"># ── CONFIG (via environment variables — never hardcode keys) ────────</span>
+<span style="color:var(--bl)">ABUSEIPDB_KEY</span><span style="color:#555">="${ABUSEIPDB_KEY:-}"</span>
+<span style="color:var(--bl)">VIRUSTOTAL_KEY</span><span style="color:#555">="${VIRUSTOTAL_KEY:-}"</span>
+<span style="color:var(--bl)">SHODAN_KEY</span><span style="color:#555">="${SHODAN_KEY:-}"</span>
+<span style="color:var(--bl)">IPINFO_TOKEN</span><span style="color:#555">="${IPINFO_TOKEN:-}"</span>
+<span style="color:var(--bl)">OUTPUT_DIR</span><span style="color:#555">="${OUTPUT_DIR:-./fraud_reports}"</span>
+<span style="color:var(--bl)">REPORT_FILE</span><span style="color:#555">=""</span>
+
+<span style="color:#333"># ── COLORS ──────────────────────────────────────────────────────────</span>
+<span style="color:var(--bl)">RED</span><span style="color:#555">='\033[0;31m'</span>; <span style="color:var(--bl)">YELLOW</span><span style="color:#555">='\033[1;33m'</span>; <span style="color:var(--bl)">GREEN</span><span style="color:#555">='\033[0;32m'</span>
+<span style="color:var(--bl)">CYAN</span><span style="color:#555">='\033[0;36m'</span>; <span style="color:var(--bl)">BOLD</span><span style="color:#555">='\033[1m'</span>; <span style="color:var(--bl)">NC</span><span style="color:#555">='\033[0m'</span>
+
+<span style="color:#333"># ── DEPENDENCY CHECK ────────────────────────────────────────────────</span>
+<span style="color:var(--g)">for</span> cmd in curl jq date; <span style="color:var(--g)">do</span>
+    <span style="color:var(--g)">command</span> -v <span style="color:#888">"$cmd"</span> &>/dev/null || { <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"[!] Missing dep: $cmd"</span> >&2; <span style="color:var(--g)">exit</span> 1; }
+<span style="color:var(--g)">done</span>
+
+<span style="color:#333"># ── INPUT VALIDATION (sanitize: only IP/domain-safe chars) ──────────</span>
+<span style="color:var(--bl)">TARGET</span><span style="color:#555">="${1:-}"</span>
+[[ -z <span style="color:#888">"$TARGET"</span> ]] && { <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"Użycie: $0 &lt;ip|domena&gt;"</span> >&2; <span style="color:var(--g)">exit</span> 1; }
+<span style="color:var(--g)">if</span> ! [[ <span style="color:#888">"$TARGET"</span> =~ ^[a-zA-Z0-9._:-]+$ ]]; <span style="color:var(--g)">then</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"[!] Invalid target format: '${TARGET}'"</span> >&2; <span style="color:var(--g)">exit</span> 1
+<span style="color:var(--g)">fi</span>
+
+<span style="color:#333"># ── HELPER: safe_curl (validates JSON, checks HTTP 200) ─────────────</span>
+<span style="color:var(--g)">safe_curl</span>() {
+    <span style="color:var(--g)">local</span> url=<span style="color:#888">"$1"</span> response http_code body
+    response=$(<span style="color:var(--g)">curl</span> -sS -w <span style="color:var(--gold)">"\n%{http_code}"</span> --max-time 15 \
+        -H <span style="color:var(--gold)">"User-Agent: FraudAnalyzer/2.0"</span> <span style="color:#888">"$url"</span> 2>/dev/null) || <span style="color:var(--g)">return</span> 1
+    http_code=$(<span style="color:var(--g)">echo</span> <span style="color:#888">"$response"</span> | <span style="color:var(--g)">tail</span> -n1)
+    body=$(<span style="color:var(--g)">echo</span> <span style="color:#888">"$response"</span> | <span style="color:var(--g)">head</span> -n -1)
+    [[ <span style="color:#888">"$http_code"</span> == <span style="color:var(--gold)">"200"</span> ]] || <span style="color:var(--g)">return</span> 1
+    <span style="color:var(--g)">echo</span> <span style="color:#888">"$body"</span> | <span style="color:var(--g)">jq</span> empty 2>/dev/null || <span style="color:var(--g)">return</span> 1
+    <span style="color:var(--g)">echo</span> <span style="color:#888">"$body"</span>
+}
+
+<span style="color:var(--g)">log_section</span>() { <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"\n${CYAN}${BOLD}══════════════════════════════${NC}"</span>;
+                <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${CYAN}${BOLD}  $1${NC}"</span>;
+                <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${CYAN}${BOLD}══════════════════════════════${NC}"</span>; }
+<span style="color:var(--g)">append_report</span>() { <span style="color:var(--g)">echo</span> <span style="color:#888">"$1"</span> >> <span style="color:#888">"$REPORT_FILE"</span>; }
+
+<span style="color:#333"># ── SETUP OUTPUT DIR ────────────────────────────────────────────────</span>
+<span style="color:var(--g)">mkdir</span> -p <span style="color:#888">"$OUTPUT_DIR"</span>
+<span style="color:var(--bl)">TIMESTAMP</span>=$(<span style="color:var(--g)">date</span> +<span style="color:var(--gold)">"%Y%m%d_%H%M%S"</span>)
+<span style="color:var(--bl)">REPORT_FILE</span>=<span style="color:#888">"${OUTPUT_DIR}/fraud_report_${TARGET//\//_}_${TIMESTAMP}.txt"</span>
+{
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"======================================"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"  FRAUD INTELLIGENCE REPORT"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"  Target : $TARGET"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"  Date   : $(date -u '+%Y-%m-%d %H:%M:%S UTC')"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"======================================"</span>
+} > <span style="color:#888">"$REPORT_FILE"</span>
+
+<span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${BOLD}[*] Target: ${YELLOW}${TARGET}${NC}"</span>
+
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:#333"># MODULE 1: GEO + ASN — ipinfo.io</span>
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:var(--g)">log_section</span> <span style="color:var(--gold)">"1/6 GEO + ASN — ipinfo.io"</span>
+<span style="color:var(--g)">append_report</span> $<span style="color:var(--gold)">'\n[MODULE 1] GEO + ASN'</span>
+
+<span style="color:var(--bl)">API_URL</span>=<span style="color:#888">"https://ipinfo.io/${TARGET}/json"</span>
+[[ -n <span style="color:#888">"$IPINFO_TOKEN"</span> ]] && <span style="color:var(--bl)">API_URL</span>+=<span style="color:#888">"?token=${IPINFO_TOKEN}"</span>
+<span style="color:var(--g)">if</span> <span style="color:var(--bl)">GEO</span>=$(<span style="color:var(--g)">safe_curl</span> <span style="color:#888">"$API_URL"</span>); <span style="color:var(--g)">then</span>
+    <span style="color:var(--g)">echo</span> <span style="color:#888">"$GEO"</span> | <span style="color:var(--g)">jq</span> <span style="color:var(--gold)">'{IP:.ip,Hostname:(.hostname//"N/A"),
+        Org:(.org//"N/A"),City:(.city//"N/A"),Country:.country,Bogon:(.bogon//false)}'</span>
+    <span style="color:var(--g)">append_report</span> <span style="color:#888">"$(echo "$GEO" | jq .)"</span>
+<span style="color:var(--g)">else</span>
+    <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${YELLOW}[!] ipinfo.io unavailable or rate limit${NC}"</span>
+<span style="color:var(--g)">fi</span>
+
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:#333"># MODULE 2: VPN / TOR / PROXY — ip-api.com</span>
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:var(--g)">log_section</span> <span style="color:var(--gold)">"2/6 VPN/TOR/PROXY — ip-api.com"</span>
+<span style="color:var(--g)">append_report</span> $<span style="color:var(--gold)">'\n[MODULE 2] VPN/TOR/PROXY'</span>
+
+<span style="color:var(--bl)">FIELDS</span>=<span style="color:var(--gold)">"status,country,regionName,city,isp,org,as,proxy,hosting,query"</span>
+<span style="color:var(--g)">if</span> <span style="color:var(--bl)">IPAPI</span>=$(<span style="color:var(--g)">safe_curl</span> <span style="color:var(--gold)">"http://ip-api.com/json/${TARGET}?fields=${FIELDS}"</span>); <span style="color:var(--g)">then</span>
+    <span style="color:var(--bl)">IS_PROXY</span>=$(<span style="color:var(--g)">echo</span> <span style="color:#888">"$IPAPI"</span> | <span style="color:var(--g)">jq</span> -r <span style="color:var(--gold)">'.proxy'</span>)
+    <span style="color:var(--bl)">IS_HOST</span>=$(<span style="color:var(--g)">echo</span> <span style="color:#888">"$IPAPI"</span> | <span style="color:var(--g)">jq</span> -r <span style="color:var(--gold)">'.hosting'</span>)
+    <span style="color:var(--g)">echo</span> <span style="color:#888">"$IPAPI"</span> | <span style="color:var(--g)">jq</span> <span style="color:var(--gold)">'{ISP:.isp,Org:.org,AS:.as,Is_Proxy:.proxy,Is_DC:.hosting}'</span>
+    [[ <span style="color:#888">"$IS_PROXY"</span> == <span style="color:var(--gold)">"true"</span> ]] && <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${RED}[!!!] PROXY/VPN DETECTED!${NC}"</span>
+    [[ <span style="color:#888">"$IS_HOST"</span> == <span style="color:var(--gold)">"true"</span> ]] && <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${YELLOW}[!] IP belongs to DATACENTER${NC}"</span>
+    <span style="color:var(--g)">append_report</span> <span style="color:#888">"$(echo "$IPAPI" | jq .)"</span>
+<span style="color:var(--g)">fi</span>
+
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:#333"># MODULE 3: ABUSE HISTORY — AbuseIPDB</span>
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:var(--g)">log_section</span> <span style="color:var(--gold)">"3/6 ABUSE HISTORY — AbuseIPDB"</span>
+<span style="color:var(--g)">if</span> [[ -z <span style="color:#888">"$ABUSEIPDB_KEY"</span> ]]; <span style="color:var(--g)">then</span>
+    <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${YELLOW}[!] ABUSEIPDB_KEY not set — skipping${NC}"</span>
+<span style="color:var(--g)">else</span>
+    <span style="color:var(--g)">if</span> <span style="color:var(--bl)">ABUSE</span>=$(<span style="color:var(--g)">curl</span> -sS --max-time 15 \
+        -H <span style="color:var(--gold)">"Key: ${ABUSEIPDB_KEY}"</span> -H <span style="color:var(--gold)">"Accept: application/json"</span> \
+        <span style="color:var(--gold)">"https://api.abuseipdb.com/api/v2/check?ipAddress=${TARGET}&amp;maxAgeInDays=90&amp;verbose"</span>); <span style="color:var(--g)">then</span>
+        <span style="color:var(--bl)">SCORE</span>=$(<span style="color:var(--g)">echo</span> <span style="color:#888">"$ABUSE"</span> | <span style="color:var(--g)">jq</span> -r <span style="color:var(--gold)">'.data.abuseConfidenceScore // 0'</span>)
+        <span style="color:var(--bl)">REPORTS</span>=$(<span style="color:var(--g)">echo</span> <span style="color:#888">"$ABUSE"</span> | <span style="color:var(--g)">jq</span> -r <span style="color:var(--gold)">'.data.totalReports // 0'</span>)
+        <span style="color:var(--g)">echo</span> <span style="color:#888">"$ABUSE"</span> | <span style="color:var(--g)">jq</span> <span style="color:var(--gold)">'.data | {Score:.abuseConfidenceScore,Reports:.totalReports}'</span>
+        (( SCORE >= 80 )) && <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${RED}[!!!] HIGH RISK: ${SCORE}/100 (${REPORTS} reports)${NC}"</span>
+        (( SCORE >= 30 )) && (( SCORE < 80 )) && <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${YELLOW}[!] MEDIUM: ${SCORE}/100${NC}"</span>
+        (( SCORE < 30 )) && <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${GREEN}[+] LOW risk: ${SCORE}/100${NC}"</span>
+    <span style="color:var(--g)">fi</span>
+<span style="color:var(--g)">fi</span>
+
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:#333"># MODULE 4: OPEN PORTS / CVE — Shodan</span>
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:var(--g)">log_section</span> <span style="color:var(--gold)">"4/6 OPEN PORTS / CVE — Shodan"</span>
+<span style="color:var(--g)">if</span> [[ -n <span style="color:#888">"$SHODAN_KEY"</span> ]]; <span style="color:var(--g)">then</span>
+    <span style="color:var(--g)">if</span> <span style="color:var(--bl)">SHODAN</span>=$(<span style="color:var(--g)">safe_curl</span> \
+        <span style="color:var(--gold)">"https://api.shodan.io/shodan/host/${TARGET}?key=${SHODAN_KEY}"</span>); <span style="color:var(--g)">then</span>
+        <span style="color:var(--g)">echo</span> <span style="color:#888">"$SHODAN"</span> | <span style="color:var(--g)">jq</span> <span style="color:var(--gold)">'{OS:(.os//"unknown"),Ports:.ports,Tags:.tags,CVEs:(.vulns|keys?//[])}'</span>
+        <span style="color:var(--g)">append_report</span> <span style="color:#888">"$(echo "$SHODAN" | jq .)"</span>
+    <span style="color:var(--g)">else</span>
+        <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${YELLOW}[!] Shodan: no data for this IP${NC}"</span>
+    <span style="color:var(--g)">fi</span>
+<span style="color:var(--g)">fi</span>
+
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:#333"># MODULE 5: MALWARE / PHISHING — VirusTotal</span>
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:var(--g)">log_section</span> <span style="color:var(--gold)">"5/6 MALWARE/PHISHING — VirusTotal"</span>
+<span style="color:var(--g)">if</span> [[ -n <span style="color:#888">"$VIRUSTOTAL_KEY"</span> ]]; <span style="color:var(--g)">then</span>
+    <span style="color:var(--g)">if</span> <span style="color:var(--bl)">VT</span>=$(<span style="color:var(--g)">curl</span> -sS --max-time 15 \
+        -H <span style="color:var(--gold)">"x-apikey: ${VIRUSTOTAL_KEY}"</span> \
+        <span style="color:var(--gold)">"https://www.virustotal.com/api/v3/ip_addresses/${TARGET}"</span>); <span style="color:var(--g)">then</span>
+        <span style="color:var(--g)">echo</span> <span style="color:#888">"$VT"</span> | <span style="color:var(--g)">jq</span> <span style="color:var(--gold)">'.data.attributes | {Malicious:.last_analysis_stats.malicious,
+            Suspicious:.last_analysis_stats.suspicious,Harmless:.last_analysis_stats.harmless}'</span>
+        <span style="color:var(--bl)">MAL</span>=$(<span style="color:var(--g)">echo</span> <span style="color:#888">"$VT"</span> | <span style="color:var(--g)">jq</span> -r <span style="color:var(--gold)">'.data.attributes.last_analysis_stats.malicious // 0'</span>)
+        (( MAL > 0 )) && <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${RED}[!!!] ${MAL} AV engines: MALICIOUS${NC}"</span>
+    <span style="color:var(--g)">fi</span>
+<span style="color:var(--g)">fi</span>
+
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:#333"># MODULE 6: SPAM REPUTATION — StopForumSpam</span>
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:var(--g)">log_section</span> <span style="color:var(--gold)">"6/6 SPAM REPUTATION — StopForumSpam"</span>
+<span style="color:var(--g)">if</span> <span style="color:var(--bl)">SFS</span>=$(<span style="color:var(--g)">safe_curl</span> <span style="color:var(--gold)">"https://api.stopforumspam.org/api?ip=${TARGET}&amp;json"</span>); <span style="color:var(--g)">then</span>
+    <span style="color:var(--g)">echo</span> <span style="color:#888">"$SFS"</span> | <span style="color:var(--g)">jq</span> <span style="color:var(--gold)">'{Listed:.ip.appears,Frequency:.ip.frequency,Confidence:.ip.confidence}'</span>
+    <span style="color:var(--bl)">LISTED</span>=$(<span style="color:var(--g)">echo</span> <span style="color:#888">"$SFS"</span> | <span style="color:var(--g)">jq</span> -r <span style="color:var(--gold)">'.ip.appears // 0'</span>)
+    (( LISTED > 0 )) && <span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"${RED}[!!!] IP listed in SPAM/FRAUD database!${NC}"</span>
+    <span style="color:var(--g)">append_report</span> <span style="color:#888">"$(echo "$SFS" | jq .)"</span>
+<span style="color:var(--g)">fi</span>
+
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:#333"># SUMMARY + LEGAL REPORTING CHANNELS</span>
+<span style="color:#333"># ════════════════════════════════════════════════════════════════════</span>
+<span style="color:var(--g)">log_section</span> <span style="color:var(--gold)">"SUMMARY &amp; LEGAL CHANNELS"</span>
+{
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"======================================"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"  LEGAL REPORTING CHANNELS"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"======================================"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"PL - CERT Polska:     https://incydent.cert.pl"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"PL - Policja:         https://www.policja.pl"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"EU - Europol EC3:     https://europol.europa.eu/report-a-crime"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"Community AbuseIPDB:  https://www.abuseipdb.com/report"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"Google Safe Browsing: https://safebrowsing.google.com"</span>
+    <span style="color:var(--g)">echo</span> <span style="color:var(--gold)">"Evidence: $REPORT_FILE"</span>
+} | <span style="color:var(--g)">tee</span> -a <span style="color:#888">"$REPORT_FILE"</span>
+
+<span style="color:var(--g)">echo</span> -e <span style="color:var(--gold)">"\n${GREEN}${BOLD}[+] Analysis complete. Report: ${REPORT_FILE}${NC}"</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [08] API KEYS GUIDE ══════════════════════════════════════════════════ -->
+<section style="margin-bottom:3.5rem" class="reveal">
+  <div class="sh"><span class="sh-num">[08]</span><span class="sh-title">PORADNIK API KEYS</span><span style="font-size:.6rem;color:#333;margin-left:auto">setup_guide.md</span></div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem">
+    <div style="padding:1rem;border:1px solid #1a1a1a;background:#050505">
+      <div style="font-size:.6rem;color:#444;letter-spacing:.1em;margin-bottom:.5rem;text-transform:uppercase">AbuseIPDB</div>
+      <div style="font-size:.68rem;color:#666;line-height:1.75;margin-bottom:.6rem">Free tier: 1000 req/dzień. Rejestracja emailem. Najbardziej wartościowy klucz.</div>
+      <a href="https://www.abuseipdb.com/account/api" target="_blank" rel="noopener" style="font-size:.62rem;color:var(--gold);letter-spacing:.06em">abuseipdb.com/account/api ↗</a>
+    </div>
+    <div style="padding:1rem;border:1px solid #1a1a1a;background:#050505">
+      <div style="font-size:.6rem;color:#444;letter-spacing:.1em;margin-bottom:.5rem;text-transform:uppercase">VirusTotal</div>
+      <div style="font-size:.68rem;color:#666;line-height:1.75;margin-bottom:.6rem">Free tier: 4 req/min, 500/dzień. Google account. Niezbędny do analizy malware.</div>
+      <a href="https://www.virustotal.com/gui/my-apikey" target="_blank" rel="noopener" style="font-size:.62rem;color:var(--g);letter-spacing:.06em">virustotal.com/gui/my-apikey ↗</a>
+    </div>
+    <div style="padding:1rem;border:1px solid #1a1a1a;background:#050505">
+      <div style="font-size:.6rem;color:#444;letter-spacing:.1em;margin-bottom:.5rem;text-transform:uppercase">Shodan</div>
+      <div style="font-size:.68rem;color:#666;line-height:1.75;margin-bottom:.6rem">Student/free plan dostępny. Najlepsza baza portów i bannerów serwisów. CVE Intel.</div>
+      <a href="https://account.shodan.io/" target="_blank" rel="noopener" style="font-size:.62rem;color:var(--pur);letter-spacing:.06em">account.shodan.io ↗</a>
+    </div>
+    <div style="padding:1rem;border:1px solid #1a1a1a;background:#050505">
+      <div style="font-size:.6rem;color:#444;letter-spacing:.1em;margin-bottom:.5rem;text-transform:uppercase">ipinfo.io</div>
+      <div style="font-size:.68rem;color:#666;line-height:1.75;margin-bottom:.6rem">50k req/miesiąc gratis bez tokena. Token opcjonalny dla wyższego limitu. Najlepsza geolokalizacja.</div>
+      <a href="https://ipinfo.io/account/token" target="_blank" rel="noopener" style="font-size:.62rem;color:var(--bl);letter-spacing:.06em">ipinfo.io/account ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [09] THREAT FEED LIVE ════════════════════════════════════════════════ -->
+<section style="margin-bottom:3.5rem" class="reveal">
+  <div class="sh"><span class="sh-num">[09]</span><span class="sh-title">THREAT FEED — LIVE LOG</span><span style="font-size:.6rem;color:#2a2a2a;margin-left:auto"><span id="feed-ts"></span></span></div>
+
+  <div class="panel" style="overflow:hidden">
+    <div class="tc">
+      <div class="dot" style="background:var(--red)"></div><div class="dot" style="background:var(--gold)"></div><div class="dot" style="background:var(--g)"></div>
+      <span class="dt">threat_intelligence_feed.sh — simulated stream</span>
+      <span class="pulse red" style="margin-left:auto;flex-shrink:0"></span>
+    </div>
+    <div id="threat-log" style="max-height:220px;overflow-y:auto;padding:.75rem 1rem"></div>
+    <div style="padding:.4rem 1rem;border-top:1px solid #0d0d0d;display:flex;align-items:center;gap:.75rem">
+      <span class="pulse" style="flex-shrink:0"></span>
+      <span style="font-size:.6rem;color:#2a2a2a;letter-spacing:.08em;flex:1">MONITORING GLOBAL THREAT INTELLIGENCE</span>
+      <span id="threat-count" style="font-size:.6rem;color:#333;letter-spacing:.08em">0 events</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ [10] USE CASES ═══════════════════════════════════════════════════════ -->
+<section style="margin-bottom:3.5rem" class="reveal">
+  <div class="sh"><span class="sh-num">[10]</span><span class="sh-title">PRZYPADKI UŻYCIA</span><span style="font-size:.6rem;color:#333;margin-left:auto">use_cases.md</span></div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.75rem">
+    <div class="panel" style="padding:1.25rem">
+      <div style="color:var(--red);font-size:.75rem;font-weight:700;margin-bottom:.4rem">🎣 Ochrona przed phishingiem</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75">Otrzymałeś podejrzany email z linkiem? Wyciągnij IP nadawcy z nagłówków i analizuj. Sprawdź domenę URL. Zidentyfikuj infrastrukturę atakujących i zgłoś do Google Safe Browsing.</div>
+    </div>
+    <div class="panel" style="padding:1.25rem">
+      <div style="color:var(--gold);font-size:.75rem;font-weight:700;margin-bottom:.4rem">💸 Fraud e-commerce</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75">Sklep online bombardowany fałszywymi zamówieniami? Przeanalizuj IP klientów pod kątem VPN/Tor i datacenter. Zautomatyzuj blokowanie przez AbuseIPDB API integration.</div>
+    </div>
+    <div class="panel" style="padding:1.25rem">
+      <div style="color:var(--bl);font-size:.75rem;font-weight:700;margin-bottom:.4rem">🔍 Investigative Journalism</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75">Badasz sieć dezinformacji? Mapuj infrastrukturę IP powiązanych domen. ASN reveal grupuje serwery tego samego operatora. Shodan ujawnia wspólne bannery.</div>
+    </div>
+    <div class="panel" style="padding:1.25rem">
+      <div style="color:var(--pur);font-size:.75rem;font-weight:700;margin-bottom:.4rem">🛡️ Ochrona serwera</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75">IP atakuje Twój SSH/webserver? Szybka analiza — jeśli score AbuseIPDB > 80, automatycznie dodaj do blokady <code>iptables</code> lub <code>fail2ban</code>. Skrypt integruje się z crontab.</div>
+    </div>
+    <div class="panel" style="padding:1.25rem">
+      <div style="color:var(--g);font-size:.75rem;font-weight:700;margin-bottom:.4rem">📱 Termux / Android</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75">Skrypt kompatybilny z Termux na Androidzie. Zainstaluj <code>curl jq</code> przez <code>pkg</code> i analizuj z telefonu. Idealne gdy jesteś w terenie i potrzebujesz szybkiej analizy.</div>
+    </div>
+    <div class="panel" style="padding:1.25rem">
+      <div style="color:var(--gold);font-size:.75rem;font-weight:700;margin-bottom:.4rem">🏢 SOC Integration</div>
+      <div style="font-size:.7rem;color:#777;line-height:1.75">Integracja z pipeline SIEM. Wywołaj jako skrypt z alertu. JSON output per moduł nadaje się do parsowania przez Splunk, Elastic, Wazuh. Raport jako artefakt w tickecie.</div>
+    </div>
+  </div>
+</section>
+
+</div>
+</main>
+
+<!-- FOOTER -->
+<footer style="position:relative;z-index:10">
+  <div style="max-width:960px;margin:0 auto;padding:3rem 1.5rem 2rem">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:2rem;margin-bottom:2rem">
+      <div>
+        <div style="font-weight:700;font-size:.9rem;color:#fff;margin-bottom:.4rem;letter-spacing:.06em">ƑERRට<span style="color:var(--red);margin-left:.3rem">OSINT</span></div>
+        <div style="font-size:.62rem;color:#333;letter-spacing:.1em;margin-bottom:.75rem">SECFERRO DIVISION · FRAUD INTELLIGENCE MODULE</div>
+        <div style="font-size:.62rem;color:#2a2a2a;line-height:1.7">Narzędzie do legalnego zbierania dowodów.<br>Wyłącznie do użytku w celu ochrony społeczeństwa.</div>
+      </div>
+      <div style="display:flex;gap:1.5rem">
+        <a href="/" style="color:#333;font-size:.6rem;letter-spacing:.1em;text-decoration:none;transition:color .2s;text-transform:uppercase" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#333'">Home</a>
+        <a href="/scripts" style="color:#333;font-size:.6rem;letter-spacing:.1em;text-decoration:none;transition:color .2s;text-transform:uppercase" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#333'">Scripts</a>
+        <a href="https://github.com/Anonymousik" target="_blank" rel="noopener" style="color:#333;font-size:.6rem;letter-spacing:.1em;text-decoration:none;transition:color .2s;text-transform:uppercase" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#333'">GitHub</a>
+        <a href="/#contact" style="color:#333;font-size:.6rem;letter-spacing:.1em;text-decoration:none;transition:color .2s;text-transform:uppercase" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#333'">Contact</a>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--brd);padding-top:1rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.5rem">
+      <div style="font-size:.58rem;color:#222;letter-spacing:.08em">© 2026 Anonymousik · MIT License · anonymousik.is-a.dev</div>
+      <div style="font-size:.58rem;color:#222;letter-spacing:.06em">SECFERRO DIVISION · OSINT FRAUD ANALYZER v1.0.0 · 08.03.2026</div>
+    </div>
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script>
+/* ── MATRIX ───────────────────────────────────────────────────────────────── */
+(function(){
+  var c=document.getElementById('matrix-canvas'),x=c.getContext('2d');
+  var ch='アイウエオカキクケコ01ABCDEFXZアノFRAUDOSINT'.split('');
+  var drops=[];
+  function resize(){c.width=innerWidth;c.height=innerHeight;var cols=Math.floor(c.width/18);drops=Array.from({length:cols},function(){return Math.floor(Math.random()*-60);});}
+  function draw(){x.fillStyle='rgba(5,5,5,.06)';x.fillRect(0,0,c.width,c.height);x.fillStyle='#ff003c';x.font='12px "Fira Code",monospace';drops.forEach(function(y,i){x.fillText(ch[Math.floor(Math.random()*ch.length)],i*18,y*18);drops[i]=(y>c.height/18+30&&Math.random()>.978)?0:y+1;});}
+  resize();addEventListener('resize',resize);setInterval(draw,60);
+})();
+
+/* ── CURSOR ──────────────────────────────────────────────────────────────── */
+var cur=document.getElementById('cursor');
+document.addEventListener('mousemove',function(e){cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
+document.querySelectorAll('a,button,.mod-card,[onclick]').forEach(function(el){
+  el.addEventListener('mouseenter',function(){cur.classList.add('big');});
+  el.addEventListener('mouseleave',function(){cur.classList.remove('big');});
+});
+
+/* ── SCROLL PROGRESS ──────────────────────────────────────────────────────── */
+var prog=document.getElementById('scroll-prog');
+document.addEventListener('scroll',function(){prog.style.width=Math.min(scrollY/(document.body.scrollHeight-innerHeight)*100,100)+'%';});
+
+/* ── CLOCK ─────────────────────────────────────────────────────────────────── */
+function tick(){
+  var t=new Date().toLocaleTimeString('pl-PL',{hour12:false});
+  var h=document.getElementById('clock-hero');
+  var n=document.getElementById('sf-nav-clock');
+  var f=document.getElementById('feed-ts');
+  if(h)h.textContent=t;if(n)n.textContent=t;if(f)f.textContent=t;
+}
+tick();setInterval(tick,1000);
+
+/* ── HERO DATE ─────────────────────────────────────────────────────────────── */
+var d=new Date();
+var hd=document.getElementById('hero-date');
+if(hd)hd.textContent=d.toISOString().slice(0,10)+' '+d.toLocaleTimeString('pl-PL',{hour12:false})+' UTC';
+
+/* ── HERO TYPING ──────────────────────────────────────────────────────────── */
+(function(){
+  var out=document.getElementById('hero-typing');
+  var res=document.getElementById('hero-out');
+  if(!out)return;
+  var text='[*] Inicjalizacja OSINT Fraud Analyzer v1.0.0...';
+  var i=0;
+  function type(){
+    if(i<=text.length){out.textContent=text.slice(0,i);i++;setTimeout(type,45);}
+    else{out.classList.remove('typing-cursor');setTimeout(function(){if(res)res.style.display='block';},400);}
+  }
+  setTimeout(type,600);
+})();
+
+/* ── NAV HAMBURGER ────────────────────────────────────────────────────────── */
+document.getElementById('sf-nav-hamburger').addEventListener('click',function(){
+  this.classList.toggle('is-open');
+  var mob=document.getElementById('sf-nav-mobile');
+  mob.classList.toggle('is-open');
+  this.setAttribute('aria-expanded',this.classList.contains('is-open'));
+});
+
+/* ── REVEAL ──────────────────────────────────────────────────────────────── */
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');}});
+},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+
+/* ── COVERAGE BARS ───────────────────────────────────────────────────────── */
+var barsObs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.bar-fill[data-w]').forEach(function(b){
+        setTimeout(function(){b.style.width=b.dataset.w+'%';},200);
+      });
+      barsObs.unobserve(e.target);
+    }
+  });
+},{threshold:.3});
+var cov=document.getElementById('coverage-bars');
+if(cov)barsObs.observe(cov);
+
+/* ── DEMO SCANNER ─────────────────────────────────────────────────────────── */
+var scanRunning=false;
+var demoData={
+  '185.220.101.45':{
+    geo:{ip:'185.220.101.45',country:'DE',org:'AS24940 Hetzner Online GmbH',city:'Falkenstein',bogon:false},
+    proxy:{isp:'Hetzner Online GmbH',proxy:true,hosting:true},
+    abuse:{score:98,reports:4721,usageType:'Data Center/Web Hosting/Transit'},
+    shodan:{ports:[443,80,22],tags:['tor','vpn'],vulns:['CVE-2023-44487','CVE-2024-2398']},
+    vt:{malicious:31,suspicious:4,harmless:38},
+    sfs:{listed:1,frequency:892,confidence:99.9},
+    threatLevel:98,threatLabel:'CRITICAL',threatColor:'#ff003c'
+  },
+  'phishing-example.ru':{
+    geo:{ip:'91.108.4.212',country:'RU',org:'AS199885 Llhost Inc OÜ',city:'Moscow',bogon:false},
+    proxy:{isp:'Llhost Inc',proxy:false,hosting:true},
+    abuse:{score:72,reports:183,usageType:'Data Center/Web Hosting'},
+    shodan:{ports:[80,443,8080],tags:['phishing'],vulns:['CVE-2023-3269']},
+    vt:{malicious:18,suspicious:7,harmless:12},
+    sfs:{listed:1,frequency:44,confidence:87.3},
+    threatLevel:72,threatLabel:'HIGH',threatColor:'#ff6600'
+  },
+  '8.8.8.8':{
+    geo:{ip:'8.8.8.8',country:'US',org:'AS15169 Google LLC',city:'Mountain View',bogon:false},
+    proxy:{isp:'Google LLC',proxy:false,hosting:true},
+    abuse:{score:0,reports:3,usageType:'Content Delivery Network'},
+    shodan:{ports:[53],tags:[],vulns:[]},
+    vt:{malicious:0,suspicious:0,harmless:94},
+    sfs:{listed:0,frequency:0,confidence:0},
+    threatLevel:2,threatLabel:'CLEAN',threatColor:'#00ff41'
+  },
+  '45.33.32.156':{
+    geo:{ip:'45.33.32.156',country:'US',org:'AS63949 Akamai Connected Cloud',city:'Fremont',bogon:false},
+    proxy:{isp:'Akamai Technologies',proxy:false,hosting:true},
+    abuse:{score:5,reports:12,usageType:'Data Center/Web Hosting/Transit'},
+    shodan:{ports:[22,80,443,9929],tags:['honeypot','self-signed'],vulns:[]},
+    vt:{malicious:1,suspicious:2,harmless:76},
+    sfs:{listed:0,frequency:2,confidence:18.5},
+    threatLevel:12,threatLabel:'LOW',threatColor:'#00ff41'
+  }
+};
+
+function setTarget(t){
+  document.getElementById('demo-input').value=t;
+}
+function loadExampleTarget(){
+  var examples=Object.keys(demoData);
+  setTarget(examples[Math.floor(Math.random()*examples.length)]);
+}
+
+function runDemoScan(){
+  if(scanRunning)return;
+  var raw=document.getElementById('demo-input').value.trim();
+  if(!raw){document.getElementById('demo-input').focus();return;}
+  // Basic sanitize check
+  if(!/^[a-zA-Z0-9._:-]+$/.test(raw)){
+    printLine('<span class="log-err">[!] Invalid target format. Use IP or domain only.</span>');
+    return;
+  }
+
+  scanRunning=true;
+  var btn=document.getElementById('scan-btn-text');
+  btn.textContent='⏳ SKANOWANIE...';
+
+  var out=document.getElementById('demo-output');
+  out.innerHTML='';
+
+  var data=demoData[raw]||generateGenericData(raw);
+  var ts=new Date().toLocaleTimeString('pl-PL',{hour12:false});
+
+  var lines=[
+    {d:0,  c:'log-info', t:'[SYS] '+ts+' — Starting OSINT Fraud Analyzer v1.0.0'},
+    {d:80, c:'log-info', t:'[SYS] Target: '+raw+' | Output: ./fraud_reports/'},
+    {d:160,c:'log-info', t:'[SYS] ══════ MODULE 1/6: GEO + ASN — ipinfo.io ══════'},
+    {d:340,c:'log-ok',   t:'[OK]  IP: '+data.geo.ip+' | Country: '+data.geo.country+' | City: '+data.geo.city},
+    {d:420,c:'log-ok',   t:'[OK]  Org: '+data.geo.org},
+    {d:500,c:data.geo.bogon?'log-err':'log-ok', t:'[OK]  Bogon: '+(data.geo.bogon?'YES (PRIVATE RANGE!)':'false')},
+    {d:640,c:'log-info', t:'[SYS] ══════ MODULE 2/6: VPN/TOR/PROXY ══════════════'},
+    {d:820,c:data.proxy.proxy?'log-err':'log-ok', t:'['+(data.proxy.proxy?'!!!':'+')+('] Is_Proxy/VPN: '+data.proxy.proxy)},
+    {d:900,c:data.proxy.hosting?'log-warn':'log-ok', t:'['+(data.proxy.hosting?'!':'+')+('] Is_Datacenter: '+data.proxy.hosting)},
+    {d:980,c:'log-ok',   t:'[+]  ISP: '+data.proxy.isp},
+    {d:1140,c:'log-info',t:'[SYS] ══════ MODULE 3/6: ABUSE HISTORY ═══════════════'},
+    {d:1320,c:data.abuse.score>=80?'log-err':data.abuse.score>=30?'log-warn':'log-ok',
+             t:'['+(data.abuse.score>=80?'!!!':data.abuse.score>=30?'!':'+')+('] Abuse Score: '+data.abuse.score+'/100 | Reports: '+data.abuse.reports)},
+    {d:1400,c:'log-ok',  t:'[+]  Usage Type: '+data.abuse.usageType},
+    {d:1560,c:'log-info',t:'[SYS] ══════ MODULE 4/6: OPEN PORTS / CVE ════════════'},
+    {d:1720,c:'log-ok',  t:'[+]  Open Ports: ['+data.shodan.ports.join(', ')+']'},
+    {d:1800,c:data.shodan.tags.length?'log-warn':'log-ok', t:'['+(data.shodan.tags.length?'!':'+')+('] Tags: ['+(data.shodan.tags.join(', ')||'none')+']')},
+    {d:1880,c:data.shodan.vulns.length?'log-err':'log-ok', t:'['+(data.shodan.vulns.length?'!!!':'+')+('] CVEs: ['+(data.shodan.vulns.join(', ')||'none')+']')},
+    {d:2060,c:'log-info',t:'[SYS] ══════ MODULE 5/6: VIRUSTOTAL (70+ AV) ═════════'},
+    {d:2240,c:data.vt.malicious>0?'log-err':'log-ok', t:'['+(data.vt.malicious>0?'!!!':'+')+('] Malicious: '+data.vt.malicious+' | Suspicious: '+data.vt.suspicious+' | Harmless: '+data.vt.harmless)},
+    {d:2380,c:'log-info',t:'[SYS] ══════ MODULE 6/6: SPAM REPUTATION ═════════════'},
+    {d:2520,c:data.sfs.listed?'log-err':'log-ok', t:'['+(data.sfs.listed?'!!!':'+')+('] Listed in spam DB: '+!!data.sfs.listed+' | Freq: '+data.sfs.frequency)},
+    {d:2700,c:'log-info',t:'────────────────────────────────────────────────'},
+    {d:2780,c:'log-ok',  t:'[+] REPORT: ./fraud_reports/fraud_report_'+raw+'_'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'.txt'},
+    {d:2860,c:'log-ok',  t:'[+] Analysis complete. Threat Level: '+data.threatLabel+' ('+data.threatLevel+'%)'},
+  ];
+  if(data.abuse.score>=80||data.vt.malicious>10){
+    lines.push({d:2980,c:'log-err',t:'[!!!] RECOMMENDED ACTION: Report to CERT.PL → incydent.cert.pl'});
+    lines.push({d:3060,c:'log-err',t:'[!!!] Submit to AbuseIPDB → abuseipdb.com/report'});
+  }
+
+  lines.forEach(function(l,i){
+    setTimeout(function(){
+      var div=document.createElement('div');
+      div.className='log-line scan-line';
+      div.style.animationDelay=(i*10)+'ms';
+      div.innerHTML='<span class="log-ts">'+new Date().toLocaleTimeString('pl-PL',{hour12:false})+'</span><span class="'+l.c+'">'+l.t+'</span>';
+      out.appendChild(div);
+      out.scrollTop=out.scrollHeight;
+    },l.d);
+  });
+
+  // Threat meter
+  setTimeout(function(){
+    var sec=document.getElementById('threat-bar-section');
+    sec.style.display='block';
+    var fill=document.getElementById('threat-fill');
+    var label=document.getElementById('threat-label');
+    fill.style.background=data.threatColor;
+    fill.style.boxShadow='0 0 8px '+data.threatColor;
+    label.style.color=data.threatColor;
+    label.textContent=data.threatLabel+' — '+data.threatLevel+'%';
+    setTimeout(function(){fill.style.width=data.threatLevel+'%';},100);
+  },2400);
+
+  setTimeout(function(){
+    scanRunning=false;
+    btn.textContent='▶ SKANUJ';
+  },3200);
+}
+
+function generateGenericData(target){
+  return{
+    geo:{ip:target,country:'??',org:'Unknown ASN',city:'Unknown',bogon:false},
+    proxy:{isp:'Unknown',proxy:false,hosting:false},
+    abuse:{score:0,reports:0,usageType:'Unknown'},
+    shodan:{ports:[],tags:[],vulns:[]},
+    vt:{malicious:0,suspicious:0,harmless:0},
+    sfs:{listed:0,frequency:0,confidence:0},
+    threatLevel:0,threatLabel:'UNKNOWN',threatColor:'#555'
+  };
+}
+
+function printLine(html){
+  var out=document.getElementById('demo-output');
+  var div=document.createElement('div');
+  div.className='log-line';
+  div.innerHTML=html;
+  out.appendChild(div);
+}
+
+function copyCode(btn,id){
+  var el=document.getElementById(id);
+  var text=el?el.innerText:'';
+  navigator.clipboard.writeText(text).then(function(){
+    btn.textContent='✓ COPIED';
+    btn.style.color='var(--g)';btn.style.borderColor='var(--g)';
+    setTimeout(function(){btn.textContent='COPY';btn.style.color='';btn.style.borderColor='';},2000);
+  }).catch(function(){});
+}
+
+// Set download link content
+document.addEventListener('DOMContentLoaded',function(){
+  var dl=document.getElementById('dl-link');
+  if(dl){
+    var sc=document.getElementById('full-script');
+    if(sc)dl.href='data:text/plain;charset=utf-8,'+encodeURIComponent(sc.innerText);
+  }
+});
+
+/* ── THREAT FEED ─────────────────────────────────────────────────────────── */
+(function(){
+  var log=document.getElementById('threat-log');
+  var cnt=document.getElementById('threat-count');
+  if(!log)return;
+  var totalEvts=0;
+
+  var feed=[
+    {t:'err', m:'[CERT.PL] Nowa kampania phishingowa — 47 domen PL zarejestrowanych'},
+    {t:'warn',m:'[ABUSEIPDB] IP 45.142.212.x — 3200+ raportów w 24h (RU ASN)'},
+    {t:'err', m:'[VT] Nowy malware dropper — wykryty przez 42/70 silników'},
+    {t:'info',m:'[SHODAN] 8400 nowych urządzeń z otwartym portem 22 (słabe hasła)'},
+    {t:'warn',m:'[STOPFORUMSPAM] Spike aktywności spam-bots — origin: BR, NG, UA'},
+    {t:'err', m:'[EC3/EUROPOL] Operacja dismantlement — darknet market takedown'},
+    {t:'ok',  m:'[CERT.PL] Blacklista zaktualizowana — 1243 nowe wpisy'},
+    {t:'info',m:'[IPINFO] Nowa sieć Tor exit nodes — ASN: 24940, DE'},
+    {t:'warn',m:'[VT] Domain squatting wykryty — 12 fałszywych bank-PL.* domen'},
+    {t:'err', m:'[ABUSEIPDB] Brute-force SSH storm — źródło: 91.108.x.x/16'},
+    {t:'ok',  m:'[GOOGLE SB] 890 phishing URL dezaktywowanych po zgłoszeniach'},
+    {t:'info',m:'[SHODAN] CVE-2024-2398 — 18k podatnych serwerów online'},
+    {t:'warn',m:'[STOPFORUMSPAM] E-mail fraud wave — credential harvesting kits'},
+    {t:'err', m:'[CERT.PL] Ransomware alert — infrastruktura C2 zidentyfikowana'},
+    {t:'ok',  m:'[ISP ABUSE] Hosting provider usunął 34 phishing sites (PL ISP)'},
+  ];
+  var idx=0;
+  function addFeed(){
+    var msg=feed[idx%feed.length]; idx++;
+    totalEvts++;
+    var d=document.createElement('div');
+    d.className='log-line';
+    var ts=new Date().toLocaleTimeString('pl-PL',{hour12:false});
+    var cls='log-'+msg.t;
+    d.innerHTML='<span class="log-ts">'+ts+'</span><span class="'+cls+'">'+msg.m+'</span>';
+    log.appendChild(d);
+    if(log.children.length>18){log.removeChild(log.firstChild);}
+    log.scrollTop=log.scrollHeight;
+    if(cnt)cnt.textContent=totalEvts+' events';
+    setTimeout(addFeed,2800+Math.random()*4000);
+  }
+  setTimeout(addFeed,500);
+})();
+
+/* ── ENTER KEY FOR DEMO ──────────────────────────────────────────────────── */
+document.getElementById('demo-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter')runDemoScan();
+});
+</script>
+</body>
+</html>
