@@ -1,0 +1,929 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  SecFerro v2.0 — RouterOS-on-Termux Management Suite                   ║
+# ║  Autor: SecFerro Division  |  Platforma: Termux/Android + QEMU TCG     ║
+# ╠══════════════════════════════════════════════════════════════════════════╣
+# ║  ARCHITEKTURA SIECI QEMU (user/slirp):                                 ║
+# ║    Host (Termux):  127.0.0.1  +  tap: 192.168.168.1                   ║
+# ║    RouterOS VM:    192.168.168.3   (DHCP)                              ║
+# ║    Port forwards:  2222→22(SSH) | 2525→25(SMTP-in) | 8291→8291(Winbox)║
+# ║    SMTP relay OUT: guestfwd 192.168.168.1:25 → 127.0.0.1:2526        ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+set -euo pipefail
+
+# ─────────────────────────── CONFIG ──────────────────────────────────────────
+SF_HOME="${SF_HOME:-$HOME/secferro}"
+SF_CONF="${SF_HOME}/conf/secferro.conf"
+SF_LOG_DIR="${SF_HOME}/logs"
+SF_PID_FILE="${SF_HOME}/run/qemu.pid"
+SF_DISK="${SF_HOME}/vm/routeros.img"
+
+# Załaduj konfigurację jeśli istnieje
+[[ -f "$SF_CONF" ]] && source "$SF_CONF"
+
+# Domyślne wartości (nadpisywane przez secferro.conf)
+: "${VM_RAM:=256}"
+: "${VM_DISK:=$SF_DISK}"
+: "${VM_ARCH:=x86_64}"
+: "${NET_SUBNET:=192.168.168.0/24}"
+: "${NET_HOST_GW:=192.168.168.1}"          # IP hosta widoczne z VM
+: "${NET_VM_IP:=192.168.168.3}"             # IP RouterOS
+: "${PORT_SSH:=2222}"                        # Host→VM SSH
+: "${PORT_SMTP_IN:=2525}"                    # Host→VM SMTP (RouterOS odbieranie)
+: "${PORT_SMTP_RELAY:=2526}"                 # Host lokalny relay OUT (VM→Host→Internet)
+: "${PORT_WINBOX:=8291}"
+: "${PORT_API:=8728}"
+: "${ROS_USER:=admin}"
+: "${ROS_PASS:=}"
+: "${MAIL_FROM:=router@secferro.lan}"
+: "${MAIL_RELAY_HOST:=smtp.gmail.com}"
+: "${MAIL_RELAY_PORT:=587}"
+: "${MAIL_RELAY_USER:=}"
+: "${MAIL_RELAY_PASS:=}"
+: "${MAIL_ALERT_TO:=}"
+: "${DNS_DOMAIN:=secferro.lan}"
+
+# ─────────────────────────── KOLORY ──────────────────────────────────────────
+R='\033[0m'; B='\033[1m'; D='\033[2m'
+RED='\033[91m'; GRN='\033[92m'; YLW='\033[93m'
+BLU='\033[94m'; MAG='\033[95m'; CYN='\033[96m'
+BGRD='\033[41m'; BGRN='\033[42m'
+
+c_ok()   { echo -e "${GRN}${B}[✓]${R} $*"; }
+c_err()  { echo -e "${RED}${B}[✗]${R} $*"; }
+c_warn() { echo -e "${YLW}${B}[!]${R} $*"; }
+c_info() { echo -e "${BLU}[i]${R} $*"; }
+c_dim()  { echo -e "${D}    └─ $*${R}"; }
+c_fix()  { echo -e "${MAG}${B}[🔧]${R} $*"; }
+c_hdr()  { echo -e "\n${CYN}${B}══ $* ══${R}\n"; }
+
+# ─────────────────────────── NARZĘDZIA ───────────────────────────────────────
+sf_vm_running() {
+    [[ -f "$SF_PID_FILE" ]] || return 1
+    local pid; pid=$(cat "$SF_PID_FILE" 2>/dev/null) || return 1
+    kill -0 "$pid" 2>/dev/null
+}
+
+sf_vm_pid() {
+    cat "$SF_PID_FILE" 2>/dev/null || echo "—"
+}
+
+sf_vm_uptime() {
+    local pid; pid=$(cat "$SF_PID_FILE" 2>/dev/null) || { echo "—"; return; }
+    local start; start=$(ps -o lstart= -p "$pid" 2>/dev/null) || { echo "—"; return; }
+    # uptime w formacie HH:MM:SS
+    local secs; secs=$(( $(date +%s) - $(date -d "$start" +%s 2>/dev/null || echo 0) ))
+    printf "%02d:%02d:%02d" $((secs/3600)) $(( (secs%3600)/60 )) $((secs%60))
+}
+
+sf_ros_boot_ready() {
+    # RouterOS uważa się za gotowy gdy SSH odpowiada
+    nc -z 127.0.0.1 "$PORT_SSH" 2>/dev/null
+}
+
+sf_port_in_use() {
+    nc -z 127.0.0.1 "$1" 2>/dev/null
+}
+
+sf_relay_running() {
+    pgrep -f "msmtpd.*${PORT_SMTP_RELAY}" >/dev/null 2>&1
+}
+
+sf_mem_free_mb() {
+    awk '/MemAvailable/{printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo "?"
+}
+
+sf_disk_free_mb() {
+    df "$HOME" 2>/dev/null | awk 'NR==2{printf "%d", $4/1024}'
+}
+
+sf_disk_img_size() {
+    [[ -f "$VM_DISK" ]] && du -sh "$VM_DISK" | cut -f1 || echo "—"
+}
+
+# ─────────────────────────── BANNER / DASHBOARD ──────────────────────────────
+sf_banner() {
+    clear
+    local vm_status vm_col vm_pid vm_up
+    local boot_status boot_col
+    local relay_status relay_col
+    local ssh_dot winbox_dot smtp_in_dot smtp_relay_dot
+
+    if sf_vm_running; then
+        vm_status="RUNNING"; vm_col="$GRN"
+        vm_pid=$(sf_vm_pid); vm_up=$(sf_vm_uptime)
+        if sf_ros_boot_ready; then
+            boot_status="RouterOS gotowy"; boot_col="$GRN"
+        else
+            boot_status="Boot w toku..."; boot_col="$YLW"
+        fi
+    else
+        vm_status="ZATRZYMANA"; vm_col="$RED"
+        vm_pid="—"; vm_up="—"
+        boot_status="VM offline"; boot_col="$D"
+    fi
+
+    sf_relay_running && { relay_status="● AKTYWNY"; relay_col="$GRN"; } \
+                     || { relay_status="○ WYŁĄCZONY"; relay_col="$YLW"; }
+
+    _dot() { sf_port_in_use "$1" && echo -e "${GRN}●${R}" || echo -e "${D}○${R}"; }
+    ssh_dot=$(      _dot "$PORT_SSH")
+    winbox_dot=$(   _dot "$PORT_WINBOX")
+    smtp_in_dot=$(  _dot "$PORT_SMTP_IN")
+    smtp_relay_dot=$( sf_relay_running && echo -e "${GRN}●${R}" || echo -e "${RED}○${R}" )
+
+    echo -e "${CYN}${B}"
+    echo "  ╔═══════════════════════════════════════════════════════════════╗"
+    echo "  ║       SecFerro v2.0  ·  RouterOS on Termux/QEMU              ║"
+    echo "  ╠═══════════════════════════════════════════════════════════════╣"
+    printf "  ║  VM:     ${vm_col}%-10s${CYN}  PID:%-6s  Uptime: %-10s   ║\n" \
+           "$vm_status" "$vm_pid" "$vm_up"
+    printf "  ║  Boot:   ${boot_col}%-47s${CYN}  ║\n" "$boot_status"
+    printf "  ║  Relay:  ${relay_col}%-47s${CYN}  ║\n" "$relay_status"
+    echo "  ╠═══════════════════════════════════════════════════════════════╣"
+    echo -e "  ║  Porty:  ${ssh_dot} 2222/SSH  ${smtp_in_dot} 2525/SMTP-in                      ${CYN}${B}║"
+    echo -e "  ║          ${winbox_dot} 8291/Winbox ${smtp_relay_dot} 2526/SMTP-relay                ${CYN}${B}║"
+    echo "  ╠═══════════════════════════════════════════════════════════════╣"
+    printf "  ║  RAM:  %-8s MB free  │  Dysk: %-8s MB free  │  VM: %-5s  ║\n" \
+           "$(sf_mem_free_mb)" "$(sf_disk_free_mb)" "$(sf_disk_img_size)"
+    echo "  ╚═══════════════════════════════════════════════════════════════╝"
+    echo -e "${R}"
+}
+
+# ─────────────────────────── MENU GŁÓWNE ─────────────────────────────────────
+sf_menu() {
+    while true; do
+        sf_banner
+        echo -e "${B}  MENU GŁÓWNE${R}"
+        echo -e "  ${GRN}${B}1.${R} VM Management      (start/stop/restart/konsola)"
+        echo -e "  ${GRN}${B}2.${R} RouterOS Config    (SSH quick-cmds, eksport, init)"
+        echo -e "  ${YLW}${B}3.${R} SMTP / Email       (relay setup, test maila, status)"
+        echo -e "  ${BLU}${B}4.${R} Sieć & DNS         (diagnostyka, ping, port-scan)"
+        echo -e "  ${MAG}${B}5.${R} Security Scan      (sftest, netwatch, SNMP audit)"
+        echo -e "  ${CYN}${B}6.${R} Logi               (QEMU, email, system)"
+        echo -e "  ${D}${B}7.${R} Backup & Eksport   (config RouterOS, snapshot VM)"
+        echo -e "  ${YLW}${B}8.${R} Konfiguracja       (ustawienia SecFerro)"
+        echo -e "  ${RED}${B}0.${R} Wyjście"
+        echo
+        read -rp "  $(echo -e "${CYN}${B}Wybór [0-8] > ${R}")" ch
+        case "$ch" in
+            1) sf_menu_vm ;;
+            2) sf_menu_ros ;;
+            3) sf_menu_smtp ;;
+            4) sf_menu_net ;;
+            5) sf_menu_security ;;
+            6) sf_menu_logs ;;
+            7) sf_menu_backup ;;
+            8) sf_menu_config ;;
+            0) echo -e "\n${D}SecFerro zakończony.${R}\n"; exit 0 ;;
+            *) c_warn "Nieznana opcja: '$ch'" ;;
+        esac
+        echo; read -rp "  $(echo -e "${D}Enter aby kontynuować...${R}")"
+    done
+}
+
+# ─────────────────────────── MENU: VM ────────────────────────────────────────
+sf_menu_vm() {
+    c_hdr "VM MANAGEMENT — RouterOS QEMU TCG"
+    echo -e "  ${GRN}${B}1.${R} Uruchom VM (sfstart)"
+    echo -e "  ${RED}${B}2.${R} Zatrzymaj VM (sfstop)"
+    echo -e "  ${YLW}${B}3.${R} Restart VM"
+    echo -e "  ${BLU}${B}4.${R} Status szczegółowy"
+    echo -e "  ${CYN}${B}5.${R} Konsola QEMU (monitor)"
+    echo -e "  ${MAG}${B}6.${R} Czekaj na boot RouterOS"
+    echo -e "  ${D}${B}0.${R} Wróć"
+    echo
+    read -rp "  $(echo -e "${CYN}Wybór > ${R}")" ch
+    case "$ch" in
+        1) sfstart ;;
+        2) sfstop ;;
+        3) sfstop; sleep 3; sfstart ;;
+        4) sf_vm_status_detail ;;
+        5) sf_qemu_monitor ;;
+        6) sf_wait_boot ;;
+        0) return ;;
+    esac
+}
+
+sf_vm_status_detail() {
+    c_hdr "STATUS VM — szczegółowy"
+    if sf_vm_running; then
+        local pid; pid=$(sf_vm_pid)
+        c_ok "VM uruchomiona (PID: $pid)"
+        c_dim "Uptime: $(sf_vm_uptime)"
+        c_dim "RAM VM: ${VM_RAM}MB"
+        c_dim "Obraz: $VM_DISK ($(sf_disk_img_size))"
+
+        echo
+        c_info "Procesy QEMU:"
+        ps -p "$pid" -o pid,vsz,rss,pcpu,comm 2>/dev/null | head -5 | sed 's/^/    /'
+
+        echo
+        c_info "Porty sieciowe (przekierowania):"
+        for p in "$PORT_SSH" "$PORT_SMTP_IN" "$PORT_SMTP_RELAY" "$PORT_WINBOX"; do
+            if sf_port_in_use "$p"; then
+                c_ok "Port $p — otwarty"
+            else
+                c_warn "Port $p — zamknięty"
+            fi
+        done
+
+        echo
+        if sf_ros_boot_ready; then
+            c_ok "RouterOS SSH (port $PORT_SSH) — gotowy"
+            # Quick system info via SSH
+            local ros_ver
+            ros_ver=$(timeout 5 ssh -o StrictHostKeyChecking=no \
+                      -o ConnectTimeout=3 -p "$PORT_SSH" \
+                      "${ROS_USER}@127.0.0.1" \
+                      "/system resource print interval=0" 2>/dev/null | head -20 || true)
+            [[ -n "$ros_ver" ]] && echo "$ros_ver" | head -15 | sed 's/^/    /'
+        else
+            c_warn "RouterOS SSH — niedostępny (VM może być w trakcie bootu)"
+        fi
+    else
+        c_err "VM nie działa"
+        c_dim "Uruchom przez opcję 1 lub komendą: sfstart"
+    fi
+}
+
+sf_wait_boot() {
+    c_hdr "CZEKAM NA BOOT ROUTEROS"
+    c_info "Oczekiwanie na SSH (port $PORT_SSH)..."
+    local timeout=120; local elapsed=0
+    while ! sf_ros_boot_ready; do
+        printf "\r  ${YLW}Czekam... %3ds / %3ds${R}" "$elapsed" "$timeout"
+        sleep 3; elapsed=$((elapsed+3))
+        [[ $elapsed -ge $timeout ]] && { echo; c_err "Timeout — RouterOS nie odpalił w ${timeout}s"; return 1; }
+    done
+    echo
+    c_ok "RouterOS gotowy po ${elapsed}s!"
+}
+
+sf_qemu_monitor() {
+    c_hdr "QEMU MONITOR — konsola"
+    local sock="${SF_HOME}/run/qemu-monitor.sock"
+    if [[ -S "$sock" ]]; then
+        c_info "Łączę z QEMU monitor (Ctrl+C żeby wyjść)..."
+        echo -e "${D}Wpisz 'quit' żeby zamknąć VM, 'info status' żeby sprawdzić stan${R}"
+        socat - "UNIX-CONNECT:$sock" 2>/dev/null || c_err "socat niedostępny — zainstaluj: pkg install socat"
+    else
+        c_err "Monitor socket nie istnieje: $sock"
+        c_dim "Uruchom VM z opcją monitoringu (sfstart)"
+    fi
+}
+
+# ─────────────────────────── MENU: ROUTEROS ──────────────────────────────────
+sf_menu_ros() {
+    c_hdr "ROUTEROS CONFIG — quick commands"
+    echo -e "  ${GRN}${B}1.${R} SSH → RouterOS (interaktywna sesja)"
+    echo -e "  ${BLU}${B}2.${R} Eksport konfiguracji RouterOS"
+    echo -e "  ${YLW}${B}3.${R} Wyślij skrypt init (init.rsc)"
+    echo -e "  ${MAG}${B}4.${R} Skonfiguruj email RouterOS (SMTP relay)"
+    echo -e "  ${CYN}${B}5.${R} Pokaż zasoby systemowe RouterOS"
+    echo -e "  ${GRN}${B}6.${R} Pokaż interfejsy sieciowe RouterOS"
+    echo -e "  ${YLW}${B}7.${R} Netwatch — dodaj reguły monitorowania"
+    echo -e "  ${D}${B}8.${R} Wyślij dowolną komendę RouterOS"
+    echo -e "  ${D}${B}0.${R} Wróć"
+    echo
+    read -rp "  $(echo -e "${CYN}Wybór > ${R}")" ch
+    case "$ch" in
+        1) sf_ros_ssh ;;
+        2) sf_ros_export_config ;;
+        3) sf_ros_send_init ;;
+        4) sf_ros_configure_email ;;
+        5) sf_ros_cmd "/system resource print" ;;
+        6) sf_ros_cmd "/interface print" ;;
+        7) sf_ros_netwatch_setup ;;
+        8) read -rp "  Komenda RouterOS > " cmd; sf_ros_cmd "$cmd" ;;
+        0) return ;;
+    esac
+}
+
+sf_ros_ssh() {
+    if ! sf_ros_boot_ready; then
+        c_err "RouterOS SSH niedostępny. Sprawdź czy VM działa."
+        return 1
+    fi
+    c_info "Łączę z RouterOS SSH (127.0.0.1:$PORT_SSH)..."
+    echo -e "${D}(Użyj 'quit' lub Ctrl+D żeby wyjść z RouterOS)${R}"
+    ssh -o StrictHostKeyChecking=no \
+        -o ConnectTimeout=5 \
+        -o ServerAliveInterval=30 \
+        -p "$PORT_SSH" \
+        "${ROS_USER}@127.0.0.1"
+}
+
+sf_ros_cmd() {
+    local cmd="$1"
+    if ! sf_ros_boot_ready; then
+        c_err "RouterOS niedostępny"
+        return 1
+    fi
+    c_info "Komenda: $cmd"
+    timeout 15 ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 \
+        -p "$PORT_SSH" "${ROS_USER}@127.0.0.1" "$cmd" 2>/dev/null || true
+}
+
+sf_ros_export_config() {
+    c_hdr "EKSPORT KONFIGURACJI ROUTEROS"
+    local ts; ts=$(date +%Y%m%d_%H%M%S)
+    local out_file="${SF_HOME}/backups/ros_config_${ts}.rsc"
+    mkdir -p "${SF_HOME}/backups"
+    c_info "Eksportuję konfigurację..."
+    if sf_ros_cmd "/export" > "$out_file" 2>&1; then
+        c_ok "Konfiguracja zapisana: $out_file"
+        c_dim "$(wc -l < "$out_file") linii"
+    else
+        c_err "Błąd eksportu"
+    fi
+}
+
+sf_ros_send_init() {
+    c_hdr "WYSYŁAM init.rsc → ROUTEROS"
+    local init_rsc="${SF_HOME}/conf/init.rsc"
+    if [[ ! -f "$init_rsc" ]]; then
+        c_err "Brak pliku: $init_rsc"
+        c_dim "Wygeneruj go przez: Konfiguracja → Generuj init.rsc"
+        return 1
+    fi
+    c_info "Kopiuję $init_rsc na RouterOS..."
+    scp -o StrictHostKeyChecking=no -P "$PORT_SSH" \
+        "$init_rsc" "${ROS_USER}@127.0.0.1:/init_upload.rsc" 2>/dev/null || {
+        c_err "scp nie zadziałał — próbuję przez SSH here-doc..."
+        cat "$init_rsc" | ssh -o StrictHostKeyChecking=no -p "$PORT_SSH" \
+            "${ROS_USER}@127.0.0.1" "import file-name=init_upload.rsc" 2>/dev/null || true
+        return
+    }
+    c_ok "Skopiowano. Uruchamiam..."
+    sf_ros_cmd "/import file-name=init_upload.rsc"
+    c_ok "init.rsc wykonany ✓"
+}
+
+sf_ros_configure_email() {
+    c_hdr "KONFIGURACJA EMAIL ROUTEROS"
+    c_info "Ustawiam RouterOS /tool e-mail → relay na 192.168.168.1:25 (guestfwd)"
+    echo
+    c_warn "Relay działa TYLKO gdy VM uruchomiona z guestfwd=tcp:192.168.168.1:25→127.0.0.1:2526"
+    c_warn "Używaj 'sfstart' — automatycznie dodaje guestfwd"
+    echo
+
+    local ros_email_cmds
+    ros_email_cmds="$(cat <<'EOF'
+/tool e-mail
+set address=192.168.168.1
+set port=25
+set start-tls=no
+set user=router
+set password=secferro
+set from=router@secferro.lan
+EOF
+)"
+    echo "$ros_email_cmds" | sf_ros_cmd "/import from-stdin" 2>/dev/null || {
+        # Fallback: wyślij linia po linii
+        sf_ros_cmd "/tool e-mail set address=192.168.168.1 port=25 start-tls=no from=router@secferro.lan user=router password=secferro"
+    }
+    c_ok "RouterOS email skonfigurowany → 192.168.168.1:25"
+    c_dim "Testuj: sfmail test"
+}
+
+sf_ros_netwatch_setup() {
+    c_hdr "NETWATCH — reguły monitorowania"
+    c_info "Dodaję netwatch dla 8.8.8.8 (Google DNS)"
+    sf_ros_cmd "/tool netwatch add host=8.8.8.8 interval=1m \
+        up-script=\"/log info message=\\\"8.8.8.8 UP\\\"\" \
+        down-script=\"/log warning message=\\\"8.8.8.8 DOWN - brak internetu!\\\"\""
+    c_ok "Netwatch dodany ✓"
+    sf_ros_cmd "/tool netwatch print"
+}
+
+# ─────────────────────────── MENU: SMTP ──────────────────────────────────────
+sf_menu_smtp() {
+    c_hdr "SMTP / EMAIL PIPELINE"
+    echo
+    echo -e "  ${D}Architektura:  RouterOS → 192.168.168.1:25 → msmtpd:2526 → Gmail/SMTP${R}"
+    echo
+    local relay_s; sf_relay_running && relay_s="${GRN}AKTYWNY${R}" || relay_s="${RED}WYŁĄCZONY${R}"
+    echo -e "  Status relay: ${relay_s}"
+    echo
+    echo -e "  ${GRN}${B}1.${R} Uruchom relay SMTP (msmtpd → :2526)"
+    echo -e "  ${RED}${B}2.${R} Zatrzymaj relay SMTP"
+    echo -e "  ${BLU}${B}3.${R} Test wysyłki (RouterOS → Gmail)"
+    echo -e "  ${YLW}${B}4.${R} Konfiguruj dane konta zewnętrznego"
+    echo -e "  ${CYN}${B}5.${R} Pokaż .msmtprc"
+    echo -e "  ${MAG}${B}6.${R} Generuj .msmtprc automatycznie"
+    echo -e "  ${D}${B}7.${R} Debug relay (verbose log)"
+    echo -e "  ${D}${B}8.${R} Sprawdź logi email"
+    echo -e "  ${D}${B}0.${R} Wróć"
+    echo
+    read -rp "  $(echo -e "${CYN}Wybór > ${R}")" ch
+    case "$ch" in
+        1) sfmail start ;;
+        2) sfmail stop ;;
+        3) sfmail test ;;
+        4) sf_smtp_configure ;;
+        5) sf_smtp_show_config ;;
+        6) sf_smtp_generate_config ;;
+        7) sfmail debug ;;
+        8) sf_smtp_show_logs ;;
+        0) return ;;
+    esac
+}
+
+sf_smtp_configure() {
+    c_hdr "KONFIGURACJA KONTA SMTP ZEWNĘTRZNEGO"
+    c_info "Te dane zostaną zapisane w ~/.msmtprc"
+    echo
+    echo -e "  ${D}(Puste = pozostaw bez zmian)${R}"
+    echo
+
+    read -rp "  Host SMTP [${MAIL_RELAY_HOST}]: " inp
+    [[ -n "$inp" ]] && MAIL_RELAY_HOST="$inp"
+
+    read -rp "  Port [${MAIL_RELAY_PORT}]: " inp
+    [[ -n "$inp" ]] && MAIL_RELAY_PORT="$inp"
+
+    read -rp "  User/email [${MAIL_RELAY_USER}]: " inp
+    [[ -n "$inp" ]] && MAIL_RELAY_USER="$inp"
+
+    read -rsp "  Hasło (ukryte) [****]: " inp; echo
+    [[ -n "$inp" ]] && MAIL_RELAY_PASS="$inp"
+
+    read -rp "  Alert TO (odbiorca) [${MAIL_ALERT_TO}]: " inp
+    [[ -n "$inp" ]] && MAIL_ALERT_TO="$inp"
+
+    sf_smtp_generate_config
+    sf_conf_save
+}
+
+sf_smtp_generate_config() {
+    c_hdr "GENEROWANIE ~/.msmtprc"
+    local msmtp_rc="$HOME/.msmtprc"
+
+    if [[ -z "$MAIL_RELAY_USER" ]]; then
+        c_err "Brak skonfigurowanego konta SMTP. Uruchom opcję 4 najpierw."
+        return 1
+    fi
+
+    cat > "$msmtp_rc" <<EOF
+# ~/.msmtprc — wygenerowany przez SecFerro v2.0
+# Plik konfiguracyjny msmtp — client SMTP relay
+
+defaults
+    auth           on
+    tls            on
+    tls_starttls   on
+    tls_trust_file /data/data/com.termux/files/usr/etc/tls/cert.pem
+    logfile        ${SF_LOG_DIR}/msmtp.log
+    syslog         off
+
+# Konto domyślne (relay dla RouterOS)
+account        secferro-relay
+host           ${MAIL_RELAY_HOST}
+port           ${MAIL_RELAY_PORT}
+from           ${MAIL_FROM}
+user           ${MAIL_RELAY_USER}
+password       ${MAIL_RELAY_PASS}
+
+# Konto alert (bezpośrednie wysyłki alertów z Termux)
+account        alert
+host           ${MAIL_RELAY_HOST}
+port           ${MAIL_RELAY_PORT}
+from           ${MAIL_FROM}
+user           ${MAIL_RELAY_USER}
+password       ${MAIL_RELAY_PASS}
+
+account default : secferro-relay
+EOF
+    chmod 600 "$msmtp_rc"
+    c_ok ".msmtprc wygenerowany: $msmtp_rc"
+    c_dim "Uprawnienia: 600 (prywatny)"
+}
+
+sf_smtp_show_config() {
+    c_hdr "AKTUALNY ~/.msmtprc"
+    if [[ -f "$HOME/.msmtprc" ]]; then
+        # Ukryj hasło
+        sed 's/^password.*/password       [UKRYTE]/' "$HOME/.msmtprc"
+    else
+        c_warn "Brak ~/.msmtprc — uruchom opcję 6 aby wygenerować"
+    fi
+}
+
+sf_smtp_show_logs() {
+    c_hdr "LOGI EMAIL"
+    local log="${SF_LOG_DIR}/msmtp.log"
+    [[ -f "$log" ]] && tail -50 "$log" | sed 's/password=[^ ]*/password=[UKRYTE]/gi' \
+                    || c_warn "Brak pliku logu: $log"
+}
+
+# ─────────────────────────── MENU: SIEĆ ──────────────────────────────────────
+sf_menu_net() {
+    c_hdr "SIEĆ & DNS — diagnostyka"
+    echo -e "  ${GRN}${B}1.${R} Ping RouterOS (192.168.168.3)"
+    echo -e "  ${GRN}${B}2.${R} Ping 8.8.8.8 (internet z Termux)"
+    echo -e "  ${BLU}${B}3.${R} Skan portów localhost (VM forwards)"
+    echo -e "  ${BLU}${B}4.${R} IP-scan RouterOS sieci wewnętrznej"
+    echo -e "  ${YLW}${B}5.${R} Napraw /etc/hosts (DNS secferro.lan)"
+    echo -e "  ${YLW}${B}6.${R} Sprawdź trasy sieciowe"
+    echo -e "  ${MAG}${B}7.${R} Traceroute do 8.8.8.8"
+    echo -e "  ${CYN}${B}8.${R} Pełny raport sieci"
+    echo -e "  ${D}${B}0.${R} Wróć"
+    echo
+    read -rp "  $(echo -e "${CYN}Wybór > ${R}")" ch
+    case "$ch" in
+        1) sf_ping_vm ;;
+        2) ping -c 4 8.8.8.8 ;;
+        3) sf_scan_local_ports ;;
+        4) sf_ros_cmd "/tool ip-scan interface=ether1 duration=5s" ;;
+        5) sf_fix_hosts ;;
+        6) ip route 2>/dev/null || route 2>/dev/null ;;
+        7) traceroute 8.8.8.8 2>/dev/null || c_warn "traceroute niedostępny" ;;
+        8) sf_net_report_full ;;
+        0) return ;;
+    esac
+}
+
+sf_ping_vm() {
+    c_info "Ping 127.0.0.1:$PORT_SSH (portforward test)..."
+    # RouterOS na QEMU user-network nie jest bezpośrednio pingable z hosta
+    # Testujemy przez port TCP zamiast ICMP
+    if nc -z -w3 127.0.0.1 "$PORT_SSH" 2>/dev/null; then
+        c_ok "RouterOS SSH port ($PORT_SSH) — osiągalny ✓"
+    else
+        c_err "RouterOS SSH port ($PORT_SSH) — niedostępny"
+        c_dim "VM może być wyłączona lub w trakcie bootu"
+    fi
+    for p in "$PORT_SMTP_IN" "$PORT_WINBOX"; do
+        nc -z -w2 127.0.0.1 "$p" 2>/dev/null && c_ok "Port $p — OK" || c_warn "Port $p — zamknięty"
+    done
+}
+
+sf_scan_local_ports() {
+    c_hdr "SKAN PORTÓW LOCALHOST"
+    local ports=(22 25 80 443 2222 2525 2526 8080 8291 8728)
+    c_info "Sprawdzam ${#ports[@]} portów..."
+    for p in "${ports[@]}"; do
+        if nc -z -w1 127.0.0.1 "$p" 2>/dev/null; then
+            printf "  ${GRN}●${R} %-5s — otwarty\n" "$p"
+        else
+            printf "  ${D}○${R} %-5s — zamknięty\n" "$p"
+        fi
+    done
+}
+
+sf_fix_hosts() {
+    c_hdr "NAPRAWA /etc/hosts"
+    # Problem z sesji: emu.secferro.lan rozwiązuje na 192.168.168.168 ale ping failuje
+    # Powinno wskazywać na 192.168.168.1 (gateway QEMU) lub 127.0.0.1 (tunnel)
+    # Ponieważ RouterOS jest dostępny przez porty na 127.0.0.1, ta jest najlepsza
+
+    local hosts_file="/data/data/com.termux/files/usr/etc/hosts"
+    [[ ! -f "$hosts_file" ]] && hosts_file="/etc/hosts"
+
+    c_info "Aktualny stan dns dla *.secferro.lan:"
+    grep -i "secferro" "$hosts_file" 2>/dev/null || echo "  (brak wpisów)"
+    echo
+
+    echo -e "  ${D}QEMU user-net: RouterOS dostępny przez 127.0.0.1 (portforward)${R}"
+    echo -e "  ${D}ICMP ping do 192.168.168.x z hosta nie działa (slirp — normal)${R}"
+    echo
+    echo -e "  ${YLW}Nowe wpisy które zostaną dodane:${R}"
+    echo "  127.0.0.1  emu.secferro.lan  router.secferro.lan"
+    echo "  127.0.0.1  routeros.secferro.lan"
+    echo
+    read -rp "  $(echo -e "${CYN}Zastosować? [T/n] > ${R}")" ans
+    [[ "${ans,,}" == "n" ]] && return
+
+    # Usuń stare wpisy secferro.lan
+    sed -i '/secferro\.lan/d' "$hosts_file" 2>/dev/null || true
+    # Dodaj nowe
+    cat >> "$hosts_file" <<EOF
+# SecFerro v2 — RouterOS VM (QEMU user-network)
+# RouterOS dostępny przez port-forwards na 127.0.0.1
+127.0.0.1  emu.secferro.lan router.secferro.lan routeros.secferro.lan
+EOF
+    c_ok "/etc/hosts zaktualizowany"
+    c_info "Test:"
+    ping -c 2 emu.secferro.lan 2>/dev/null || nc -z -w2 emu.secferro.lan "$PORT_SSH" 2>/dev/null \
+        && c_ok "emu.secferro.lan osiągalny" || c_warn "Nadal problem (normalny na slirp — użyj portforwards)"
+}
+
+sf_net_report_full() {
+    c_hdr "PEŁNY RAPORT SIECI"
+    echo -e "${B}── Interfejsy ──${R}"
+    ip addr 2>/dev/null | grep -E "(^[0-9]|inet )" | sed 's/^/  /'
+    echo
+    echo -e "${B}── Trasy ──${R}"
+    ip route 2>/dev/null | sed 's/^/  /'
+    echo
+    echo -e "${B}── DNS ──${R}"
+    cat /etc/resolv.conf 2>/dev/null | sed 's/^/  /'
+    echo
+    echo -e "${B}── Porty VM (forwards) ──${R}"
+    sf_scan_local_ports
+    echo
+    echo -e "${B}── Relay SMTP ──${R}"
+    sf_relay_running && c_ok "msmtpd relay aktywny (:$PORT_SMTP_RELAY)" || c_warn "Relay wyłączony"
+}
+
+# ─────────────────────────── MENU: SECURITY ──────────────────────────────────
+sf_menu_security() {
+    c_hdr "SECURITY SCAN — SecFerro"
+    echo -e "  ${RED}${B}1.${R} Pełny skan bezpieczeństwa (sftest)"
+    echo -e "  ${YLW}${B}2.${R} Audyt SNMP RouterOS"
+    echo -e "  ${YLW}${B}3.${R} Audyt kont użytkowników RouterOS"
+    echo -e "  ${BLU}${B}4.${R} Sprawdź aktualizacje RouterOS"
+    echo -e "  ${MAG}${B}5.${R} Skanuj otwarte porty VM"
+    echo -e "  ${CYN}${B}6.${R} Firewall audit RouterOS"
+    echo -e "  ${D}${B}0.${R} Wróć"
+    echo
+    read -rp "  $(echo -e "${CYN}Wybór > ${R}")" ch
+    case "$ch" in
+        1) sftest ;;
+        2) sf_sec_snmp_audit ;;
+        3) sf_sec_user_audit ;;
+        4) sf_sec_check_updates ;;
+        5) sf_sec_port_scan_vm ;;
+        6) sf_sec_firewall_audit ;;
+        0) return ;;
+    esac
+}
+
+sf_sec_snmp_audit() {
+    c_hdr "AUDYT SNMP ROUTEROS"
+    local status; status=$(sf_ros_cmd "/snmp print interval=0" 2>/dev/null || echo "ERROR")
+    echo "$status" | sed 's/^/  /'
+    echo
+    # Sprawdź czy SNMP jest włączone i czy community jest domyślne
+    if echo "$status" | grep -q "enabled: yes"; then
+        c_warn "SNMP jest WŁĄCZONE"
+        if echo "$status" | grep -q "community: public"; then
+            c_err "Community 'public' — domyślne, ZMIEŃ!"
+        fi
+    else
+        c_ok "SNMP wyłączone ✓"
+    fi
+}
+
+sf_sec_user_audit() {
+    c_hdr "AUDYT KONT UŻYTKOWNIKÓW"
+    sf_ros_cmd "/user print"
+    echo
+    c_info "Grupy uprawnień:"
+    sf_ros_cmd "/user group print"
+}
+
+sf_sec_check_updates() {
+    c_hdr "SPRAWDZAM AKTUALIZACJE ROUTEROS"
+    sf_ros_cmd "/system package update check-for-updates"
+}
+
+sf_sec_port_scan_vm() {
+    c_hdr "SKAN PORTÓW VM (nmap/nc)"
+    c_info "Skanowanie portów RouterOS przez localhost..."
+    if command -v nmap >/dev/null 2>&1; then
+        nmap -p 1-9999 -T4 --open 127.0.0.1 2>/dev/null | tail -30
+    else
+        c_warn "nmap niedostępny — używam nc (wolniejszy)"
+        local open=()
+        for p in 22 23 80 443 2222 2525 8291 8728 8729; do
+            nc -z -w1 127.0.0.1 "$p" 2>/dev/null && open+=("$p")
+        done
+        c_info "Otwarte porty: ${open[*]:-brak znalezionych}"
+    fi
+}
+
+sf_sec_firewall_audit() {
+    c_hdr "FIREWALL AUDIT ROUTEROS"
+    c_info "Reguły filter:"
+    sf_ros_cmd "/ip firewall filter print"
+    echo
+    c_info "Reguły NAT:"
+    sf_ros_cmd "/ip firewall nat print"
+    echo
+    c_info "Connection tracking:"
+    sf_ros_cmd "/ip firewall connection print count-only"
+}
+
+# ─────────────────────────── MENU: LOGI ──────────────────────────────────────
+sf_menu_logs() {
+    c_hdr "LOGI SYSTEMU"
+    echo -e "  ${GRN}${B}1.${R} Log QEMU (na żywo)"
+    echo -e "  ${YLW}${B}2.${R} Log email/msmtp"
+    echo -e "  ${BLU}${B}3.${R} Log RouterOS (/log print)"
+    echo -e "  ${MAG}${B}4.${R} Log SNMP trap"
+    echo -e "  ${CYN}${B}5.${R} Ostatnie 100 linii logu QEMU"
+    echo -e "  ${D}${B}0.${R} Wróć"
+    echo
+    read -rp "  $(echo -e "${CYN}Wybór > ${R}")" ch
+    case "$ch" in
+        1) sflog live ;;
+        2) sflog mail ;;
+        3) sf_ros_cmd "/log print without-paging" | tail -50 ;;
+        4) sflog snmp ;;
+        5) sflog tail ;;
+        0) return ;;
+    esac
+}
+
+# ─────────────────────────── MENU: BACKUP ────────────────────────────────────
+sf_menu_backup() {
+    c_hdr "BACKUP & EKSPORT"
+    echo -e "  ${GRN}${B}1.${R} Eksport konfiguracji RouterOS → .rsc"
+    echo -e "  ${YLW}${B}2.${R} Backup RouterOS (system backup binary)"
+    echo -e "  ${BLU}${B}3.${R} Lista backupów"
+    echo -e "  ${MAG}${B}4.${R} Przywróć konfigurację z pliku .rsc"
+    echo -e "  ${D}${B}0.${R} Wróć"
+    echo
+    read -rp "  $(echo -e "${CYN}Wybór > ${R}")" ch
+    case "$ch" in
+        1) sf_ros_export_config ;;
+        2) sf_ros_backup_binary ;;
+        3) ls -lht "${SF_HOME}/backups/" 2>/dev/null || c_warn "Brak backupów" ;;
+        4) sf_ros_restore_rsc ;;
+        0) return ;;
+    esac
+}
+
+sf_ros_backup_binary() {
+    local ts; ts=$(date +%Y%m%d_%H%M%S)
+    local name="secferro_backup_${ts}"
+    c_info "Tworzę backup binarny: $name"
+    sf_ros_cmd "/system backup save name=$name"
+    c_ok "Backup utworzony na RouterOS: $name.backup"
+    c_dim "Pobierz przez SCP: scp -P $PORT_SSH ${ROS_USER}@127.0.0.1:/${name}.backup ${SF_HOME}/backups/"
+}
+
+sf_ros_restore_rsc() {
+    c_hdr "PRZYWRÓĆ KONFIGURACJĘ"
+    local bdir="${SF_HOME}/backups"
+    ls -1 "$bdir"/*.rsc 2>/dev/null || { c_warn "Brak plików .rsc w $bdir"; return; }
+    echo
+    read -rp "  Podaj pełną ścieżkę do pliku .rsc: " rsc_file
+    [[ -f "$rsc_file" ]] || { c_err "Plik nie istnieje: $rsc_file"; return; }
+    c_warn "UWAGA: to NADPISZE bieżącą konfigurację RouterOS!"
+    read -rp "  Jesteś pewny? [wpisz POTWIERDŹ]: " conf
+    [[ "$conf" == "POTWIERDŹ" ]] || { c_info "Anulowano."; return; }
+    scp -o StrictHostKeyChecking=no -P "$PORT_SSH" \
+        "$rsc_file" "${ROS_USER}@127.0.0.1:/restore.rsc" 2>/dev/null
+    sf_ros_cmd "/import file-name=restore.rsc"
+    c_ok "Konfiguracja przywrócona"
+}
+
+# ─────────────────────────── MENU: KONFIGURACJA ──────────────────────────────
+sf_menu_config() {
+    c_hdr "KONFIGURACJA SECFERRO"
+    echo -e "  ${GRN}${B}1.${R} Pokaż aktualną konfigurację"
+    echo -e "  ${YLW}${B}2.${R} Zmień ustawienia VM (RAM, obraz)"
+    echo -e "  ${BLU}${B}3.${R} Zmień ustawienia SMTP"
+    echo -e "  ${MAG}${B}4.${R} Generuj init.rsc RouterOS"
+    echo -e "  ${CYN}${B}5.${R} Generuj .msmtprc"
+    echo -e "  ${D}${B}6.${R} Reset do domyślnych"
+    echo -e "  ${D}${B}0.${R} Wróć"
+    echo
+    read -rp "  $(echo -e "${CYN}Wybór > ${R}")" ch
+    case "$ch" in
+        1) sf_conf_show ;;
+        2) sf_conf_edit_vm ;;
+        3) sf_smtp_configure ;;
+        4) sf_gen_init_rsc ;;
+        5) sf_smtp_generate_config ;;
+        6) sf_conf_reset ;;
+        0) return ;;
+    esac
+}
+
+sf_conf_show() {
+    c_hdr "AKTUALNA KONFIGURACJA"
+    echo -e "  ${B}VM:${R}"
+    echo "    RAM:       ${VM_RAM}MB"
+    echo "    Disk:      $VM_DISK  ($(sf_disk_img_size))"
+    echo "    Arch:      $VM_ARCH"
+    echo "  "
+    echo -e "  ${B}Sieć:${R}"
+    echo "    Host GW:   $NET_HOST_GW (widoczny z VM)"
+    echo "    VM IP:     $NET_VM_IP"
+    echo "    SSH:       127.0.0.1:$PORT_SSH → VM:22"
+    echo "    SMTP-in:   127.0.0.1:$PORT_SMTP_IN → VM:25"
+    echo "    SMTP-relay: 127.0.0.1:$PORT_SMTP_RELAY ← VM:25 (guestfwd)"
+    echo "    Winbox:    127.0.0.1:$PORT_WINBOX → VM:$PORT_WINBOX"
+    echo "  "
+    echo -e "  ${B}Email:${R}"
+    echo "    From:      $MAIL_FROM"
+    echo "    Relay:     ${MAIL_RELAY_HOST}:${MAIL_RELAY_PORT}"
+    echo "    User:      ${MAIL_RELAY_USER:-[nie ustawiony]}"
+    echo "    Alert to:  ${MAIL_ALERT_TO:-[nie ustawiony]}"
+}
+
+sf_conf_edit_vm() {
+    echo; read -rp "  RAM MB [${VM_RAM}]: " inp; [[ -n "$inp" ]] && VM_RAM="$inp"
+    read -rp "  Obraz dysku [${VM_DISK}]: " inp; [[ -n "$inp" ]] && VM_DISK="$inp"
+    sf_conf_save
+}
+
+sf_conf_save() {
+    mkdir -p "$(dirname "$SF_CONF")"
+    cat > "$SF_CONF" <<EOF
+# SecFerro v2 — konfiguracja
+# Wygenerowano: $(date)
+
+VM_RAM="$VM_RAM"
+VM_DISK="$VM_DISK"
+VM_ARCH="$VM_ARCH"
+NET_SUBNET="$NET_SUBNET"
+NET_HOST_GW="$NET_HOST_GW"
+NET_VM_IP="$NET_VM_IP"
+PORT_SSH="$PORT_SSH"
+PORT_SMTP_IN="$PORT_SMTP_IN"
+PORT_SMTP_RELAY="$PORT_SMTP_RELAY"
+PORT_WINBOX="$PORT_WINBOX"
+PORT_API="$PORT_API"
+ROS_USER="$ROS_USER"
+MAIL_FROM="$MAIL_FROM"
+MAIL_RELAY_HOST="$MAIL_RELAY_HOST"
+MAIL_RELAY_PORT="$MAIL_RELAY_PORT"
+MAIL_RELAY_USER="$MAIL_RELAY_USER"
+MAIL_RELAY_PASS="$MAIL_RELAY_PASS"
+MAIL_ALERT_TO="$MAIL_ALERT_TO"
+DNS_DOMAIN="$DNS_DOMAIN"
+EOF
+    chmod 600 "$SF_CONF"
+    c_ok "Konfiguracja zapisana: $SF_CONF"
+}
+
+sf_conf_reset() {
+    c_warn "Resetuję do wartości domyślnych..."
+    [[ -f "$SF_CONF" ]] && mv "$SF_CONF" "${SF_CONF}.bak"
+    c_ok "Reset wykonany (backup: ${SF_CONF}.bak)"
+}
+
+sf_gen_init_rsc() {
+    c_hdr "GENEROWANIE init.rsc RouterOS"
+    local out="${SF_HOME}/conf/init.rsc"
+    mkdir -p "$(dirname "$out")"
+    cat > "$out" <<EOF
+# SecFerro — RouterOS init.rsc
+# Wygenerowano przez SecFerro v2.0 dnia $(date)
+# Wysyłaj przez: sfstart → opcja 3 (wysłanie init.rsc)
+
+# ── Tożsamość ─────────────────────────────────────────────────────────────────
+/system identity set name=SecFerro-Router
+
+# ── NTP ───────────────────────────────────────────────────────────────────────
+/system ntp client set enabled=yes primary-ntp=216.239.35.0 secondary-ntp=216.239.35.4
+
+# ── DNS ───────────────────────────────────────────────────────────────────────
+/ip dns set servers=1.1.1.1,8.8.8.8 allow-remote-requests=yes
+
+# ── Email relay → SecFerro host ──────────────────────────────────────────────
+/tool e-mail set address=${NET_HOST_GW} port=25 start-tls=no \\
+  from=router@${DNS_DOMAIN} user=router password=secferro
+
+# ── SNMP ─────────────────────────────────────────────────────────────────────
+/snmp set enabled=yes src-address=127.0.0.1
+
+# ── Firewall — podstawowy ─────────────────────────────────────────────────────
+/ip firewall filter
+add chain=input   action=accept connection-state=established,related comment="Accept established"
+add chain=input   action=accept protocol=icmp                         comment="Accept ICMP"
+add chain=input   action=accept src-address=${NET_SUBNET}             comment="Accept local subnet"
+add chain=input   action=drop                                          comment="Drop everything else"
+
+add chain=forward action=accept connection-state=established,related  comment="Accept established fwd"
+add chain=forward action=drop                                          comment="Drop unestablished fwd"
+
+# ── Scheduler — test email po starcie ────────────────────────────────────────
+/system scheduler add name=boot-email-test interval=5m on-event=\\
+  "/tool e-mail send to=${MAIL_ALERT_TO:-admin@example.com} subject=\\\"RouterOS started\\\" \\
+   body=\\\"SecFerro RouterOS uruchomiony: [/system resource get uptime]\\\"" \\
+  start-time=startup
+
+# ── Netwatch — monitoring internetu ──────────────────────────────────────────
+/tool netwatch
+add host=8.8.8.8 interval=1m \\
+  up-script="/log info message=\\\"LINK UP: internet dostępny\\\"" \\
+  down-script="/tool e-mail send to=${MAIL_ALERT_TO:-admin@example.com} \\
+    subject=\\\"[ALERT] Internet DOWN!\\\" body=\\\"SecFerro: 8.8.8.8 niedostępny\\\""
+
+# ── Logi ─────────────────────────────────────────────────────────────────────
+/system logging
+add topics=info    action=memory
+add topics=warning action=memory
+add topics=error   action=memory
+
+:log info "SecFerro init.rsc załadowany pomyślnie"
+EOF
+    c_ok "init.rsc wygenerowany: $out"
+}
+
+# ─────────────────────────── MAIN ────────────────────────────────────────────
+case "${1:-menu}" in
+    menu|"")      sf_menu ;;
+    status)       sf_banner; sf_vm_status_detail ;;
+    *)
+        echo "SecFerro v2.0 — zarządzanie RouterOS VM"
+        echo "Użycie: secferro [menu|status]"
+        echo "Szybkie komendy: sfstart  sfstop  sflog  sftest  sfmail"
+        ;;
+esac

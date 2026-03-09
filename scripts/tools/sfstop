@@ -1,0 +1,81 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# sfstop — SecFerro: zatrzymaj RouterOS VM (graceful → force)
+set -euo pipefail
+
+SF_HOME="${SF_HOME:-$HOME/secferro}"
+SF_CONF="${SF_HOME}/conf/secferro.conf"
+[[ -f "$SF_CONF" ]] && source "$SF_CONF"
+
+: "${PORT_SSH:=2222}"
+: "${PORT_SMTP_RELAY:=2526}"
+: "${ROS_USER:=admin}"
+
+PID_FILE="${SF_HOME}/run/qemu.pid"
+MON_SOCK="${SF_HOME}/run/qemu-monitor.sock"
+
+R='\033[0m'; B='\033[1m'
+GRN='\033[92m'; RED='\033[91m'; YLW='\033[93m'; D='\033[2m'
+ok()   { echo -e "${GRN}${B}[✓]${R} $*"; }
+err()  { echo -e "${RED}${B}[✗]${R} $*"; }
+warn() { echo -e "${YLW}${B}[!]${R} $*"; }
+
+# ── Sprawdzenie czy działa ────────────────────────────────────────────────────
+if [[ ! -f "$PID_FILE" ]]; then
+    warn "Brak pliku PID — VM nie jest uruchomiona"
+    exit 0
+fi
+
+PID=$(cat "$PID_FILE" 2>/dev/null || echo "")
+if [[ -z "$PID" ]] || ! kill -0 "$PID" 2>/dev/null; then
+    warn "VM nie działa (stary PID: ${PID:-—})"
+    rm -f "$PID_FILE"
+    exit 0
+fi
+
+echo -e "\n${YLW}${B}  Zatrzymuję RouterOS VM (PID: $PID)...${R}\n"
+
+# ── Krok 1: Graceful shutdown przez RouterOS SSH ──────────────────────────────
+if nc -z -w2 127.0.0.1 "$PORT_SSH" 2>/dev/null; then
+    echo -e "  ${D}Wysyłam /system shutdown do RouterOS...${R}"
+    timeout 5 ssh \
+        -o StrictHostKeyChecking=no \
+        -o ConnectTimeout=3 \
+        -o BatchMode=yes \
+        -p "$PORT_SSH" \
+        "${ROS_USER}@127.0.0.1" \
+        "/system shutdown" 2>/dev/null || true
+    sleep 4
+fi
+
+# ── Krok 2: QEMU monitor (system_powerdown) ───────────────────────────────────
+if [[ -S "$MON_SOCK" ]]; then
+    echo -e "  ${D}QEMU monitor: system_powerdown...${R}"
+    echo "system_powerdown" | socat - "UNIX-CONNECT:$MON_SOCK" 2>/dev/null || true
+    sleep 3
+fi
+
+# ── Krok 3: Sprawdź czy process się zamknął ───────────────────────────────────
+if kill -0 "$PID" 2>/dev/null; then
+    warn "VM nadal działa — SIGTERM..."
+    kill -TERM "$PID" 2>/dev/null || true
+    sleep 3
+fi
+
+# ── Krok 4: Force kill jeśli wciąż żyje ──────────────────────────────────────
+if kill -0 "$PID" 2>/dev/null; then
+    warn "Wymuszam zatrzymanie (SIGKILL)..."
+    kill -KILL "$PID" 2>/dev/null || true
+    sleep 1
+fi
+
+# ── Cleanup ───────────────────────────────────────────────────────────────────
+rm -f "$PID_FILE" "$MON_SOCK"
+
+# Zatrzymaj też SMTP relay jeśli działa
+if pgrep -f "msmtpd.*${PORT_SMTP_RELAY}" >/dev/null 2>&1; then
+    echo -e "  ${D}Zatrzymuję SMTP relay...${R}"
+    pkill -f "msmtpd.*${PORT_SMTP_RELAY}" 2>/dev/null || true
+    ok "SMTP relay zatrzymany"
+fi
+
+ok "VM zatrzymana (PID: $PID)"
