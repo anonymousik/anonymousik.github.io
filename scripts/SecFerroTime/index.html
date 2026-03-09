@@ -1958,10 +1958,10 @@
                 <div class="footer-section">
                     <h4>Documentation</h4>
                     <ul class="footer-links">
-                        <li><a href="/README.md">User Guide</a></li>
-                        <li><a href="/CHANGELOG.md">Changelog</a></li>
-                        <li><a href="/DEPLOYMENT.md">Deployment</a></li>
-                        <li><a href="/SEO-GUIDE.md">SEO Guide</a></li>
+                        <li><a href="./README.md">User Guide</a></li>
+                        <li><a href="./CHANGELOG.md">Changelog</a></li>
+                        <li><a href="./DEPLOYMENT.md">Deployment</a></li>
+                        <li><a href="./SEO-GUIDE.md">SEO Guide</a></li>
                     </ul>
                 </div>
                 
@@ -2292,11 +2292,11 @@
         // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
+                navigator.serviceWorker.register('./service-worker.js')
                     .then(reg => console.log('✅ SW registered'))
                     .catch(err => console.warn('⚠️ SW failed'));
             });
         }
     </script>
 </body>
-</html><!DOCTYPE html>
+</html>
