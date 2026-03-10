@@ -1,0 +1,641 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║  sftest — SecFerro Security Audit v2                                    ║
+# ║  Sprawdza: VM, SNMP, Konta, Firewall, Porty, Wersja, NTP, SMTP, DNS    ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+set -euo pipefail
+
+SF_HOME="${SF_HOME:-$HOME/secferro}"
+SF_CONF="${SF_HOME}/conf/secferro.conf"
+[[ -f "$SF_CONF" ]] && source "$SF_CONF"
+
+: "${PORT_SSH:=2222}"
+: "${PORT_SMTP_IN:=2525}"
+: "${PORT_SMTP_RELAY:=2526}"
+: "${PORT_WINBOX:=8291}"
+: "${PORT_API:=8728}"
+: "${ROS_USER:=admin}"
+
+REPORT_DIR="${SF_HOME}/reports"
+REPORT_FILE="${REPORT_DIR}/sftest_$(date +%Y%m%d_%H%M%S).txt"
+mkdir -p "$REPORT_DIR"
+
+R='\033[0m'; B='\033[1m'; D='\033[2m'
+GRN='\033[92m'; RED='\033[91m'; YLW='\033[93m'
+CYN='\033[96m'; MAG='\033[95m'
+
+PASS=0; WARN=0; FAIL=0
+ISSUES=()  # tablica opisów problemów dla raportu końcowego
+
+ok()   { echo -e "  ${GRN}${B}[PASS]${R} $*"; ((PASS++))  || true; }
+fail() { echo -e "  ${RED}${B}[FAIL]${R} $*"; ((FAIL++))  || true; ISSUES+=("[FAIL] $*"); }
+warn() { echo -e "  ${YLW}${B}[WARN]${R} $*"; ((WARN++))  || true; ISSUES+=("[WARN] $*"); }
+info() { echo -e "  ${CYN}[INFO]${R} $*"; }
+hdr()  { echo -e "\n${CYN}${B}══ $* ══${R}"; echo; }
+sep()  { echo -e "  ${D}──────────────────────────────────────────────────${R}"; }
+
+# Helper: SSH command z timeout
+_ros() {
+    timeout 10 ssh \
+        -o StrictHostKeyChecking=no \
+        -o ConnectTimeout=5 \
+        -o BatchMode=yes \
+        -p "$PORT_SSH" \
+        "${ROS_USER}@127.0.0.1" \
+        "$@" 2>/dev/null || echo "SSH_ERROR"
+}
+
+# Helper: sprawdź port
+_port_open() { nc -z -w2 127.0.0.1 "$1" 2>/dev/null; }
+
+# ─────────────────────────────────────────────────────────────────────────────
+_test_vm() {
+    hdr "TEST 1 — Dostępność VM i RouterOS"
+    sep
+
+    local pid_file="${SF_HOME}/run/qemu.pid"
+
+    # QEMU PID
+    if [[ -f "$pid_file" ]]; then
+        local pid; pid=$(cat "$pid_file")
+        if kill -0 "$pid" 2>/dev/null; then
+            ok "QEMU VM uruchomiona (PID: $pid)"
+            # Uptime procesu
+            local up; up=$(ps -o etime= -p "$pid" 2>/dev/null | tr -d ' ' || echo "?")
+            info "  Czas działania: $up"
+        else
+            fail "Stary plik PID — VM nie działa (PID: $pid)"
+        fi
+    else
+        fail "Brak PID file — VM nie jest uruchomiona"
+    fi
+
+    # SSH port
+    if _port_open "$PORT_SSH"; then
+        ok "Port SSH $PORT_SSH — otwarty"
+    else
+        fail "Port SSH $PORT_SSH — zamknięty (VM nie bootuje lub wyłączona)"
+        info "Uruchom: sfstart"
+        return
+    fi
+
+    # Faktyczne logowanie SSH
+    local test_cmd; test_cmd=$(_ros "echo pong")
+    if [[ "$test_cmd" == "pong" ]]; then
+        ok "SSH logowanie (${ROS_USER}@127.0.0.1:${PORT_SSH}) — działa"
+    else
+        warn "SSH port otwarty ale logowanie bez hasła nie działa"
+        info "Sprawdź klucze SSH lub hasło konta '$ROS_USER'"
+    fi
+
+    # RouterOS uptime
+    local uptime; uptime=$(_ros "/system resource get uptime" 2>/dev/null || echo "?")
+    [[ "$uptime" != "SSH_ERROR" && "$uptime" != "?" ]] \
+        && info "RouterOS uptime: $uptime" \
+        || warn "Nie można pobrać uptime RouterOS"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+_test_snmp() {
+    hdr "TEST 2 — SNMP Security"
+    sep
+
+    local out; out=$(_ros "/snmp print without-paging")
+    [[ "$out" == "SSH_ERROR" ]] && { warn "SSH niedostępny — pomijam SNMP"; return; }
+
+    if echo "$out" | grep -q "enabled: yes"; then
+        warn "SNMP WŁĄCZONE — potencjalny wektor ataku"
+        echo "$out" | grep -E "src-address|trap-target|contact" \
+            | sed 's/^/    /' || true
+
+        # Community check
+        local comm; comm=$(_ros "/snmp community print without-paging" 2>/dev/null || echo "")
+        if echo "$comm" | grep -qi "^.*public"; then
+            fail "SNMP community = 'public' — domyślna, niezabezpieczona!"
+            info "Poprawka: /snmp community set public name=<unikalna> security=private"
+        else
+            ok "SNMP community nie jest 'public' — zmieniona ✓"
+        fi
+
+        # src-address ograniczenie
+        if echo "$out" | grep -q "src-address: 127.0.0.1"; then
+            ok "SNMP src-address = 127.0.0.1 — dostęp ograniczony do localhost"
+        elif echo "$out" | grep -q "src-address: 0.0.0.0\|src-address:$"; then
+            fail "SNMP src-address = 0.0.0.0 — dostępny dla WSZYSTKICH!"
+            info "Poprawka: /snmp set src-address=127.0.0.1"
+        fi
+    else
+        ok "SNMP wyłączone — bezpieczne ✓"
+    fi
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+_test_users() {
+    hdr "TEST 3 — Konta użytkowników RouterOS"
+    sep
+
+    local out; out=$(_ros "/user print without-paging")
+    [[ "$out" == "SSH_ERROR" ]] && { warn "SSH niedostępny — pomijam"; return; }
+
+    echo "$out" | grep -v "^#\|^Flags" | head -15 | sed 's/^/    /' || true
+    echo
+
+    # Liczba kont z pełnymi uprawnieniami
+    local full_count; full_count=$(echo "$out" | grep -c "full" 2>/dev/null || echo 0)
+    if [[ "$full_count" -gt 1 ]]; then
+        warn "$full_count kont z uprawnieniami 'full' (pożądane: tylko admin)"
+    else
+        ok "Tylko jedno konto z uprawnieniami 'full' ✓"
+    fi
+
+    # SSH keys
+    local keys; keys=$(_ros "/user ssh-keys print without-paging" 2>/dev/null || echo "")
+    if echo "$keys" | grep -qE "RSA|DSA|#\s+[0-9]"; then
+        ok "Klucze SSH skonfigurowane — logowanie kluczem możliwe"
+    else
+        info "Brak kluczy SSH — logowanie hasłem (OK dla środowiska testowego)"
+    fi
+
+    # Sprawdź czy konto 'admin' ma hasło (próba z pustym hasłem)
+    local no_pass_test
+    no_pass_test=$(timeout 5 ssh \
+        -o StrictHostKeyChecking=no \
+        -o ConnectTimeout=3 \
+        -o PasswordAuthentication=yes \
+        -o BatchMode=no \
+        -p "$PORT_SSH" "${ROS_USER}@127.0.0.1" \
+        -o PreferredAuthentications=none \
+        "echo ok" 2>&1 || true)
+    if echo "$no_pass_test" | grep -q "^ok$"; then
+        fail "Konto '${ROS_USER}' NIE MA HASŁA — KRYTYCZNE ZAGROŻENIE!"
+        info "Ustaw hasło: /user set admin password=<silne_haslo>"
+    else
+        ok "Konto '${ROS_USER}' wymaga hasła lub klucza ✓"
+    fi
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+_test_firewall() {
+    hdr "TEST 4 — Firewall RouterOS"
+    sep
+
+    local fw; fw=$(_ros "/ip firewall filter print without-paging")
+    [[ "$fw" == "SSH_ERROR" ]] && { warn "SSH niedostępny — pomijam"; return; }
+
+    local rule_count; rule_count=$(echo "$fw" | grep -cE "^\s+[0-9]" 2>/dev/null || echo 0)
+    info "Liczba reguł firewall: $rule_count"
+
+    if [[ "$rule_count" -eq 0 ]]; then
+        fail "Brak reguł firewall — RouterOS całkowicie otwarty!"
+        info "Zastosuj podstawowe reguły: secferro → RouterOS → Wyślij init.rsc"
+        return
+    fi
+
+    # Sprawdź DROP chain input
+    if echo "$fw" | grep -q "action=drop.*chain=input\|chain=input.*action=drop"; then
+        ok "Reguła DROP na chain=input istnieje ✓"
+    else
+        warn "Brak reguły DROP na chain=input — ruch wejściowy niezablokowany domyślnie"
+    fi
+
+    # Reguły established/related
+    if echo "$fw" | grep -q "established,related"; then
+        ok "Reguła accept established/related ✓"
+    else
+        warn "Brak reguły established/related — może blokować legalne połączenia"
+    fi
+
+    # NAT
+    local nat; nat=$(_ros "/ip firewall nat print count-only" 2>/dev/null || echo "?")
+    info "Reguły NAT: $nat"
+
+    # Liczba aktywnych połączeń
+    local ct; ct=$(_ros "/ip firewall connection print count-only" 2>/dev/null || echo "?")
+    info "Aktywne połączenia (connection tracking): $ct"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+_test_ports() {
+    hdr "TEST 5 — Porty sieciowe i usługi"
+    sep
+
+    # Porty oczekiwane
+    declare -A EXPECTED_STATE=(
+        ["$PORT_SSH"]="open:RouterOS SSH"
+        ["$PORT_SMTP_IN"]="any:RouterOS SMTP-in"
+        ["$PORT_SMTP_RELAY"]="open:SMTP relay (sfmail)"
+        ["$PORT_WINBOX"]="any:Winbox GUI"
+        ["$PORT_API"]="any:RouterOS API"
+    )
+
+    # Porty które NIE powinny być otwarte (security check)
+    local UNEXPECTED=(22 23 80 443 8080 9090 4848)
+
+    for port in "${!EXPECTED_STATE[@]}"; do
+        local spec="${EXPECTED_STATE[$port]}"
+        local required="${spec%%:*}"
+        local name="${spec##*:}"
+        if _port_open "$port"; then
+            [[ "$required" == "open" || "$required" == "any" ]] \
+                && ok "Port $port ($name) — otwarty" \
+                || fail "Port $port ($name) — otwarty (powinien być zamknięty!)"
+        else
+            [[ "$required" == "open" ]] \
+                && fail "Port $port ($name) — ZAMKNIĘTY (wymagany!)" \
+                || info "Port $port ($name) — zamknięty (OK lub usługa wyłączona)"
+        fi
+    done
+
+    echo
+    info "Sprawdzam nieoczekiwane porty..."
+    local found_unexpected=0
+    for p in "${UNEXPECTED[@]}"; do
+        if _port_open "$p"; then
+            warn "Port $p otwarty (nieoczekiwany) — sprawdź: co nasłuchuje?"
+            found_unexpected=1
+        fi
+    done
+    [[ $found_unexpected -eq 0 ]] && ok "Brak nieoczekiwanych otwartych portów ✓"
+
+    # Specjalny: relay SMTP
+    echo
+    if pgrep -f "msmtpd" >/dev/null 2>&1; then
+        ok "msmtpd relay process aktywny ✓"
+    else
+        warn "msmtpd NIE DZIAŁA — alerty email z RouterOS nie będą działać"
+        info "Uruchom: sfmail start"
+    fi
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+_test_version() {
+    hdr "TEST 6 — Wersja RouterOS i aktualizacje"
+    sep
+
+    local ver; ver=$(_ros "/system resource get version" 2>/dev/null || echo "SSH_ERROR")
+    [[ "$ver" == "SSH_ERROR" ]] && { warn "SSH niedostępny — pomijam"; return; }
+
+    info "Zainstalowana: RouterOS $ver"
+
+    # Package list
+    local pkgs; pkgs=$(_ros "/system package print without-paging" 2>/dev/null || echo "")
+    local pkg_count; pkg_count=$(echo "$pkgs" | grep -c "routeros\|system\|wireless" 2>/dev/null || echo "?")
+    info "Zainstalowane pakiety: $pkg_count"
+
+    # Wyłączone pakiety (X flag)
+    local disabled; disabled=$(echo "$pkgs" | grep "^X\|X " | wc -l 2>/dev/null || echo 0)
+    [[ "$disabled" -gt 0 ]] && info "Wyłączonych pakietów: $disabled (np. IPv6)" || true
+
+    # Sprawdź aktualizacje (z timeoutem — wymaga internetu w VM)
+    info "Sprawdzanie aktualizacji (timeout 20s)..."
+    local update_out; update_out=$(timeout 20 ssh \
+        -o StrictHostKeyChecking=no -o ConnectTimeout=5 -o BatchMode=yes \
+        -p "$PORT_SSH" "${ROS_USER}@127.0.0.1" \
+        "/system package update check-for-updates without-paging" 2>/dev/null \
+        | tail -5 || echo "TIMEOUT")
+
+    if echo "$update_out" | grep -qi "up to date"; then
+        ok "RouterOS jest aktualny ✓"
+    elif echo "$update_out" | grep -qi "available\|new version"; then
+        local latest; latest=$(echo "$update_out" | grep "latest-version" | awk '{print $2}')
+        warn "Dostępna aktualizacja RouterOS: ${latest:-nowsza wersja}"
+        info "Aktualizuj: secferro → Security → Sprawdź aktualizacje RouterOS"
+    else
+        info "Nie można sprawdzić aktualizacji: ${update_out:0:60}..."
+        info "(VM może nie mieć dostępu do internetu)"
+    fi
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+_test_ntp() {
+    hdr "TEST 7 — NTP i synchronizacja czasu"
+    sep
+
+    local ntp; ntp=$(_ros "/system ntp client print without-paging" 2>/dev/null || echo "SSH_ERROR")
+    [[ "$ntp" == "SSH_ERROR" ]] && { warn "SSH niedostępny — pomijam"; return; }
+
+    if echo "$ntp" | grep -q "enabled: yes"; then
+        ok "NTP włączone ✓"
+        echo "$ntp" | grep -E "primary-ntp|secondary-ntp|active-server" \
+            | sed 's/^/    /' || true
+        echo "$ntp" | grep -E "last-update-from|last-adjustment" \
+            | sed 's/^/    /' || true
+    else
+        fail "NTP wyłączone — czas RouterOS może być nieprawidłowy!"
+        info "Poprawka: /system ntp client set enabled=yes primary-ntp=216.239.35.0"
+    fi
+
+    # Porównaj czasy
+    local ros_time; ros_time=$(_ros "/system clock get time date" 2>/dev/null || echo "?")
+    local host_time; host_time=$(date '+%Y-%m-%d %H:%M:%S')
+    info "RouterOS: $ros_time  |  Host: $host_time"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+_test_smtp() {
+    hdr "TEST 8 — Konfiguracja SMTP email"
+    sep
+
+    # RouterOS email config
+    local email; email=$(_ros "/tool e-mail print without-paging" 2>/dev/null || echo "SSH_ERROR")
+    [[ "$email" == "SSH_ERROR" ]] && { warn "SSH niedostępny — pomijam"; return; }
+
+    echo "$email" | grep -v password | sed 's/^/    /' || true
+    echo
+
+    local addr; addr=$(echo "$email" | awk '/address:/{print $2}')
+    local port; port=$(echo "$email" | awk '/port:/{print $2}')
+    local tls;  tls=$(echo  "$email" | awk '/start-tls:/{print $2}')
+    local last;  last=$(echo  "$email" | awk '/last-status:/{print $2}')
+
+    # Sprawdź target relay
+    if [[ "$addr" == "192.168.168.1" ]] && [[ "$port" == "25" ]]; then
+        ok "RouterOS email → 192.168.168.1:25 (SecFerro relay) ✓"
+    else
+        warn "RouterOS email nie wskazuje na relay (address=$addr port=$port)"
+        info "Poprawka: /tool e-mail set address=192.168.168.1 port=25 start-tls=no"
+    fi
+
+    # TLS
+    if [[ "$port" == "25" ]] && [[ "$tls" == "no" ]]; then
+        ok "TLS=no na porcie 25 (poprawne dla lokalnego relay) ✓"
+    elif [[ "$tls" == "yes" ]] && [[ "$port" == "587" ]]; then
+        ok "TLS+STARTTLS na porcie 587 ✓"
+    else
+        warn "Nieoczekiwana kombinacja TLS=$tls / port=$port — sprawdź konfigurację"
+    fi
+
+    # Last status
+    if [[ "$last" == "success" ]]; then
+        ok "Ostatnia wysyłka: success ✓"
+    elif [[ "$last" == "failed" ]]; then
+        warn "Ostatnia wysyłka: FAILED — email nie był wysłany"
+        info "Test: sfmail test  |  Debug: sfmail debug"
+    else
+        info "Status ostatniej wysyłki: $last"
+    fi
+
+    # .msmtprc
+    if [[ -f "$HOME/.msmtprc" ]]; then
+        ok ".msmtprc istnieje ($(wc -l < "$HOME/.msmtprc") linii)"
+        if grep -q "password.*YOUR_PASS\|example\.com\|PLACEHOLDER" "$HOME/.msmtprc" 2>/dev/null; then
+            fail ".msmtprc zawiera placeholder dane — uzupełnij prawdziwe konto SMTP!"
+        fi
+    else
+        fail ".msmtprc BRAK — relay zewnętrzny nie skonfigurowany"
+        info "Uruchom: sfmail configure"
+    fi
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+_test_dns() {
+    hdr "TEST 9 — DNS i rozwiązywanie nazw"
+    sep
+
+    # RouterOS DNS
+    local dns; dns=$(_ros "/ip dns print without-paging" 2>/dev/null || echo "SSH_ERROR")
+    if [[ "$dns" != "SSH_ERROR" ]]; then
+        echo "$dns" | grep -E "servers:|allow-remote" | sed 's/^/    /' || true
+
+        if echo "$dns" | grep -q "allow-remote-requests: yes"; then
+            warn "RouterOS: allow-remote-requests=YES — DNS resolver otwarty dla sieci!"
+            info "Poprawka: /ip dns set allow-remote-requests=no"
+        else
+            ok "RouterOS DNS: allow-remote-requests=no ✓"
+        fi
+
+        # Sprawdź czy używa bezpiecznego DNS
+        if echo "$dns" | grep -qE "1\.1\.1\.1|8\.8\.8\.8|9\.9\.9\.9|94\.140"; then
+            ok "RouterOS używa renomowanego serwera DNS ✓"
+        else
+            info "Sprawdź serwery DNS RouterOS (w powyższym output)"
+        fi
+    else
+        warn "SSH niedostępny — pomijam test DNS RouterOS"
+    fi
+
+    # Host /etc/hosts
+    echo
+    info "Host /etc/hosts — wpisy secferro.lan:"
+    grep -i "secferro" /data/data/com.termux/files/usr/etc/hosts 2>/dev/null \
+        | sed 's/^/    /' || grep -i "secferro" /etc/hosts 2>/dev/null \
+        | sed 's/^/    /' || echo "    (brak wpisów)"
+
+    # emu.secferro.lan → powinno być 127.0.0.1
+    local emu_ip
+    emu_ip=$(getent hosts emu.secferro.lan 2>/dev/null | awk '{print $1}' || echo "unresolved")
+    if [[ "$emu_ip" == "127.0.0.1" ]]; then
+        ok "emu.secferro.lan → 127.0.0.1 (poprawne dla QEMU user-net) ✓"
+    else
+        warn "emu.secferro.lan → $emu_ip (powinno być 127.0.0.1)"
+        info "Napraw: secferro → Sieć → Napraw /etc/hosts"
+    fi
+
+    # Zewnętrzna rozdzielczość DNS
+    if ping -c 1 -W 3 8.8.8.8 >/dev/null 2>&1; then
+        ok "Zewnętrzny internet (8.8.8.8) — dostępny z Termux ✓"
+    else
+        warn "Brak internetu z Termux (8.8.8.8 niedostępne)"
+    fi
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+_test_relay_chain() {
+    hdr "TEST 10 — Pełny łańcuch SMTP (RouterOS → relay → internet)"
+    sep
+
+    info "Sprawdzam każde ogniwo łańcucha:"
+    echo
+
+    # Ogniwo 1: RouterOS → 192.168.168.1:25 (guestfwd)
+    info "1. RouterOS → QEMU guestfwd (192.168.168.1:25 → 127.0.0.1:$PORT_SMTP_RELAY)"
+    if _port_open "$PORT_SMTP_RELAY"; then
+        ok "  msmtpd nasłuchuje na :$PORT_SMTP_RELAY ✓"
+    else
+        fail "  msmtpd NIE NASŁUCHUJE na :$PORT_SMTP_RELAY"
+        info "  → sfmail start"
+    fi
+
+    # Ogniwo 2: msmtpd → zewnętrzny SMTP
+    info "2. msmtpd → zewnętrzny SMTP (z .msmtprc)"
+    if [[ -f "$HOME/.msmtprc" ]]; then
+        local ext_host; ext_host=$(grep "^host" "$HOME/.msmtprc" | head -1 | awk '{print $2}' || echo "")
+        local ext_port; ext_port=$(grep "^port" "$HOME/.msmtprc" | head -1 | awk '{print $2}' || echo "587")
+        if [[ -n "$ext_host" ]]; then
+            info "  Serwer: $ext_host:$ext_port"
+            if nc -z -w5 "$ext_host" "$ext_port" 2>/dev/null; then
+                ok "  $ext_host:$ext_port — osiągalny ✓"
+            else
+                fail "  $ext_host:$ext_port — NIEDOSTĘPNY (firewall? brak internetu?)"
+            fi
+        else
+            warn "  Brak konfiguracji 'host' w .msmtprc"
+        fi
+    else
+        warn "  .msmtprc nie istnieje — ogniwo 2 niekonfigurowane"
+    fi
+
+    # Ogniwo 3: RouterOS scheduler (czy jest skonfigurowany do alertów)
+    info "3. RouterOS Scheduler — automacyjne alerty"
+    local sched; sched=$(_ros "/system scheduler print without-paging" 2>/dev/null || echo "SSH_ERROR")
+    if [[ "$sched" != "SSH_ERROR" ]]; then
+        if echo "$sched" | grep -q "e-mail\|email"; then
+            ok "  Scheduler z regułami email znaleziony ✓"
+        else
+            info "  Brak schedulera z email — dodaj przez init.rsc lub ręcznie"
+        fi
+    fi
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RAPORT KOŃCOWY
+# ─────────────────────────────────────────────────────────────────────────────
+_final_report() {
+    local total=$((PASS + WARN + FAIL))
+    local score=0
+    [[ $total -gt 0 ]] && score=$(( (PASS * 100) / total ))
+
+    # Ocena literowa
+    local grade note color
+    if   [[ $score -ge 90 && $FAIL -eq 0 ]]; then grade="A+"; note="DOSKONAŁY";    color="$GRN"
+    elif [[ $score -ge 80 ]]; then                  grade="A";  note="BARDZO DOBRY"; color="$GRN"
+    elif [[ $score -ge 70 ]]; then                  grade="B";  note="DOBRY";        color="$YLW"
+    elif [[ $score -ge 60 ]]; then                  grade="C";  note="DOSTATECZNY";  color="$YLW"
+    elif [[ $score -ge 50 ]]; then                  grade="D";  note="SŁABY";        color="$RED"
+    else                                             grade="F";  note="KRYTYCZNY";   color="$RED"
+    fi
+
+    echo
+    echo -e "${CYN}${B}══════════════════════════════════════════════════════${R}"
+    echo -e "${CYN}${B}  📊 RAPORT KOŃCOWY AUDYTU — SECFERRO v2              ${R}"
+    echo -e "${CYN}${B}══════════════════════════════════════════════════════${R}"
+    echo
+    printf "  %-20s %s\n" "Data:"    "$(date '+%Y-%m-%d %H:%M:%S')"
+    printf "  %-20s %s\n" "Raport:"  "$REPORT_FILE"
+    echo
+    echo -e "  ${GRN}${B}PASS:${R}  $PASS"
+    echo -e "  ${YLW}${B}WARN:${R}  $WARN"
+    echo -e "  ${RED}${B}FAIL:${R}  $FAIL"
+    echo -e "  Total: $total"
+    echo
+    echo -e "  Wynik:  ${color}${B}${score}%  [${grade}]  — ${note}${R}"
+    echo
+
+    if [[ ${#ISSUES[@]} -gt 0 ]]; then
+        echo -e "  ${B}Problemy do rozwiązania:${R}"
+        for issue in "${ISSUES[@]}"; do
+            if [[ "$issue" == "[FAIL]"* ]]; then
+                echo -e "    ${RED}${B}${issue}${R}"
+            else
+                echo -e "    ${YLW}${issue}${R}"
+            fi
+        done
+        echo
+    fi
+
+    # Rekomendacje
+    echo -e "  ${B}Rekomendacje:${R}"
+    if [[ $FAIL -gt 0 ]]; then
+        echo "    1. Napraw wszystkie [FAIL] przed wdrożeniem produkcyjnym"
+        echo "    2. Uruchom: sfmail configure — konfiguracja SMTP"
+        echo "    3. Uruchom: sfmail start — relay SMTP"
+        echo "    4. Sprawdź: secferro → Sieć → Napraw /etc/hosts"
+    fi
+    if [[ $WARN -gt 0 ]]; then
+        echo "    • Przejrzyj ostrzeżenia [WARN] — mogą wskazywać na luki bezpieczeństwa"
+        echo "    • SNMP: wyłącz lub zmień community name"
+        echo "    • RouterOS admin password: ustaw jeśli puste"
+    fi
+    [[ $FAIL -eq 0 && $WARN -eq 0 ]] && echo "    ✓ Brak krytycznych problemów — system gotowy do użycia!"
+
+    # Zapisz raport do pliku (bez kolorów ANSI)
+    {
+        echo "SecFerro Security Audit v2"
+        echo "Data: $(date)"
+        echo "────────────────────────────────────"
+        echo "PASS:  $PASS"
+        echo "WARN:  $WARN"
+        echo "FAIL:  $FAIL"
+        echo "Wynik: ${score}% [${grade}] — ${note}"
+        echo ""
+        [[ ${#ISSUES[@]} -gt 0 ]] && printf '%s\n' "${ISSUES[@]}"
+    } > "$REPORT_FILE" 2>/dev/null || true
+
+    echo
+    echo -e "${CYN}${B}══════════════════════════════════════════════════════${R}"
+    echo -e "  Raport zapisano: ${D}$REPORT_FILE${R}"
+    echo -e "${CYN}${B}══════════════════════════════════════════════════════${R}"
+    echo
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MAIN
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Parsuj flagi
+FAST_MODE=0
+SPECIFIC_TEST=""
+for arg in "$@"; do
+    case "$arg" in
+        --fast|-f)    FAST_MODE=1 ;;
+        --snmp)       SPECIFIC_TEST="snmp" ;;
+        --users)      SPECIFIC_TEST="users" ;;
+        --firewall)   SPECIFIC_TEST="firewall" ;;
+        --ports)      SPECIFIC_TEST="ports" ;;
+        --smtp)       SPECIFIC_TEST="smtp" ;;
+        --dns)        SPECIFIC_TEST="dns" ;;
+        --relay)      SPECIFIC_TEST="relay" ;;
+        --help|-h)
+            echo "sftest — SecFerro Security Audit"
+            echo "Użycie: sftest [opcje]"
+            echo "  --fast         Pomiń wolne testy (aktualizacje, NTP check)"
+            echo "  --snmp         Tylko test SNMP"
+            echo "  --users        Tylko test kont użytkowników"
+            echo "  --firewall     Tylko test firewall"
+            echo "  --ports        Tylko test portów"
+            echo "  --smtp         Tylko test SMTP"
+            echo "  --dns          Tylko test DNS"
+            echo "  --relay        Tylko test łańcucha relay"
+            exit 0 ;;
+    esac
+done
+
+clear
+echo -e "\n${CYN}${B}"
+echo "  ╔══════════════════════════════════════════════════════════╗"
+echo "  ║  SecFerro v2 — Security Audit                           ║"
+printf "  ║  %-54s  ║\n" "$(date '+%Y-%m-%d %H:%M:%S')"
+echo "  ╚══════════════════════════════════════════════════════════╝"
+echo -e "${R}"
+
+if [[ -n "$SPECIFIC_TEST" ]]; then
+    # Pojedynczy test
+    case "$SPECIFIC_TEST" in
+        snmp)     _test_snmp ;;
+        users)    _test_users ;;
+        firewall) _test_firewall ;;
+        ports)    _test_ports ;;
+        smtp)     _test_smtp ;;
+        dns)      _test_dns ;;
+        relay)    _test_relay_chain ;;
+    esac
+    _final_report
+    exit 0
+fi
+
+# Pełny audyt
+_test_vm
+_test_snmp
+_test_users
+_test_firewall
+_test_ports
+
+if [[ $FAST_MODE -eq 0 ]]; then
+    _test_version   # wolny (check-for-updates wymaga internetu w VM)
+    _test_ntp
+fi
+
+_test_smtp
+_test_dns
+_test_relay_chain
+_final_report
