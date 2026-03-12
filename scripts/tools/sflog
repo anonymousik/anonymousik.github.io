@@ -1,0 +1,188 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# sflog — SecFerro: przeglądarka logów (QEMU / email / RouterOS / SNMP)
+set -euo pipefail
+
+SF_HOME="${SF_HOME:-$HOME/secferro}"
+SF_CONF="${SF_HOME}/conf/secferro.conf"
+[[ -f "$SF_CONF" ]] && source "$SF_CONF"
+
+: "${PORT_SSH:=2222}"
+: "${ROS_USER:=admin}"
+
+LOG_DIR="${SF_HOME}/logs"
+QEMU_LOG="${LOG_DIR}/qemu.log"
+MAIL_LOG="${LOG_DIR}/sfmail_relay.log"
+SNMP_LOG="${LOG_DIR}/snmp.log"
+
+R='\033[0m'; B='\033[1m'; D='\033[2m'
+GRN='\033[92m'; RED='\033[91m'; YLW='\033[93m'
+CYN='\033[96m'; MAG='\033[95m'
+
+hdr()  { echo -e "\n${CYN}${B}── $* ──${R}\n"; }
+info() { echo -e "${CYN}[i]${R} $*"; }
+warn() { echo -e "${YLW}${B}[!]${R} $*"; }
+err()  { echo -e "${RED}${B}[✗]${R} $*"; }
+
+# Kolorowanie linii logu QEMU (RouterOS output)
+_colorize_ros() {
+    sed \
+        -e "s/\[WARNING\]/$(echo -e "${YLW}[WARNING]${R}")/g" \
+        -e "s/\[ERROR\]/$(echo -e "${RED}[ERROR]${R}")/g" \
+        -e "s/\[INFO\]/$(echo -e "${CYN}[INFO]${R}")/g" \
+        -e "s/login:/$(echo -e "${GRN}login:${R}")/g" \
+        -e "s/RouterOS/$(echo -e "${MAG}RouterOS${R}")/g" \
+        -e "s/firewall/$(echo -e "${YLW}firewall${R}")/g" \
+        -e "s/rejected/$(echo -e "${RED}rejected${R}")/g" \
+        -e "s/accepted/$(echo -e "${GRN}accepted${R}")/g" \
+        2>/dev/null
+}
+
+CMD="${1:-help}"
+LINES="${2:-50}"
+
+case "$CMD" in
+
+# ─── live: tail QEMU log na żywo ─────────────────────────────────────────────
+live)
+    hdr "LOG QEMU — na żywo (Ctrl+C żeby wyjść)"
+    if [[ ! -f "$QEMU_LOG" ]]; then
+        warn "Brak pliku logu: $QEMU_LOG"
+        info "Uruchom VM najpierw: sfstart"
+        exit 1
+    fi
+    info "Śledzenie: $QEMU_LOG"
+    echo -e "${D}─────────────────────────────────────────────${R}"
+    tail -f "$QEMU_LOG" | _colorize_ros
+    ;;
+
+# ─── tail: ostatnie N linii QEMU ─────────────────────────────────────────────
+tail)
+    hdr "LOG QEMU — ostatnie ${LINES} linii"
+    if [[ ! -f "$QEMU_LOG" ]]; then
+        warn "Brak logu QEMU. VM nie była uruchamiana."
+        exit 0
+    fi
+    echo -e "${D}Plik: $QEMU_LOG  |  Rozmiar: $(du -sh "$QEMU_LOG" | cut -f1)${R}\n"
+    tail -"$LINES" "$QEMU_LOG" | _colorize_ros
+    ;;
+
+# ─── boot: pokaż ostatni cykl boot RouterOS ─────────────────────────────────
+boot)
+    hdr "LOG BOOT RouterOS"
+    if [[ ! -f "$QEMU_LOG" ]]; then warn "Brak logu QEMU"; exit 0; fi
+    # RouterOS boot zaczyna się od "RouterOS" i kończy na "Press <any key>"
+    local boot_start
+    boot_start=$(grep -n "Starting kernel\|RouterOS\|MikroTik" "$QEMU_LOG" \
+                 | tail -1 | cut -d: -f1 2>/dev/null || echo 1)
+    sed -n "${boot_start},\$p" "$QEMU_LOG" | head -100 | _colorize_ros
+    ;;
+
+# ─── mail: logi SMTP relay ───────────────────────────────────────────────────
+mail)
+    hdr "LOG EMAIL / SMTP"
+    if [[ -f "$MAIL_LOG" ]]; then
+        echo -e "${D}Plik: $MAIL_LOG${R}\n"
+        tail -"$LINES" "$MAIL_LOG" \
+            | sed 's/password=[^ ]*/password=[UKRYTE]/gi' \
+            | sed \
+                -e "s/host\b/$(echo -e "${CYN}host${R}")/g" \
+                -e "s/exitcode=EX_OK/$(echo -e "${GRN}exitcode=EX_OK${R}")/g" \
+                -e "s/exitcode=.*/$(echo -e "${RED}&${R}")/g"
+    else
+        warn "Brak logu mail. Uruchom relay: sfmail start"
+    fi
+    ;;
+
+# ─── ros: logi z RouterOS przez SSH ─────────────────────────────────────────
+ros)
+    hdr "LOG ROUTEROS (przez SSH)"
+    if ! nc -z -w2 127.0.0.1 "$PORT_SSH" 2>/dev/null; then
+        err "RouterOS niedostępny na porcie $PORT_SSH"
+        info "Sprawdź czy VM działa: sfstart"
+        exit 1
+    fi
+    info "Pobieranie logów RouterOS..."
+    timeout 10 ssh \
+        -o StrictHostKeyChecking=no -o ConnectTimeout=5 \
+        -p "$PORT_SSH" "${ROS_USER}@127.0.0.1" \
+        "/log print without-paging" 2>/dev/null \
+        | tail -"$LINES" \
+        | sed \
+            -e "s/warning/$(echo -e "${YLW}warning${R}")/g" \
+            -e "s/error/$(echo -e "${RED}error${R}")/g" \
+            -e "s/info/$(echo -e "${CYN}info${R}")/g" \
+            -e "s/critical/$(echo -e "${RED}${B}critical${R}")/g" \
+        || err "Błąd połączenia SSH z RouterOS"
+    ;;
+
+# ─── snmp: logi SNMP ────────────────────────────────────────────────────────
+snmp)
+    hdr "LOG SNMP TRAPS"
+    [[ -f "$SNMP_LOG" ]] \
+        && tail -"$LINES" "$SNMP_LOG" \
+        || warn "Brak logu SNMP ($SNMP_LOG)"
+    ;;
+
+# ─── all: wszystkie logi skrótowo ────────────────────────────────────────────
+all)
+    hdr "WSZYSTKIE LOGI — podgląd (20 linii każdy)"
+
+    echo -e "${B}╔══ QEMU / RouterOS Console ══╗${R}"
+    [[ -f "$QEMU_LOG" ]] \
+        && tail -20 "$QEMU_LOG" | _colorize_ros | sed 's/^/  /' \
+        || echo -e "  ${D}(brak logu QEMU)${R}"
+
+    echo -e "\n${B}╔══ SMTP Relay ══╗${R}"
+    [[ -f "$MAIL_LOG" ]] \
+        && tail -20 "$MAIL_LOG" | sed 's/password=[^ ]*/password=[UKRYTE]/gi' | sed 's/^/  /' \
+        || echo -e "  ${D}(brak logu mail)${R}"
+
+    echo -e "\n${B}╔══ RouterOS Syslog ══╗${R}"
+    if nc -z -w1 127.0.0.1 "$PORT_SSH" 2>/dev/null; then
+        timeout 8 ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 \
+            -p "$PORT_SSH" "${ROS_USER}@127.0.0.1" \
+            "/log print without-paging" 2>/dev/null | tail -10 | sed 's/^/  /' || echo "  (błąd SSH)"
+    else
+        echo -e "  ${D}(RouterOS niedostępny)${R}"
+    fi
+    ;;
+
+# ─── clear: wyczyść logi ─────────────────────────────────────────────────────
+clear)
+    hdr "CZYSZCZENIE LOGÓW"
+    for f in "$QEMU_LOG" "$MAIL_LOG" "$SNMP_LOG"; do
+        [[ -f "$f" ]] && { > "$f"; echo -e "  ${GRN}✓${R} Wyczyszczono: $f"; } || true
+    done
+    ;;
+
+# ─── size: rozmiary plików logów ────────────────────────────────────────────
+size)
+    hdr "ROZMIARY LOGÓW"
+    for f in "$QEMU_LOG" "$MAIL_LOG" "$SNMP_LOG"; do
+        if [[ -f "$f" ]]; then
+            local lines; lines=$(wc -l < "$f")
+            local size; size=$(du -sh "$f" | cut -f1)
+            echo -e "  ${CYN}${size}${R}  (${lines} linii)  $f"
+        else
+            echo -e "  ${D}—   (brak)         $f${R}"
+        fi
+    done
+    ;;
+
+# ─── help ────────────────────────────────────────────────────────────────────
+*)
+    echo "sflog — SecFerro Log Viewer"
+    echo
+    echo "Użycie: sflog <komenda> [linie]"
+    echo
+    echo "  sflog live          — QEMU log na żywo (tail -f)"
+    echo "  sflog tail [N]      — ostatnie N linii QEMU (domyślnie 50)"
+    echo "  sflog boot          — ostatni boot RouterOS"
+    echo "  sflog mail [N]      — logi SMTP relay"
+    echo "  sflog ros  [N]      — logi RouterOS (przez SSH)"
+    echo "  sflog snmp [N]      — logi SNMP trap"
+    echo "  sflog all           — wszystkie logi skrótowo"
+    echo "  sflog size          — rozmiary plików logów"
+    echo "  sflog clear         — wyczyść wszystkie logi"
+    ;;
+esac
