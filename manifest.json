@@ -1,0 +1,64 @@
+{
+  "name": "SecFerro Division - Quantum Time Terminal",
+  "short_name": "SecFerro",
+  "description": "Elite cybersecurity quantum time terminal with military-grade protection",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#00ff41",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pl",
+  "dir": "ltr",
+  
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%23000' width='192' height='192'/%3E%3Cpath d='M96,30 L156,60 L156,120 Q156,150 96,165 Q36,150 36,120 L36,60 Z' fill='none' stroke='%2300ff41' stroke-width='4'/%3E%3Ccircle cx='96' cy='96' r='25' fill='none' stroke='%2300d4ff' stroke-width='3'/%3E%3Crect x='86' y='100' width='20' height='18' fill='none' stroke='%2300ff41' stroke-width='2'/%3E%3Cpath d='M88,100 L88,92 Q88,85 96,85 Q104,85 104,92 L104,100' fill='none' stroke='%2300ff41' stroke-width='2'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%23000' width='512' height='512'/%3E%3Cpath d='M256,80 L416,160 L416,320 Q416,400 256,440 Q96,400 96,320 L96,160 Z' fill='none' stroke='%2300ff41' stroke-width='8'/%3E%3Ccircle cx='256' cy='256' r='65' fill='none' stroke='%2300d4ff' stroke-width='6'/%3E%3Crect x='228' y='265' width='56' height='48' fill='none' stroke='%2300ff41' stroke-width='5'/%3E%3Cpath d='M233,265 L233,245 Q233,225 256,225 Q279,225 279,245 L279,265' fill='none' stroke='%2300ff41' stroke-width='5'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'%3E%3Crect fill='%23000' width='540' height='720'/%3E%3Ctext x='270' y='360' text-anchor='middle' fill='%2300ff41' font-size='48' font-family='monospace'%3ESecFerro%3C/text%3E%3Ctext x='270' y='410' text-anchor='middle' fill='%2300d4ff' font-size='24' font-family='monospace'%3EQuantum Terminal%3C/text%3E%3C/svg%3E",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ],
+  
+  "categories": [
+    "utilities",
+    "productivity",
+    "security"
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "Open Terminal",
+      "short_name": "Terminal",
+      "description": "Launch SecFerro Quantum Terminal",
+      "url": "/",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect fill='%23000' width='96' height='96'/%3E%3Cpath d='M48,15 L78,30 L78,60 Q78,75 48,82.5 Q18,75 18,60 L18,30 Z' fill='none' stroke='%2300ff41' stroke-width='2'/%3E%3C/svg%3E",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  
+  "related_applications": [],
+  "prefer_related_applications": false,
+  
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
+}
