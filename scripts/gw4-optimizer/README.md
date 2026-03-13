@@ -1,4 +1,6 @@
-# GW4 Pro Optimizer Suite
+# GW4 Pro Optimizer Suite 
+STATUS: PRE-ALPHA
+SEMI TESTED 
 
 > **Kompleksowe narzędzie ADB do optymalizacji Samsung Galaxy Watch 4 po aktualizacji One UI 8.0 / WearOS 6.0**
 
