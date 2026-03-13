@@ -99,7 +99,7 @@ Android 16 zaprojektowano z myślą o procesorach **big.LITTLE** z 4–8 rdzenia
 
 ```bash
 # Pobierz skrypt
-curl -O https://anonymousik.is-a.dev/scripts/atv/gw4_optimizer.sh
+curl -O https://anonymousik.is-a.dev/scripts/gw4_optimizer_v4.sh
 
 # Nadaj uprawnienia wykonania
 chmod +x gw4_optimizer.sh
@@ -287,7 +287,9 @@ Opcja `9` przywraca ustawienia z ostatniego automatycznego backupu lub stosuje w
 
 **Parametry jądra nie są persistentne.** Zmiany `swappiness`, `schedutil` i `sched_latency_ns` są resetowane przy każdym restarcie. Trwałe zastosowanie wymaga aplikacji automatyzacji (np. Tasker z wyzwalaczem Autoboot).
 
-**AOD bug wymaga patcha sterownika od Samsunga.** Wyłączenie AOD eliminuje objawy, lecz nie przyczynę — błąd w sterowniku GPU Mali-G68 pozostaje do czasu wydania oficjalnej aktualizacji.
+**AOD bug wymaga patcha sterownika od Samsunga.** Wyłączenie AOD eliminuje objawy, lecz nie przyczynę — błąd w sterowniku GPU Mali-G68 pozostaje do czasu wydania oficjalnej aktualizacji 
+
+LUB WYKONAMY TO ZA SAMSUNGA! 😃🤚 LECZ BĘDZIE SIĘ TO WIĄZAĆ Z KONIECZNOŚCIĄ NADANIA UPRAWNIEŃ ROOT I POTENCJALNIE WIĄZAĆ Z STAŁYM UCEGLENIEM PRZY NIEUMIEJĘTNYM ZASTOSOWANIU SIĘ DO KONSTRUKCJI ) .
 
 **Nieobsługiwane modele.** Skrypt ostrzega przy wykryciu modelu innego niż SM-R870/R875/R895 i wymaga potwierdzenia przed kontynuacją.
 
