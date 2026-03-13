@@ -1,11 +1,8 @@
-# GW4 Pro Optimizer Suite 
-STATUS: ALPHA
-LATEST VERSION: v5.0.0-alpha
-WWW: https://anonymousik.is-a.dev/scripts/gw4-optimizer
-
-<div align="center">
-
 # GW4 Pro Optimizer Suite
+STATUS:ALPHA 
+
+[STRONA PROJEKTU](https://anonymousik.is-a.dev/scripts/gw4-optimizer)
+<div align="center"> 
 
 ### Zaawansowane narzędzie ADB do naprawy regresji wydajności<br>Samsung Galaxy Watch 4 po aktualizacji One UI 8.0 / WearOS 6.0
 
@@ -14,7 +11,6 @@ WWW: https://anonymousik.is-a.dev/scripts/gw4-optimizer
 [![Platform](https://img.shields.io/badge/SM--R870%20%7C%20SM--R875%20%7C%20SM--R895-lightgrey?style=flat-square&logo=samsung)](https://www.samsung.com)
 [![WearOS](https://img.shields.io/badge/WearOS-6.0%20%2F%20Android%2016-orange?style=flat-square&logo=wear-os)](https://developer.android.com)
 [![License](https://img.shields.io/badge/license-MIT-yellow?style=flat-square)](LICENSE)
-
 ---
 
 ### ⚡ One-Click Install
