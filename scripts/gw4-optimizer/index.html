@@ -1,1 +1,1001 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="GW4 Pro Optimizer — narzędzie ADB do naprawy regresji wydajności Samsung Galaxy Watch 4 po One UI 8.0 / WearOS 6.0 / Android 16. Bez roota.">
+<meta property="og:title" content="GW4 Pro Optimizer · anonymousik.is-a.dev">
+<meta property="og:description" content="Fix HWC bug, PELT thrashing, zRAM freeze, AOD lag. SM-R870/875/895. One-click install.">
+<meta name="theme-color" content="#0c0d10">
+<title>GW4 Pro Optimizer · scripts/gw4 · anonymousik.is-a.dev</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ─── DESIGN TOKENS ────────────────────────────────────────────────────────── */
+:root {
+  --bg-0:      #0c0d10;
+  --bg-1:      #111318;
+  --bg-2:      #161920;
+  --bg-3:      #1c2030;
+  --border:    #1e2535;
+  --border-hi: #2a3450;
+  --cyan:      #00d4c8;
+  --cyan-dim:  rgba(0,212,200,0.12);
+  --cyan-glow: rgba(0,212,200,0.06);
+  --green:     #34d399;
+  --yellow:    #fbbf24;
+  --red:       #f87171;
+  --purple:    #a78bfa;
+  --orange:    #fb923c;
+  --text-0:    #f1f5f9;
+  --text-1:    #94a3b8;
+  --text-2:    #475569;
+  --font-mono: 'IBM Plex Mono','Cascadia Code','Fira Code',monospace;
+  --font-ui:   'Syne',system-ui,sans-serif;
+  --space-1:4px;  --space-2:8px;  --space-3:12px;
+  --space-4:16px; --space-5:24px; --space-6:32px;
+  --space-7:48px; --space-8:64px; --space-9:96px;
+  --max-w:1000px; --radius-sm:4px; --radius-md:8px; --radius-lg:12px;
+}
+
+/* ─── RESET ─────────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--bg-0);color:var(--text-0);
+  font-family:var(--font-mono);line-height:1.6;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline}
+code{
+  font-family:var(--font-mono);font-size:.85em;
+  background:var(--bg-2);padding:.15em .4em;
+  border-radius:var(--radius-sm);color:var(--cyan);
+  border:1px solid var(--border);
+}
+
+/* ─── NOISE TEXTURE ─────────────────────────────────────────────────────────── */
+body::after{
+  content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.028;mix-blend-mode:overlay;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:9997;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
+}
+
+/* ─── AMBIENT GLOW ───────────────────────────────────────────────────────────── */
+.ambient{position:fixed;pointer-events:none;z-index:0;border-radius:50%;filter:blur(120px)}
+.ambient-1{width:700px;height:400px;top:-100px;left:-200px;background:radial-gradient(ellipse,rgba(0,212,200,.055) 0%,transparent 70%)}
+.ambient-2{width:600px;height:600px;bottom:0;right:-150px;background:radial-gradient(ellipse,rgba(167,139,250,.04) 0%,transparent 70%)}
+
+/* ─── GRID OVERLAY ───────────────────────────────────────────────────────────── */
+.grid-overlay{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:48px 48px;opacity:.25;
+  mask-image:radial-gradient(ellipse 70% 50% at 50% 0%,black 30%,transparent 100%);
+}
+
+/* ─── LAYOUT ─────────────────────────────────────────────────────────────────── */
+.wrapper{position:relative;z-index:1;max-width:var(--max-w);margin:0 auto;padding:0 var(--space-5)}
+
+/* ─── NAV ────────────────────────────────────────────────────────────────────── */
+nav{position:sticky;top:0;z-index:100;background:rgba(12,13,16,.88);backdrop-filter:blur(16px) saturate(140%);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:var(--max-w);margin:0 auto;padding:var(--space-3) var(--space-5);display:flex;align-items:center;gap:var(--space-3)}
+.nav-breadcrumb{font-size:.75rem;color:var(--text-2);display:flex;align-items:center;gap:6px;flex:1}
+.nav-breadcrumb a{color:var(--text-1)}
+.nav-breadcrumb a:hover{color:var(--cyan);text-decoration:none}
+.nav-breadcrumb .sep{color:var(--text-2);user-select:none}
+.nav-breadcrumb .current{color:var(--cyan)}
+.nav-badge{font-size:.68rem;font-weight:600;color:var(--cyan);background:var(--cyan-dim);border:1px solid rgba(0,212,200,.25);padding:2px 8px;border-radius:3px;letter-spacing:.04em}
+.nav-actions{display:flex;align-items:center;gap:var(--space-3)}
+.nav-link{font-size:.75rem;color:var(--text-2);padding:4px 8px;border-radius:var(--radius-sm);transition:color .15s,background .15s}
+.nav-link:hover{color:var(--text-0);background:var(--bg-2);text-decoration:none}
+
+/* ─── HERO ───────────────────────────────────────────────────────────────────── */
+.hero{padding:var(--space-9) 0 var(--space-7)}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.7rem;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;margin-bottom:var(--space-4)}
+.hero-eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--cyan)}
+.hero-title{font-family:var(--font-ui);font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:var(--space-4)}
+.hero-title .accent{color:var(--cyan)}
+.hero-tagline{font-size:.92rem;color:var(--text-1);max-width:540px;line-height:1.7;margin-bottom:var(--space-5)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-bottom:var(--space-6)}
+
+/* ─── BADGES ─────────────────────────────────────────────────────────────────── */
+.badge{font-size:.68rem;font-weight:500;padding:3px 8px;border-radius:3px;border:1px solid;letter-spacing:.03em}
+.badge-cyan  {color:var(--cyan);  border-color:rgba(0,212,200,.25); background:rgba(0,212,200,.08)}
+.badge-green {color:var(--green); border-color:rgba(52,211,153,.25);background:rgba(52,211,153,.08)}
+.badge-yellow{color:var(--yellow);border-color:rgba(251,191,36,.25);background:rgba(251,191,36,.08)}
+.badge-purple{color:var(--purple);border-color:rgba(167,139,250,.25);background:rgba(167,139,250,.08)}
+.badge-red   {color:var(--red);   border-color:rgba(248,113,113,.25);background:rgba(248,113,113,.08)}
+.badge-dim   {color:var(--text-2);border-color:var(--border);background:transparent}
+
+/* ─── BUTTONS ────────────────────────────────────────────────────────────────── */
+.cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3)}
+.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:.82rem;font-weight:500;padding:9px 18px;border-radius:var(--radius-md);border:1px solid;cursor:pointer;transition:all .15s;text-decoration:none}
+.btn-primary{background:var(--cyan);color:#000;border-color:var(--cyan)}
+.btn-primary:hover{background:#1febe3;border-color:#1febe3;transform:translateY(-1px);text-decoration:none}
+.btn-ghost{background:transparent;color:var(--text-1);border-color:var(--border)}
+.btn-ghost:hover{background:var(--bg-2);border-color:var(--border-hi);color:var(--text-0);text-decoration:none}
+
+/* ─── ONE-CLICK COPY BLOCK ──────────────────────────────────────────────────── */
+.oneclick-wrap{
+  margin:var(--space-6) 0 var(--space-7);
+  background:var(--bg-1);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:0 0 0 1px rgba(0,212,200,.04) inset,0 16px 48px rgba(0,0,0,.5),0 0 60px rgba(0,212,200,.03);
+}
+.oneclick-header{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg-2);border-bottom:1px solid var(--border);
+  padding:10px 16px;
+}
+.oneclick-label{font-size:.68rem;color:var(--text-2);letter-spacing:.06em;text-transform:uppercase}
+.oneclick-label span{color:var(--cyan)}
+.oneclick-body{
+  padding:var(--space-5) var(--space-5) var(--space-4);
+  display:flex;flex-direction:column;align-items:center;gap:var(--space-4);
+}
+.oneclick-cmd{
+  width:100%;
+  background:#080a0c;
+  border:1px solid var(--border-hi);
+  border-radius:var(--radius-md);
+  padding:var(--space-4) var(--space-5);
+  font-family:var(--font-mono);font-size:.82rem;
+  color:var(--cyan);line-height:1.5;
+  word-break:break-all;text-align:center;
+  letter-spacing:.01em;
+  box-shadow:0 0 32px rgba(0,212,200,.04) inset;
+}
+.oneclick-cmd .cmd-prompt{color:var(--text-2)}
+.oneclick-cmd .cmd-main{color:var(--cyan)}
+.oneclick-cmd .cmd-url{color:var(--purple)}
+
+.btn-copy-big{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:.9rem;font-weight:600;
+  padding:12px 32px;border-radius:var(--radius-md);
+  background:var(--cyan-dim);color:var(--cyan);
+  border:1px solid rgba(0,212,200,.3);
+  cursor:pointer;transition:all .2s;
+  letter-spacing:.03em;
+}
+.btn-copy-big:hover{background:rgba(0,212,200,.2);border-color:rgba(0,212,200,.5);transform:translateY(-1px);box-shadow:0 4px 24px rgba(0,212,200,.15)}
+.btn-copy-big.copied{background:rgba(52,211,153,.1);color:var(--green);border-color:rgba(52,211,153,.3)}
+.btn-copy-big svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.oneclick-note{font-size:.72rem;color:var(--text-2);text-align:center;line-height:1.7}
+.oneclick-note a{color:var(--text-1)}
+
+/* ─── TERMINAL BLOCK ─────────────────────────────────────────────────────────── */
+.terminal-wrap{margin:var(--space-7) 0;position:relative}
+.terminal{
+  background:#080a0c;border:1px solid var(--border);border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:0 0 0 1px rgba(0,212,200,.04) inset,0 24px 64px rgba(0,0,0,.6),0 0 80px rgba(0,212,200,.03);
+}
+.terminal-bar{display:flex;align-items:center;background:var(--bg-2);border-bottom:1px solid var(--border);padding:10px 14px;gap:6px}
+.tbar-dot{width:11px;height:11px;border-radius:50%}
+.td-r{background:#ff5f56}.td-y{background:#ffbd2e}.td-g{background:#27c93f}
+.tbar-title{margin-left:auto;margin-right:auto;transform:translateX(-26px);font-size:.68rem;color:var(--text-2);letter-spacing:.03em}
+.terminal-body{padding:var(--space-4) var(--space-5);font-size:.78rem;line-height:1.9;overflow-x:auto}
+.t-dim{color:#3d4f68}.t-head{color:var(--purple);font-weight:600}
+.t-cyan{color:var(--cyan)}.t-green{color:var(--green)}.t-yellow{color:var(--yellow)}
+.t-red{color:var(--red)}.t-white{color:var(--text-0)}.t-gray{color:var(--text-1)}
+.t-bold{font-weight:700}.t-ok{color:var(--green)}.t-warn{color:var(--yellow)}
+.t-dim2{color:#2a3a52}.t-mag{color:var(--purple)}
+
+/* ─── SECTION ────────────────────────────────────────────────────────────────── */
+.section{padding:var(--space-8) 0}
+.section+.section{border-top:1px solid var(--border)}
+.s-label{font-size:.68rem;color:var(--cyan);letter-spacing:.12em;text-transform:uppercase;margin-bottom:var(--space-2);display:block}
+.s-title{font-family:var(--font-ui);font-size:1.7rem;font-weight:700;letter-spacing:-.025em;margin-bottom:var(--space-3);line-height:1.2}
+.s-desc{color:var(--text-1);font-size:.85rem;max-width:560px;line-height:1.7}
+
+/* ─── FEATURE GRID ───────────────────────────────────────────────────────────── */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-3);margin-top:var(--space-5)}
+.feat-card{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4) var(--space-4) var(--space-5);transition:border-color .2s,background .2s}
+.feat-card:hover{border-color:var(--border-hi);background:var(--bg-2)}
+.feat-icon{font-size:1.2rem;margin-bottom:var(--space-3);display:block}
+.feat-title{font-size:.85rem;font-weight:600;margin-bottom:var(--space-2);color:var(--text-0)}
+.feat-body{font-size:.78rem;color:var(--text-1);line-height:1.6}
+.feat-tag{display:inline-block;margin-top:var(--space-2);font-size:.65rem;color:var(--cyan);background:var(--cyan-dim);border:1px solid rgba(0,212,200,.2);padding:2px 6px;border-radius:3px}
+
+/* ─── MODULES GRID ───────────────────────────────────────────────────────────── */
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px;margin-top:var(--space-5)}
+.mod-row{display:flex;align-items:center;gap:10px;background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:.75rem;transition:border-color .15s}
+.mod-row:hover{border-color:var(--border-hi)}
+.mod-key{color:var(--cyan);font-weight:700;min-width:34px;flex-shrink:0}
+.mod-name{color:var(--text-0);flex:1}
+.mod-eta{color:var(--text-2);font-size:.68rem;white-space:nowrap;flex-shrink:0}
+.mod-new{color:var(--green);font-size:.62rem;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);padding:1px 5px;border-radius:2px;margin-left:4px}
+
+/* ─── HW TABLE ───────────────────────────────────────────────────────────────── */
+.hw-table-wrap{margin-top:var(--space-5);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.hw-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.hw-table th{text-align:left;padding:9px 14px;background:var(--bg-2);border-bottom:1px solid var(--border);color:var(--text-2);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.hw-table td{padding:9px 14px;border-bottom:1px solid rgba(30,37,53,.7);vertical-align:middle}
+.hw-table tr:last-child td{border-bottom:none}
+.hw-table tr:hover td{background:rgba(255,255,255,.015)}
+.hw-table td:first-child{color:var(--text-2);white-space:nowrap;width:30%}
+.hw-table td:last-child{color:var(--text-0)}
+
+/* ─── INSTALL STEPS ──────────────────────────────────────────────────────────── */
+.steps{margin-top:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3)}
+.step{display:grid;grid-template-columns:36px 1fr;gap:var(--space-4);background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-4)}
+.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--cyan-dim);border:1px solid rgba(0,212,200,.3);font-size:.72rem;font-weight:700;color:var(--cyan);flex-shrink:0}
+.step-title{font-size:.85rem;font-weight:600;margin-bottom:4px}
+.step-body{font-size:.78rem;color:var(--text-1);line-height:1.65}
+
+/* ─── CALLOUT ────────────────────────────────────────────────────────────────── */
+.callout{display:flex;gap:var(--space-3);padding:var(--space-4);border-radius:var(--radius-md);font-size:.8rem;line-height:1.6;margin-top:var(--space-4)}
+.callout-warn{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);color:var(--text-1)}
+.callout-icon{color:var(--yellow);flex-shrink:0;font-size:1rem;margin-top:1px}
+.callout-info{background:rgba(0,212,200,.06);border:1px solid rgba(0,212,200,.18);color:var(--text-1)}
+.callout-info .callout-icon{color:var(--cyan)}
+.callout-red{background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.18);color:var(--text-1)}
+.callout-red .callout-icon{color:var(--red)}
+
+/* ─── FAQ ────────────────────────────────────────────────────────────────────── */
+.faq-list{margin-top:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3)}
+.faq-item{
+  background:var(--bg-1);border:1px solid var(--border);
+  border-radius:var(--radius-md);overflow:hidden;
+  transition:border-color .2s;
+}
+.faq-item:hover{border-color:var(--border-hi)}
+.faq-q{
+  width:100%;text-align:left;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--space-4) var(--space-5);
+  background:none;border:none;cursor:pointer;
+  font-family:var(--font-mono);font-size:.85rem;color:var(--text-0);
+  gap:var(--space-4);
+}
+.faq-q:hover{background:var(--bg-2)}
+.faq-q-text{text-align:left;flex:1;line-height:1.5}
+.faq-arrow{color:var(--cyan);font-size:.75rem;flex-shrink:0;transition:transform .25s}
+.faq-item.open .faq-arrow{transform:rotate(90deg)}
+.faq-a{
+  display:none;padding:0 var(--space-5) var(--space-4);
+  font-size:.8rem;color:var(--text-1);line-height:1.75;
+  border-top:1px solid var(--border);padding-top:var(--space-3);
+}
+.faq-item.open .faq-a{display:block}
+.faq-a p+p{margin-top:var(--space-3)}
+.faq-a code{font-size:.78em}
+.faq-a .highlight{color:var(--cyan)}
+.faq-a ul{margin:var(--space-2) 0 0 var(--space-4)}
+.faq-a li{margin-bottom:4px}
+
+/* ─── INSTALL BLOCK ──────────────────────────────────────────────────────────── */
+.install-block{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-top:var(--space-5)}
+.install-tabs{display:flex;border-bottom:1px solid var(--border)}
+.itab{font-size:.75rem;padding:10px 16px;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font-mono);transition:color .15s,border-color .15s}
+.itab:hover{color:var(--text-0)}
+.itab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.itab-panel{display:none}
+.itab-panel.active{display:block}
+.cmd-row{display:flex;align-items:stretch;border-bottom:1px solid var(--border)}
+.cmd-row:last-child{border-bottom:none}
+.cmd-label{font-size:.7rem;color:var(--text-2);padding:12px 14px;border-right:1px solid var(--border);min-width:90px;display:flex;align-items:center;background:rgba(0,0,0,.2);letter-spacing:.05em}
+.cmd-code{flex:1;padding:11px 14px;font-size:.78rem;color:var(--cyan);display:flex;align-items:center;justify-content:space-between;gap:8px;background:transparent}
+.cmd-code span{flex:1;word-break:break-all}
+.btn-copy-sm{background:transparent;color:var(--text-2);border:1px solid var(--border);padding:4px 8px;border-radius:var(--radius-sm);font-size:.68rem;font-family:var(--font-mono);cursor:pointer;transition:all .15s;flex-shrink:0}
+.btn-copy-sm:hover{color:var(--cyan);border-color:rgba(0,212,200,.3);background:var(--cyan-dim)}
+.btn-copy-sm.copied{color:var(--green);border-color:rgba(52,211,153,.3)}
+
+/* ─── FOOTER ─────────────────────────────────────────────────────────────────── */
+footer{border-top:1px solid var(--border);padding:var(--space-6) 0;margin-top:var(--space-9)}
+.footer-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--space-5);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-4)}
+.footer-brand{font-size:.78rem;color:var(--text-2)}
+.footer-brand a{color:var(--cyan)}
+.footer-links{display:flex;gap:var(--space-5)}
+.footer-links a{font-size:.75rem;color:var(--text-2)}
+.footer-links a:hover{color:var(--text-0);text-decoration:none}
+
+/* ─── SCROLL FADE ────────────────────────────────────────────────────────────── */
+.fade{opacity:0;transform:translateY(12px);transition:opacity .4s ease,transform .4s ease}
+.fade.in{opacity:1;transform:none}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────────── */
+@media(max-width:640px){
+  .hero{padding:var(--space-7) 0 var(--space-6)}
+  .hero-title{font-size:2rem}
+  .nav-actions .nav-link:not(:last-child){display:none}
+  .footer-links{display:none}
+  .modules-grid{grid-template-columns:1fr 1fr}
+  .oneclick-cmd{font-size:.7rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient effects -->
+<div class="ambient ambient-1" aria-hidden="true"></div>
+<div class="ambient ambient-2" aria-hidden="true"></div>
+<div class="grid-overlay" aria-hidden="true"></div>
+
+<!-- ─── NAV ──────────────────────────────────────────────────────────────────── -->
+<nav role="navigation" aria-label="Site navigation">
+  <div class="nav-inner">
+    <div class="nav-breadcrumb" aria-label="Breadcrumb">
+      <a href="https://anonymousik.is-a.dev">~</a>
+      <span class="sep">/</span>
+      <a href="https://anonymousik.is-a.dev/scripts">scripts</a>
+      <span class="sep">/</span>
+      <span class="current">gw4-optimizer</span>
+    </div>
+    <span class="nav-badge">v5.0.0</span>
+    <div class="nav-actions">
+      <a class="nav-link" href="#install">install</a>
+      <a class="nav-link" href="#modules">moduły</a>
+      <a class="nav-link" href="#faq">FAQ</a>
+      <a class="nav-link" href="https://github.com/anonymousik/anonymousik.github.io/tree/main/scripts/gw4-optimizer" target="_blank" rel="noopener">github ↗</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="wrapper">
+    <p class="hero-eyebrow">scripts / gw4-optimizer</p>
+
+    <h1 class="hero-title">
+      GW4 Pro<br><span class="accent">Optimizer</span>
+    </h1>
+
+    <p class="hero-tagline">
+      Narzędzie ADB do naprawy regresji wydajności Samsung Galaxy Watch 4
+      po aktualizacji One UI 8.0 / WearOS 6.0 / Android 16.
+      Każda poprawka uzasadniona inżynieryjnie — bez roota, bez ryzyka.
+    </p>
+
+    <div class="hero-meta">
+      <span class="badge badge-cyan">v5.0.0</span>
+      <span class="badge badge-green">bez roota</span>
+      <span class="badge badge-yellow">SM-R870 / R875 / R895</span>
+      <span class="badge badge-purple">Exynos W920</span>
+      <span class="badge badge-dim">Android 16 SDK 36</span>
+      <span class="badge badge-dim">Termux ready</span>
+      <span class="badge badge-dim">MIT license</span>
+    </div>
+
+    <div class="cta-row">
+      <a href="#install" class="btn btn-primary">↓ Zainstaluj</a>
+      <a href="https://github.com/anonymousik/anonymousik.github.io/tree/main/scripts/gw4-optimizer"
+         class="btn btn-ghost" target="_blank" rel="noopener">View source ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ONE-CLICK COPY ────────────────────────────────────────────────────────── -->
+<section aria-label="One-click install" id="install">
+  <div class="wrapper">
+    <div class="oneclick-wrap fade">
+      <div class="oneclick-header">
+        <span class="oneclick-label">⚡ <span>One-Click Install</span> — Termux / bash</span>
+        <span class="badge badge-dim">v5.0.0</span>
+      </div>
+      <div class="oneclick-body">
+        <div class="oneclick-cmd" id="install-cmd">
+          <span class="cmd-prompt">$&nbsp;</span><span class="cmd-main">bash</span> &lt;(<span class="cmd-main">curl</span> <span class="t-gray">-sL</span> <span class="cmd-url">https://raw.githubusercontent.com/anonymousik/anonymousik.github.io/refs/heads/main/scripts/gw4-optimizer/gw4_optimizer_v5.sh</span>)
+        </div>
+        <button class="btn-copy-big" id="copy-main" onclick="copyMain()">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          COPY
+        </button>
+        <p class="oneclick-note">
+          Wymaga <code>bash 4+</code> i <code>adb</code> w PATH ·
+          <a href="#setup">Jak włączyć ADB na zegarku?</a> ·
+          <a href="https://raw.githubusercontent.com/anonymousik/anonymousik.github.io/refs/heads/main/scripts/gw4-optimizer/gw4_optimizer_v5.sh" target="_blank" rel="noopener">raw script ↗</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TERMINAL PREVIEW ───────────────────────────────────────────────────────── -->
+<section aria-label="Terminal preview">
+  <div class="wrapper">
+    <div class="terminal-wrap fade">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="tbar-dot td-r"></div>
+          <div class="tbar-dot td-y"></div>
+          <div class="tbar-dot td-g"></div>
+          <span class="tbar-title">gw4_optimizer_v5.sh — Termux · SM-R870</span>
+        </div>
+        <div class="terminal-body" role="img" aria-label="Terminal output GW4 Optimizer v5">
+<span class="t-dim2">  ╔══════════════════════════════════════════════════════════════════════╗</span><br>
+<span class="t-head">  ║  GW4 Pro Optimizer Suite  v5.0.0                                   ║</span><br>
+<span class="t-head">  ║  SM-R870/75/95 · Exynos W920 (A55 2C / Mali-G68) · One UI 8.0     ║</span><br>
+<span class="t-dim2">  ╠══════════════════════════════════════════════════════════════════════╣</span><br>
+<span class="t-head">  ║  ⚡ </span><span class="t-cyan">192.168.1.42:5555  |  SM-R870  |  SDK 36</span><span class="t-head">                        ║</span><br>
+<span class="t-head">  ║    </span><span class="t-gray">R870XXU1JYLYL6 (region XEO)</span><span class="t-head">                                    ║</span><br>
+<span class="t-head">  ║    Bateria: </span><span class="t-green">87%</span><span class="t-head">                                                        ║</span><br>
+<span class="t-dim2">  ╚══════════════════════════════════════════════════════════════════════╝</span><br>
+<br>
+<span class="t-white">  ─── OPTYMALIZACJE ─────────────────────────────────────────────────</span><br>
+<span class="t-cyan">  A</span><span class="t-gray">) Animacje              ~2s  │ zero ryzyka, efekt natychmiastowy</span><br>
+<span class="t-cyan">  B</span><span class="t-gray">) AOD — GPU voltage bug ~2s  │ </span><span class="t-yellow">główna przyczyna lag wybudzenia</span><br>
+<span class="t-cyan">  C</span><span class="t-gray">) SF/HWUI/Blur          ~5s  │ HWC bug fix + SkiaGL + blur off</span><br>
+<span class="t-cyan">  D</span><span class="t-gray">) PELT/schedutil        ~2s  │ A55 2-core thrashing fix</span><br>
+<span class="t-cyan">  E</span><span class="t-gray">) Pamięć (zRAM/MGLRU)  ~5s  │ swappiness 100→60, freeze fix</span><br>
+<span class="t-cyan">  F</span><span class="t-gray">) Debloat + WAKE_LOCK   ~3s  │ One UI 8.0 + bateria</span><br>
+<span class="t-cyan">  G</span><span class="t-gray">) Kompilacja ART        ~5m  │ po OTA │ </span><span class="t-yellow">min. 20% bat.</span><br>
+<span class="t-cyan t-bold">  Z</span><span class="t-bold">) </span><span class="t-green t-bold">PAKIET KOMPLEKSOWY    ~10m │ wszystkie fixy naraz</span><br>
+<br>
+<span class="t-white">  ─── NARZĘDZIA ──────────────────────────────────────────────────────</span><br>
+<span class="t-cyan">  8</span><span class="t-gray">) Diagnostyka systemu   zbierz raporty (Toybox-safe)</span><br>
+<span class="t-cyan">  9</span><span class="t-gray">) Przywróć ustawienia   z backupu lub OEM default</span><br>
+<span class="t-cyan">  R</span><span class="t-gray">) </span><span class="t-red">Factory Reset</span><span class="t-gray">         Master Clear (2-step confirm)</span><br>
+<br>
+<span class="t-cyan">  Wybierz</span> <span class="t-white t-bold">&gt;</span> <span id="cursor-demo" class="t-cyan">Z</span><br>
+<br>
+<span class="t-ok">  ✓  Tworzę backup bieżących ustawień...</span><br>
+<span class="t-ok">  ✓  Backup: /root/.gw4_optimizer/backup_20260313_214401.txt</span><br>
+<br>
+<span class="t-gray">  Kontynuować? [t/N]</span> <span class="t-white">t</span><br>
+<br>
+<span class="t-cyan">  ╔══ Animacje 0.5x ══╗</span><br>
+<span class="t-dim">     window_animation_scale: </span><span class="t-yellow">1.0</span><span class="t-dim"> → </span><span class="t-green">0.5</span>  <span class="t-gray">[idempotent check]</span><br>
+<span class="t-ok">  ✓  window_animation_scale: 1.0 → 0.5</span><br>
+<span class="t-dim">  ↷  transition_animation_scale (już: 0.5)</span><br>
+<br>
+<span class="t-cyan">  ╔══ AOD off (GPU bug) ══╗</span><br>
+<span class="t-ok">  ✓  doze_always_on: 1 → 0</span><br>
+<span class="t-ok">  ✓  doze_enabled: 1 → 0</span><br>
+<br>
+<span class="t-green">  [████████████████████████████████]  100%  Gotowe</span><br>
+<span class="t-green t-bold">  ✓  PAKIET KOMPLEKSOWY ZASTOSOWANY ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY THIS EXISTS ────────────────────────────────────────────────────────── -->
+<section class="section" id="why" aria-labelledby="why-title">
+  <div class="wrapper">
+    <span class="s-label">Diagnoza</span>
+    <h2 class="s-title" id="why-title">Dlaczego One UI 8.0 wymaga tych poprawek?</h2>
+    <p class="s-desc">
+      Aktualizacja do Android 16 przyniosła mechanizmy jądra zaprojektowane dla procesorów big.LITTLE z 4–8 rdzeniami.
+      Exynos W920 posiada tylko dwa identyczne rdzenie Cortex-A55 — brak rdzeni "big" powoduje, że nowe algorytmy działają kontrproduktywnie.
+    </p>
+
+    <div class="feat-grid" style="margin-top:var(--space-6)">
+
+      <div class="feat-card fade">
+        <span class="feat-icon">🔵</span>
+        <div class="feat-title">AOD → GPU voltage ramp bug</div>
+        <div class="feat-body">
+          Sterownik Mali-G68 nie podbija napięcia szyny GPU wystarczająco szybko przy przejściu
+          z trybu AOD (1 Hz partial GPU) do trybu aktywnego (60 Hz).
+          Pierwsze klatki po wybudzeniu renderowane z minimalną częstotliwością → lag 1–2 s.
+          Samsung nie wydał patcha sterownika (stan: 03/2026).
+        </div>
+        <span class="feat-tag">Fix B</span>
+      </div>
+
+      <div class="feat-card fade">
+        <span class="feat-icon">🔴</span>
+        <div class="feat-title">PELT miscalibration (2-core A55)</div>
+        <div class="feat-body">
+          Android 16 PELT skalibrowany pod big.LITTLE 4–8C. Na W920 wartości
+          <code>up_rate_limit_us=500µs</code> powodują thrashing częstotliwości:
+          agresywne skoki do 1.18 GHz → thermal throttle → stutter animacji.
+          Korekta: up=1000µs, down=10000µs, sched_latency=8ms.
+        </div>
+        <span class="feat-tag">Fix D</span>
+      </div>
+
+      <div class="feat-card fade">
+        <span class="feat-icon">🟡</span>
+        <div class="feat-title">zRAM / swappiness conflict</div>
+        <div class="feat-body">
+          Samsung One UI 8.0 ustawia <code>vm.swappiness=100</code> — agresywna kompresja zRAM.
+          Na 2-core A55 dekompresja blokuje oba rdzenie → freeze 0.5–1.5 s przy otwieraniu
+          Spotify, galerii, map. Korekta: swappiness=60 + extra_free_kbytes.
+        </div>
+        <span class="feat-tag">Fix E</span>
+      </div>
+
+      <div class="feat-card fade">
+        <span class="feat-icon">🟠</span>
+        <div class="feat-title">HWC driver bug (flickering)</div>
+        <div class="feat-body">
+          Hardware Composer driver Mali-G68 w buildzie R870XXU1JYLYL6 zawiera buga
+          powodującego flickering i frame drops. Wbrew intuicji, wymuszenie Force GPU composition
+          (<code>SF 1008 i32 1</code>) jest zalecanym obejściem — omija wadliwy HWC.
+        </div>
+        <span class="feat-tag">Fix C</span>
+      </div>
+
+      <div class="feat-card fade">
+        <span class="feat-icon">🟣</span>
+        <div class="feat-title">Vulkan memory leaks</div>
+        <div class="feat-body">
+          Stare sterowniki Mali-G68 + Android 16 HWUI pipeline Vulkan = wycieki pamięci
+          przy renderowaniu interfejsu. Wymuszenie backendu SkiaGL (OpenGL ES)
+          eliminuje problem — dojrzałe, stabilne sterowniki.
+        </div>
+        <span class="feat-tag">Fix C</span>
+      </div>
+
+      <div class="feat-card fade">
+        <span class="feat-icon">🔋</span>
+        <div class="feat-title">WAKE_LOCK drenaż baterii</div>
+        <div class="feat-body">
+          Google Assistant i Play Store trzymają stałe blokady energii po aktualizacji.
+          <code>cmd appops set ... WAKE_LOCK ignore</code> ogranicza WAKE_LOCK bez
+          wyłączania aplikacji — oczekiwana poprawa czasu baterii: 15–30%.
+        </div>
+        <span class="feat-tag">Fix F</span>
+      </div>
+
+    </div>
+
+    <div class="callout callout-warn" style="margin-top:var(--space-5)">
+      <span class="callout-icon">⚠</span>
+      <div>
+        <strong>Parametry jądra nietrwałe.</strong> Zmiany <code>swappiness</code> i <code>schedutil</code>
+        resetują się przy restarcie zegarka. Dla trwałości wymagana aplikacja automatyzacji
+        z wyzwalaczem <code>On Boot</code> (np. Tasker). Skrypt informuje o tym w każdym miejscu.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MODUŁY ────────────────────────────────────────────────────────────────── -->
+<section class="section" id="modules" aria-labelledby="mod-title">
+  <div class="wrapper">
+    <span class="s-label">Moduły</span>
+    <h2 class="s-title" id="mod-title">Co naprawia każdy fix?</h2>
+    <p class="s-desc">Wszystkie moduły wykonują idempotentną weryfikację stanu przed zmianą — jeśli wartość jest już ustawiona, operacja jest pomijana.</p>
+
+    <div class="modules-grid">
+      <div class="mod-row">
+        <span class="mod-key">[A]</span>
+        <span class="mod-name">Animacje interfejsu</span>
+        <span class="mod-eta">~2s</span>
+      </div>
+      <div class="mod-row">
+        <span class="mod-key">[B]</span>
+        <span class="mod-name">AOD GPU voltage ramp bug</span>
+        <span class="mod-eta">~2s</span>
+      </div>
+      <div class="mod-row">
+        <span class="mod-key">[C]</span>
+        <span class="mod-name">SF / HWUI / Background Blur</span>
+        <span class="mod-eta">~5s</span>
+      </div>
+      <div class="mod-row">
+        <span class="mod-key">[D]</span>
+        <span class="mod-name">PELT / schedutil A55</span>
+        <span class="mod-eta">~2s</span>
+      </div>
+      <div class="mod-row">
+        <span class="mod-key">[E]</span>
+        <span class="mod-name">Pamięć zRAM / MGLRU</span>
+        <span class="mod-eta">~5s</span>
+      </div>
+      <div class="mod-row">
+        <span class="mod-key">[F]</span>
+        <span class="mod-name">Debloat + WAKE_LOCK</span>
+        <span class="mod-eta">~3s</span>
+      </div>
+      <div class="mod-row">
+        <span class="mod-key">[G]</span>
+        <span class="mod-name">Kompilacja ART <span class="mod-new">battery guard</span></span>
+        <span class="mod-eta">~5m</span>
+      </div>
+      <div class="mod-row">
+        <span class="mod-key">[Z]</span>
+        <span class="mod-name">PAKIET KOMPLEKSOWY</span>
+        <span class="mod-eta">~10m</span>
+      </div>
+      <div class="mod-row">
+        <span class="mod-key">[8]</span>
+        <span class="mod-name">Diagnostyka (Toybox-safe)</span>
+        <span class="mod-eta">~30s</span>
+      </div>
+      <div class="mod-row">
+        <span class="mod-key">[9]</span>
+        <span class="mod-name">Przywróć ustawienia</span>
+        <span class="mod-eta">—</span>
+      </div>
+      <div class="mod-row">
+        <span class="mod-key">[R]</span>
+        <span class="mod-name">Factory Reset <span class="mod-new">2-step</span></span>
+        <span class="mod-eta">—</span>
+      </div>
+    </div>
+
+    <!-- Tabela sprzętu -->
+    <div style="margin-top:var(--space-7)">
+      <span class="s-label">Sprzęt docelowy</span>
+      <div class="hw-table-wrap">
+        <table class="hw-table">
+          <thead>
+            <tr><th>Parametr</th><th>Wartość</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Model</td><td>SM-R870 / SM-R875 / SM-R895</td></tr>
+            <tr><td>SoC</td><td>Exynos W920 (5 nm EUV)</td></tr>
+            <tr><td>CPU</td><td>2× Cortex-A55 @ 1.18 GHz</td></tr>
+            <tr><td>GPU</td><td>Mali-G68 (2-core)</td></tr>
+            <tr><td>RAM</td><td>1.5 GB LPDDR4X</td></tr>
+            <tr><td>System</td><td>WearOS 6.0 / Android 16 / SDK 36</td></tr>
+            <tr><td>Docelowy build</td><td><code>R870XXU1JYLYL6</code> (region XEO)</td></tr>
+            <tr><td>Root wymagany</td><td><span style="color:var(--green)">❌ Nie</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── QUICK START ────────────────────────────────────────────────────────────── -->
+<section class="section" id="setup" aria-labelledby="qs-title">
+  <div class="wrapper">
+    <span class="s-label">Pierwsze kroki</span>
+    <h2 class="s-title" id="qs-title">Szybka instalacja</h2>
+    <p class="s-desc">Skrypt uruchamiany na hoście (PC / Termux), łączy się z zegarkiem przez ADB over Wi-Fi.</p>
+
+    <div class="install-block fade" style="margin-top:var(--space-5)">
+      <div class="install-tabs">
+        <button class="itab active" onclick="switchTab(this,'termux')">Termux</button>
+        <button class="itab" onclick="switchTab(this,'linux')">Linux / macOS</button>
+        <button class="itab" onclick="switchTab(this,'wsl')">Windows WSL2 <small style="color:var(--text-2);font-size:.65rem">SOON</small></button>
+      </div>
+
+      <div class="itab-panel active" id="tab-termux">
+        <div class="cmd-row">
+          <div class="cmd-label">deps</div>
+          <div class="cmd-code">
+            <span>pkg update && pkg upgrade -y && pkg install -y android-tools curl bash</span>
+            <button class="btn-copy-sm" onclick="copyCmd(this,'pkg update && pkg upgrade -y && pkg install -y android-tools curl bash')">copy</button>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div class="cmd-label">run</div>
+          <div class="cmd-code">
+            <span>bash &lt;(curl -sL https://raw.githubusercontent.com/anonymousik/anonymousik.github.io/refs/heads/main/scripts/gw4-optimizer/gw4_optimizer_v5.sh)</span>
+            <button class="btn-copy-sm" onclick="copyCmd(this,'bash <(curl -sL https://raw.githubusercontent.com/anonymousik/anonymousik.github.io/refs/heads/main/scripts/gw4-optimizer/gw4_optimizer_v5.sh)')">copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="itab-panel" id="tab-linux">
+        <div class="cmd-row">
+          <div class="cmd-label">download</div>
+          <div class="cmd-code">
+            <span>curl -sL https://raw.githubusercontent.com/anonymousik/anonymousik.github.io/refs/heads/main/scripts/gw4-optimizer/gw4_optimizer_v5.sh -o gw4_optimizer_v5.sh</span>
+            <button class="btn-copy-sm" onclick="copyCmd(this,'curl -sL https://raw.githubusercontent.com/anonymousik/anonymousik.github.io/refs/heads/main/scripts/gw4-optimizer/gw4_optimizer_v5.sh -o gw4_optimizer_v5.sh')">copy</button>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div class="cmd-label">run</div>
+          <div class="cmd-code">
+            <span>chmod +x gw4_optimizer_v5.sh && bash gw4_optimizer_v5.sh</span>
+            <button class="btn-copy-sm" onclick="copyCmd(this,'chmod +x gw4_optimizer_v5.sh && bash gw4_optimizer_v5.sh')">copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="itab-panel" id="tab-wsl">
+        <div class="cmd-row">
+          <div class="cmd-label" style="color:var(--text-2)">soon</div>
+          <div class="cmd-code" style="color:var(--text-2)">
+            <span>Wsparcie Windows WSL2 / Git Bash — wkrótce</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kroki konfiguracji zegarka -->
+    <div style="margin-top:var(--space-7)">
+      <span class="s-label">Konfiguracja zegarka (jednorazowo)</span>
+      <div class="steps">
+        <div class="step fade">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Opcje programisty</div>
+            <div class="step-body">
+              <strong>Ustawienia → System → O oprogramowaniu → O zegarku</strong><br>
+              Kliknij <em>Numer kompilacji</em> 7 razy aż pojawi się komunikat
+              <span style="color:var(--green)">"Opcje programisty włączone"</span>.
+            </div>
+          </div>
+        </div>
+        <div class="step fade">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Debugowanie przez Wi-Fi</div>
+            <div class="step-body">
+              <strong>Ustawienia → Opcje programisty → Debugowanie przez Wi-Fi → Włącz</strong><br>
+              Zegarek wyświetli adres <code>192.168.X.X:5555</code> — zanotuj.
+            </div>
+          </div>
+        </div>
+        <div class="step fade">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Parowanie klucza RSA</div>
+            <div class="step-body">
+              W terminalu hosta: <code>adb connect 192.168.X.X:5555</code><br>
+              Na zegarku: <span style="color:var(--green)">Akceptuj</span> w dialogu "Czy zezwolić na debugowanie?".
+            </div>
+          </div>
+        </div>
+        <div class="step fade">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Uruchom skrypt</div>
+            <div class="step-body">
+              <code>adb devices</code> → status: <span style="color:var(--green)">device</span> → gotowe.<br>
+              Uruchom One-Click Install powyżej. Skrypt auto-wykrywa podłączone urządzenie.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ───────────────────────────────────────────────────────────────────── -->
+<section class="section" id="faq" aria-labelledby="faq-title">
+  <div class="wrapper">
+    <span class="s-label">FAQ</span>
+    <h2 class="s-title" id="faq-title">Często zadawane pytania</h2>
+
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          <span class="faq-q-text">Czy skrypt wymaga rootowania zegarka?</span>
+          <span class="faq-arrow">▶</span>
+        </button>
+        <div class="faq-a">
+          <p><strong style="color:var(--green)">Nie.</strong> Wszystkie operacje korzystają wyłącznie z uprawnień ADB (<code>adb shell</code>).
+          Skrypt nie modyfikuje partycji systemowych (<code>/system</code>, <code>/vendor</code>) i nie wymaga żadnych
+          modyfikacji bootloadera.</p>
+          <p>Niektóre parametry jądra (<code>/proc/sys/</code>, <code>/sys/devices/</code>) mogą wymagać roota do zapisu.
+          Skrypt wykrywa brak uprawnień i informuje o każdej nieudanej operacji zamiast przerywać działanie.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          <span class="faq-q-text">Dlaczego One UI 8.0 jest wolniejsze niż poprzednia wersja?</span>
+          <span class="faq-arrow">▶</span>
+        </button>
+        <div class="faq-a">
+          <p>Android 16 wprowadza nowe mechanizmy zarządzania energią i CPU (<span class="highlight">PELT, MGLRU, schedutil</span>)
+          zaprojektowane dla smartfonów z procesorami big.LITTLE posiadającymi 4–8 rdzeni.</p>
+          <p>Exynos W920 posiada tylko <strong>2 rdzenie Cortex-A55</strong> — brak rdzeni "big" sprawia, że algorytm PELT
+          kalibruje częstotliwości zbyt agresywnie, powodując thrashing. Dodatkowo Samsung utrzymał
+          <code>swappiness=100</code> z poprzednich wersji — na 2-core CPU kompresja zRAM blokuje oba rdzenie.</p>
+          <p>Do tego dochodzą dwa błędy sterownikowe: HWC driver bug (flickering) oraz GPU voltage ramp bug (lag po AOD),
+          których Samsung jeszcze nie naprawił aktualizacją sterownika.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          <span class="faq-q-text">Czy zmiany są trwałe po restarcie zegarka?</span>
+          <span class="faq-arrow">▶</span>
+        </button>
+        <div class="faq-a">
+          <p>Częściowo. Ustawienia zmieniane przez <code>settings put</code> (animacje, AOD, blur, phantom procs) są
+          <strong style="color:var(--green)">trwałe</strong> — zapisywane w bazie danych Androida.</p>
+          <p>Parametry jądra (<code>swappiness</code>, <code>schedutil</code>, <code>sched_latency_ns</code>) wpisywane do
+          <code>/proc/sys/</code> i <code>/sys/devices/</code> są <strong style="color:var(--yellow)">nietrwałe</strong> —
+          resetują się przy każdym restarcie. Dla trwałości wymagana aplikacja automatyzacji, np.
+          Tasker z wyzwalaczem <em>On Boot</em>, która wykona komendy ADB po każdym uruchomieniu.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          <span class="faq-q-text">Dlaczego Fix G (Kompilacja ART) wymaga min. 20% baterii?</span>
+          <span class="faq-arrow">▶</span>
+        </button>
+        <div class="faq-a">
+          <p>Kompilacja ART (<code>pm compile -m speed-profile -a</code>) jest operacją intensywnie korzystającą z CPU
+          przez 3–8 minut. Przerwanie procesu w połowie (np. wyłączenie zegarka z powodu rozładowania) może spowodować
+          uszkodzenie profilów kompilacji i wymagać pełnego resetu.</p>
+          <p>Skrypt sprawdza poziom baterii przez <code>dumpsys battery | grep level</code> przed uruchomieniem i blokuje
+          operację z wyraźnym komunikatem jeśli poziom jest poniżej 20%.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          <span class="faq-q-text">Czym jest "Force GPU composition" i dlaczego jest zalecane?</span>
+          <span class="faq-arrow">▶</span>
+        </button>
+        <div class="faq-a">
+          <p>Normalnie Android używa Hardware Composer (HWC) do składania warstw UI bez angażowania GPU —
+          jest to bardziej energooszczędne. Jednak sterownik HWC w Mali-G68 w buildzie
+          <code>R870XXU1JYLYL6</code> zawiera buga powodującego flickering i frame drops.</p>
+          <p>Komenda <code>service call SurfaceFlinger 1008 i32 1</code> wymusza renderowanie przez GPU,
+          omijając wadliwy HWC. Na W920 koszt energetyczny jest niewielki — GPU i tak pracuje przy
+          renderowaniu UI — natomiast eliminacja flickeringu jest znacząca.</p>
+          <p><em>W poprzednich wersjach skryptu (v3.0) ta opcja była błędnie oznaczona jako "nie zalecana".
+          Analiza inżynierska z stycznia 2026 wykazała, że jest to <strong>zalecane obejście</strong> dla W920.</em></p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          <span class="faq-q-text">Co robi Factory Reset (opcja R)?</span>
+          <span class="faq-arrow">▶</span>
+        </button>
+        <div class="faq-a">
+          <p>Opcja R wykonuje Master Clear — usuwa wszystkie dane użytkownika z zegarka i przywraca ustawienia fabryczne.
+          Jest to operacja <strong style="color:var(--red)">nieodwracalna</strong>.</p>
+          <p>Skrypt wymaga dwustopniowego potwierdzenia (wpisanie <code>RESET</code> i <code>POTWIERDZAM</code>) oraz
+          odliczania 30 sekund z możliwością przerwania dowolnym klawiszem. Po wykonaniu skrypt wyświetla
+          instrukcję konfiguracji i kończy działanie, ponieważ autoryzacja ADB wygasa po resecie.</p>
+          <ul>
+            <li>Backupy skryptu pozostają na hoście (PC / Termux)</li>
+            <li>Po restarcie należy ponownie przejść przez konfigurację ADB</li>
+            <li>Po konfiguracji uruchom skrypt ponownie i zastosuj Pakiet Kompleksowy (Z)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          <span class="faq-q-text">Jak przywrócić ustawienia do stanu sprzed uruchomienia skryptu?</span>
+          <span class="faq-arrow">▶</span>
+        </button>
+        <div class="faq-a">
+          <p>Skrypt automatycznie tworzy backup przed <em>każdą</em> modyfikacją w pliku
+          <code>~/.gw4_optimizer/backup_YYYYMMDD_HHMMSS.txt</code>.
+          Opcja <strong>9</strong> z menu wyświetla listę dostępnych backupów i przywraca wybrany.</p>
+          <p>Jeśli brak backupu (np. pierwsze uruchomienie innej wersji skryptu), opcja 9 przywraca
+          wartości fabryczne One UI 8.0 dla wszystkich modyfikowanych ustawień.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── ARCHIWUM ───────────────────────────────────────────────────────────────── -->
+<section class="section" id="archive" aria-labelledby="arch-title">
+  <div class="wrapper">
+    <span class="s-label">Archiwum</span>
+    <h2 class="s-title" id="arch-title">Poprzednie wersje</h2>
+    <p class="s-desc">Historyczne wersje dostępne w archiwum GitHub.</p>
+
+    <div class="hw-table-wrap" style="margin-top:var(--space-5)">
+      <table class="hw-table">
+        <thead>
+          <tr><th>Wersja</th><th>Data</th><th>Kluczowa zmiana</th><th>Link</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-cyan">v5.0.0</span></td>
+            <td style="color:var(--text-1)">2026-03-13</td>
+            <td>WearOS-Style CLI, idempotentne operacje, Factory Reset, battery guard ART</td>
+            <td><a href="https://raw.githubusercontent.com/anonymousik/anonymousik.github.io/refs/heads/main/scripts/gw4-optimizer/gw4_optimizer_v5.sh" target="_blank" rel="noopener">raw ↗</a></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-dim">v4.0.0</span></td>
+            <td style="color:var(--text-1)">2026-03-13</td>
+            <td>PELT fix, SkiaGL, swappiness, WAKE_LOCK (raport inżynieryjny)</td>
+            <td><a href="https://raw.githubusercontent.com/anonymousik/anonymousik.github.io/refs/heads/main/scripts/gw4-optimizer/UPDATES/v4.0.0/gw4_optimizer_v4.0.0.sh" target="_blank" rel="noopener">raw ↗</a></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-dim">v3.0.0</span></td>
+            <td style="color:var(--text-1)">2026-03-13</td>
+            <td>Pełna przebudowa, backup, Toybox-safe diagnostyka</td>
+            <td><a href="https://raw.githubusercontent.com/anonymousik/anonymousik.github.io/refs/heads/main/scripts/gw4-optimizer/UPDATES/v3.0.0/gw4_optimizer_v3.0.0.sh" target="_blank" rel="noopener">raw ↗</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="https://anonymousik.is-a.dev">anonymousik.is-a.dev</a>
+      <span style="color:var(--text-2)"> / scripts / gw4-optimizer · MIT License</span>
+    </div>
+    <div class="footer-links">
+      <a href="https://anonymousik.is-a.dev/scripts">scripts</a>
+      <a href="https://github.com/anonymousik/anonymousik.github.io" target="_blank" rel="noopener">github</a>
+      <a href="https://raw.githubusercontent.com/anonymousik/anonymousik.github.io/refs/heads/main/scripts/gw4-optimizer/gw4_optimizer_v5.sh" target="_blank" rel="noopener">raw script</a>
+      <a href="#faq">FAQ</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ─── JAVASCRIPT ─────────────────────────────────────────────────────────────── -->
+<script>
+// ─── Scroll fade-in ─────────────────────────────────────────────────────────── //
+const observer = new IntersectionObserver(
+  (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }),
+  { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+);
+document.querySelectorAll('.fade').forEach(el => observer.observe(el));
+
+// ─── Copy main install command ───────────────────────────────────────────────── //
+function copyMain() {
+  const cmd = 'bash <(curl -sL https://raw.githubusercontent.com/anonymousik/anonymousik.github.io/refs/heads/main/scripts/gw4-optimizer/gw4_optimizer_v5.sh)';
+  navigator.clipboard.writeText(cmd).then(() => {
+    const btn = document.getElementById('copy-main');
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> SKOPIOWANO';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> COPY';
+    }, 2500);
+  }).catch(() => {
+    // fallback dla starszych przeglądarek
+    const ta = document.createElement('textarea');
+    ta.value = cmd; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+
+// ─── Copy inline cmd ────────────────────────────────────────────────────────── //
+function copyCmd(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ─── Install tabs ────────────────────────────────────────────────────────────── //
+function switchTab(btn, id) {
+  document.querySelectorAll('.itab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.itab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+// ─── FAQ accordion ───────────────────────────────────────────────────────────── //
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  // Zamknij wszystkie
+  document.querySelectorAll('.faq-item.open').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.faq-q').setAttribute('aria-expanded','false');
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    btn.setAttribute('aria-expanded','true');
+  }
+}
+
+// ─── Terminal cursor blink ────────────────────────────────────────────────────── //
+const cur = document.getElementById('cursor-demo');
+if (cur) {
+  let visible = true;
+  setInterval(() => {
+    cur.style.opacity = (visible = !visible) ? '1' : '0';
+  }, 600);
+}
+</script>
+</body>
+</html>
