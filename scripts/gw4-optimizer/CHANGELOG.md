@@ -7,6 +7,52 @@ Wersjonowanie zgodne z [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ---
 
+## [5.0.0] — 2026-03-13
+
+### Kontekst wydania
+
+Wersja 5.0 to ewolucja UX i niezawodności — skupiona na idempotentności operacji, profesjonalizacji interfejsu CLI (WearOS-Style), nowych funkcjach bezpieczeństwa (Factory Reset, battery guard) i animacjach terminalowych. Kod skryptu wzrósł z 1226 do 1454 linii. Syntax clean: `bash -n` ✓.
+
+### Added
+
+- **`_apply_if_changed(LABEL, CURRENT, DESIRED, CMD)`** — idempotentna operacja: odczytuje bieżącą wartość ustawienia (`settings get` / `getprop` / `cat /proc`), wykonuje zmianę tylko jeśli `CURRENT ≠ DESIRED`, loguje `skip` zamiast powtórnego ustawiania. Zastosowana we wszystkich fixach A–Z.
+- **`_check_battery()`** — guard baterii dla Fix G: odczytuje `dumpsys battery | grep level`, blokuje kompilację ART z wizualnym komunikatem błędu gdy poziom < `ART_BATTERY_MIN` (20%). Monitoruje baterię również w trakcie kompilacji i ostrzega przy spadku < 15%.
+- **`_countdown_reboot(secs, msg)`** — odliczanie z pulsującym paskiem ANSI (`read -t 1 -n 1`): przerwanie dowolnym klawiszem, kolory pulsują od YELLOW przez LCYAN do LRED poniżej 10s. Używane przez Factory Reset.
+- **`_wait_for_reconnect()`** — animowany spinner po restarcie zegarka: próbuje `adb connect` co 10s, wyświetla elapsed time, kończy sukcesem po wykryciu stanu `device`. Timeout: `RECONNECT_TIMEOUT=120s`.
+- **`_spinner(PID, TEXT)`** — reużywalny spinner braille (`⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏`) z wielokolorową animacją, uruchamiany w tle podczas długotrwałych operacji.
+- **`_factory_reset()` (opcja R)** — Master Clear z 2-stopniowym potwierdzeniem (wpisz `RESET` → `POTWIERDZAM`), odliczaniem 30s, wyświetleniem instrukcji post-reset i automatycznym zamknięciem skryptu. Loguje akcję do `LOG_FILE`.
+- **`_get_setting()`, `_get_prop()`, `_get_kernel()`** — dedykowane wrappery odczytu stanu, używane przez `_apply_if_changed` i sekcje diagnostyczne.
+- **Stałe ANSI rozszerzone:** `LGREEN`, `LRED`, `LCYAN`, `LYELLOW`, `GRAY`, `BLINK` — rozszerzona paleta dla WearOS-Style CLI.
+- **Symbole z fallback ASCII:** `SYM_OK`, `SYM_ERR`, `SYM_WARN`, `SYM_ARR`, `SYM_FIX`, `SYM_SKIP` — auto-detekcja UTF-8, fallback na ASCII gdy brak obsługi.
+- **Wyświetlanie baterii w bannerze:** poziom naładowania z kodem koloru (GREEN/YELLOW/RED < 20%).
+- **Tabela parametrów urządzenia** (`┌─────┐`) zamiast prostych `printf` — box-drawing characters dla czytelności.
+- **Diagnostyka — `thermal.txt` rozszerzona:** dodano `dumpsys battery` jako sekcja "Battery" przed thermal zones.
+- **`_loop` — obsługa opcji `R`:** Factory Reset dostępny z menu głównego.
+- **Landing page `gw4_index.html`:** nowoczesna podstrona w stylu `anonymousik.is-a.dev/scripts`, ciemny motyw, przycisk COPY, FAQ z akordeonem, sekcja "Dlaczego One UI 8.0 wymaga tych poprawek?", archiwum wersji, install tabs (Termux/Linux/SOON Windows).
+
+### Changed
+
+- **Wszystkie fixy (A–Z) → idempotentne:** każda operacja `settings put` / `setprop` poprzedzona odczytem stanu i porównaniem. Operacja pomijana (`skip`) jeśli wartość już ustawiona. Pakiet Kompleksowy (Z) jest teraz bezpieczny do wielokrotnego uruchomienia.
+- **WearOS-Style CLI — hierarchia wizualna:** przebudowana kolorystyka: CYAN=nawigacja, GREEN=sukces, YELLOW=ostrzeżenie, RED=błąd, GRAY=info/skip. Wszystkie submenu używają box-drawing characters (`╔`, `╠`, `╚`, `┌`, `└`). Pasek postępu kolorowany (`GREEN█` + `GRAY░`).
+- **Responsywność CLI:** operacje statusowe używają `\r` (nadpisywanie linii) zamiast `\n` — eliminacja zbędnego scrollowania podczas długotrwałych operacji.
+- **Banner główny:** rozszerzony o poziom baterii z kodem koloru. Pole FW na osobnej linii dla czytelności.
+- **Menu główne:** zreorganizowane, Fix G zawiera informację o minimum baterii (`min. ART_BATTERY_MIN%`).
+- **Fix E — `_fix_memory()`: opcja 1** — pełna optymalizacja teraz używa `_apply_if_changed` dla `monitor_phantom_procs` i `background_process_limit`.
+- **Stałe schedutil:** `SCHED_UP_DEFAULT`, `SCHED_DOWN_DEFAULT` etc. przemianowane na krótkie formy (`SCHED_UP_OPT`, `SCHED_DOWN_OPT`) dla czytelności.
+- **README przebudowany do v5:** wyśrodkowany header z One-Click Install na początku, podział wymagań na "Smartwatch" i "Środowisko uruchomieniowe", tabela platform z statusem (✅/⚠/🔜 SOON), schemat modułów Nazwa→Cel→Działanie, sekcja archiwum wersji z URL-schematem `UPDATES/{version}/`.
+
+### Fixed
+
+- **`_fix_memory()` — bezpośrednie wywołania `settings put`** bez wcześniejszego odczytu stanu zastąpione przez `_apply_if_changed`.
+- **`_restore()` — `pm enable` komunikat:** dodano informację że przywracanie pakietów debloat wymaga `adb shell pm enable PAKIET` (nie jest automatyczne).
+- **`_factory_reset()` — fallback reset cmd:** sekwencja `am broadcast MASTER_CLEAR → recovery --wipe_data → am start ResetSmartWatchActivity` z tolerancją błędów (`|| true`).
+
+### Deprecated
+
+- Bezpośrednie `_apply()` dla operacji z możliwą weryfikacją stanu — zalecane `_apply_if_changed()`. `_apply()` pozostaje dla operacji bez stanu (SF 1008, logcat -c).
+
+---
+
 ## [4.0.0] — 2026-03-13
 
 ### Kontekst wydania
@@ -109,7 +155,8 @@ Pełna przebudowa od zera na bazie raportów użytkowników. Zastąpił skrypty 
 
 ---
 
-[4.0.0]: https://github.com/anonymousik/gw4-optimizer/compare/v3.0.0...v4.0.0
+[5.0.0]: https://github.com/anonymousik/anonymousik.github.io/compare/v4.0.0...v5.0.0
+[4.0.0]: https://github.com/anonymousik/anonymousik.github.io/compare/v3.0.0...v4.0.0
 [3.0.0]: https://github.com/anonymousik/gw4-optimizer/compare/v2.1.0...v3.0.0
 [2.1.0]: https://github.com/anonymousik/gw4-optimizer/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/anonymousik/gw4-optimizer/releases/tag/v2.0.0
