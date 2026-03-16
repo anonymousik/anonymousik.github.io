@@ -28,6 +28,9 @@ jobs:
       - name: Uruchomienie skanera bezpieczeństwa
         run: python security_audit.py
 
+      - name: Snyk
+        uses: snyk/actions@v1.0.0
+
       - name: Wdrożenie na GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
