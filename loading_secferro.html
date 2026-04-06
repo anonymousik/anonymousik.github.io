@@ -2,265 +2,235 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SecFERRO — FerroART</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SecFERRO Division</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@700;900&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700;900&display=swap');
+/* ── TOKENS ── */
+:root {
+  --c:    #00e5ff;
+  --cd:   rgba(0,229,255,.5);
+  --cm:   rgba(0,229,255,.15);
+  --r:    #e50000;
+  --bg:   #020407;
+  --mono: 'Share Tech Mono', monospace;
+  --head: 'Rajdhani', 'Segoe UI', sans-serif;
+}
 
-  *{margin:0;padding:0;box-sizing:border-box;}
+/* ── BASE ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg);
+  font-family:var(--mono);
+  overflow:hidden;height:100vh;
+  display:flex;justify-content:center;align-items:center;
+  color:#fff;
+}
 
-  body {
-    background:#020407;
-    font-family:'Share Tech Mono',monospace;
-    overflow:hidden;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:#fff;
-  }
+/* ── CANVASES ── */
+#bg{position:fixed;inset:0;z-index:0;}
 
-  /* ── MATRIX CANVAS ── */
-  #matrix{position:fixed;inset:0;z-index:0;opacity:.08;}
+/* ── FIXED LAYERS ── */
+.layer{position:fixed;inset:0;pointer-events:none;}
+.l-scan{
+  z-index:90;
+  background:repeating-linear-gradient(
+    to bottom,transparent 0,transparent 2px,
+    rgba(0,0,0,.09) 2px,rgba(0,0,0,.09) 4px);
+}
+.l-vig{
+  z-index:89;
+  background:radial-gradient(ellipse at 50% 50%,
+    transparent 28%,rgba(0,0,0,.88) 100%);
+}
+.l-sweep{
+  z-index:88;
+  background:linear-gradient(
+    to bottom,transparent 47%,
+    rgba(0,229,255,.025) 50%,transparent 53%);
+  animation:sweep 9s infinite 4s;opacity:0;
+}
+@keyframes sweep{
+  0%,90%,100%{opacity:0;transform:none;}
+  91%{opacity:1;transform:translateX(-4px);}
+  92%{opacity:0;}
+  94%{opacity:1;transform:translateX(4px);}
+  95%{opacity:0;}
+}
+.l-err{z-index:87;background:rgba(229,0,0,.04);opacity:0;animation:errF 13s infinite 7s;}
+@keyframes errF{0%,93%,100%{opacity:0;}94%{opacity:1;}95%{opacity:0;}97%{opacity:.3;}98%{opacity:0;}}
 
-  /* ── OVERLAYS ── */
-  .scanlines{
-    position:fixed;inset:0;z-index:90;pointer-events:none;
-    background:repeating-linear-gradient(to bottom,
-      transparent 0,transparent 2px,
-      rgba(0,0,0,.1) 2px,rgba(0,0,0,.1) 4px);
-  }
-  .vignette{
-    position:fixed;inset:0;z-index:89;pointer-events:none;
-    background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.82) 100%);
-  }
-  .glitch-overlay{
-    position:fixed;inset:0;z-index:91;pointer-events:none;opacity:0;
-    animation:fullGlitch 9s infinite 4s;
-    background:linear-gradient(transparent 48%,rgba(0,229,255,.03) 50%,transparent 52%);
-  }
-  @keyframes fullGlitch{
-    0%,93%,100%{opacity:0;transform:none;}
-    94%{opacity:1;transform:translateX(-4px);}
-    95%{opacity:0;}
-    96%{opacity:1;transform:translateX(4px);}
-    97%{opacity:0;}
-  }
+/* ── SCENE ── */
+.scene{
+  position:relative;z-index:10;
+  display:flex;flex-direction:column;align-items:center;
+  gap:14px;width:100%;max-width:560px;padding:14px;
+}
 
-  /* ── SCENE ── */
-  .scene{
-    position:relative;z-index:10;
-    display:flex;flex-direction:column;align-items:center;
-    gap:20px;width:100%;max-width:560px;padding:16px;
-  }
+/* ── SHIELD ── */
+.shield-wrap{position:relative;display:flex;justify-content:center;align-items:center;}
 
-  /* ── SHIELD ── */
-  .shield-wrap{position:relative;display:flex;justify-content:center;align-items:center;}
+.ring{
+  position:absolute;border-radius:50%;
+  border:1px solid var(--cm);
+  will-change:transform,opacity;
+  animation:ringOut 3.4s ease-out infinite;
+}
+.ring:nth-child(1){width:186px;height:186px;animation-delay:0s;}
+.ring:nth-child(2){width:222px;height:222px;animation-delay:1.13s;}
+.ring:nth-child(3){width:258px;height:258px;animation-delay:2.27s;}
+@keyframes ringOut{0%{transform:scale(.7);opacity:.7;}100%{transform:scale(1.1);opacity:0;}}
 
-  .ring{
-    position:absolute;border-radius:50%;
-    border:1px solid rgba(0,229,255,.18);
-    animation:ringOut 3s ease-out infinite;
-  }
-  .ring:nth-child(1){width:195px;height:195px;animation-delay:0s;}
-  .ring:nth-child(2){width:230px;height:230px;animation-delay:1s;}
-  .ring:nth-child(3){width:265px;height:265px;animation-delay:2s;}
-  @keyframes ringOut{
-    0%{transform:scale(.75);opacity:.6;}
-    100%{transform:scale(1.05);opacity:0;}
-  }
+.sh-svg{
+  width:148px;height:180px;
+  will-change:transform,filter;
+  animation:shFloat 4.2s ease-in-out infinite;
+}
+@keyframes shFloat{
+  0%,100%{transform:translateY(0);
+    filter:drop-shadow(0 0 6px var(--c)) drop-shadow(0 0 20px rgba(0,180,220,.55));}
+  50%{transform:translateY(-8px);
+    filter:drop-shadow(0 0 14px #0ff) drop-shadow(0 0 38px rgba(0,210,240,.8)) drop-shadow(0 0 72px rgba(0,120,185,.4));}
+}
 
-  .shield-svg{
-    width:155px;height:185px;
-    filter:
-      drop-shadow(0 0 8px #00e5ff)
-      drop-shadow(0 0 24px rgba(0,180,220,.6))
-      drop-shadow(0 0 55px rgba(0,100,160,.35));
-    animation:shFloat 4s ease-in-out infinite;
-  }
-  @keyframes shFloat{
-    0%,100%{transform:translateY(0);
-      filter:drop-shadow(0 0 8px #00e5ff) drop-shadow(0 0 24px rgba(0,180,220,.6));}
-    50%{transform:translateY(-9px);
-      filter:drop-shadow(0 0 16px #00ffff) drop-shadow(0 0 40px rgba(0,210,240,.8)) drop-shadow(0 0 80px rgba(0,130,190,.4));}
-  }
+/* SVG circuit animation */
+.cp{
+  stroke-dasharray:200;
+  stroke-dashoffset:200;
+  animation:draw 1.8s ease forwards;
+}
+.cp.d1{animation-delay:.3s;} .cp.d2{animation-delay:.55s;}
+.cp.d3{animation-delay:.8s;} .cp.d4{animation-delay:1.05s;}
+@keyframes draw{to{stroke-dashoffset:0;}}
 
-  .shield-text{
-    position:absolute;
-    bottom:22px;
-    display:flex;flex-direction:column;align-items:center;gap:3px;
-    pointer-events:none;
-    animation:shFloat 4s ease-in-out infinite;
-  }
-  .sh-name{
-    font-size:.62rem;font-weight:800;letter-spacing:.3em;
-    color:#00e5ff;text-shadow:0 0 10px #00e5ff,0 0 22px rgba(0,200,230,.5);
-  }
-  .sh-line{width:42px;height:1px;background:linear-gradient(to right,transparent,rgba(0,229,255,.8),transparent);}
-  .sh-div{font-size:.38rem;letter-spacing:.25em;color:rgba(0,200,220,.5);}
+.rot {transform-origin:77px 88px;animation:rotCW 7s linear infinite;}
+.rot2{transform-origin:77px 88px;animation:rotCCW 10s linear infinite;}
+@keyframes rotCW {to{transform:rotate( 360deg);}}
+@keyframes rotCCW{to{transform:rotate(-360deg);}}
 
-  /* ── FERROART TITLE ── */
-  .title-block{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.sh-label{
+  position:absolute;bottom:20px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  pointer-events:none;
+  will-change:transform;
+  animation:shFloat 4.2s ease-in-out infinite;
+}
+.sh-name{
+  font-size:.6rem;font-weight:800;letter-spacing:.32em;
+  color:var(--c);text-shadow:0 0 10px var(--c),0 0 22px rgba(0,200,230,.5);
+}
+.sh-bar{width:44px;height:1px;background:linear-gradient(to right,transparent,rgba(0,229,255,.85),transparent);}
+.sh-div{font-size:.36rem;letter-spacing:.24em;color:rgba(0,200,220,.48);}
 
-  .title-row{display:flex;align-items:baseline;}
+/* ── TITLE ── */
+.t-block{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.t-row{display:flex;align-items:baseline;}
 
-  .ferro,.art{
-    font-family:'Rajdhani','Segoe UI',sans-serif;
-    font-size:clamp(2.8rem,9vw,4.8rem);
-    font-weight:900;
-    letter-spacing:.04em;
-    position:relative;
-  }
-  .ferro{
-    color:#fff;
-    text-shadow:0 0 30px rgba(255,255,255,.15);
-    animation:gFerro 6s infinite;
-  }
-  .art{
-    color:#e50000;
-    text-shadow:0 0 15px rgba(229,0,0,.7),0 0 40px rgba(200,0,0,.3);
-    animation:gArt 6s infinite .3s;
-  }
+.ferro,.art{
+  font-family:var(--head);
+  font-size:clamp(2.6rem,9vw,4.6rem);
+  font-weight:900;letter-spacing:.04em;
+  will-change:transform,filter;
+}
+.ferro{color:#fff;text-shadow:0 0 24px rgba(255,255,255,.1);animation:gF 7s infinite;}
+.art  {color:var(--r);text-shadow:0 0 14px rgba(229,0,0,.7),0 0 34px rgba(200,0,0,.3);animation:gA 7s infinite .3s;}
 
-  @keyframes gFerro{
-    0%,88%,100%{transform:none;clip-path:none;color:#fff;}
-    89%{transform:skewX(-10deg) translateX(-4px);clip-path:polygon(0 10%,100% 10%,100% 35%,0 35%);color:#00e5ff;}
-    90%{transform:skewX(6deg) translateX(3px);clip-path:polygon(0 60%,100% 60%,100% 85%,0 85%);color:#fff;}
-    91%{transform:none;clip-path:none;}
-    93%{transform:translateX(-3px);}
-    94%{transform:translateX(3px);}
-    95%{transform:none;}
-  }
-  @keyframes gArt{
-    0%,86%,100%{transform:none;color:#e50000;}
-    87%{transform:skewX(12deg) translateX(5px);color:#ff4444;text-shadow:-3px 0 #00e5ff,3px 0 #ff0000;}
-    88%{transform:skewX(-6deg) translateX(-3px);}
-    89%{transform:none;}
-    92%{transform:translateX(4px);}
-    93%{transform:translateX(-4px);}
-    94%{transform:none;}
-  }
+@keyframes gF{
+  0%,87%,100%{transform:none;clip-path:none;color:#fff;}
+  88%{transform:skewX(-12deg) translateX(-4px);clip-path:polygon(0 8%,100% 8%,100% 33%,0 33%);color:var(--c);}
+  89%{transform:skewX(7deg) translateX(3px);clip-path:polygon(0 62%,100% 62%,100% 86%,0 86%);color:#fff;}
+  90%{transform:none;clip-path:none;}
+  92%{transform:translateX(-3px);}93%{transform:translateX(3px);}94%{transform:none;}
+}
+@keyframes gA{
+  0%,85%,100%{transform:none;color:var(--r);}
+  86%{transform:skewX(14deg) translateX(5px);color:#f44;text-shadow:-3px 0 var(--c),3px 0 var(--r);}
+  87%{transform:skewX(-7deg) translateX(-3px);}
+  88%{transform:none;}
+  91%{transform:translateX(4px);}92%{transform:translateX(-4px);}93%{transform:none;}
+}
 
-  .subtitle{
-    font-size:.62rem;letter-spacing:.42em;
-    color:rgba(255,255,255,.32);text-transform:uppercase;
-  }
+.subtitle  {font-size:.58rem;letter-spacing:.44em;color:rgba(255,255,255,.28);text-transform:uppercase;}
+.div-tag   {font-size:.48rem;letter-spacing:.3em;color:var(--c);opacity:.5;text-shadow:0 0 8px rgba(0,229,255,.4);}
 
-  /* ── STATUS ── */
-  .status{
-    font-size:.6rem;letter-spacing:.16em;
-    color:#00e5ff;opacity:.7;min-height:1em;
-    text-shadow:0 0 8px rgba(0,229,255,.5);
-    transition:opacity .18s;
-  }
+/* ── NODE ROW ── */
+.nodes{display:flex;gap:10px;align-items:center;}
+.node{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:.4rem;letter-spacing:.12em;color:rgba(0,229,255,.45);
+}
+.nd{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--c);box-shadow:0 0 6px var(--c);
+}
+.nsep{color:rgba(0,229,255,.18);font-size:.5rem;}
 
-  /* ── PROGRESS BAR ── */
-  .bar-wrap{width:100%;max-width:420px;position:relative;padding-top:18px;}
-  .bar-pct{
-    position:absolute;top:0;right:0;
-    font-size:.58rem;color:#00e5ff;letter-spacing:.1em;
-    text-shadow:0 0 6px #00e5ff;
-  }
-  .bar-track{
-    width:100%;height:2px;background:rgba(255,255,255,.06);
-    position:relative;overflow:visible;
-  }
-  .bar-fill{
-    height:100%;width:0%;
-    background:linear-gradient(to right,#006080,#00bcd4,#00e5ff,#fff);
-    box-shadow:0 0 8px #00e5ff,0 0 18px rgba(0,229,255,.4);
-    transition:width .08s linear;
-    position:relative;
-  }
-  .bar-fill::after{
-    content:'';position:absolute;right:-1px;top:-3px;
-    width:3px;height:8px;background:#fff;
-    box-shadow:0 0 6px #00e5ff,0 0 14px #00e5ff;
-  }
-  .bar-ghost{
-    position:absolute;inset:0;
-    animation:bGhost 5s infinite 2s;pointer-events:none;
-  }
-  @keyframes bGhost{
-    0%,92%,100%{opacity:0;}
-    93%{opacity:1;background:rgba(0,229,255,.25);transform:translateX(-6px);}
-    94%{opacity:0;}
-    96%{opacity:1;background:rgba(229,0,0,.15);transform:translateX(6px);}
-    97%{opacity:0;}
-  }
+/* ── STATUS ── */
+.status{
+  font-size:.56rem;letter-spacing:.14em;
+  color:var(--c);opacity:.7;min-height:1em;
+  text-shadow:0 0 8px rgba(0,229,255,.5);
+  transition:opacity .2s;
+}
+.cur{
+  display:inline-block;width:6px;height:.8em;
+  background:var(--c);margin-left:2px;
+  vertical-align:middle;animation:blink .7s infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
 
-  /* ── LOADING LETTERS ── */
-  .loader-wrap{display:flex;gap:3px;margin-top:2px;}
-  .ll{
-    font-size:clamp(1.3rem,4.5vw,2rem);font-weight:900;
-    letter-spacing:.1em;color:#fff;
-    animation:lAnim 1.6s cubic-bezier(.45,.05,.55,.95) infinite;
-  }
-  .ll:nth-child(1){animation-delay:0s;}
-  .ll:nth-child(2){animation-delay:.12s;}
-  .ll:nth-child(3){animation-delay:.24s;}
-  .ll:nth-child(4){animation-delay:.36s;}
-  .ll:nth-child(5){animation-delay:.48s;}
-  .ll:nth-child(6){animation-delay:.60s;}
-  .ll:nth-child(7){animation-delay:.72s;}
-  @keyframes lAnim{
-    0%,100%{opacity:.1;transform:translateY(0);filter:blur(5px);color:#444;}
-    50%{
-      opacity:1;transform:translateY(-14px);filter:blur(0);color:#fff;
-      text-shadow:0 0 10px #fff,0 0 24px #00e5ff,0 0 50px rgba(0,180,210,.5);
-    }
-  }
+/* ── HEX BAR ── */
+.bar-wrap{width:100%;max-width:420px;position:relative;padding-top:18px;}
+.bar-label{position:absolute;left:0;top:0;font-size:.42rem;letter-spacing:.15em;color:rgba(0,229,255,.4);}
+.bar-pct  {position:absolute;right:0;top:0;font-size:.56rem;color:var(--c);letter-spacing:.1em;text-shadow:0 0 6px var(--c);}
+.hex-row  {display:flex;gap:2px;align-items:center;flex-wrap:wrap;}
 
-  /* ── ICON STRIP ── */
-  .icons{display:flex;gap:16px;opacity:.5;margin-top:2px;}
-  .ic{
-    font-size:1rem;
-    animation:icP 2.4s ease-in-out infinite;
-    filter:drop-shadow(0 0 3px rgba(0,229,255,.3));
-  }
-  .ic:nth-child(1){animation-delay:0s;}
-  .ic:nth-child(2){animation-delay:.4s;}
-  .ic:nth-child(3){animation-delay:.8s;}
-  .ic:nth-child(4){animation-delay:1.2s;}
-  .ic:nth-child(5){animation-delay:1.6s;}
-  .ic:nth-child(6){animation-delay:2.0s;}
-  @keyframes icP{
-    0%,100%{opacity:.25;filter:drop-shadow(0 0 2px rgba(0,229,255,.1));}
-    50%{opacity:1;filter:drop-shadow(0 0 8px rgba(0,229,255,.95));}
-  }
+.hs{
+  width:13px;height:13px;flex-shrink:0;
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  background:rgba(0,229,255,.07);
+  transition:background .12s,box-shadow .12s;
+}
+.hs.on {background:var(--c);box-shadow:0 0 5px var(--c),0 0 10px rgba(0,229,255,.45);}
+.hs.hd {background:#fff;box-shadow:0 0 7px #fff,0 0 14px var(--c),0 0 26px rgba(0,229,255,.4);}
 
-  /* ── WATERMARK ── */
-  .wm{
-    position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
-    font-size:.52rem;letter-spacing:.28em;
-    color:rgba(0,229,255,.14);white-space:nowrap;
-    z-index:20;pointer-events:none;
-    animation:wmB 7s ease-in-out infinite;
-  }
-  @keyframes wmB{
-    0%,100%{opacity:.45;letter-spacing:.28em;}
-    50%{opacity:.06;letter-spacing:.36em;}
-  }
+/* ── LOADING LETTERS ── */
+.lw{display:flex;gap:2px;margin-top:2px;}
+.ll{
+  font-size:clamp(1.1rem,3.8vw,1.7rem);font-weight:900;letter-spacing:.1em;
+  color:#fff;will-change:transform,opacity,filter;
+  animation:lA 1.6s cubic-bezier(.45,.05,.55,.95) infinite;
+}
+.ll:nth-child(1){animation-delay:0s;}   .ll:nth-child(2){animation-delay:.11s;}
+.ll:nth-child(3){animation-delay:.22s;} .ll:nth-child(4){animation-delay:.33s;}
+.ll:nth-child(5){animation-delay:.44s;} .ll:nth-child(6){animation-delay:.55s;}
+.ll:nth-child(7){animation-delay:.66s;}
+@keyframes lA{
+  0%,100%{opacity:.1;transform:translateY(0);filter:blur(5px);color:#333;}
+  50%{opacity:1;transform:translateY(-13px);filter:blur(0);color:#fff;
+    text-shadow:0 0 10px #fff,0 0 22px var(--c),0 0 48px rgba(0,180,210,.5);}
+}
 
-  /* ── ERROR FLASH ── */
-  .err{
-    position:fixed;inset:0;pointer-events:none;z-index:88;opacity:0;
-    background:rgba(229,0,0,.04);
-    animation:errF 11s infinite 5s;
-  }
-  @keyframes errF{
-    0%,94%,100%{opacity:0;}
-    95%{opacity:1;}96%{opacity:0;}98%{opacity:.4;}99%{opacity:0;}
-  }
+/* ── WATERMARK ── */
+.wm{
+  position:fixed;bottom:10px;left:50%;transform:translateX(-50%);
+  font-size:.46rem;letter-spacing:.1em;
+  color:rgba(0,229,255,.14);white-space:nowrap;
+  z-index:20;pointer-events:none;
+  text-shadow:0 0 12px rgba(0,229,255,.2);
+  animation:wmB 8s ease-in-out infinite;
+}
+@keyframes wmB{0%,100%{opacity:.55;letter-spacing:.1em;}50%{opacity:.06;letter-spacing:.16em;}}
 </style>
 </head>
 <body>
 
-<canvas id="matrix"></canvas>
-<div class="scanlines"></div>
-<div class="vignette"></div>
-<div class="glitch-overlay"></div>
-<div class="err"></div>
+<canvas id="bg"></canvas>
+<div class="layer l-scan"></div>
+<div class="layer l-vig"></div>
+<div class="layer l-sweep"></div>
+<div class="layer l-err"></div>
 
 <div class="scene">
 
@@ -268,176 +238,277 @@
   <div class="shield-wrap">
     <div class="ring"></div><div class="ring"></div><div class="ring"></div>
 
-    <svg class="shield-svg" viewBox="0 0 155 185" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg class="sh-svg" viewBox="0 0 154 184" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="sg" x1="0" y1="0" x2="155" y2="185" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#071828"/>
-          <stop offset="55%" stop-color="#041018"/>
+        <linearGradient id="sg" x1="0" y1="0" x2="154" y2="184" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#071828"/>
+          <stop offset="55%"  stop-color="#040f18"/>
           <stop offset="100%" stop-color="#020a10"/>
         </linearGradient>
-        <linearGradient id="eg" x1="0" y1="0" x2="155" y2="185" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stop-color="#00e5ff" stop-opacity="1"/>
-          <stop offset="55%"  stop-color="#00bcd4" stop-opacity=".7"/>
-          <stop offset="100%" stop-color="#005570" stop-opacity=".35"/>
+        <linearGradient id="eg" x1="0" y1="0" x2="154" y2="184" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#00e5ff"/>
+          <stop offset="60%"  stop-color="#00bcd4" stop-opacity=".7"/>
+          <stop offset="100%" stop-color="#004d66" stop-opacity=".3"/>
         </linearGradient>
-        <radialGradient id="sh" cx="35%" cy="22%" r="55%">
-          <stop offset="0%" stop-color="rgba(0,229,255,.14)"/>
+        <radialGradient id="shine" cx="32%" cy="20%" r="52%">
+          <stop offset="0%"   stop-color="rgba(0,229,255,.16)"/>
           <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
         </radialGradient>
-        <filter id="gf"><feGaussianBlur stdDeviation="2.5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+        <filter id="gf" x="-25%" y="-25%" width="150%" height="150%">
+          <feGaussianBlur stdDeviation="2.5" result="b"/>
+          <feComposite in="SourceGraphic" in2="b" operator="over"/>
+        </filter>
       </defs>
 
-      <!-- body -->
-      <path d="M77 4 L150 30 L150 94 C150 140 77 181 77 181 C77 181 4 140 4 94 L4 30 Z"
+      <!-- Body -->
+      <path d="M77 4 L149 30 L149 95 C149 141 77 180 77 180 C77 180 5 141 5 95 L5 30 Z"
             fill="url(#sg)" stroke="url(#eg)" stroke-width="2.2" filter="url(#gf)"/>
-      <!-- inner frame -->
-      <path d="M77 14 L140 36 L140 94 C140 134 77 172 77 172 C77 172 14 134 14 94 L14 36 Z"
+      <!-- Inner frame -->
+      <path d="M77 14 L140 37 L140 95 C140 134 77 170 77 170 C77 170 14 134 14 95 L14 37 Z"
             fill="none" stroke="rgba(0,229,255,.14)" stroke-width=".8"/>
 
-      <!-- circuit traces -->
-      <line x1="28" y1="68" x2="62" y2="68" stroke="rgba(0,229,255,.35)" stroke-width=".8"/>
-      <line x1="62" y1="68" x2="62" y2="88" stroke="rgba(0,229,255,.35)" stroke-width=".8"/>
-      <line x1="92" y1="68" x2="126" y2="68" stroke="rgba(0,229,255,.35)" stroke-width=".8"/>
-      <line x1="92" y1="68" x2="92" y2="88" stroke="rgba(0,229,255,.35)" stroke-width=".8"/>
-      <line x1="28" y1="118" x2="126" y2="118" stroke="rgba(0,229,255,.22)" stroke-width=".8"/>
-      <line x1="44" y1="136" x2="110" y2="136" stroke="rgba(0,229,255,.15)" stroke-width=".7"/>
-      <!-- vertical connectors -->
-      <line x1="28" y1="68" x2="28" y2="118" stroke="rgba(0,229,255,.18)" stroke-width=".6"/>
-      <line x1="126" y1="68" x2="126" y2="118" stroke="rgba(0,229,255,.18)" stroke-width=".6"/>
+      <!-- Hex cell grid (background texture) -->
+      <path d="M50 46 L57 42 L64 46 L64 54 L57 58 L50 54Z" fill="rgba(0,229,255,.04)" stroke="rgba(0,229,255,.1)" stroke-width=".5"/>
+      <path d="M64 46 L71 42 L78 46 L78 54 L71 58 L64 54Z" fill="rgba(0,229,255,.03)" stroke="rgba(0,229,255,.08)" stroke-width=".5"/>
+      <path d="M78 46 L85 42 L92 46 L92 54 L85 58 L78 54Z" fill="rgba(0,229,255,.04)" stroke="rgba(0,229,255,.1)" stroke-width=".5"/>
+      <path d="M92 46 L99 42 L106 46 L106 54 L99 58 L92 54Z" fill="rgba(0,229,255,.03)" stroke="rgba(0,229,255,.07)" stroke-width=".5"/>
+      <path d="M57 58 L64 54 L71 58 L71 66 L64 70 L57 66Z" fill="rgba(0,229,255,.03)" stroke="rgba(0,229,255,.07)" stroke-width=".5"/>
+      <path d="M85 58 L92 54 L99 58 L99 66 L92 70 L85 66Z" fill="rgba(0,229,255,.03)" stroke="rgba(0,229,255,.07)" stroke-width=".5"/>
 
-      <!-- nodes -->
-      <circle cx="28"  cy="68"  r="2.8" fill="#00e5ff" opacity=".65"/>
-      <circle cx="126" cy="68"  r="2.8" fill="#00e5ff" opacity=".65"/>
-      <circle cx="28"  cy="118" r="2.2" fill="#00e5ff" opacity=".5"/>
-      <circle cx="126" cy="118" r="2.2" fill="#00e5ff" opacity=".5"/>
-      <circle cx="62"  cy="88"  r="1.8" fill="#00e5ff" opacity=".5"/>
-      <circle cx="92"  cy="88"  r="1.8" fill="#00e5ff" opacity=".5"/>
+      <!-- Circuit traces (animated draw) -->
+      <line class="cp d1" x1="26" y1="66" x2="66" y2="66" stroke="rgba(0,229,255,.38)" stroke-width=".9"/>
+      <line class="cp d2" x1="66" y1="66" x2="66" y2="88" stroke="rgba(0,229,255,.38)" stroke-width=".9"/>
+      <line class="cp d2" x1="88" y1="66" x2="128" y2="66" stroke="rgba(0,229,255,.38)" stroke-width=".9"/>
+      <line class="cp d3" x1="88" y1="66" x2="88" y2="88" stroke="rgba(0,229,255,.38)" stroke-width=".9"/>
+      <line class="cp d3" x1="26" y1="116" x2="128" y2="116" stroke="rgba(0,229,255,.22)" stroke-width=".8"/>
+      <line class="cp d4" x1="40" y1="134" x2="114" y2="134" stroke="rgba(0,229,255,.14)" stroke-width=".7"/>
+      <!-- Vertical buses -->
+      <line class="cp d4" x1="26"  y1="66"  x2="26"  y2="116" stroke="rgba(0,229,255,.18)" stroke-width=".6"/>
+      <line class="cp d4" x1="128" y1="66"  x2="128" y2="116" stroke="rgba(0,229,255,.18)" stroke-width=".6"/>
 
-      <!-- lock icon -->
-      <rect x="67" y="82" width="22" height="16" rx="2.5"
-            fill="rgba(0,229,255,.08)" stroke="#00e5ff" stroke-width="1.3" opacity=".75"/>
-      <path d="M72 82 L72 77 C72 73 82 73 82 77 L82 82"
-            fill="none" stroke="#00e5ff" stroke-width="1.3" opacity=".75"/>
-      <circle cx="78" cy="90" r="2" fill="#00e5ff" opacity=".85"/>
-      <line x1="78" y1="90" x2="78" y2="94" stroke="#00e5ff" stroke-width="1.2" opacity=".7"/>
+      <!-- Rotating dashed rings -->
+      <circle class="rot"  cx="77" cy="88" r="24" fill="none" stroke="rgba(0,229,255,.22)" stroke-width=".8" stroke-dasharray="6 4"/>
+      <circle class="rot2" cx="77" cy="88" r="16" fill="none" stroke="rgba(0,229,255,.15)" stroke-width=".6" stroke-dasharray="3 6"/>
 
-      <!-- shine -->
-      <path d="M77 4 L150 30 L150 94 C150 140 77 181 77 181 C77 181 4 140 4 94 L4 30 Z" fill="url(#sh)"/>
+      <!-- Lock icon -->
+      <rect x="68" y="83" width="18" height="13" rx="2.5"
+            fill="rgba(0,229,255,.08)" stroke="#00e5ff" stroke-width="1.2" opacity=".8"/>
+      <path d="M72 83 L72 78 C72 74 82 74 82 78 L82 83"
+            fill="none" stroke="#00e5ff" stroke-width="1.2" opacity=".8"/>
+      <circle cx="77" cy="90" r="1.8" fill="#00e5ff" opacity=".9"/>
+      <line x1="77" y1="90" x2="77" y2="93" stroke="#00e5ff" stroke-width="1.1" opacity=".7"/>
 
-      <!-- corner ticks -->
-      <path d="M4 30 L4 18 L16 18"  fill="none" stroke="rgba(0,229,255,.45)" stroke-width="1.2"/>
-      <path d="M150 30 L150 18 L138 18" fill="none" stroke="rgba(0,229,255,.45)" stroke-width="1.2"/>
-      <!-- tip accent -->
-      <path d="M70 172 L77 181 L84 172" fill="none" stroke="rgba(0,229,255,.5)" stroke-width="1.3"/>
+      <!-- Circuit nodes -->
+      <circle cx="26"  cy="66"  r="3"   fill="#00e5ff" opacity=".7"/>
+      <circle cx="128" cy="66"  r="3"   fill="#00e5ff" opacity=".7"/>
+      <circle cx="26"  cy="116" r="2.2" fill="#00e5ff" opacity=".55"/>
+      <circle cx="128" cy="116" r="2.2" fill="#00e5ff" opacity=".55"/>
+      <circle cx="66"  cy="88"  r="2"   fill="#00e5ff" opacity=".55"/>
+      <circle cx="88"  cy="88"  r="2"   fill="#00e5ff" opacity=".55"/>
+
+      <!-- Shine + tip + corner brackets -->
+      <path d="M77 4 L149 30 L149 95 C149 141 77 180 77 180 C77 180 5 141 5 95 L5 30 Z" fill="url(#shine)"/>
+      <path d="M70 171 L77 180 L84 171" fill="none" stroke="rgba(0,229,255,.55)" stroke-width="1.2"/>
+      <path d="M5  30 L5  18 L17  18" fill="none" stroke="rgba(0,229,255,.5)" stroke-width="1.1"/>
+      <path d="M149 30 L149 18 L137 18" fill="none" stroke="rgba(0,229,255,.5)" stroke-width="1.1"/>
     </svg>
 
-    <div class="shield-text">
+    <div class="sh-label">
       <div class="sh-name">SecFERRO</div>
-      <div class="sh-line"></div>
+      <div class="sh-bar"></div>
       <div class="sh-div">DIVISION</div>
     </div>
   </div>
 
   <!-- TITLE -->
-  <div class="title-block">
-    <div class="title-row">
+  <div class="t-block">
+    <div class="t-row">
       <span class="ferro">FERRO</span><span class="art">ART</span>
     </div>
     <div class="subtitle">The Creative Engineer</div>
+    <div class="div-tag">◈ SECFERRO DIVISION ◈</div>
   </div>
 
-  <!-- STATUS -->
-  <div class="status" id="status">INITIALIZING SECURE ENVIRONMENT...</div>
-
-  <!-- PROGRESS -->
-  <div class="bar-wrap">
-    <div class="bar-pct" id="pct">0%</div>
-    <div class="bar-track">
-      <div class="bar-fill" id="bar"></div>
-      <div class="bar-ghost"></div>
+  <!-- SYSTEM NODES -->
+  <div class="nodes">
+    <div class="node" style="animation:nodePulse 2s ease-in-out infinite 0s">
+      <div class="nd" style="animation:ndGlow 2s ease-in-out infinite 0s"></div>NET
+    </div>
+    <span class="nsep">·</span>
+    <div class="node" style="animation:nodePulse 2s ease-in-out infinite .4s">
+      <div class="nd" style="animation:ndGlow 2s ease-in-out infinite .4s"></div>ENC
+    </div>
+    <span class="nsep">·</span>
+    <div class="node" style="animation:nodePulse 2s ease-in-out infinite .8s">
+      <div class="nd" style="animation:ndGlow 2s ease-in-out infinite .8s"></div>FW
+    </div>
+    <span class="nsep">·</span>
+    <div class="node" style="animation:nodePulse 2s ease-in-out infinite 1.2s">
+      <div class="nd" style="animation:ndGlow 2s ease-in-out infinite 1.2s"></div>ADB
+    </div>
+    <span class="nsep">·</span>
+    <div class="node" style="animation:nodePulse 2s ease-in-out infinite 1.6s">
+      <div class="nd" style="animation:ndGlow 2s ease-in-out infinite 1.6s"></div>VC4
     </div>
   </div>
 
+  <!-- STATUS -->
+  <div class="status" id="status"><span class="cur"></span></div>
+
+  <!-- HEX PROGRESS BAR -->
+  <div class="bar-wrap">
+    <span class="bar-label">BOOT SEQUENCE</span>
+    <span class="bar-pct" id="pct">0%</span>
+    <div class="hex-row" id="hexrow"></div>
+  </div>
+
   <!-- LOADING LETTERS -->
-  <div class="loader-wrap">
+  <div class="lw">
     <span class="ll">L</span><span class="ll">O</span><span class="ll">A</span>
     <span class="ll">D</span><span class="ll">I</span><span class="ll">N</span><span class="ll">G</span>
   </div>
 
-  <!-- ICONS -->
-  <div class="icons">
-    <span class="ic">📶</span>
-    <span class="ic">🌐</span>
-    <span class="ic">🛡️</span>
-    <span class="ic">⚙️</span>
-    <span class="ic">🔗</span>
-    <span class="ic">👤</span>
-  </div>
-
 </div>
 
-<div class="wm">anonymousik.is-a.dev</div>
+<div class="wm">•``•.༼X🌐༼X.•``• Ⱥ🅽ටꈤYMටꪊSƗꀘ.IS-A.DEV •``•.༼X🌐༼X.•``•</div>
+
+<style>
+@keyframes nodePulse{0%,100%{opacity:.3;}50%{opacity:.95;}}
+@keyframes ndGlow   {0%,100%{box-shadow:0 0 4px var(--c);}50%{box-shadow:0 0 10px var(--c),0 0 18px rgba(0,229,255,.6);}}
+</style>
 
 <script>
-/* ── MATRIX RAIN ── */
-const cv = document.getElementById('matrix');
+/* ══════════════════════════════════
+   BG CANVAS — hex grid + matrix rain
+   (RAF, frame-capped at 20fps for perf)
+══════════════════════════════════ */
+const cv = document.getElementById('bg');
 const cx = cv.getContext('2d');
-let W,H,cols,drops;
-const CHARS='アイウエオカキクケコ01アサ01FERROART01SECFERRO10シスセソ01タチツ10';
+const CHARS = 'アイウエオカキクケコシスセソ01タチツ10FERROART01SECFERRO10';
+const HS = 26; // hex size
+let W, H, drops = [];
 
-function init(){
-  W=cv.width=innerWidth; H=cv.height=innerHeight;
-  cols=Math.floor(W/13); drops=Array(cols).fill(1);
+function resize() {
+  W = cv.width  = innerWidth;
+  H = cv.height = innerHeight;
+  drops = Array.from({length: Math.floor(W / 13)}, () => Math.random() * -60);
 }
-init(); addEventListener('resize',init);
+resize();
+addEventListener('resize', resize);
 
-setInterval(()=>{
-  cx.fillStyle='rgba(2,4,7,0.05)'; cx.fillRect(0,0,W,H);
-  cx.font='13px monospace';
-  drops.forEach((y,i)=>{
-    const c=CHARS[Math.floor(Math.random()*CHARS.length)];
-    const bright=Math.random()>.97;
-    cx.fillStyle=bright?'#00ffff':Math.random()>.75?'#006878':'#003545';
-    cx.fillText(c,i*13,y*13);
-    if(y*13>H&&Math.random()>.975)drops[i]=0;
+function hexGrid() {
+  const h = HS * Math.sqrt(3);
+  cx.strokeStyle = 'rgba(0,229,255,0.035)';
+  cx.lineWidth = .5;
+  for (let r = 0; r * h < H + h; r++) {
+    for (let c = 0; c * HS * 1.5 < W + HS; c++) {
+      const x = c * HS * 1.5, y = r * h + (c % 2 ? h / 2 : 0);
+      cx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const a = Math.PI / 3 * i - Math.PI / 6;
+        i ? cx.lineTo(x + HS * Math.cos(a), y + HS * Math.sin(a))
+          : cx.moveTo(x + HS * Math.cos(a), y + HS * Math.sin(a));
+      }
+      cx.closePath(); cx.stroke();
+    }
+  }
+}
+
+function drawFrame() {
+  cx.fillStyle = 'rgba(2,4,7,0.045)';
+  cx.fillRect(0, 0, W, H);
+  hexGrid();
+  cx.font = '12px monospace';
+  drops.forEach((y, i) => {
+    const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
+    cx.fillStyle = Math.random() > .97 ? '#00ffff'
+                 : Math.random() > .8  ? '#007090' : '#003a4a';
+    cx.fillText(ch, i * 13, y * 13);
+    if (y * 13 > H && Math.random() > .975) drops[i] = 0;
     drops[i]++;
   });
-},50);
+}
 
-/* ── PROGRESS + STATUS ── */
-const messages=[
-  'INITIALIZING SECURE ENVIRONMENT...',
-  'LOADING FERROART KERNEL MODULES...',
-  'ESTABLISHING ENCRYPTED CHANNEL...',
-  'VERIFYING SECFERRO CERTIFICATES...',
-  'CALIBRATING BCM HARDWARE PROFILE...',
-  'MOUNTING TITANIUM CORE v17...',
-  'SYNCING ADB BRIDGE INTERFACE...',
-  'INJECTING PLAYBOX OPTIMIZATIONS...',
-  'COMPILING VC4 PIPELINE...',
-  'WE ARE LEGION — FERROART ONLINE.',
+let last = 0;
+function loop(ts) {
+  if (ts - last > 50) { drawFrame(); last = ts; }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ══════════════════════════════════
+   HEX BAR
+══════════════════════════════════ */
+const SEGS = 26;
+const hexrow = document.getElementById('hexrow');
+const pctEl  = document.getElementById('pct');
+const segs   = [];
+
+for (let i = 0; i < SEGS; i++) {
+  const d = document.createElement('div');
+  d.className = 'hs';
+  hexrow.appendChild(d);
+  segs.push(d);
+}
+
+function updateBar(p) {
+  const filled = Math.floor(p / 100 * SEGS);
+  segs.forEach((s, i) => {
+    s.className = 'hs' + (i < filled - 1 ? ' on' : i === filled - 1 ? ' hd' : '');
+  });
+  pctEl.textContent = Math.floor(p) + '%';
+}
+
+/* ══════════════════════════════════
+   TYPEWRITER STATUS
+══════════════════════════════════ */
+const MSGS = [
+  'INITIALIZING SECURE ENVIRONMENT',
+  'LOADING FERROART KERNEL MODULES',
+  'ESTABLISHING ENCRYPTED CHANNEL',
+  'VERIFYING SECFERRO CERTIFICATES',
+  'CALIBRATING BCM72604 HARDWARE',
+  'MOUNTING TITANIUM CORE v17.1',
+  'SYNCING ADB BRIDGE — PLAYBOX',
+  'INJECTING PLAYBOX OPTIMIZATIONS',
+  'COMPILING VC4 PIPELINE STAGE 2',
+  'WE ARE LEGION — FERROART ONLINE',
 ];
 
-let p=0, si=-1;
-const bar=document.getElementById('bar');
-const pct=document.getElementById('pct');
-const stat=document.getElementById('status');
+const statEl = document.getElementById('status');
+const cursor = statEl.querySelector('.cur');
+let curMsg = -1, typeTimer = null;
 
-function tick(){
-  p+=Math.random()*2.4+.3;
-  if(p>100)p=100;
-  bar.style.width=p+'%';
-  pct.textContent=Math.floor(p)+'%';
-  const idx=Math.min(Math.floor((p/100)*(messages.length-1)),messages.length-1);
-  if(idx!==si){
-    si=idx;
-    stat.style.opacity='0';
-    setTimeout(()=>{stat.textContent=messages[si];stat.style.opacity='.7';},160);
-  }
-  if(p<100) setTimeout(tick,Math.random()*130+35);
+function typeMsg(msg) {
+  clearInterval(typeTimer);
+  // wipe text nodes, keep cursor
+  [...statEl.childNodes].forEach(n => { if (n !== cursor) n.remove(); });
+  let i = 0;
+  typeTimer = setInterval(() => {
+    if (i >= msg.length) { clearInterval(typeTimer); return; }
+    statEl.insertBefore(document.createTextNode(msg[i++]), cursor);
+  }, 30);
 }
-stat.style.transition='opacity .18s';
-setTimeout(tick,700);
+
+function setMsg(idx) {
+  if (idx === curMsg) return;
+  curMsg = idx;
+  statEl.style.opacity = '0';
+  setTimeout(() => { statEl.style.opacity = '.7'; typeMsg(MSGS[idx]); }, 180);
+}
+statEl.style.transition = 'opacity .2s';
+
+/* ══════════════════════════════════
+   BOOT PROGRESS
+══════════════════════════════════ */
+let p = 0;
+function tick() {
+  p = Math.min(p + Math.random() * 2.4 + .2, 100);
+  updateBar(p);
+  setMsg(Math.min(Math.floor(p / 100 * (MSGS.length - 1)), MSGS.length - 1));
+  if (p < 100) setTimeout(tick, Math.random() * 140 + 30);
+}
+setTimeout(tick, 700);
 </script>
 </body>
-</html>
+        </html>
