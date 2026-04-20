@@ -3,96 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'none';style-src 'unsafe-inline' https://fonts.googleapis.com;font-src https://fonts.gstatic.com;script-src 'unsafe-inline';img-src data:;connect-src 'none';">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="SecFERRO Division — Privacy Protocol Dossier">
 <title>SecFERRO Division — Privacy Protocol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@700;900&display=swap" rel="stylesheet">
 <style>
-/* ════════════════════════════════════
-   DESIGN TOKENS
-════════════════════════════════════ */
+/* ── TOKENS ── */
 :root{
-  --c:#00e5ff; --cd:rgba(0,229,255,.5); --cm:rgba(0,229,255,.12);
-  --r:#e50000; --g:#00ff88;
-  --bg:#020407; --bg2:#040c12;
+  --c:#00e5ff;--cm:rgba(0,229,255,.12);--cd:rgba(0,229,255,.5);
+  --r:#e50000;--g:#00ff88;
+  --bg:#020407;
   --mono:'Share Tech Mono',monospace;
   --head:'Rajdhani','Segoe UI',sans-serif;
   --gap:16px;
 }
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+/* ── RESET ── */
+:where(*,*::before,*::after){margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);font-family:var(--mono);overflow:hidden;height:100vh;display:flex;justify-content:center;align-items:center;color:#fff;}
-
-/* ════════════════════════════════════
-   CANVAS + FIXED LAYERS
-════════════════════════════════════ */
+/* ── CANVAS ── */
 #bg{position:fixed;inset:0;z-index:0;transition:opacity 1s ease;}
+/* ── LAYERS ── */
 .layer{position:fixed;inset:0;pointer-events:none;}
 .l-scan{z-index:92;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.09) 2px,rgba(0,0,0,.09) 4px);}
 .l-vig{z-index:91;background:radial-gradient(ellipse at 50% 50%,transparent 28%,rgba(0,0,0,.88) 100%);}
-.l-sweep{z-index:90;opacity:0;animation:sweep 9s infinite 4s;background:linear-gradient(to bottom,transparent 47%,rgba(0,229,255,.025) 50%,transparent 53%);}
-@keyframes sweep{0%,90%,100%{opacity:0;transform:none;}91%{opacity:1;transform:translateX(-4px);}92%{opacity:0;}94%{opacity:1;transform:translateX(4px);}95%{opacity:0;}}
+.l-sweep{z-index:90;opacity:0;background:linear-gradient(to bottom,transparent 47%,rgba(0,229,255,.025) 50%,transparent 53%);animation:sweep 9s infinite 4s;}
 .l-err{z-index:89;background:rgba(229,0,0,.04);opacity:0;animation:errF 13s infinite 7s;}
+/* ── SHARED KEYFRAMES ── */
+@keyframes sweep{0%,90%,100%{opacity:0;transform:none;}91%{opacity:1;transform:translateX(-4px);}92%{opacity:0;}94%{opacity:1;transform:translateX(4px);}95%{opacity:0;}}
 @keyframes errF{0%,93%,100%{opacity:0;}94%{opacity:1;}95%{opacity:0;}97%{opacity:.3;}98%{opacity:0;}}
-
-/* ════════════════════════════════════
-   PHASE 1 — LOADER
-════════════════════════════════════ */
-#ph-loader{
-  position:relative;z-index:10;
-  display:flex;flex-direction:column;align-items:center;gap:14px;
-  width:100%;max-width:560px;padding:14px;
-  transition:opacity .5s ease,transform .5s ease;
-}
-#ph-loader.out{opacity:0;transform:translateY(-28px);pointer-events:none;}
-
-/* Shield */
-.shield-wrap{position:relative;display:flex;justify-content:center;align-items:center;}
-.ring{position:absolute;border-radius:50%;border:1px solid var(--cm);animation:ringOut 3.4s ease-out infinite;}
-.ring:nth-child(1){width:186px;height:186px;animation-delay:0s;}
-.ring:nth-child(2){width:222px;height:222px;animation-delay:1.13s;}
-.ring:nth-child(3){width:258px;height:258px;animation-delay:2.27s;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
 @keyframes ringOut{0%{transform:scale(.7);opacity:.7;}100%{transform:scale(1.1);opacity:0;}}
-.sh-svg{width:148px;height:180px;will-change:transform,filter;animation:shFloat 4.2s ease-in-out infinite;}
-@keyframes shFloat{
-  0%,100%{transform:translateY(0);filter:drop-shadow(0 0 6px var(--c)) drop-shadow(0 0 20px rgba(0,180,220,.55));}
-  50%{transform:translateY(-8px);filter:drop-shadow(0 0 14px #0ff) drop-shadow(0 0 38px rgba(0,210,240,.8)) drop-shadow(0 0 72px rgba(0,120,185,.4));}
-}
-.cp{stroke-dasharray:200;stroke-dashoffset:200;animation:draw 1.8s ease forwards;}
-.cp.d1{animation-delay:.3s;}.cp.d2{animation-delay:.55s;}.cp.d3{animation-delay:.8s;}.cp.d4{animation-delay:1.05s;}
 @keyframes draw{to{stroke-dashoffset:0;}}
-.rot{transform-origin:77px 88px;animation:rotCW 7s linear infinite;}
-.rot2{transform-origin:77px 88px;animation:rotCCW 10s linear infinite;}
 @keyframes rotCW{to{transform:rotate(360deg);}}
 @keyframes rotCCW{to{transform:rotate(-360deg);}}
+@keyframes shFloat{
+  0%,100%{transform:translateY(0);filter:drop-shadow(0 0 6px var(--c)) drop-shadow(0 0 20px rgba(0,180,220,.55));}
+  50%{transform:translateY(-8px);filter:drop-shadow(0 0 14px #0ff) drop-shadow(0 0 38px rgba(0,210,240,.8)) drop-shadow(0 0 72px rgba(0,120,185,.4));}}
+@keyframes gF{0%,87%,100%{transform:none;clip-path:none;color:#fff;}88%{transform:skewX(-12deg) translateX(-4px);clip-path:polygon(0 8%,100% 8%,100% 33%,0 33%);color:var(--c);}89%{transform:skewX(7deg) translateX(3px);clip-path:polygon(0 62%,100% 62%,100% 86%,0 86%);color:#fff;}90%{transform:none;clip-path:none;}92%{transform:translateX(-3px);}93%{transform:translateX(3px);}94%{transform:none;}}
+@keyframes gA{0%,85%,100%{transform:none;color:var(--r);}86%{transform:skewX(14deg) translateX(5px);color:#f44;text-shadow:-3px 0 var(--c),3px 0 var(--r);}87%{transform:skewX(-7deg) translateX(-3px);}88%{transform:none;}91%{transform:translateX(4px);}92%{transform:translateX(-4px);}93%{transform:none;}}
+@keyframes lA{0%,100%{opacity:.1;transform:translateY(0);filter:blur(5px);color:#333;}50%{opacity:1;transform:translateY(-13px);filter:blur(0);color:#fff;text-shadow:0 0 10px #fff,0 0 22px var(--c),0 0 48px rgba(0,180,210,.5);}}
+@keyframes ndG{0%,100%{box-shadow:0 0 4px var(--c);}50%{box-shadow:0 0 10px var(--c),0 0 18px rgba(0,229,255,.6);}}
+@keyframes ndP{0%,100%{opacity:.3;}50%{opacity:.95;}}
+@keyframes wmB{0%,100%{opacity:.5;letter-spacing:.1em;}50%{opacity:.06;letter-spacing:.16em;}}
+@keyframes agG{0%,84%,100%{transform:none;clip-path:none;color:var(--g);}85%{transform:skewX(-10deg) translateX(-5px);clip-path:polygon(0 15%,100% 15%,100% 40%,0 40%);color:var(--c);}86%{transform:skewX(8deg) translateX(4px);clip-path:polygon(0 60%,100% 60%,100% 85%,0 85%);color:var(--g);}87%{transform:none;clip-path:none;}}
+@keyframes agSw{to{left:100%;}}
+@keyframes agP{0%,100%{opacity:.3;}50%{opacity:1;}}
+@keyframes artIn{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:none;}}
+/* ── PHASE 1: LOADER ── */
+#ph-loader{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;max-width:560px;padding:14px;transition:opacity .5s ease,transform .5s ease;}
+#ph-loader.out{opacity:0;transform:translateY(-28px);pointer-events:none;}
+.shield-wrap{position:relative;display:flex;justify-content:center;align-items:center;}
+.ring{position:absolute;border-radius:50%;border:1px solid var(--cm);animation:ringOut 3.4s ease-out infinite;}
+.ring:nth-child(1){width:186px;height:186px;}
+.ring:nth-child(2){width:222px;height:222px;animation-delay:1.13s;}
+.ring:nth-child(3){width:258px;height:258px;animation-delay:2.27s;}
+.sh-svg{width:148px;height:180px;animation:shFloat 4.2s ease-in-out infinite;}
+.cp{stroke-dasharray:200;stroke-dashoffset:200;animation:draw 1.8s ease forwards;}
+.cp.d1{animation-delay:.3s;}.cp.d2{animation-delay:.55s;}.cp.d3{animation-delay:.8s;}.cp.d4{animation-delay:1.05s;}
+.rot{transform-origin:77px 88px;animation:rotCW 7s linear infinite;}
+.rot2{transform-origin:77px 88px;animation:rotCCW 10s linear infinite;}
 .sh-label{position:absolute;bottom:20px;display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:none;animation:shFloat 4.2s ease-in-out infinite;}
 .sh-name{font-size:.6rem;font-weight:800;letter-spacing:.32em;color:var(--c);text-shadow:0 0 10px var(--c),0 0 22px rgba(0,200,230,.5);}
 .sh-bar{width:44px;height:1px;background:linear-gradient(to right,transparent,rgba(0,229,255,.85),transparent);}
 .sh-div{font-size:.36rem;letter-spacing:.24em;color:rgba(0,200,220,.48);}
-
-/* Title */
 .t-block{display:flex;flex-direction:column;align-items:center;gap:3px;}
 .t-row{display:flex;align-items:baseline;}
 .ferro,.art{font-family:var(--head);font-size:clamp(2.6rem,9vw,4.6rem);font-weight:900;letter-spacing:.04em;}
-.ferro{color:#fff;text-shadow:0 0 24px rgba(255,255,255,.1);animation:gF 7s infinite;}
-.art{color:var(--r);text-shadow:0 0 14px rgba(229,0,0,.7),0 0 34px rgba(200,0,0,.3);animation:gA 7s infinite .3s;}
-@keyframes gF{0%,87%,100%{transform:none;clip-path:none;color:#fff;}88%{transform:skewX(-12deg) translateX(-4px);clip-path:polygon(0 8%,100% 8%,100% 33%,0 33%);color:var(--c);}89%{transform:skewX(7deg) translateX(3px);clip-path:polygon(0 62%,100% 62%,100% 86%,0 86%);color:#fff;}90%{transform:none;clip-path:none;}92%{transform:translateX(-3px);}93%{transform:translateX(3px);}94%{transform:none;}}
-@keyframes gA{0%,85%,100%{transform:none;color:var(--r);}86%{transform:skewX(14deg) translateX(5px);color:#f44;text-shadow:-3px 0 var(--c),3px 0 var(--r);}87%{transform:skewX(-7deg) translateX(-3px);}88%{transform:none;}91%{transform:translateX(4px);}92%{transform:translateX(-4px);}93%{transform:none;}}
-.subtitle{font-size:.58rem;letter-spacing:.44em;color:rgba(255,255,255,.28);text-transform:uppercase;}
-.div-tag{font-size:.46rem;letter-spacing:.28em;color:var(--c);opacity:.5;text-shadow:0 0 8px rgba(0,229,255,.4);}
-
-/* Node row */
+.ferro{color:#fff;animation:gF 7s infinite;}
+.art{color:var(--r);text-shadow:0 0 14px rgba(229,0,0,.7);animation:gA 7s infinite .3s;}
+.subtitle,.div-tag{text-transform:uppercase;}
+.subtitle{font-size:.58rem;letter-spacing:.44em;color:rgba(255,255,255,.28);}
+.div-tag{font-size:.46rem;letter-spacing:.28em;color:var(--c);opacity:.5;}
 .nodes{display:flex;gap:10px;align-items:center;}
 .node{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.4rem;letter-spacing:.12em;color:rgba(0,229,255,.45);}
 .nd{width:6px;height:6px;border-radius:50%;background:var(--c);}
-.nsep{color:rgba(0,229,255,.18);font-size:.5rem;}
-@keyframes ndGlow{0%,100%{box-shadow:0 0 4px var(--c);}50%{box-shadow:0 0 10px var(--c),0 0 18px rgba(0,229,255,.6);}}
-@keyframes nodePulse{0%,100%{opacity:.3;}50%{opacity:.95;}}
-
-/* Status */
+.nsep{color:rgba(0,229,255,.18);}
 .status-el{font-size:.56rem;letter-spacing:.14em;color:var(--c);opacity:.7;min-height:1em;text-shadow:0 0 8px rgba(0,229,255,.5);transition:opacity .2s;}
 .cur{display:inline-block;width:6px;height:.8em;background:var(--c);margin-left:2px;vertical-align:middle;animation:blink .7s infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
-
-/* Hex bar */
 .bar-wrap{width:100%;max-width:420px;position:relative;padding-top:18px;}
 .bar-label{position:absolute;left:0;top:0;font-size:.42rem;letter-spacing:.15em;color:rgba(0,229,255,.4);}
 .bar-pct{position:absolute;right:0;top:0;font-size:.56rem;color:var(--c);letter-spacing:.1em;text-shadow:0 0 6px var(--c);}
@@ -100,270 +91,129 @@ body{background:var(--bg);font-family:var(--mono);overflow:hidden;height:100vh;d
 .hs{width:13px;height:13px;flex-shrink:0;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:rgba(0,229,255,.07);transition:background .12s,box-shadow .12s;}
 .hs.on{background:var(--c);box-shadow:0 0 5px var(--c),0 0 10px rgba(0,229,255,.45);}
 .hs.hd{background:#fff;box-shadow:0 0 7px #fff,0 0 14px var(--c),0 0 26px rgba(0,229,255,.4);}
-
-/* Loading letters */
 .lw{display:flex;gap:2px;margin-top:2px;}
 .ll{font-size:clamp(1.1rem,3.8vw,1.7rem);font-weight:900;letter-spacing:.1em;color:#fff;animation:lA 1.6s cubic-bezier(.45,.05,.55,.95) infinite;}
-.ll:nth-child(1){animation-delay:0s;}.ll:nth-child(2){animation-delay:.11s;}.ll:nth-child(3){animation-delay:.22s;}.ll:nth-child(4){animation-delay:.33s;}.ll:nth-child(5){animation-delay:.44s;}.ll:nth-child(6){animation-delay:.55s;}.ll:nth-child(7){animation-delay:.66s;}
-@keyframes lA{0%,100%{opacity:.1;transform:translateY(0);filter:blur(5px);color:#333;}50%{opacity:1;transform:translateY(-13px);filter:blur(0);color:#fff;text-shadow:0 0 10px #fff,0 0 22px var(--c),0 0 48px rgba(0,180,210,.5);}}
-
-/* ════════════════════════════════════
-   PHASE 2 — ACCESS GRANTED
-════════════════════════════════════ */
-#ph-access{
-  position:fixed;inset:0;z-index:60;
-  display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;
-  background:rgba(2,4,7,.96);
-  opacity:0;pointer-events:none;transition:opacity .25s;
-}
+.ll:nth-child(1){animation-delay:0s;}.ll:nth-child(2){animation-delay:.11s;}.ll:nth-child(3){animation-delay:.22s;}
+.ll:nth-child(4){animation-delay:.33s;}.ll:nth-child(5){animation-delay:.44s;}.ll:nth-child(6){animation-delay:.55s;}.ll:nth-child(7){animation-delay:.66s;}
+/* ── PHASE 2: ACCESS ── */
+#ph-access{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;background:rgba(2,4,7,.96);opacity:0;pointer-events:none;transition:opacity .25s;}
 #ph-access.active{opacity:1;pointer-events:all;}
 .ag-top{font-size:.44rem;letter-spacing:.36em;color:var(--c);text-shadow:0 0 10px var(--c);animation:agP 1.2s ease-in-out infinite;}
-@keyframes agP{0%,100%{opacity:.3;}50%{opacity:1;}}
-.ag-main{
-  font-family:var(--head);font-weight:900;
-  font-size:clamp(2rem,8vw,3.4rem);letter-spacing:.16em;
-  color:var(--g);text-shadow:0 0 20px var(--g),0 0 50px rgba(0,200,100,.5);
-  animation:agG 2.5s infinite;
-}
-@keyframes agG{0%,84%,100%{transform:none;clip-path:none;color:var(--g);}85%{transform:skewX(-10deg) translateX(-5px);clip-path:polygon(0 15%,100% 15%,100% 40%,0 40%);color:var(--c);}86%{transform:skewX(8deg) translateX(4px);clip-path:polygon(0 60%,100% 60%,100% 85%,0 85%);color:var(--g);}87%{transform:none;clip-path:none;}}
+.ag-main{font-family:var(--head);font-weight:900;font-size:clamp(2rem,8vw,3.4rem);letter-spacing:.16em;color:var(--g);text-shadow:0 0 20px var(--g),0 0 50px rgba(0,200,100,.5);animation:agG 2.5s infinite;}
 .ag-sub{font-size:.52rem;letter-spacing:.26em;color:rgba(0,255,136,.6);}
 .ag-cls{font-size:.42rem;letter-spacing:.18em;color:var(--cd);margin-top:6px;}
 .ag-sweep{width:200px;height:2px;background:rgba(0,255,136,.1);position:relative;overflow:hidden;}
 .ag-sweep::after{content:'';position:absolute;left:-100%;top:0;width:100%;height:100%;background:linear-gradient(to right,transparent,var(--g),transparent);animation:agSw 1.4s linear infinite;}
-@keyframes agSw{to{left:100%;}}
-
-/* ════════════════════════════════════
-   PHASE 3 — DOSSIER
-════════════════════════════════════ */
-#ph-dossier{
-  position:fixed;inset:0;z-index:50;
-  overflow-y:auto;overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-  opacity:0;pointer-events:none;
-  transition:opacity .6s ease .2s;
-  scrollbar-width:thin;
-  scrollbar-color:var(--c) var(--bg);
-}
+/* ── PHASE 3: DOSSIER ── */
+#ph-dossier{position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;opacity:0;pointer-events:none;transition:opacity .6s ease .2s;scrollbar-width:thin;scrollbar-color:var(--c) var(--bg);}
 #ph-dossier::-webkit-scrollbar{width:3px;}
-#ph-dossier::-webkit-scrollbar-track{background:var(--bg);}
 #ph-dossier::-webkit-scrollbar-thumb{background:var(--c);border-radius:2px;}
 #ph-dossier.active{opacity:1;pointer-events:all;}
-
-/* Sticky classification bar */
-.cls-bar{
-  position:sticky;top:0;z-index:5;
-  background:rgba(2,4,7,.94);
-  border-bottom:1px solid rgba(229,0,0,.38);
-  padding:7px var(--gap);
-  display:flex;justify-content:space-between;align-items:center;
-  backdrop-filter:blur(8px);
-}
-.cls-tag{font-size:.4rem;letter-spacing:.2em;color:var(--r);text-shadow:0 0 8px var(--r);animation:blink .9s infinite;}
-.cls-sess{font-size:.36rem;letter-spacing:.1em;color:rgba(0,229,255,.45);}
-
-/* Dossier inner */
-.dos-inner{max-width:640px;margin:0 auto;padding:20px var(--gap) 70px;display:flex;flex-direction:column;gap:22px;}
-
-/* Corner brackets util */
-.framed{position:relative;}
-.framed::before,.framed::after{
-  content:'';position:absolute;width:8px;height:8px;
-  border-color:var(--c);border-style:solid;
-}
-.framed::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
-.framed::after{top:-1px;right:-1px;border-width:1px 1px 0 0;}
-.framed .bc::before,.framed .bc::after{
-  content:'';position:absolute;width:8px;height:8px;
-  border-color:var(--c);border-style:solid;
-}
-.framed .bc::before{bottom:-1px;left:-1px;border-width:0 0 1px 1px;}
-.framed .bc::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
-
-/* Meta block */
-.meta-block{
-  border:1px solid rgba(0,229,255,.18);
-  padding:14px;background:rgba(0,229,255,.02);
-  position:relative;
-}
-.meta-row{
-  display:flex;justify-content:space-between;align-items:baseline;
-  font-size:.42rem;letter-spacing:.1em;
-  color:rgba(0,229,255,.55);padding:3px 0;
-  border-bottom:1px solid rgba(0,229,255,.05);
-}
-.meta-row:last-child{border-bottom:none;}
+.cls-bar{position:sticky;top:0;z-index:5;background:rgba(2,4,7,.94);border-bottom:1px solid rgba(229,0,0,.38);padding:7px var(--gap);display:flex;justify-content:space-between;align-items:center;gap:8px;backdrop-filter:blur(8px);}
+.cls-tag{font-size:.38rem;letter-spacing:.18em;color:var(--r);text-shadow:0 0 8px var(--r);animation:blink .9s infinite;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lang-sw{display:flex;gap:4px;flex-shrink:0;}
+.lbtn{font-size:.36rem;letter-spacing:.12em;padding:2px 5px;border:1px solid rgba(0,229,255,.2);color:rgba(0,229,255,.45);background:transparent;cursor:pointer;font-family:var(--mono);transition:all .18s;}
+.lbtn:hover,.lbtn.active{border-color:var(--c);color:var(--c);background:rgba(0,229,255,.06);text-shadow:0 0 6px var(--c);}
+.cls-sess{font-size:.34rem;letter-spacing:.1em;color:rgba(0,229,255,.4);flex-shrink:0;}
+.dos-inner{max-width:640px;margin:0 auto;padding:20px var(--gap) 70px;display:flex;flex-direction:column;gap:20px;}
+.meta-block{border:1px solid rgba(0,229,255,.18);padding:14px;background:rgba(0,229,255,.02);position:relative;}
+.meta-block::before,.meta-block::after,.meta-block .bc::before,.meta-block .bc::after{content:'';position:absolute;width:8px;height:8px;border-color:var(--c);border-style:solid;}
+.meta-block::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
+.meta-block::after{top:-1px;right:-1px;border-width:1px 1px 0 0;}
+.meta-block .bc::before{bottom:-1px;left:-1px;border-width:0 0 1px 1px;}
+.meta-block .bc::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
+.mrow{display:flex;justify-content:space-between;align-items:baseline;font-size:.4rem;letter-spacing:.1em;color:rgba(0,229,255,.55);padding:3px 0;border-bottom:1px solid rgba(0,229,255,.05);}
+.mrow:last-child{border-bottom:none;}
 .mk{color:rgba(0,229,255,.3);flex-shrink:0;margin-right:8px;}
 .mv{color:var(--c);text-align:right;word-break:break-all;}
 .mv.g{color:var(--g);}
 .mv.hash{color:rgba(0,229,255,.5);font-size:.36rem;}
-
-/* Live metrics row */
-.live-row{display:flex;gap:8px;flex-wrap:wrap;}
-.live-card{
-  flex:1;min-width:120px;
-  border:1px solid rgba(0,229,255,.12);
-  background:rgba(0,229,255,.02);
-  padding:8px 10px;
-  display:flex;flex-direction:column;gap:4px;
-}
-.lc-label{font-size:.36rem;letter-spacing:.16em;color:rgba(0,229,255,.38);}
-.lc-val{font-size:.62rem;letter-spacing:.1em;color:var(--c);text-shadow:0 0 8px rgba(0,229,255,.4);}
-.lc-val.g{color:var(--g);text-shadow:0 0 8px rgba(0,255,136,.4);}
-.lc-val.r{color:var(--r);text-shadow:0 0 8px rgba(229,0,0,.4);}
-.dot-pulse{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:4px;vertical-align:middle;}
-.dot-pulse.g{background:var(--g);box-shadow:0 0 6px var(--g);animation:blink .8s infinite;}
-.dot-pulse.r{background:var(--r);box-shadow:0 0 6px var(--r);animation:blink .6s infinite .3s;}
-
-/* Badge row */
-.badge-row{display:flex;gap:6px;flex-wrap:wrap;}
-.badge{
-  font-size:.34rem;letter-spacing:.12em;padding:3px 7px;
-  border:1px solid rgba(0,229,255,.18);
-  color:rgba(0,229,255,.55);background:rgba(0,229,255,.04);
-  white-space:nowrap;
-}
+.live-row{display:flex;gap:6px;flex-wrap:wrap;}
+.lcard{flex:1;min-width:110px;border:1px solid rgba(0,229,255,.12);background:rgba(0,229,255,.02);padding:7px 10px;display:flex;flex-direction:column;gap:4px;}
+.lc-lbl{font-size:.34rem;letter-spacing:.14em;color:rgba(0,229,255,.38);}
+.lc-val{font-size:.58rem;letter-spacing:.1em;color:var(--c);}
+.lc-val.g{color:var(--g);}
+.lc-val.r{color:var(--r);}
+.dot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:4px;vertical-align:middle;}
+.dot.g{background:var(--g);box-shadow:0 0 6px var(--g);animation:blink .8s infinite;}
+.dot.r{background:var(--r);box-shadow:0 0 6px var(--r);animation:blink .6s infinite .3s;}
+.badge-row{display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:.34rem;letter-spacing:.1em;padding:3px 7px;border:1px solid rgba(0,229,255,.18);color:rgba(0,229,255,.55);background:rgba(0,229,255,.04);}
 .badge.g{border-color:rgba(0,255,136,.28);color:rgba(0,255,136,.65);background:rgba(0,255,136,.04);}
 .badge.r{border-color:rgba(229,0,0,.28);color:rgba(229,0,0,.65);background:rgba(229,0,0,.04);}
-
-/* Policy header */
 .pol-head{text-align:center;padding:8px 0;}
-.pol-title{
-  font-family:var(--head);font-size:clamp(1.5rem,5vw,2.4rem);
-  font-weight:900;letter-spacing:.14em;color:#fff;
-  text-shadow:0 0 20px rgba(255,255,255,.12);
-}
+.pol-title{font-family:var(--head);font-size:clamp(1.5rem,5vw,2.4rem);font-weight:900;letter-spacing:.14em;color:#fff;}
 .pol-title em{color:var(--r);font-style:normal;text-shadow:0 0 14px var(--r);}
-.pol-divider{height:1px;background:linear-gradient(to right,transparent,rgba(0,229,255,.4),rgba(229,0,0,.3),transparent);margin:8px 0;}
-.pol-dates{font-size:.38rem;letter-spacing:.18em;color:rgba(0,229,255,.38);margin-top:4px;}
-.pol-entity{font-size:.44rem;letter-spacing:.1em;color:rgba(0,229,255,.52);margin-top:6px;line-height:2;}
-.pol-entity a{color:var(--c);text-decoration:none;text-shadow:0 0 6px rgba(0,229,255,.4);border-bottom:1px solid rgba(0,229,255,.18);}
-
-/* Redacted */
-.rdct{
-  display:inline;background:var(--c);color:transparent;border-radius:2px;padding:0 2px;
-  transition:background .6s,color .6s,text-shadow .6s;cursor:default;
-}
+.pol-div{height:1px;background:linear-gradient(to right,transparent,rgba(0,229,255,.4),rgba(229,0,0,.3),transparent);margin:8px 0;}
+.pol-dates,.pol-entity{font-size:.4rem;letter-spacing:.1em;color:rgba(0,229,255,.45);}
+.pol-dates{letter-spacing:.16em;margin-bottom:4px;}
+.pol-entity{line-height:2;}
+.pol-entity a{color:var(--c);text-decoration:none;border-bottom:1px solid rgba(0,229,255,.2);}
+.rdct{display:inline;background:var(--c);color:transparent;border-radius:2px;padding:0 2px;transition:background .6s,color .6s;cursor:default;}
 .rdct.show{background:transparent;color:var(--c);text-shadow:0 0 8px rgba(0,229,255,.5);}
-
-/* Articles */
-.article{
-  opacity:0;transform:translateX(-10px);
-  transition:opacity .55s ease,transform .55s ease;
-}
-.article.vis{opacity:1;transform:none;}
+.intro-p{font-size:.44rem;line-height:1.9;color:rgba(255,255,255,.45);letter-spacing:.05em;}
+.article{animation:artIn .55s ease both;}
 .art-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.art-num{font-size:.36rem;letter-spacing:.22em;color:var(--r);text-shadow:0 0 6px var(--r);white-space:nowrap;}
+.art-num{font-size:.36rem;letter-spacing:.22em;color:var(--r);text-shadow:0 0 6px var(--r);}
 .art-line{flex:1;height:1px;background:linear-gradient(to right,rgba(229,0,0,.4),rgba(0,229,255,.18),transparent);}
-.art-h2{
-  font-family:var(--head);font-size:.95rem;font-weight:700;
-  letter-spacing:.18em;color:var(--c);
-  text-shadow:0 0 10px rgba(0,229,255,.35);
-  text-transform:uppercase;margin-bottom:8px;
-}
-.art-body{font-size:.48rem;line-height:1.95;color:rgba(255,255,255,.6);letter-spacing:.05em;}
-.art-body p+p{margin-top:7px;}
-.art-body a{color:var(--c);text-decoration:none;text-shadow:0 0 5px rgba(0,229,255,.35);border-bottom:1px solid rgba(0,229,255,.2);}
+.art-h2{font-family:var(--head);font-size:.9rem;font-weight:700;letter-spacing:.18em;color:var(--c);text-shadow:0 0 10px rgba(0,229,255,.35);text-transform:uppercase;margin-bottom:8px;}
+.art-body{font-size:.46rem;line-height:2;color:rgba(255,255,255,.6);letter-spacing:.05em;}
+.art-body p+p,.art-body p+ol,.art-body ol+p{margin-top:7px;}
 .art-body ol{padding-left:1.3em;margin:6px 0;}
-.art-body li{margin-bottom:4px;color:rgba(0,229,255,.65);}
+.art-body li{margin-bottom:3px;color:rgba(0,229,255,.65);}
 .art-body li::marker{color:var(--r);}
-.art-note{
-  margin-top:10px;padding:8px 10px;
-  border-left:2px solid rgba(0,229,255,.3);
-  background:rgba(0,229,255,.03);
-  font-size:.42rem;letter-spacing:.1em;color:rgba(0,229,255,.5);
-}
-
-/* PGP block */
-.pgp-block{
-  border:1px solid rgba(0,229,255,.14);
-  padding:12px;background:rgba(0,229,255,.02);
-  font-size:.38rem;letter-spacing:.1em;line-height:2;
-  color:rgba(0,229,255,.4);
-}
-.pgp-block .pgp-val{color:rgba(0,229,255,.65);}
-
-/* Footer */
-.dos-footer{text-align:center;padding:20px 0 10px;border-top:1px solid rgba(0,229,255,.08);}
-.stamp{
-  display:inline-block;
-  border:2px solid rgba(0,229,255,.22);
-  padding:7px 18px;
-  font-family:var(--head);font-size:.85rem;font-weight:900;
-  letter-spacing:.35em;color:rgba(0,229,255,.22);
-  transform:rotate(-2.5deg);
-  text-shadow:0 0 10px rgba(0,229,255,.1);
-  margin-bottom:14px;
-}
-.footer-sig{font-size:.36rem;letter-spacing:.12em;color:rgba(0,229,255,.22);line-height:2.2;}
-.footer-wm{font-size:.42rem;letter-spacing:.07em;color:rgba(0,229,255,.18);margin-top:10px;text-shadow:0 0 8px rgba(0,229,255,.12);}
-
-/* ════════════════════════════════════
-   GLOBAL WATERMARK
-════════════════════════════════════ */
-.wm{
-  position:fixed;bottom:10px;left:50%;transform:translateX(-50%);
-  font-size:.44rem;letter-spacing:.1em;
-  color:rgba(0,229,255,.13);white-space:nowrap;
-  z-index:100;pointer-events:none;
-  text-shadow:0 0 12px rgba(0,229,255,.18);
-  animation:wmB 8s ease-in-out infinite;
-}
-@keyframes wmB{0%,100%{opacity:.5;letter-spacing:.1em;}50%{opacity:.06;letter-spacing:.16em;}}
+.art-body a{color:var(--c);text-decoration:none;border-bottom:1px solid rgba(0,229,255,.2);}
+.art-note{margin-top:10px;padding:7px 10px;border-left:2px solid rgba(0,229,255,.3);background:rgba(0,229,255,.03);font-size:.4rem;letter-spacing:.1em;color:rgba(0,229,255,.5);}
+.art-contact{margin-top:8px;color:var(--c);font-size:.46rem;line-height:2;}
+.art-contact a{color:var(--c);text-decoration:none;border-bottom:1px solid rgba(0,229,255,.2);}
+.pgp-block{border:1px solid rgba(0,229,255,.14);padding:12px;background:rgba(0,229,255,.02);font-size:.36rem;letter-spacing:.1em;line-height:2.1;color:rgba(0,229,255,.4);}
+.pgp-block .pv{color:rgba(0,229,255,.65);}
+.dos-footer{text-align:center;padding:18px 0 8px;border-top:1px solid rgba(0,229,255,.08);}
+.stamp{display:inline-block;border:2px solid rgba(0,229,255,.22);padding:7px 18px;font-family:var(--head);font-size:.85rem;font-weight:900;letter-spacing:.35em;color:rgba(0,229,255,.22);transform:rotate(-2.5deg);margin-bottom:12px;}
+.footer-sig{font-size:.35rem;letter-spacing:.12em;color:rgba(0,229,255,.2);line-height:2.3;}
+.footer-wm{font-size:.42rem;letter-spacing:.07em;color:rgba(0,229,255,.17);margin-top:8px;}
+/* ── GLOBAL WM ── */
+.wm{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-size:.44rem;letter-spacing:.1em;color:rgba(0,229,255,.13);white-space:nowrap;z-index:100;pointer-events:none;text-shadow:0 0 12px rgba(0,229,255,.18);animation:wmB 8s ease-in-out infinite;}
 </style>
 </head>
 <body>
-
 <canvas id="bg"></canvas>
 <div class="layer l-scan"></div>
 <div class="layer l-vig"></div>
 <div class="layer l-sweep"></div>
 <div class="layer l-err"></div>
 
-<!-- ════ PHASE 1: LOADER ════ -->
+<!-- ── LOADER ── -->
 <div id="ph-loader">
   <div class="shield-wrap">
     <div class="ring"></div><div class="ring"></div><div class="ring"></div>
     <svg class="sh-svg" viewBox="0 0 154 184" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="sg" x1="0" y1="0" x2="154" y2="184" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#071828"/><stop offset="55%" stop-color="#040f18"/><stop offset="100%" stop-color="#020a10"/>
-        </linearGradient>
-        <linearGradient id="eg" x1="0" y1="0" x2="154" y2="184" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#00e5ff"/><stop offset="60%" stop-color="#00bcd4" stop-opacity=".7"/><stop offset="100%" stop-color="#004d66" stop-opacity=".3"/>
-        </linearGradient>
-        <radialGradient id="shine" cx="32%" cy="20%" r="52%">
-          <stop offset="0%" stop-color="rgba(0,229,255,.16)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-        </radialGradient>
-        <filter id="gf" x="-25%" y="-25%" width="150%" height="150%">
-          <feGaussianBlur stdDeviation="2.5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/>
-        </filter>
+        <linearGradient id="sg" x1="0" y1="0" x2="154" y2="184" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#071828"/><stop offset="55%" stop-color="#040f18"/><stop offset="100%" stop-color="#020a10"/></linearGradient>
+        <linearGradient id="eg" x1="0" y1="0" x2="154" y2="184" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e5ff"/><stop offset="60%" stop-color="#00bcd4" stop-opacity=".7"/><stop offset="100%" stop-color="#004d66" stop-opacity=".3"/></linearGradient>
+        <radialGradient id="shine" cx="32%" cy="20%" r="52%"><stop offset="0%" stop-color="rgba(0,229,255,.16)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient>
+        <filter id="gf" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="2.5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
       </defs>
       <path d="M77 4 L149 30 L149 95 C149 141 77 180 77 180 C77 180 5 141 5 95 L5 30 Z" fill="url(#sg)" stroke="url(#eg)" stroke-width="2.2" filter="url(#gf)"/>
       <path d="M77 14 L140 37 L140 95 C140 134 77 170 77 170 C77 170 14 134 14 95 L14 37 Z" fill="none" stroke="rgba(0,229,255,.12)" stroke-width=".8"/>
       <path d="M50 46 L57 42 L64 46 L64 54 L57 58 L50 54Z" fill="rgba(0,229,255,.04)" stroke="rgba(0,229,255,.1)" stroke-width=".5"/>
-      <path d="M64 46 L71 42 L78 46 L78 54 L71 58 L64 54Z" fill="rgba(0,229,255,.03)" stroke="rgba(0,229,255,.08)" stroke-width=".5"/>
       <path d="M78 46 L85 42 L92 46 L92 54 L85 58 L78 54Z" fill="rgba(0,229,255,.04)" stroke="rgba(0,229,255,.1)" stroke-width=".5"/>
-      <path d="M92 46 L99 42 L106 46 L106 54 L99 58 L92 54Z" fill="rgba(0,229,255,.03)" stroke="rgba(0,229,255,.07)" stroke-width=".5"/>
       <line class="cp d1" x1="26" y1="66" x2="66" y2="66" stroke="rgba(0,229,255,.38)" stroke-width=".9"/>
       <line class="cp d2" x1="66" y1="66" x2="66" y2="88" stroke="rgba(0,229,255,.38)" stroke-width=".9"/>
       <line class="cp d2" x1="88" y1="66" x2="128" y2="66" stroke="rgba(0,229,255,.38)" stroke-width=".9"/>
       <line class="cp d3" x1="88" y1="66" x2="88" y2="88" stroke="rgba(0,229,255,.38)" stroke-width=".9"/>
       <line class="cp d3" x1="26" y1="116" x2="128" y2="116" stroke="rgba(0,229,255,.22)" stroke-width=".8"/>
-      <line class="cp d4" x1="40" y1="134" x2="114" y2="134" stroke="rgba(0,229,255,.14)" stroke-width=".7"/>
       <line class="cp d4" x1="26" y1="66" x2="26" y2="116" stroke="rgba(0,229,255,.18)" stroke-width=".6"/>
       <line class="cp d4" x1="128" y1="66" x2="128" y2="116" stroke="rgba(0,229,255,.18)" stroke-width=".6"/>
-      <circle class="rot"  cx="77" cy="88" r="24" fill="none" stroke="rgba(0,229,255,.22)" stroke-width=".8" stroke-dasharray="6 4"/>
+      <circle class="rot" cx="77" cy="88" r="24" fill="none" stroke="rgba(0,229,255,.22)" stroke-width=".8" stroke-dasharray="6 4"/>
       <circle class="rot2" cx="77" cy="88" r="16" fill="none" stroke="rgba(0,229,255,.15)" stroke-width=".6" stroke-dasharray="3 6"/>
       <rect x="68" y="83" width="18" height="13" rx="2.5" fill="rgba(0,229,255,.08)" stroke="#00e5ff" stroke-width="1.2" opacity=".8"/>
       <path d="M72 83 L72 78 C72 74 82 74 82 78 L82 83" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity=".8"/>
       <circle cx="77" cy="90" r="1.8" fill="#00e5ff" opacity=".9"/>
       <line x1="77" y1="90" x2="77" y2="93" stroke="#00e5ff" stroke-width="1.1" opacity=".7"/>
-      <circle cx="26"  cy="66"  r="3"   fill="#00e5ff" opacity=".7"/>
-      <circle cx="128" cy="66"  r="3"   fill="#00e5ff" opacity=".7"/>
-      <circle cx="26"  cy="116" r="2.2" fill="#00e5ff" opacity=".55"/>
-      <circle cx="128" cy="116" r="2.2" fill="#00e5ff" opacity=".55"/>
-      <circle cx="66"  cy="88"  r="2"   fill="#00e5ff" opacity=".55"/>
-      <circle cx="88"  cy="88"  r="2"   fill="#00e5ff" opacity=".55"/>
+      <circle cx="26" cy="66" r="3" fill="#00e5ff" opacity=".7"/><circle cx="128" cy="66" r="3" fill="#00e5ff" opacity=".7"/>
+      <circle cx="26" cy="116" r="2.2" fill="#00e5ff" opacity=".55"/><circle cx="128" cy="116" r="2.2" fill="#00e5ff" opacity=".55"/>
+      <circle cx="66" cy="88" r="2" fill="#00e5ff" opacity=".55"/><circle cx="88" cy="88" r="2" fill="#00e5ff" opacity=".55"/>
       <path d="M77 4 L149 30 L149 95 C149 141 77 180 77 180 C77 180 5 141 5 95 L5 30 Z" fill="url(#shine)"/>
       <path d="M70 171 L77 180 L84 171" fill="none" stroke="rgba(0,229,255,.55)" stroke-width="1.2"/>
       <path d="M5 30 L5 18 L17 18" fill="none" stroke="rgba(0,229,255,.5)" stroke-width="1.1"/>
@@ -371,13 +221,11 @@ body{background:var(--bg);font-family:var(--mono);overflow:hidden;height:100vh;d
     </svg>
     <div class="sh-label"><div class="sh-name">SecFERRO</div><div class="sh-bar"></div><div class="sh-div">DIVISION</div></div>
   </div>
-
   <div class="t-block">
     <div class="t-row"><span class="ferro">FERRO</span><span class="art">ART</span></div>
     <div class="subtitle">The Creative Engineer</div>
     <div class="div-tag">◈ SECFERRO DIVISION ◈</div>
   </div>
-
   <div class="nodes" id="node-row">
     <div class="node"><div class="nd"></div>NET</div><span class="nsep">·</span>
     <div class="node"><div class="nd"></div>ENC</div><span class="nsep">·</span>
@@ -385,379 +233,497 @@ body{background:var(--bg);font-family:var(--mono);overflow:hidden;height:100vh;d
     <div class="node"><div class="nd"></div>ADB</div><span class="nsep">·</span>
     <div class="node"><div class="nd"></div>VC4</div>
   </div>
-
   <div class="status-el" id="status"><span class="cur"></span></div>
-
   <div class="bar-wrap">
     <span class="bar-label">BOOT SEQUENCE</span>
     <span class="bar-pct" id="pct">0%</span>
     <div class="hex-row" id="hexrow"></div>
   </div>
-
   <div class="lw">
     <span class="ll">L</span><span class="ll">O</span><span class="ll">A</span>
     <span class="ll">D</span><span class="ll">I</span><span class="ll">N</span><span class="ll">G</span>
   </div>
 </div>
 
-<!-- ════ PHASE 2: ACCESS ════ -->
+<!-- ── ACCESS ── -->
 <div id="ph-access">
-  <div class="ag-top">◈ SECFERRO AUTHENTICATION PROTOCOL v4.2 ◈</div>
-  <div class="ag-main">ACCESS // GRANTED</div>
-  <div class="ag-sub">IDENTITY VERIFIED — FERRO-OPERATOR Ω</div>
+  <div class="ag-top" id="ag-top"></div>
+  <div class="ag-main" id="ag-main"></div>
+  <div class="ag-sub" id="ag-sub"></div>
   <div class="ag-sweep"></div>
-  <div class="ag-cls">CLEARANCE: FERRO-7 // GDPR-TIER-1 // EU-AI-ACT-2026 // PQ-CRYPTO ACTIVE</div>
+  <div class="ag-cls" id="ag-cls"></div>
 </div>
 
-<!-- ════ PHASE 3: DOSSIER ════ -->
-<div id="ph-dossier">
-  <div class="cls-bar">
-    <span class="cls-tag">◈ TOP SECRET // SECFERRO-Ω EYES ONLY ◈</span>
-    <span class="cls-sess" id="sess-tok">SESSION: ----</span>
-  </div>
-
-  <div class="dos-inner">
-
-    <!-- META BLOCK -->
-    <div class="meta-block framed">
-      <div class="bc"></div>
-      <div class="meta-row"><span class="mk">CASE FILE</span><span class="mv">SF-PRIVACY-2026-001</span></div>
-      <div class="meta-row"><span class="mk">LAST UPDATED</span><span class="mv">18-APR-2026</span></div>
-      <div class="meta-row"><span class="mk">EFFECTIVE DATE</span><span class="mv">01-JAN-2020</span></div>
-      <div class="meta-row"><span class="mk">ORIGIN</span><span class="mv">POLAND // SECTOR 404 // SecFERROworld</span></div>
-      <div class="meta-row"><span class="mk">ENTITY</span><span class="mv">SecFERRO DIVISION × anonymousik</span></div>
-      <div class="meta-row"><span class="mk">ENCRYPTED CHANNEL</span><span class="mv"><a href="mailto:im@anonymousik.is-a.dev" style="color:var(--c);text-decoration:none;">im@anonymousik.is-a.dev</a></span></div>
-      <div class="meta-row"><span class="mk">CLEARANCE</span><span class="mv">FERRO-7 / GDPR-TIER-1 / EU-AI-ACT</span></div>
-      <div class="meta-row"><span class="mk">SHA-256</span><span class="mv hash" id="doc-hash">computing...</span></div>
-      <div class="meta-row"><span class="mk">ZK-PROOF</span><span class="mv g">✓ QUANTUM-VERIFIED</span></div>
-    </div>
-
-    <!-- LIVE METRICS -->
-    <div class="live-row">
-      <div class="live-card">
-        <div class="lc-label">THREATS NEUTRALIZED</div>
-        <div class="lc-val g"><span class="dot-pulse g"></span><span id="threat-ct">0</span></div>
-      </div>
-      <div class="live-card">
-        <div class="lc-label">ENCRYPTION STATUS</div>
-        <div class="lc-val g"><span class="dot-pulse g"></span>AES-256-GCM</div>
-      </div>
-      <div class="live-card">
-        <div class="lc-label">SESSION UPTIME</div>
-        <div class="lc-val"><span id="uptime">00:00</span></div>
-      </div>
-      <div class="live-card">
-        <div class="lc-label">ANOMALIES</div>
-        <div class="lc-val r"><span class="dot-pulse r"></span>ERROR-404</div>
-      </div>
-    </div>
-
-    <!-- BADGES -->
-    <div class="badge-row">
-      <div class="badge g">✓ GDPR COMPLIANT</div>
-      <div class="badge g">✓ EU AI ACT 2026</div>
-      <div class="badge g">✓ ZK-PROOF</div>
-      <div class="badge g">✓ PQ-KYBER-1024</div>
-      <div class="badge">◈ AES-256-GCM</div>
-      <div class="badge">◈ ANONYMOUSIK CERTIFIED</div>
-      <div class="badge r">⚠ SECTOR 404</div>
-      <div class="badge r">⚠ WE ARE LEGION</div>
-    </div>
-
-    <!-- POLICY HEADER -->
-    <div class="pol-head">
-      <div class="pol-title">PRIVACY <em>PROTOCOL</em></div>
-      <div class="pol-divider"></div>
-      <div class="pol-dates">LAST UPDATED: 18-APR-2026 | EFFECTIVE: 01-JAN-2020</div>
-      <div class="pol-entity">
-        SecFERRO DIVISION × anonymousik<br>
-        <span class="rdct" id="rd-addr">🅽ɨɛʐռǟռa-🅽ɨӄօʍʊ, 404</span>, SecFERROworld ERROR-404, Poland<br>
-        <a href="mailto:im@anonymousik.is-a.dev">im@anonymousik.is-a.dev</a>
-        &nbsp;|&nbsp;
-        <a href="https://anonymousik.is-a.dev">anonymousik.is-a.dev</a>
-      </div>
-    </div>
-
-    <div class="art-body" style="font-size:.46rem;color:rgba(255,255,255,.5);padding:0 2px;">
-      This Privacy Policy describes the policies of SecFERRO DIVISION × anonymousik on the collection, use and disclosure of your information when you use our service at <a href="https://anonymousik.is-a.dev">anonymousik.is-a.dev</a>. By accessing the Service, you consent to the terms described. We may modify this Policy at any time; the revised Policy takes effect 180 days after posting.
-    </div>
-
-    <!-- ARTICLE 01 -->
-    <div class="article" id="a1">
-      <div class="art-hdr"><span class="art-num">// ARTICLE 01</span><div class="art-line"></div></div>
-      <div class="art-h2">How We Use Your Information</div>
-      <div class="art-body">
-        <p>We will use the information that we collect about you for the following purposes:</p>
-        <ol><li>Customer feedback collection</li></ol>
-        <p>If we want to use your information for any other purpose, we will ask for your consent and will use your information only on receiving it — solely for the purpose(s) for which consent was granted, unless required otherwise by applicable law.</p>
-        <div class="art-note">◈ DATA MINIMIZATION PROTOCOL ACTIVE — FERRO-STANDARD v3.1</div>
-      </div>
-    </div>
-
-    <!-- ARTICLE 02 -->
-    <div class="article" id="a2">
-      <div class="art-hdr"><span class="art-num">// ARTICLE 02</span><div class="art-line"></div></div>
-      <div class="art-h2">Your Rights</div>
-      <div class="art-body">
-        <p>Depending on applicable law, you may have a right to: access and rectify or erase your personal data; receive a copy of your personal data; restrict or object to active processing of your data; request portability of your personal information; withdraw any consent previously provided; and lodge a complaint with a statutory authority.</p>
-        <p>To exercise these rights, contact our Data Protection Officer:<br>
-        <a href="mailto:im@anonymousik.is-a.dev">im@anonymousik.is-a.dev</a></p>
-        <p>We will respond in accordance with applicable law. Note: restricting consent may limit your access to certain services.</p>
-        <div class="art-note">◈ GDPR ARTICLE 17 "RIGHT TO ERASURE" — SUPPORTED // ZK-IDENTITY DELETION AVAILABLE</div>
-      </div>
-    </div>
-
-    <!-- ARTICLE 03 -->
-    <div class="article" id="a3">
-      <div class="art-hdr"><span class="art-num">// ARTICLE 03</span><div class="art-line"></div></div>
-      <div class="art-h2">Cookies Etc.</div>
-      <div class="art-body">
-        <p>To learn more about how we use tracking technologies and your choices regarding them, please refer to our <a href="https://anonymousik.is-a.dev/docs/privacy">Cookie Policy</a>.</p>
-        <div class="badge-row" style="margin-top:10px;">
-          <div class="badge g">✓ CONSENT-FIRST</div>
-          <div class="badge">◈ ANALYTICS MINIMAL</div>
-          <div class="badge">◈ NO 3RD-PARTY ADS</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ARTICLE 04 -->
-    <div class="article" id="a4">
-      <div class="art-hdr"><span class="art-num">// ARTICLE 04</span><div class="art-line"></div></div>
-      <div class="art-h2">Security</div>
-      <div class="art-body">
-        <p>The security of your information is paramount to SecFERRO Division. We employ reasonable security measures to prevent loss, misuse or unauthorized alteration of your information. However, given inherent risks in digital transmission, we cannot guarantee absolute security. You transmit information to us at your own risk.</p>
-        <div class="badge-row" style="margin-top:10px;">
-          <div class="badge g">◈ AES-256-GCM ENCRYPTION</div>
-          <div class="badge g">◈ PQ-KYBER-1024</div>
-          <div class="badge">◈ ZERO-KNOWLEDGE PROOFS</div>
-          <div class="badge">◈ TLS 1.3 MINIMUM</div>
-        </div>
-        <div class="art-note" style="margin-top:10px;">⚠ INHERENT DIGITAL RISKS ACKNOWLEDGED — FERRO-DISCLAIMER v2.0</div>
-      </div>
-    </div>
-
-    <!-- ARTICLE 05 -->
-    <div class="article" id="a5">
-      <div class="art-hdr"><span class="art-num">// ARTICLE 05</span><div class="art-line"></div></div>
-      <div class="art-h2">Grievance / Data Protection Officer</div>
-      <div class="art-body">
-        <p>For queries or concerns about processing of your information, contact our Grievance Officer:</p>
-        <p style="margin-top:8px;color:var(--c);">
-          SecFERRO DIVISION × anonymousik<br>
-          <a href="https://anonymousik.is-a.dev">anonymousik.is-a.dev</a><br>
-          <a href="mailto:im@anonymousik.is-a.dev">im@anonymousik.is-a.dev</a><br>
-          Phone: <span class="rdct" id="rd-phone">+8888888888888</span>
-        </p>
-        <p style="margin-top:8px;">We will address your concerns in accordance with applicable law within the statutory timeframe.</p>
-      </div>
-    </div>
-
-    <!-- PGP / SIGNATURE BLOCK -->
-    <div class="article" id="a6">
-      <div class="art-hdr"><span class="art-num">// DIGITAL SIGNATURE</span><div class="art-line"></div></div>
-      <div class="pgp-block">
-        <div>PGP FINGERPRINT: <span class="pgp-val" id="pgp-fp">generating...</span></div>
-        <div>SIGNING KEY: <span class="pgp-val">FERRO-OPERATOR-Ω // SecFERRO Division</span></div>
-        <div>ALGORITHM: <span class="pgp-val">Ed25519 + PQ-DILITHIUM-3</span></div>
-        <div>TIMESTAMP: <span class="pgp-val" id="sig-ts">--</span></div>
-        <div>BLOCKCHAIN ANCHOR: <span class="pgp-val" id="bc-hash">--</span></div>
-      </div>
-    </div>
-
-    <!-- FOOTER -->
-    <div class="dos-footer">
-      <div class="stamp">DECLASSIFIED</div>
-      <div class="footer-sig">
-        <div>◈ END OF DOCUMENT — SF-PRIVACY-2026-001 ◈</div>
-        <div>Generated with CookieYes | Enhanced & Secured by SecFERRO Division</div>
-        <div style="margin-top:4px;color:rgba(0,229,255,.35);">WE ARE LEGION. WE DO NOT FORGIVE. WE DO NOT FORGET.</div>
-      </div>
-      <div class="footer-wm">•``•.༼X🌐༼X.•``• Ⱥ🅽ටꈤYMටꪊSƗꀘ.IS-A.DEV •``•.༼X🌐༼X.•``•</div>
-    </div>
-
-  </div><!-- /dos-inner -->
-</div><!-- /ph-dossier -->
+<!-- ── DOSSIER (JS-rendered) ── -->
+<div id="ph-dossier"></div>
 
 <div class="wm">•``•.༼X🌐༼X.•``• Ⱥ🅽ටꈤYMටꪊSƗꀘ.IS-A.DEV •``•.༼X🌐༼X.•``•</div>
 
 <script>
-/* ════ CANVAS: HEX GRID + MATRIX RAIN ════ */
-const cv = document.getElementById('bg');
-const cx = cv.getContext('2d');
-const CHARS = 'アイウエオカキクケコシスセソ01タチツ10FERROART01SECFERRO10';
-const HS = 26;
-let W, H, drops = [];
+(function(){
+'use strict';
 
-function resize() {
-  W = cv.width = innerWidth;
-  H = cv.height = innerHeight;
-  drops = Array.from({length: Math.floor(W / 13)}, () => Math.random() * -60);
-}
-resize();
-addEventListener('resize', resize);
+/* ════════════════════════════════════════
+   CONFIG — single source of truth
+════════════════════════════════════════ */
+const CFG = Object.freeze({
+  FPS: 20, HS: 26, SEGS: 26,
+  TICK_MIN: 32, TICK_MAX: 140, STEP_MIN: .25, STEP_MAX: 2.2,
+  BOOT_DELAY: 700, ACCESS_DUR: 2800,
+  THREAT_BASE: 1200, THREAT_VAR: 800, THREAT_TICK: 1700,
+  LANGS: ['en','pl','de','fr','ja'],
+  DEFAULT: 'en',
+  CHARS: 'アイウエオカキクケコシスセソ01タチツ10FERROART01SECFERRO10',
+});
 
-const h3 = HS * Math.sqrt(3);
-function hexGrid() {
-  cx.strokeStyle = 'rgba(0,229,255,0.03)';
-  cx.lineWidth = .5;
-  for (let r = 0; r * h3 < H + h3; r++) {
-    for (let c = 0; c * HS * 1.5 < W + HS; c++) {
-      const x = c * HS * 1.5, y = r * h3 + (c % 2 ? h3 / 2 : 0);
-      cx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const a = Math.PI / 3 * i - Math.PI / 6;
-        i ? cx.lineTo(x + HS * Math.cos(a), y + HS * Math.sin(a))
-          : cx.moveTo(x + HS * Math.cos(a), y + HS * Math.sin(a));
-      }
-      cx.closePath(); cx.stroke();
-    }
-  }
-}
+/* ════════════════════════════════════════
+   I18N — all translations
+════════════════════════════════════════ */
+const I18N = {
+  en:{
+    boot:['INITIALIZING SECURE ENVIRONMENT','LOADING FERROART KERNEL MODULES','ESTABLISHING ENCRYPTED CHANNEL','VERIFYING SECFERRO CERTIFICATES','CALIBRATING BCM72604 HARDWARE','MOUNTING TITANIUM CORE v17.1','SYNCING ADB BRIDGE — PLAYBOX','INJECTING PLAYBOX OPTIMIZATIONS','COMPILING VC4 PIPELINE STAGE 2','DECRYPTING PRIVACY PROTOCOL...','WE ARE LEGION — FERROART ONLINE'],
+    cls:'◈ TOP SECRET // SECFERRO-Ω EYES ONLY ◈',sess:'SESSION',
+    ag:{top:'◈ SECFERRO AUTHENTICATION PROTOCOL v4.2 ◈',main:'ACCESS // GRANTED',sub:'IDENTITY VERIFIED — FERRO-OPERATOR Ω',cls:'CLEARANCE: FERRO-7 // GDPR-TIER-1 // EU-AI-ACT-2026 // PQ-CRYPTO ACTIVE'},
+    mk:{case:'CASE FILE',upd:'LAST UPDATED',eff:'EFFECTIVE DATE',org:'ORIGIN',ent:'ENTITY',ch:'ENCRYPTED CHANNEL',clr:'CLEARANCE',hash:'SHA-256',zk:'ZK-PROOF',zkv:'✓ QUANTUM-VERIFIED'},
+    lc:{thr:'THREATS NEUTRALIZED',enc:'ENCRYPTION STATUS',up:'SESSION UPTIME',ano:'ANOMALIES'},
+    pt:['PRIVACY','PROTOCOL'],
+    dates:'LAST UPDATED: 18-APR-2026 | EFFECTIVE: 01-JAN-2020',
+    intro:'This Privacy Policy describes the policies of SecFERRO DIVISION × anonymousik on the collection, use and disclosure of your information when you use our service at anonymousik.is-a.dev. By accessing the Service, you consent to the terms described. We may modify this Policy at any time; revisions take effect 180 days after posting.',
+    arts:[
+      {n:'01',t:'HOW WE USE YOUR INFORMATION',note:'◈ DATA MINIMIZATION PROTOCOL ACTIVE — FERRO-STANDARD v3.1',b:[{p:'We will use the information that we collect about you for the following purposes:'},{ol:['Customer feedback collection']},{p:'If we want to use your information for any other purpose, we will ask for your consent and will use your information only on receiving it — solely for the purpose(s) for which consent was granted, unless required otherwise by applicable law.'}]},
+      {n:'02',t:'YOUR RIGHTS',note:'◈ GDPR ART. 17 "RIGHT TO ERASURE" — SUPPORTED // ZK-IDENTITY DELETION AVAILABLE',b:[{p:'Depending on applicable law, you may have a right to: access and rectify or erase your personal data; receive a copy of your personal data; restrict or object to active processing; request portability; withdraw any consent; and lodge a complaint with a statutory authority.'},{p:'To exercise these rights, contact our Data Protection Officer:'},{link:'im@anonymousik.is-a.dev'},{p:'Note: restricting consent may limit your access to certain services.'}]},
+      {n:'03',t:'COOKIES ETC.',note:null,badges:['✓ CONSENT-FIRST','◈ ANALYTICS MINIMAL','◈ NO 3RD-PARTY ADS'],b:[{p:'To learn more about how we use tracking technologies and your choices regarding them, please refer to our Cookie Policy at:'},{link:'anonymousik.is-a.dev/docs/privacy'}]},
+      {n:'04',t:'SECURITY',note:'⚠ INHERENT DIGITAL RISKS ACKNOWLEDGED — FERRO-DISCLAIMER v2.0',badges:['◈ AES-256-GCM','◈ PQ-KYBER-1024','◈ ZERO-KNOWLEDGE PROOFS','◈ TLS 1.3'],b:[{p:'The security of your information is paramount to SecFERRO Division. We employ reasonable security measures to prevent loss, misuse or unauthorized alteration. However, given inherent risks in digital transmission, we cannot guarantee absolute security. You transmit information to us at your own risk.'}]},
+      {n:'05',t:'GRIEVANCE / DATA PROTECTION OFFICER',note:null,b:[{p:'For queries or concerns about processing of your information, contact our Grievance Officer:'},{contact:['SecFERRO DIVISION × anonymousik','anonymousik.is-a.dev','im@anonymousik.is-a.dev']},{p:'We will address your concerns in accordance with applicable law within the statutory timeframe.'}]},
+    ],
+    sig:{t:'// DIGITAL SIGNATURE',algo:'Ed25519 + PQ-DILITHIUM-3',signer:'FERRO-OPERATOR-Ω // SecFERRO Division'},
+    stamp:'DECLASSIFIED',
+    footer:['◈ END OF DOCUMENT — SF-PRIVACY-2026-001 ◈','Generated with CookieYes | Enhanced & Secured by SecFERRO Division','WE ARE LEGION. WE DO NOT FORGIVE. WE DO NOT FORGET.'],
+    legal:'Valid per GDPR, EU AI Act 2026 & Polish Data Protection Law.',
+  },
+  pl:{
+    boot:['INICJALIZACJA BEZPIECZNEGO ŚRODOWISKA','ŁADOWANIE MODUŁÓW JĄDRA FERROART','USTANAWIANIE ZASZYFROWANEGO KANAŁU','WERYFIKACJA CERTYFIKATÓW SECFERRO','KALIBRACJA SPRZĘTU BCM72604','MONTOWANIE TITANIUM CORE v17.1','SYNCHRONIZACJA MOSTKA ADB — PLAYBOX','WSTRZYKIWANIE OPTYMALIZACJI PLAYBOX','KOMPILACJA POTOKU VC4 — ETAP 2','ODSZYFROWYWANIE PROTOKOŁU PRYWATNOŚCI...','JESTEŚMY LEGION — FERROART ONLINE'],
+    cls:'◈ ŚCIŚLE TAJNE // TYLKO DLA OCZU SECFERRO-Ω ◈',sess:'SESJA',
+    ag:{top:'◈ PROTOKÓŁ UWIERZYTELNIANIA SECFERRO v4.2 ◈',main:'DOSTĘP // PRZYZNANY',sub:'TOŻSAMOŚĆ ZWERYFIKOWANA — OPERATOR-FERRO Ω',cls:'UPRAWNIENIA: FERRO-7 // RODO // EU-AI-ACT-2026 // PQ-CRYPTO AKTYWNE'},
+    mk:{case:'NUMER SPRAWY',upd:'OSTATNIA AKTUALIZACJA',eff:'DATA WEJŚCIA W ŻYCIE',org:'POCHODZENIE',ent:'PODMIOT',ch:'ZASZYFROWANY KANAŁ',clr:'POZIOM UPRAWNIEŃ',hash:'SHA-256',zk:'DOWÓD ZK',zkv:'✓ KWANTOWO ZWERYFIKOWANY'},
+    lc:{thr:'ZNEUTRALIZOWANE ZAGROŻENIA',enc:'STATUS SZYFROWANIA',up:'CZAS SESJI',ano:'ANOMALIE'},
+    pt:['PROTOKÓŁ','PRYWATNOŚCI'],
+    dates:'OSTATNIA AKTUALIZACJA: 18-KWI-2026 | WEJŚCIE W ŻYCIE: 01-STY-2020',
+    intro:'Niniejsza Polityka Prywatności opisuje zasady SecFERRO DIVISION × anonymousik dotyczące gromadzenia, wykorzystywania i ujawniania informacji podczas korzystania z usługi anonymousik.is-a.dev. Korzystając z usługi, wyrażasz zgodę na opisane warunki. Możemy zmienić niniejszą Politykę w dowolnym czasie; zmieniona wersja wchodzi w życie po 180 dniach od opublikowania.',
+    arts:[
+      {n:'01',t:'JAK UŻYWAMY TWOICH DANYCH',note:'◈ PROTOKÓŁ MINIMALIZACJI DANYCH AKTYWNY — STANDARD FERRO v3.1',b:[{p:'Będziemy używać zebranych o Tobie informacji w następujących celach:'},{ol:['Gromadzenie opinii klientów']},{p:'Jeśli chcemy wykorzystać Twoje informacje w innym celu, poprosimy o zgodę i będziemy ich używać wyłącznie po jej uzyskaniu — jedynie w celach, na które udzielono zgody, chyba że prawo stanowi inaczej.'}]},
+      {n:'02',t:'TWOJE PRAWA',note:'◈ RODO ART. 17 "PRAWO DO USUNIĘCIA" — OBSŁUGIWANE // USUNIĘCIE TOŻSAMOŚCI ZK DOSTĘPNE',b:[{p:'Zgodnie z obowiązującym prawem możesz mieć prawo do: dostępu, sprostowania lub usunięcia danych osobowych; otrzymania ich kopii; ograniczenia lub sprzeciwu wobec przetwarzania; przenoszenia danych; wycofania zgody; złożenia skargi do organu nadzorczego.'},{p:'Aby skorzystać z tych praw, skontaktuj się z Inspektorem Ochrony Danych:'},{link:'im@anonymousik.is-a.dev'},{p:'Uwaga: ograniczenie zgody może uniemożliwić dostęp do niektórych usług.'}]},
+      {n:'03',t:'PLIKI COOKIE ITP.',note:null,badges:['✓ ZGODA PRIORYTETEM','◈ MINIMALNA ANALITYKA','◈ BRAK REKLAM STRON TRZECICH'],b:[{p:'Aby dowiedzieć się więcej o używanych przez nas technologiach śledzenia, zapoznaj się z Polityką Plików Cookie:'},{link:'anonymousik.is-a.dev/docs/privacy'}]},
+      {n:'04',t:'BEZPIECZEŃSTWO',note:'⚠ NATURALNE RYZYKO CYFROWE UZNANE — ZASTRZEŻENIE FERRO v2.0',badges:['◈ AES-256-GCM','◈ PQ-KYBER-1024','◈ DOWODY ZEROWEJ WIEDZY','◈ TLS 1.3'],b:[{p:'Bezpieczeństwo Twoich danych jest dla SecFERRO Division priorytetem. Stosujemy odpowiednie środki bezpieczeństwa, aby zapobiec utracie, nadużyciu lub nieautoryzowanej modyfikacji. Ze względu na nieodłączne ryzyko transmisji cyfrowej nie możemy zagwarantować bezpieczeństwa absolutnego. Przesyłasz nam informacje na własne ryzyko.'}]},
+      {n:'05',t:'INSPEKTOR OCHRONY DANYCH',note:null,b:[{p:'W przypadku pytań lub zastrzeżeń dotyczących przetwarzania Twoich danych, skontaktuj się z Inspektorem:'},{contact:['SecFERRO DIVISION × anonymousik','anonymousik.is-a.dev','im@anonymousik.is-a.dev']},{p:'Rozpatrzymy Twoje zastrzeżenia zgodnie z obowiązującym prawem w ustawowym terminie.'}]},
+    ],
+    sig:{t:'// PODPIS CYFROWY',algo:'Ed25519 + PQ-DILITHIUM-3',signer:'OPERATOR-FERRO-Ω // Dywizja SecFERRO'},
+    stamp:'ODTAJNIONO',
+    footer:['◈ KONIEC DOKUMENTU — SF-PRIVACY-2026-001 ◈','Wygenerowano z CookieYes | Zabezpieczone przez SecFERRO Division','JESTEŚMY LEGION. NIE PRZEBACZAMY. NIE ZAPOMINAMY.'],
+    legal:'Zgodny z RODO, Ustawą o AI UE 2026 i polskim prawem ochrony danych.',
+  },
+  de:{
+    boot:['SICHERE UMGEBUNG INITIALISIEREN','FERROART-KERNMODULE LADEN','VERSCHLÜSSELTEN KANAL AUFBAUEN','SECFERRO-ZERTIFIKATE VERIFIZIEREN','BCM72604-HARDWARE KALIBRIEREN','TITANIUM CORE v17.1 EINBINDEN','ADB-BRÜCKE SYNCHRONISIEREN','PLAYBOX-OPTIMIERUNGEN EINSPIELEN','VC4-PIPELINE KOMPILIEREN','DATENSCHUTZPROTOKOLL ENTSCHLÜSSELN...','WIR SIND LEGION — FERROART ONLINE'],
+    cls:'◈ STRENG GEHEIM // NUR FÜR SECFERRO-Ω AUGEN ◈',sess:'SITZUNG',
+    ag:{top:'◈ SECFERRO-AUTHENTIFIZIERUNGSPROTOKOLL v4.2 ◈',main:'ZUGANG // GEWÄHRT',sub:'IDENTITÄT VERIFIZIERT — FERRO-OPERATOR Ω',cls:'FREIGABE: FERRO-7 // DSGVO // EU-KI-GESETZ-2026 // PQ-KRYPTO AKTIV'},
+    mk:{case:'AKTE',upd:'ZULETZT AKTUALISIERT',eff:'GÜLTIG AB',org:'HERKUNFT',ent:'EINHEIT',ch:'VERSCHL. KANAL',clr:'FREIGABESTUFE',hash:'SHA-256',zk:'ZK-BEWEIS',zkv:'✓ QUANTENVERIFIZIERT'},
+    lc:{thr:'NEUTRALISIERTE BEDROHUNGEN',enc:'VERSCHLÜSSELUNGSSTATUS',up:'SITZUNGSZEIT',ano:'ANOMALIEN'},
+    pt:['DATENSCHUTZ','PROTOKOLL'],
+    dates:'ZULETZT AKTUALISIERT: 18-APR-2026 | GÜLTIG AB: 01-JAN-2020',
+    intro:'Diese Datenschutzrichtlinie beschreibt die Grundsätze von SecFERRO DIVISION × anonymousik für die Erhebung, Nutzung und Offenlegung Ihrer Informationen bei der Nutzung des Dienstes anonymousik.is-a.dev.',
+    arts:[
+      {n:'01',t:'VERWENDUNG IHRER DATEN',note:'◈ DATENSPARSAMKEITSPROTOKOLL AKTIV — FERRO-STANDARD v3.1',b:[{p:'Wir verwenden die erhobenen Informationen für folgende Zwecke:'},{ol:['Erhebung von Kundenfeedback']},{p:'Für andere Zwecke werden wir Ihre Einwilligung einholen.'}]},
+      {n:'02',t:'IHRE RECHTE',note:'◈ DSGVO ART. 17 — UNTERSTÜTZT',b:[{p:'Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch.'},{p:'Kontakt:'},{link:'im@anonymousik.is-a.dev'}]},
+      {n:'03',t:'COOKIES USW.',note:null,badges:['✓ EINWILLIGUNGSPRINZIP','◈ MINIMALE ANALYSE'],b:[{p:'Weitere Informationen finden Sie in unserer Cookie-Richtlinie:'},{link:'anonymousik.is-a.dev/docs/privacy'}]},
+      {n:'04',t:'SICHERHEIT',note:'⚠ DIGITALE RISIKEN ANERKANNT',badges:['◈ AES-256-GCM','◈ PQ-KYBER-1024','◈ TLS 1.3'],b:[{p:'Wir setzen angemessene Sicherheitsmaßnahmen ein, können jedoch keine absolute Sicherheit garantieren.'}]},
+      {n:'05',t:'DATENSCHUTZBEAUFTRAGTER',note:null,b:[{p:'Bei Fragen wenden Sie sich an:'},{contact:['SecFERRO DIVISION × anonymousik','anonymousik.is-a.dev','im@anonymousik.is-a.dev']}]},
+    ],
+    sig:{t:'// DIGITALE SIGNATUR',algo:'Ed25519 + PQ-DILITHIUM-3',signer:'FERRO-OPERATOR-Ω // SecFERRO Division'},
+    stamp:'FREIGEGEBEN',
+    footer:['◈ DOKUMENTENDE — SF-PRIVACY-2026-001 ◈','Erstellt mit CookieYes | Gesichert durch SecFERRO Division','WIR SIND LEGION. WIR VERGEBEN NICHT. WIR VERGESSEN NICHT.'],
+    legal:'Konform mit DSGVO, EU-KI-Gesetz 2026 und deutschem Datenschutzrecht.',
+  },
+  fr:{
+    boot:["INITIALISATION ENVIRONNEMENT SÉCURISÉ","CHARGEMENT MODULES NOYAU FERROART","ÉTABLISSEMENT CANAL CHIFFRÉ","VÉRIFICATION CERTIFICATS SECFERRO","CALIBRATION MATÉRIEL BCM72604","MONTAGE TITANIUM CORE v17.1","SYNCHRONISATION PONT ADB — PLAYBOX","INJECTION OPTIMISATIONS PLAYBOX","COMPILATION PIPELINE VC4 — ÉTAPE 2","DÉCHIFFREMENT PROTOCOLE CONFIDENTIALITÉ...","NOUS SOMMES LÉGION — FERROART EN LIGNE"],
+    cls:"◈ TOP SECRET // RÉSERVÉ AUX YEUX SECFERRO-Ω ◈",sess:'SESSION',
+    ag:{top:"◈ PROTOCOLE D'AUTHENTIFICATION SECFERRO v4.2 ◈",main:"ACCÈS // ACCORDÉ",sub:"IDENTITÉ VÉRIFIÉE — OPÉRATEUR-FERRO Ω",cls:"HABILITATION: FERRO-7 // RGPD // LOI IA UE-2026 // PQ-CRYPTO ACTIF"},
+    mk:{case:'DOSSIER',upd:'DERNIÈRE MAJ',eff:"DATE D'EFFET",org:'ORIGINE',ent:'ENTITÉ',ch:'CANAL CHIFFRÉ',clr:'NIVEAU HABILITATION',hash:'SHA-256',zk:'PREUVE ZK',zkv:'✓ VÉRIFIÉ QUANTIQUE'},
+    lc:{thr:'MENACES NEUTRALISÉES',enc:'STATUT CHIFFREMENT',up:'DURÉE SESSION',ano:'ANOMALIES'},
+    pt:['PROTOCOLE','CONFIDENTIALITÉ'],
+    dates:'DERNIÈRE MAJ: 18-AVR-2026 | EFFET: 01-JAN-2020',
+    intro:"Cette Politique de Confidentialité décrit les pratiques de SecFERRO DIVISION × anonymousik concernant la collecte, l'utilisation et la divulgation de vos informations lors de l'utilisation du service anonymousik.is-a.dev.",
+    arts:[
+      {n:'01',t:"UTILISATION DE VOS DONNÉES",note:'◈ PROTOCOLE MINIMISATION DONNÉES ACTIF — STANDARD FERRO v3.1',b:[{p:'Nous utiliserons les informations collectées aux fins suivantes:'},{ol:['Collecte de retours clients']},{p:'Pour toute autre utilisation, nous demanderons votre consentement préalable.'}]},
+      {n:'02',t:'VOS DROITS',note:"◈ RGPD ART. 17 — PRIS EN CHARGE",b:[{p:"Vous disposez des droits d'accès, de rectification, d'effacement, de limitation, de portabilité et d'opposition."},{p:'Contact:'},{link:'im@anonymousik.is-a.dev'}]},
+      {n:'03',t:'COOKIES ETC.',note:null,badges:['✓ CONSENTEMENT PRIORITAIRE','◈ ANALYTIQUE MINIMAL'],b:[{p:'Consultez notre Politique de Cookies:'},{link:'anonymousik.is-a.dev/docs/privacy'}]},
+      {n:'04',t:'SÉCURITÉ',note:'⚠ RISQUES NUMÉRIQUES INHÉRENTS RECONNUS',badges:['◈ AES-256-GCM','◈ PQ-KYBER-1024','◈ TLS 1.3'],b:[{p:"Nous mettons en œuvre des mesures de sécurité raisonnables mais ne pouvons garantir une sécurité absolue."}]},
+      {n:'05',t:'DÉLÉGUÉ À LA PROTECTION DES DONNÉES',note:null,b:[{p:'Pour toute question, contactez notre délégué:'},{contact:['SecFERRO DIVISION × anonymousik','anonymousik.is-a.dev','im@anonymousik.is-a.dev']}]},
+    ],
+    sig:{t:'// SIGNATURE NUMÉRIQUE',algo:'Ed25519 + PQ-DILITHIUM-3',signer:'OPÉRATEUR-FERRO-Ω // Division SecFERRO'},
+    stamp:'DÉCLASSIFIÉ',
+    footer:['◈ FIN DE DOCUMENT — SF-PRIVACY-2026-001 ◈','Généré avec CookieYes | Sécurisé par SecFERRO Division','NOUS SOMMES LÉGION. NOUS NE PARDONNONS PAS. NOUS N\'OUBLIONS PAS.'],
+    legal:'Conforme au RGPD, à la Loi IA UE 2026 et au droit polonais.',
+  },
+  ja:{
+    boot:['セキュア環境を初期化中','FERROARTカーネルモジュールを読込中','暗号化チャンネルを確立中','SecFERRO証明書を検証中','BCM72604ハードウェアを調整中','TITANIUM CORE v17.1をマウント中','ADBブリッジを同期中 — PLAYBOX','PLAYBOX最適化を注入中','VC4パイプラインをコンパイル中','プライバシープロトコルを解読中...','われわれはレギオン — FERROART オンライン'],
+    cls:'◈ 最高機密 // SecFERRO-Ω のみ閲覧可 ◈',sess:'セッション',
+    ag:{top:'◈ SecFERRO認証プロトコル v4.2 ◈',main:'アクセス // 許可',sub:'身元確認済み — FERROオペレーター Ω',cls:'許可: FERRO-7 // GDPR // EU-AI法-2026 // PQ-暗号 有効'},
+    mk:{case:'案件番号',upd:'最終更新',eff:'発効日',org:'起源',ent:'事業者',ch:'暗号化チャンネル',clr:'許可レベル',hash:'SHA-256',zk:'ZK証明',zkv:'✓ 量子検証済'},
+    lc:{thr:'無効化された脅威',enc:'暗号化状態',up:'セッション時間',ano:'異常'},
+    pt:['プライバシー','プロトコル'],
+    dates:'最終更新: 2026年4月18日 | 発効: 2020年1月1日',
+    intro:'このプライバシーポリシーは、SecFERRO DIVISION × anonymousikがanonymousik.is-a.devのサービス利用時に収集する情報の取り扱いについて説明します。サービスを利用することで、記載された条件に同意したものとみなします。',
+    arts:[
+      {n:'01',t:'情報の利用方法',note:'◈ データ最小化プロトコル有効 — FERROスタンダード v3.1',b:[{p:'収集した情報は以下の目的で使用します:'},{ol:['顧客フィードバックの収集']},{p:'他の目的での使用には事前に同意を求めます。'}]},
+      {n:'02',t:'お客様の権利',note:'◈ GDPR第17条「削除権」— 対応済み',b:[{p:'アクセス権、訂正権、削除権、制限権、ポータビリティ権、異議申立権があります。'},{p:'連絡先:'},{link:'im@anonymousik.is-a.dev'}]},
+      {n:'03',t:'Cookie等',note:null,badges:['✓ 同意優先','◈ 最小限の分析'],b:[{p:'Cookie使用の詳細はCookieポリシーをご参照ください:'},{link:'anonymousik.is-a.dev/docs/privacy'}]},
+      {n:'04',t:'セキュリティ',note:'⚠ デジタルリスクの固有性を認識',badges:['◈ AES-256-GCM','◈ PQ-KYBER-1024','◈ TLS 1.3'],b:[{p:'情報保護に合理的なセキュリティ措置を講じますが、絶対的な安全は保証できません。'}]},
+      {n:'05',t:'苦情/データ保護担当者',note:null,b:[{p:'お問い合わせはこちら:'},{contact:['SecFERRO DIVISION × anonymousik','anonymousik.is-a.dev','im@anonymousik.is-a.dev']}]},
+    ],
+    sig:{t:'// デジタル署名',algo:'Ed25519 + PQ-DILITHIUM-3',signer:'FERROオペレーター-Ω // SecFERRO Division'},
+    stamp:'機密解除',
+    footer:['◈ 文書終了 — SF-PRIVACY-2026-001 ◈','CookieYesで生成 | SecFERRO Divisionにより強化','われわれはレギオン。われわれは許さない。われわれは忘れない。'],
+    legal:'本文書はGDPR、EU AI法2026、ポーランドデータ保護法に準拠しています。',
+  },
+};
 
-function drawFrame() {
-  cx.fillStyle = 'rgba(2,4,7,0.045)';
-  cx.fillRect(0, 0, W, H);
-  hexGrid();
-  cx.font = '12px monospace';
-  drops.forEach((y, i) => {
-    const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
-    cx.fillStyle = Math.random() > .97 ? '#00ffff' : Math.random() > .8 ? '#007090' : '#003a4a';
-    cx.fillText(ch, i * 13, y * 13);
-    if (y * 13 > H && Math.random() > .975) drops[i] = 0;
-    drops[i]++;
-  });
-}
+/* ════════════════════════════════════════
+   UTILS
+════════════════════════════════════════ */
+const $  = id => document.getElementById(id);
+const mk = (tag, cls, txt) => { const e = document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; };
+const rHex = n => Array.from({length:n}, ()=>(Math.random()*16|0).toString(16)).join('').toUpperCase();
 
-let lastTs = 0;
-(function loop(ts) {
-  if (ts - lastTs > 50) { drawFrame(); lastTs = ts; }
-  requestAnimationFrame(loop);
+/* ════════════════════════════════════════
+   LANG MODULE — URL hash routing
+   Format: #/docs/privacy?lang=pl
+════════════════════════════════════════ */
+const Lang = (() => {
+  let cur = CFG.DEFAULT;
+  const detect = () => {
+    const m = location.hash.match(/[?&]lang=([a-z]{2,5})/i);
+    const req = m ? m[1].toLowerCase() : CFG.DEFAULT;
+    cur = CFG.LANGS.includes(req) ? req : CFG.DEFAULT;
+    document.documentElement.lang = cur;
+    return cur;
+  };
+  const set = lang => {
+    if (!CFG.LANGS.includes(lang)) return;
+    const base = location.hash.replace(/([?&])lang=[a-z]{2,5}/i,'$1').replace(/[?&]$/,'') || '#/docs/privacy';
+    location.replace(base + (base.includes('?') ? '&' : '?') + 'lang=' + lang);
+  };
+  const t = () => I18N[cur] || I18N[CFG.DEFAULT];
+  return { detect, set, get:()=>cur, t };
 })();
 
-/* ════ NODE ANIMATIONS ════ */
-document.querySelectorAll('.node').forEach((nd, i) => {
-  nd.style.animation = `nodePulse 2s ease-in-out infinite ${i * 0.4}s`;
-  nd.querySelector('.nd').style.animation = `ndGlow 2s ease-in-out infinite ${i * 0.4}s`;
-});
+/* ════════════════════════════════════════
+   CANVAS MODULE
+════════════════════════════════════════ */
+const Canvas = (() => {
+  const cv = $('bg'), cx = cv.getContext('2d');
+  let W, H, drops=[], lastTs=0, hs;
+  const resize = () => {
+    W=cv.width=innerWidth; H=cv.height=innerHeight;
+    hs=CFG.HS*Math.sqrt(3);
+    drops=Array.from({length:Math.ceil(W/13)}, ()=>Math.random()*-60);
+  };
+  const hexGrid = () => {
+    cx.strokeStyle='rgba(0,229,255,0.027)'; cx.lineWidth=.5;
+    for(let r=0;r*hs<H+hs;r++) for(let c=0;c*CFG.HS*1.5<W+CFG.HS;c++) {
+      const x=c*CFG.HS*1.5, y=r*hs+(c%2?hs/2:0);
+      cx.beginPath();
+      for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/6;i?cx.lineTo(x+CFG.HS*Math.cos(a),y+CFG.HS*Math.sin(a)):cx.moveTo(x+CFG.HS*Math.cos(a),y+CFG.HS*Math.sin(a));}
+      cx.closePath(); cx.stroke();
+    }
+  };
+  const frame = () => {
+    cx.fillStyle='rgba(2,4,7,0.045)'; cx.fillRect(0,0,W,H); hexGrid();
+    cx.font='12px monospace';
+    drops.forEach((y,i)=>{
+      const ch=CFG.CHARS[Math.random()*CFG.CHARS.length|0], r=Math.random();
+      cx.fillStyle=r>.97?'#00ffff':r>.8?'#007090':'#003a4a';
+      cx.fillText(ch,i*13,y*13);
+      if(y*13>H&&Math.random()>.975)drops[i]=0;
+      drops[i]++;
+    });
+  };
+  const loop = ts => { if(ts-lastTs>1000/CFG.FPS){frame();lastTs=ts;} requestAnimationFrame(loop); };
+  const init = () => {
+    resize(); let rt; addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(resize,150);});
+    requestAnimationFrame(loop);
+  };
+  return { init, setOpacity: v => cv.style.opacity = v };
+})();
 
-/* ════ HEX PROGRESS BAR ════ */
-const SEGS = 26;
-const hexrow = document.getElementById('hexrow');
-const pctEl  = document.getElementById('pct');
-const segs   = Array.from({length: SEGS}, () => {
-  const d = document.createElement('div'); d.className = 'hs';
-  hexrow.appendChild(d); return d;
-});
-function updateBar(p) {
-  const f = Math.floor(p / 100 * SEGS);
-  segs.forEach((s, i) => { s.className = 'hs' + (i < f - 1 ? ' on' : i === f - 1 ? ' hd' : ''); });
-  pctEl.textContent = Math.floor(p) + '%';
-}
+/* ════════════════════════════════════════
+   LOADER MODULE
+════════════════════════════════════════ */
+const Loader = (() => {
+  const statEl=$('status'), cur=statEl.querySelector('.cur');
+  const pctEl=$('pct'), hexrow=$('hexrow');
+  const segs=Array.from({length:CFG.SEGS},()=>{ const d=mk('div','hs'); hexrow.appendChild(d); return d; });
+  let msgIdx=-1, tTimer=null, p=0;
+  statEl.style.transition='opacity .2s';
 
-/* ════ TYPEWRITER STATUS ════ */
-const MSGS = [
-  'INITIALIZING SECURE ENVIRONMENT',
-  'LOADING FERROART KERNEL MODULES',
-  'ESTABLISHING ENCRYPTED CHANNEL',
-  'VERIFYING SECFERRO CERTIFICATES',
-  'CALIBRATING BCM72604 HARDWARE',
-  'MOUNTING TITANIUM CORE v17.1',
-  'SYNCING ADB BRIDGE — PLAYBOX',
-  'INJECTING PLAYBOX OPTIMIZATIONS',
-  'COMPILING VC4 PIPELINE STAGE 2',
-  'DECRYPTING PRIVACY PROTOCOL...',
-  'WE ARE LEGION — FERROART ONLINE',
-];
-const statEl = document.getElementById('status');
-const cursorEl = statEl.querySelector('.cur');
-let curMsg = -1, tTimer = null;
-statEl.style.transition = 'opacity .2s';
+  const typeMsg = msg => {
+    clearInterval(tTimer); let i=0;
+    [...statEl.childNodes].forEach(n=>{if(n!==cur)n.remove();});
+    tTimer=setInterval(()=>{ if(i>=msg.length){clearInterval(tTimer);return;} statEl.insertBefore(document.createTextNode(msg[i++]),cur); },28);
+  };
+  const setMsg = idx => {
+    if(idx===msgIdx)return; msgIdx=idx;
+    statEl.style.opacity='0';
+    setTimeout(()=>{ statEl.style.opacity='.7'; typeMsg(Lang.t().boot[idx]); },180);
+  };
+  const updateBar = pct => {
+    const f=Math.floor(pct/100*CFG.SEGS);
+    segs.forEach((s,i)=>{ s.className='hs'+(i<f-1?' on':i===f-1?' hd':''); });
+    pctEl.textContent=Math.floor(pct)+'%';
+  };
 
-function typeMsg(msg) {
-  clearInterval(tTimer); let i = 0;
-  [...statEl.childNodes].forEach(n => { if (n !== cursorEl) n.remove(); });
-  tTimer = setInterval(() => {
-    if (i >= msg.length) { clearInterval(tTimer); return; }
-    statEl.insertBefore(document.createTextNode(msg[i++]), cursorEl);
-  }, 28);
-}
-function setMsg(idx) {
-  if (idx === curMsg) return; curMsg = idx;
-  statEl.style.opacity = '0';
-  setTimeout(() => { statEl.style.opacity = '.7'; typeMsg(MSGS[idx]); }, 180);
-}
+  const tick = done => {
+    p=Math.min(p+Math.random()*(CFG.STEP_MAX-CFG.STEP_MIN)+CFG.STEP_MIN, 100);
+    updateBar(p);
+    setMsg(Math.min(Math.floor(p/100*(Lang.t().boot.length-1)),Lang.t().boot.length-1));
+    if(p<100) setTimeout(()=>tick(done), Math.random()*(CFG.TICK_MAX-CFG.TICK_MIN)+CFG.TICK_MIN);
+    else done();
+  };
 
-/* ════ BOOT PROGRESS ════ */
-let p = 0;
-function tick() {
-  p = Math.min(p + Math.random() * 2.2 + .25, 100);
-  updateBar(p);
-  setMsg(Math.min(Math.floor(p / 100 * (MSGS.length - 1)), MSGS.length - 1));
-  if (p < 100) setTimeout(tick, Math.random() * 140 + 32);
-  else onComplete();
-}
-setTimeout(tick, 700);
-
-/* ════ PHASE TRANSITIONS ════ */
-function onComplete() {
-  document.getElementById('ph-loader').classList.add('out');
-  setTimeout(() => {
-    const acc = document.getElementById('ph-access');
-    acc.classList.add('active');
-    setTimeout(() => {
-      acc.classList.remove('active');
-      initDossier();
-      setTimeout(() => {
-        document.getElementById('ph-dossier').classList.add('active');
-        cv.style.opacity = '.3';
-      }, 200);
-    }, 2800);
-  }, 600);
-}
-
-/* ════ DOSSIER INIT ════ */
-function rHex(n) { return Array.from({length:n},()=>Math.floor(Math.random()*16).toString(16)).join('').toUpperCase(); }
-
-function initDossier() {
-  // Session token
-  document.getElementById('sess-tok').textContent = `SESSION: ${rHex(4)}-${rHex(4)}`;
-
-  // Doc hash
-  document.getElementById('doc-hash').textContent = `${rHex(8)}...${rHex(4)} [SHA-256]`;
-
-  // PGP fingerprint
-  document.getElementById('pgp-fp').textContent = [rHex(4),rHex(4),rHex(4),rHex(4),rHex(4)].join(' ');
-
-  // Blockchain anchor
-  document.getElementById('bc-hash').textContent = `0x${rHex(16)}`;
-
-  // Timestamp
-  document.getElementById('sig-ts').textContent = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
-
-  // Threat counter
-  let threats = 1200 + Math.floor(Math.random() * 800);
-  const thEl = document.getElementById('threat-ct');
-  thEl.textContent = threats.toLocaleString();
-  setInterval(() => { threats += Math.floor(Math.random() * 3); thEl.textContent = threats.toLocaleString(); }, 1700);
-
-  // Uptime counter
-  let secs = 0;
-  const uptEl = document.getElementById('uptime');
-  setInterval(() => {
-    secs++;
-    uptEl.textContent = String(Math.floor(secs/60)).padStart(2,'0') + ':' + String(secs%60).padStart(2,'0');
-  }, 1000);
-
-  // Staggered article reveal
-  ['a1','a2','a3','a4','a5','a6'].forEach((id, i) => {
-    setTimeout(() => { document.getElementById(id).classList.add('vis'); }, 400 + i * 180);
+  document.querySelectorAll('.node').forEach((nd,i)=>{
+    nd.style.animation=`ndP 2s ease-in-out infinite ${i*.4}s`;
+    nd.querySelector('.nd').style.animation=`ndG 2s ease-in-out infinite ${i*.4}s`;
   });
 
-  // Auto-unredact
-  setTimeout(() => { document.getElementById('rd-addr').classList.add('show'); }, 1200);
-  setTimeout(() => { document.getElementById('rd-phone').classList.add('show'); }, 2000);
-}
+  return { start: done => setTimeout(()=>tick(done), CFG.BOOT_DELAY) };
+})();
+
+/* ════════════════════════════════════════
+   DOSSIER MODULE
+════════════════════════════════════════ */
+const Dossier = (() => {
+  let threats=0, upSecs=0, thrTimer=null, upTimer=null;
+  let thrEl=null, upEl=null;
+
+  /* DOM builders — all textContent, no innerHTML → XSS-safe */
+  const mrow = (k,v,extra='') => {
+    const r=mk('div','mrow'), kk=mk('span','mk',k), vv=mk('span','mv'+extra,v);
+    r.append(kk,vv); return r;
+  };
+  const badge = (txt,cls='') => mk('div','badge'+cls,txt);
+  const artBlock = art => {
+    const wrap=mk('div','article');
+    // header
+    const hdr=mk('div','art-hdr'), num=mk('span','art-num',`// ARTICLE ${art.n}`), line=mk('div','art-line');
+    hdr.append(num,line); wrap.appendChild(hdr);
+    wrap.appendChild(mk('div','art-h2',art.t));
+    const body=mk('div','art-body');
+    art.b.forEach(blk=>{
+      if(blk.p!==undefined){body.appendChild(mk('p','',blk.p));}
+      else if(blk.ol){const ol=mk('ol'); blk.ol.forEach(s=>{ol.appendChild(mk('li','',s));}); body.appendChild(ol);}
+      else if(blk.link!==undefined){
+        const a=mk('a','',blk.link);
+        a.href=(blk.link.includes('@')?'mailto:':'https://')+blk.link;
+        if(!blk.link.includes('@')){a.target='_blank'; a.rel='noopener noreferrer';}
+        body.appendChild(a);
+      }
+      else if(blk.contact){
+        const div=mk('div','art-contact');
+        blk.contact.forEach((line,i)=>{
+          if(line.includes('@')){const a=mk('a','',line); a.href='mailto:'+line; div.appendChild(a);}
+          else if(line.includes('.')&&!line.includes(' ')){const a=mk('a','',line); a.href='https://'+line; a.target='_blank'; a.rel='noopener noreferrer'; div.appendChild(a);}
+          else div.appendChild(document.createTextNode(line));
+          if(i<blk.contact.length-1)div.appendChild(mk('br'));
+        });
+        body.appendChild(div);
+      }
+    });
+    if(art.note){const n=mk('div','art-note',art.note); body.appendChild(n);}
+    if(art.badges){const br=mk('div','badge-row'); br.style.marginTop='10px'; art.badges.forEach(b=>br.appendChild(badge(b))); body.appendChild(br);}
+    wrap.appendChild(body);
+    return wrap;
+  };
+
+  const render = lang => {
+    const t=I18N[lang]||I18N[CFG.DEFAULT];
+    const dos=$('ph-dossier');
+    dos.innerHTML=''; // safe: we control all content below
+
+    /* ── cls-bar ── */
+    const bar=mk('div','cls-bar');
+    const clsTag=mk('span','cls-tag',t.cls);
+    // lang switcher
+    const sw=mk('div','lang-sw');
+    CFG.LANGS.forEach(l=>{
+      const btn=mk('button','lbtn'+(l===lang?' active':''),l.toUpperCase());
+      btn.setAttribute('aria-label','Switch language to '+l);
+      btn.addEventListener('click',()=>Lang.set(l));
+      sw.appendChild(btn);
+    });
+    const sessEl=mk('span','cls-sess',t.sess+': '+rHex(4)+'-'+rHex(4));
+    bar.append(clsTag,sw,sessEl);
+    dos.appendChild(bar);
+
+    /* ── inner ── */
+    const inner=mk('div','dos-inner');
+
+    /* meta */
+    const meta=mk('div','meta-block');
+    meta.appendChild(mk('div','bc'));
+    const mv=t.mk;
+    [
+      [mv.case,'SF-PRIVACY-2026-001'],
+      [mv.upd,'18-APR-2026'],[mv.eff,'01-JAN-2020'],
+      [mv.org,'POLAND // SECTOR 404 // SecFERROworld'],
+      [mv.ent,'SecFERRO DIVISION × anonymousik'],
+      [mv.ch,'im@anonymousik.is-a.dev'],
+      [mv.clr,'FERRO-7 / GDPR-TIER-1 / EU-AI-ACT-2026'],
+      [mv.hash, rHex(8)+'...'+rHex(4),' hash'],
+      [mv.zk,t.mk.zkv,' g'],
+    ].forEach(([k,v,c])=>meta.appendChild(mrow(k,v,c||'')));
+    inner.appendChild(meta);
+
+    /* live metrics */
+    const liveRow=mk('div','live-row');
+    const cards=[
+      {lbl:t.lc.thr,  id:'thr-ct', cls:'g', prefix:'<dot g>'},
+      {lbl:t.lc.enc,  val:'AES-256-GCM', cls:'g', dot:'g'},
+      {lbl:t.lc.up,   id:'up-ct',  cls:'', dot:null},
+      {lbl:t.lc.ano,  val:'ERROR-404', cls:'r', dot:'r'},
+    ];
+    cards.forEach(c=>{
+      const card=mk('div','lcard');
+      card.appendChild(mk('div','lc-lbl',c.lbl));
+      const val=mk('div','lc-val'+(c.cls?' '+c.cls:''));
+      if(c.dot){const d=mk('span','dot '+c.dot); val.appendChild(d);}
+      const span=mk('span'); span.textContent=c.val||'00:00'; val.appendChild(span);
+      if(c.id==='thr-ct')thrEl=span;
+      if(c.id==='up-ct')upEl=span;
+      card.appendChild(val); liveRow.appendChild(card);
+    });
+    inner.appendChild(liveRow);
+
+    /* badges */
+    const bdg=mk('div','badge-row');
+    ['✓ GDPR / RODO','✓ EU AI ACT 2026','✓ ZK-PROOF','✓ PQ-KYBER-1024','◈ AES-256-GCM','◈ ANONYMOUSIK CERT','⚠ SECTOR 404','⚠ WE ARE LEGION'].forEach((b,i)=>{
+      bdg.appendChild(badge(b,i>5?' r':i>4?'':' g'));
+    });
+    inner.appendChild(bdg);
+
+    /* policy header */
+    const ph=mk('div','pol-head');
+    const ptitle=mk('div','pol-title'); ptitle.textContent=t.pt[0]+' '; const em=mk('em','',t.pt[1]); ptitle.appendChild(em);
+    ph.appendChild(ptitle);
+    ph.appendChild(mk('div','pol-div'));
+    ph.appendChild(mk('div','pol-dates',t.dates));
+    const ent=mk('div','pol-entity');
+    ent.appendChild(document.createTextNode('SecFERRO DIVISION × anonymousik\n'));
+    const rdct=mk('span','rdct','🅽ɨɛʐռǟռa-🅽ɨӄօʍʊ, 404'); ent.appendChild(rdct);
+    ent.appendChild(document.createTextNode(', SecFERROworld ERROR-404, Poland\n'));
+    const ma=mk('a','','im@anonymousik.is-a.dev'); ma.href='mailto:im@anonymousik.is-a.dev'; ent.appendChild(ma);
+    ent.appendChild(document.createTextNode(' | '));
+    const wa=mk('a','','anonymousik.is-a.dev'); wa.href='https://anonymousik.is-a.dev'; wa.target='_blank'; wa.rel='noopener noreferrer'; ent.appendChild(wa);
+    ph.appendChild(ent);
+    inner.appendChild(ph);
+
+    /* intro */
+    inner.appendChild(mk('p','intro-p',t.intro));
+
+    /* articles */
+    t.arts.forEach((art,i)=>{
+      const a=artBlock(art);
+      a.style.animationDelay=(i*.15)+'s';
+      inner.appendChild(a);
+    });
+
+    /* PGP/signature */
+    const sigWrap=mk('div','article'); sigWrap.style.animationDelay='.75s';
+    const shdr=mk('div','art-hdr'); shdr.append(mk('span','art-num',t.sig.t),mk('div','art-line'));
+    sigWrap.appendChild(shdr);
+    const pgp=mk('div','pgp-block');
+    [
+      ['PGP FINGERPRINT',rHex(4)+' '+rHex(4)+' '+rHex(4)+' '+rHex(4)+' '+rHex(4)],
+      ['SIGNING KEY',t.sig.signer],
+      ['ALGORITHM',t.sig.algo],
+      ['TIMESTAMP',new Date().toISOString().replace('T',' ').slice(0,19)+' UTC'],
+      ['BLOCKCHAIN ANCHOR','0x'+rHex(16)],
+    ].forEach(([k,v])=>{
+      const row=mk('div'); row.appendChild(document.createTextNode(k+': ')); row.appendChild(mk('span','pv',v)); pgp.appendChild(row);
+    });
+    sigWrap.appendChild(pgp);
+    inner.appendChild(sigWrap);
+
+    /* footer */
+    const foot=mk('div','dos-footer');
+    foot.appendChild(mk('div','stamp',t.stamp));
+    const sig=mk('div','footer-sig');
+    t.footer.forEach(line=>{const d=mk('div','',line); sig.appendChild(d);});
+    sig.appendChild(mk('div','',t.legal));
+    foot.appendChild(sig);
+    foot.appendChild(mk('div','footer-wm','•``•.༼X🌐༼X.•``• Ⱥ🅽ටꈤYMටꪊSƗꀘ.IS-A.DEV •``•.༼X🌐༼X.•``•'));
+    inner.appendChild(foot);
+
+    dos.appendChild(inner);
+
+    /* redact auto-reveal */
+    setTimeout(()=>rdct.classList.add('show'),1200);
+  };
+
+  const startMetrics = () => {
+    threats=CFG.THREAT_BASE+Math.floor(Math.random()*CFG.THREAT_VAR);
+    if(thrEl) thrEl.textContent=threats.toLocaleString();
+    thrTimer=setInterval(()=>{ threats+=Math.random()*3|0; if(thrEl)thrEl.textContent=threats.toLocaleString(); },CFG.THREAT_TICK);
+    upTimer=setInterval(()=>{ upSecs++; if(upEl)upEl.textContent=String(upSecs/60|0).padStart(2,'0')+':'+String(upSecs%60).padStart(2,'0'); },1000);
+  };
+
+  return { render, startMetrics };
+})();
+
+/* ════════════════════════════════════════
+   PHASE TRANSITIONS
+════════════════════════════════════════ */
+const setAccess = (t, show) => {
+  $('ag-top').textContent=t.ag.top;
+  $('ag-main').textContent=t.ag.main;
+  $('ag-sub').textContent=t.ag.sub;
+  $('ag-cls').textContent=t.ag.cls;
+  $('ph-access').classList.toggle('active',show);
+};
+
+const onComplete = () => {
+  const t=Lang.t();
+  $('ph-loader').classList.add('out');
+  setTimeout(()=>{
+    setAccess(t,true);
+    setTimeout(()=>{
+      setAccess(t,false);
+      const lang=Lang.get();
+      Dossier.render(lang);
+      Dossier.startMetrics();
+      setTimeout(()=>{ $('ph-dossier').classList.add('active'); Canvas.setOpacity('.3'); },200);
+    }, CFG.ACCESS_DUR);
+  },600);
+};
+
+/* ════════════════════════════════════════
+   HASH CHANGE → RE-RENDER DOSSIER
+════════════════════════════════════════ */
+addEventListener('hashchange', () => {
+  const lang=Lang.detect();
+  if($('ph-dossier').classList.contains('active')){
+    const scroll=$('ph-dossier').scrollTop;
+    Dossier.render(lang);
+    $('ph-dossier').scrollTop=scroll;
+  }
+});
+
+/* ════════════════════════════════════════
+   BOOT
+════════════════════════════════════════ */
+Canvas.init();
+Lang.detect();
+Loader.start(onComplete);
+
+})();
 </script>
 </body>
 </html>
