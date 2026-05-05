@@ -42,9 +42,9 @@ fi
 # [FIX-02] STRICT MODE
 # Wyjątki inline stosowane przez: || true  /  { cmd; } 2>/dev/null
 # ─────────────────────────────────────────────────────────────
-set -Eeuo pipefail
-IFS=$'\n\t'
-
+#set -Eeuo pipefail ( TERMUX BUG-FIX ) 
+#IFS=$'\n\t'      
+# ( USUŃ KOMENTARZ POWYŻEJ JEŻELI WIESZ CO ROBISZ:) 
 # ─────────────────────────────────────────────────────────────
 # STAŁE WERSJI
 # ─────────────────────────────────────────────────────────────
