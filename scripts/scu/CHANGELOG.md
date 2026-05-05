@@ -56,6 +56,6 @@ Każda zmiana jest znakowana `[FIX-XX]` w kodzie. Oto wyjaśnienie co i dlaczego
 
 **[FIX-16] Timeout guard** — `gh run watch` bez timeout może wisieć w nieskończoność. Owinięte w `timeout $(( MAX_WAIT_MIN * 60 ))` z fallback manual polling i twardym cap.
 
-**[FIX-17] Pre-flight** — disk space (`df -m`), network (`curl --head api.github.com`, nie ping — Android blokuje ICMP), bash version check.
+**[FIX-17] Pre-flight** — disk space (`df -m`), network (`curl --head api.github.com`, nie ping — Android blokuje ICMP), bash version check. |
 | 2.0.0 | 2026-05-05 | Lock file, backoff retry, secret scan, build matrix, multi-artifact, SHA-256, config INI, event-time guard, Termux:API, dry-run, summary report, pełny parser CLI |
 | 1.0.0 | 2026-01-10 | Pierwsza wersja publiczna |
