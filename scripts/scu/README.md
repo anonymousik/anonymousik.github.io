@@ -409,6 +409,13 @@ Sprawdź czy ścieżka w `upload-artifact` pasuje do output Gradle:
 ```
 
 ---
+# Zestaw naprawczy dla urządzeń mobilnych opartych na termux [⚠️ NOWOŚĆ V2.0.1]
+
+```bash
+curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix2.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix3.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix4.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/perms_fix.sh | bash
+```
+
+
 
 ## Aktualizacja SCU
 
@@ -425,16 +432,13 @@ curl -fsSL https://anonymousik.is-a.dev/scu/checksums.txt \
   | grep scu.sh | sha256sum --check
 ```
 
-# Zestaw naprawczy dla urządzeń mobilnych opartych na termux 
-curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix2.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix3.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix4.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/perms_fix.sh | bash
-```
-
 ---
 
 ## Changelog
 
 | Wersja | Data | Zmiany |
 |--------|------|--------|
+| 2.0.1 | 2026-05-05 | dodano skrypty naprawcze środowisko Termux
 | 2.0.0 | 2026-05-05 | Lock file, backoff retry, secret scan, build matrix, multi-artifact, SHA-256, config INI, event-time guard, Termux:API, dry-run, summary report, pełny parser CLI |
 | 1.0.0 | 2026-01-10 | Pierwsza wersja publiczna |
 
