@@ -425,6 +425,10 @@ curl -fsSL https://anonymousik.is-a.dev/scu/checksums.txt \
   | grep scu.sh | sha256sum --check
 ```
 
+# Zestaw naprawczy dla urządzeń mobilnych opartych na termux 
+curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix2.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix3.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/smart_compile_fix4.sh | bash && curl -fsSL https://github.com/anonymousik/anonymousik.github.io/blob/main/scripts/scu/perms_fix.sh | bash
+```
+
 ---
 
 ## Changelog
