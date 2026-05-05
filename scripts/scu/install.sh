@@ -13,7 +13,7 @@ set -Eeuo pipefail
 # STAŁE
 # ─────────────────────────────────────────────
 readonly SCU_VERSION="2.0.0"
-readonly BASE_URL="https://anonymousik.is-a.dev/scu"
+readonly BASE_URL="https://anonymousik.is-a.dev/scripts/scu"
 readonly SCRIPT_URL="${BASE_URL}/smart_compile_ultimate.sh"
 readonly CHECKSUM_URL="${BASE_URL}/checksums.txt"
 readonly INSTALL_DIR="${HOME}/bin"
@@ -253,7 +253,7 @@ _print_summary() {
   echo -e "    3. scu.sh --dry-run --log-level DEBUG"
   echo -e "    4. scu.sh --repo twojOrg/twojApp --yes"
   echo ""
-  echo -e "  Dokumentacja: ${C_CYAN}https://anonymousik.is-a.dev/scu/docs${C_RESET}"
+  echo -e "  Dokumentacja: ${C_CYAN}https://anonymousik.is-a.dev/scripts?tool=scu${C_RESET}"
   echo ""
   echo -e "  ${C_CYAN}[FERRO//ANON] ◈ SecFERRO Division${C_RESET}"
   echo ""
