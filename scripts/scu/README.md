@@ -449,4 +449,4 @@ Dozwolone użycie komercyjne z zachowaniem nagłówka autorstwa.
 
 ---
 
-*[FERRO//ANON] · SecFERRO Division · `◈`*
+*[FERRO//ANON] · SecFERRO Division · `◈`* 
