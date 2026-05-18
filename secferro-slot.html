@@ -208,7 +208,6 @@
       <div class="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(188,19,254,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(188,19,254,0.1)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
       
       <div class="relative flex flex-col items-center max-w-md w-full px-6 py-10 border border-cyberPurple/40 rounded-2xl bg-black/90 shadow-[0_0_50px_rgba(188,19,254,0.2)] text-center">
-        <!-- Neon Corner Brackets -->
         <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyberPurple"></div>
         <div class="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyberPurple"></div>
         <div class="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-cyberPurple"></div>
@@ -231,11 +230,9 @@
 
     <!-- WIELKI KINOWY BANER ZWYCIĘSTWA -->
     <div id="win-overlay" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
-      <!-- Digital Rain / Cyber Grid Background -->
       <div class="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(0,240,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
       
       <div class="relative flex flex-col items-center max-w-md w-full px-6 py-10 border border-cyberGold/40 rounded-2xl bg-black/90 shadow-[0_0_50px_rgba(255,179,0,0.2)] text-center">
-        <!-- Neon Corner brackets -->
         <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyberGold"></div>
         <div class="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyberGold"></div>
         <div class="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-cyberGold"></div>
@@ -364,7 +361,7 @@
 
     <div id="panel-stats" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberPurple/35 bg-black/80">
-        <h2 class="font-tech font-bold text-cyberPurple tracking-widest text-sm">> STATYSTYKI_SESJI</h2>
+        <h2 class="font-tech font-bold text-cyberPurple tracking-widest text-sm">> STATYSTYKI_SESJI_I_LOGI</h2>
         <button id="btn-close-stats" class="text-gray-400 hover:text-white p-2 text-2xl btn-tactile leading-none">&times;</button>
       </div>
       <div class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto">
@@ -376,6 +373,12 @@
           <div class="bg-black/50 border border-cyberGold/20 p-3 rounded-lg">
             <span class="text-gray-500 text-[10px] block">RTP SESJI</span>
             <span id="stat-rtp" class="text-cyberGold font-tech font-bold text-lg">0.0%</span>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-cyberPurple font-bold font-tech mb-2">HISTORIA OSTATNICH WYGRANYCH</h3>
+          <div id="win-history-log" class="space-y-1.5 max-h-[220px] overflow-y-auto text-[10px] text-gray-400">
+            <div class="text-gray-500 italic text-center py-4">Brak zarejestrowanych rund w tej sesji</div>
           </div>
         </div>
       </div>
@@ -408,7 +411,7 @@
         <div class="font-tech text-3xl sm:text-4xl font-black tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase animate-pulse">
           SECFERRO
         </div>
-        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase animate-pulse">Cinematic Engine v4.1</p>
+        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase animate-pulse">Cinematic Engine v4.2</p>
       </div>
       <div class="w-full max-w-[250px] bg-black/60 border border-cyberBlue/20 h-2 rounded-full overflow-hidden p-[1px] mb-8">
         <div id="loader-bar" class="h-full bg-cyberBlue w-0 transition-all duration-300"></div>
@@ -1024,7 +1027,16 @@
         this.autoplay = { enabled: false, remaining: 0 };
         this.stats = { totalRounds: 0, totalBet: 0.0, totalWin: 0.0 };
 
-        this.cacheDOM(); this.loadSession(); this.initLoader(); this.setupEvents();
+        this.sessionStart = Date.now();
+
+        this.cacheDOM(); 
+        this.loadSession(); 
+        this.initLoader(); 
+        this.setupEvents();
+        
+        // Krytyczne i profesjonalne uruchomienie liczników sesji
+        this.startSessionTimer();
+        this.listenNetwork();
       }
 
       cacheDOM() {
@@ -1061,7 +1073,6 @@
           this.audio.startMusic();
         });
         
-        // Touch + Mouse binding dla SPIN
         this.dom.spinBtn.addEventListener('mousedown', () => { if(!this.isSpinning) this.play(); });
         this.dom.spinBtn.addEventListener('touchstart', (e) => { e.preventDefault(); if(!this.isSpinning) this.play(); }, {passive:false});
 
@@ -1143,7 +1154,6 @@
           this.startAutoplay();
         });
 
-        // Zamknięcie podsumowania darmowych spinów
         this.dom.btnCloseFSSummary.addEventListener('click', () => {
           this.dom.fsSummaryOverlay.classList.remove('opacity-100', 'pointer-events-auto');
           this.dom.fsSummaryOverlay.classList.add('opacity-0', 'pointer-events-none');
@@ -1158,14 +1168,63 @@
         setTimeout(() => document.getElementById('btn-start-game').classList.remove('hidden'), 500);
       }
 
-      saveSession() { localStorage.setItem('secferro_v4', JSON.stringify(this.state)); }
+      startSessionTimer() {
+        setInterval(() => {
+          const diff = Math.floor((Date.now() - this.sessionStart) / 1000);
+          const mins = String(Math.floor(diff / 60)).padStart(2, '0');
+          const secs = String(diff % 60).padStart(2, '0');
+          const rgSession = document.getElementById('rg-session');
+          const rgClock = document.getElementById('rg-clock');
+          if (rgSession) rgSession.innerText = `${mins}:${secs}`;
+          if (rgClock) rgClock.innerText = new Date().toISOString().substring(11, 19) + ' UTC';
+        }, 1000);
+      }
+
+      listenNetwork() {
+        const updateStatus = () => {
+          const el = document.getElementById('net-status');
+          const ind = document.getElementById('net-indicator');
+          if (!el || !ind) return;
+          if (navigator.onLine) {
+            el.innerText = 'ONLINE';
+            el.className = 'text-cyberGreen font-bold';
+            ind.className = 'w-1.5 h-1.5 rounded-full bg-cyberGreen animate-ping';
+          } else {
+            el.innerText = 'OFFLINE';
+            el.className = 'text-cyberAlert font-bold animate-pulse';
+            ind.className = 'w-1.5 h-1.5 rounded-full bg-cyberAlert';
+            this.dom.msg.innerText = "UTRACONO POŁĄCZENIE";
+          }
+        };
+        window.addEventListener('online', updateStatus);
+        window.addEventListener('offline', updateStatus);
+        updateStatus();
+      }
+
+      saveSession() { 
+        try {
+          const payload = {
+            state: this.state,
+            stats: this.stats
+          };
+          localStorage.setItem('secferro_v4', JSON.stringify(payload)); 
+        } catch(e) {
+          console.warn("Storage write blocked", e);
+        }
+      }
       
       loadSession() { 
-        const s = localStorage.getItem('secferro_v4'); 
-        if(s) { 
-          Object.assign(this.state, JSON.parse(s)); 
-          this.updateJackpotBar(); 
-        } 
+        try {
+          const s = localStorage.getItem('secferro_v4'); 
+          if(s) { 
+            const data = JSON.parse(s);
+            if (data.state) Object.assign(this.state, data.state); 
+            if (data.stats) Object.assign(this.stats, data.stats);
+            this.updateJackpotBar(); 
+          } 
+        } catch(e) {
+          console.error("Storage read blocked", e);
+        }
         this.updateTurboUI();
       }
 
@@ -1192,11 +1251,32 @@
       }
 
       updateStatsUI() {
-        document.getElementById('stat-rounds').innerText = this.stats.totalRounds;
+        const statRounds = document.getElementById('stat-rounds');
+        const statRtp = document.getElementById('stat-rtp');
+        if (statRounds) statRounds.innerText = this.stats.totalRounds;
         const calculatedRtp = this.stats.totalBet > 0 
           ? ((this.stats.totalWin / this.stats.totalBet) * 100).toFixed(1) 
           : "0.0";
-        document.getElementById('stat-rtp').innerText = `${calculatedRtp}%`;
+        if (statRtp) statRtp.innerText = `${calculatedRtp}%`;
+      }
+
+      logRoundToHistory(bet, win) {
+        const container = document.getElementById('win-history-log');
+        if (!container) return;
+        
+        if (this.stats.totalRounds === 1 || container.innerHTML.includes("Brak zarejestrowanych")) {
+          container.innerHTML = ''; 
+        }
+        
+        const timestamp = new Date().toLocaleTimeString('pl-PL');
+        const row = document.createElement('div');
+        row.className = "flex justify-between p-2 bg-white/5 border-b border-white/5 rounded-lg text-[9px]";
+        row.innerHTML = `
+          <span>[${timestamp}] RUNDA #${this.stats.totalRounds}</span>
+          <span class="text-gray-400">STAWKA: ${bet.toFixed(2)} PLN</span>
+          <span class="${win > 0 ? 'text-cyberGreen font-bold' : 'text-gray-500'}">WYGRANA: ${win.toFixed(2)} PLN</span>
+        `;
+        container.insertBefore(row, container.firstChild);
       }
 
       async play() {
@@ -1263,7 +1343,6 @@
                this.audio.stopHeartbeat();
             }
             
-            // Reagowanie na trafienie Scattera
             let hasColScatter = false;
             for(let r=0; r<3; r++) {
               if (this.state.matrix[colIdx][r] === 6) {
@@ -1314,7 +1393,6 @@
             this.updateUI();
           }
 
-          // Akumulacja wygranej w bonusie
           if (this.bonusSession.activeBonus) {
             this.bonusSession.accumulatedFSWin += evalResult.win;
           }
@@ -1372,6 +1450,10 @@
       }
 
       async endCycle(pendingFS) {
+        // Naliczenie historii logów dla tej sesji
+        const currentWin = parseFloat(this.dom.win.innerText) || 0.0;
+        this.logRoundToHistory(this.state.bets[this.state.betIndex], currentWin);
+
         this.saveSession();
 
         // 1. Obsługa paska FERRO Jackpot
@@ -1382,10 +1464,9 @@
           } catch (err) {
             console.error("Critical Jackpot Engine Fault:", err);
           }
-          // Kontynuujemy bieg gry bez przerywania pętli!
         }
 
-        // 2. Obsługa aktywacji / ponownej aktywacji darmowych obrotów
+        // 2. Obsługa darmowych obrotów
         if (pendingFS) {
           this.renderer.triggerBlindingFlash();
           this.audio.playJackpotSiren();
@@ -1403,7 +1484,7 @@
           
           this.dom.fsSummaryOverlay.classList.remove('opacity-0', 'pointer-events-none');
           this.dom.fsSummaryOverlay.classList.add('opacity-100', 'pointer-events-auto');
-          return; // Czekamy na zatwierdzenie przez użytkownika
+          return; 
         }
 
         // 4. Bezpieczne odblokowanie przycisku Spin
@@ -1479,7 +1560,6 @@
               this.dom.winAmt.innerText = current.toFixed(2);
               claimBtn.innerText = "ODBIERZ TRANSFER";
               this.audio.playDeepImpact();
-              // Świętujemy cząsteczkami
               for (let i = 0; i < 5; i++) {
                 this.renderer.spawnMegaExplosion(this.rng.getInt(0, 4), this.rng.getInt(0, 2), 'gold');
               }
@@ -1570,8 +1650,10 @@
         const map = { F: 'F', E: 'E', R1: 'R1', R2: 'R2', O: 'O' };
         for (let k in map) {
           const el = document.getElementById(`jackpot-letter-${k}`);
-          if (this.state.jackpotLetters[k]) el.className = "w-6 h-6 border flex items-center justify-center text-xs font-black font-tech rounded active-letter transition-all relative z-10";
-          else el.className = "w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all relative z-10";
+          if (el) {
+            if (this.state.jackpotLetters[k]) el.className = "w-6 h-6 border flex items-center justify-center text-xs font-black font-tech rounded active-letter transition-all relative z-10";
+            else el.className = "w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all relative z-10";
+          }
         }
       }
     }
