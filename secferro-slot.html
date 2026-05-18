@@ -189,7 +189,7 @@
         <div class="font-tech text-5xl sm:text-7xl font-black text-cyberGold drop-shadow-[0_0_35px_rgba(255,179,0,0.85)] z-10 flex items-baseline">
           <span id="win-amount-counter">0.00</span> <span class="text-3xl sm:text-4xl ml-2">PLN</span>
         </div>
-        <div class="text-xs text-cyberGreen mt-4 font-mono z-10 font-bold animate-pulse" id="win-continue-msg" style="display:none;">KLIKNIJ ABY KONTYNUOWAĆ</div>
+        <div class="text-xs text-cyberGreen mt-4 font-mono z-10 font-bold animate-pulse" id="win-continue-msg" style="display:none;">KLIKNIJ ABY POMINĄĆ / KONTYNUOWAĆ</div>
       </div>
     </div>
 
@@ -201,7 +201,7 @@
       <!-- Sekcja finansów -->
       <div class="grid grid-cols-2 bg-black/85 font-mono select-none border-b border-cyberBlue/25">
         <div class="flex flex-col items-center justify-center py-2 border-r border-cyberBlue/20">
-          <span class="text-[9px] text-gray-500 tracking-wider mb-0.5">SALDO (PLN)</span>
+          <span class="text-[9px] text-gray-400 tracking-wider mb-0.5">SALDO (PLN)</span>
           <span id="display-balance" class="text-xs sm:text-sm font-bold text-white transition-all">1000.00</span>
         </div>
         <div class="flex flex-col items-center justify-center py-2">
@@ -709,13 +709,16 @@
         this.winLines = [];
         
         // PULA ISKIER (Dynamiczne mienienie się - Particle Rainbow Shimmer)
-        this.maxParticles = 120;
+        this.maxParticles = 300; // Zwiększono pulę iskrzących cząsteczek dla maksymalnej widowiskowości
         this.particlePool = Array.from({ length: this.maxParticles }, () => ({
           active: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, decay: 0, hue: 0, size: 0, shimmerSpeed: 0
         }));
 
         // Dynamiczne efekty oświetleniowe (Glow Mapping)
         this.lights = [];
+
+        // Fale uderzeniowe (Blast Shockwaves)
+        this.blastRings = [];
         
         this.w = 0; this.h = 0;
         this.ra = { x: 0, y: 0, w: 0, h: 0 };
@@ -796,30 +799,41 @@
         const y = this.ra.y + (row * this.rH) + (this.rH / 2);
         let count = 0;
 
+        // Generowanie większej gęstości iskrzenia (30 cząsteczek na wygraną)
         for (let i = 0; i < this.maxParticles; i++) {
           const p = this.particlePool[i];
           if (!p.active) {
             p.active = true;
             p.x = x;
             p.y = y;
-            p.vx = (Math.random() - 0.5) * 11;
-            p.vy = (Math.random() - 0.5) * 11;
+            p.vx = (Math.random() - 0.5) * 14;
+            p.vy = (Math.random() - 0.5) * 14;
             p.life = 1.0;
-            p.decay = Math.random() * 0.05 + 0.025;
-            p.hue = baseHue + (Math.random() - 0.5) * 30; // drobna dewiacja koloru dla głębi
-            p.size = Math.random() * 3.5 + 2.0;
-            p.shimmerSpeed = Math.random() * 15 + 5;
+            p.decay = Math.random() * 0.04 + 0.018;
+            p.hue = baseHue + (Math.random() - 0.5) * 45; 
+            p.size = Math.random() * 4.0 + 2.5;
+            p.shimmerSpeed = Math.random() * 20 + 8;
             count++;
-            if (count >= 16) break;
+            if (count >= 30) break;
           }
         }
+
+        // Dodanie fali uderzeniowej (Shockwave Blast Ring)
+        this.blastRings.push({
+          x: x, y: y,
+          radius: 5,
+          maxRadius: this.cW * 2.2,
+          color: `hsla(${baseHue}, 100%, 60%, 0.85)`,
+          life: 1.0,
+          decay: 2.2
+        });
 
         // Dodanie punktu światła dynamicznego
         this.lights.push({
           x: x, y: y,
-          radius: this.cW * 1.5,
-          color: `hsla(${baseHue}, 100%, 50%, 0.35)`,
-          life: 1.0, decay: 2.0
+          radius: this.cW * 2.2,
+          color: `hsla(${baseHue}, 100%, 50%, 0.45)`,
+          life: 1.0, decay: 1.8
         });
       }
 
@@ -840,7 +854,7 @@
 
           for (let i = 0; i < 3; i++) {
             if (r.dropOffsets[i] < 0) {
-              r.dropOffsets[i] += dt * 1200; // Ultra szybki, dynamiczny spadek
+              r.dropOffsets[i] += dt * 1350; // Bardzo dynamiczny, sprężysty spadek
               if (r.dropOffsets[i] > 0) r.dropOffsets[i] = 0;
             }
           }
@@ -853,10 +867,18 @@
             p.x += p.vx;
             p.y += p.vy;
             p.life -= p.decay;
-            // Płynna rotacja barwy dla mieniącego się efektu
-            p.hue = (p.hue + dt * 100) % 360;
-            
+            p.hue = (p.hue + dt * 150) % 360; // Szybsza mieniąca rotacja kolorów
             if (p.life <= 0) p.active = false;
+          }
+        }
+
+        // Aktualizacja fal uderzeniowych (Blast Rings)
+        for (let i = this.blastRings.length - 1; i >= 0; i--) {
+          const b = this.blastRings[i];
+          b.life -= dt * b.decay;
+          b.radius += (b.maxRadius - b.radius) * dt * 8.0;
+          if (b.life <= 0) {
+            this.blastRings.splice(i, 1);
           }
         }
 
@@ -899,13 +921,29 @@
         this.lights.forEach(l => {
           const grad = this.ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.radius * l.life);
           grad.addColorStop(0, l.color);
-          grad.addColorStop(0.3, l.color.replace('0.35', `${0.12 * l.life}`));
+          grad.addColorStop(0.4, l.color.replace('0.45', `${0.15 * l.life}`));
           grad.addColorStop(1, 'transparent');
           
           this.ctx.fillStyle = grad;
           this.ctx.save();
           this.ctx.globalCompositeOperation = 'screen';
           this.ctx.fillRect(l.x - l.radius, l.y - l.radius, l.radius * 2, l.radius * 2);
+          this.ctx.restore();
+        });
+
+        // Rysowanie fal uderzeniowych (Blast Rings) z efektem świecenia neonowego
+        this.blastRings.forEach(b => {
+          this.ctx.save();
+          this.ctx.globalCompositeOperation = 'screen';
+          this.ctx.strokeStyle = b.color;
+          this.ctx.globalAlpha = b.life;
+          this.ctx.lineWidth = 4 * b.life;
+          this.ctx.shadowColor = b.color;
+          this.ctx.shadowBlur = 18;
+          
+          this.ctx.beginPath();
+          this.ctx.arc(b.x, b.y, b.radius, 0, 6.28);
+          this.ctx.stroke();
           this.ctx.restore();
         });
 
@@ -1623,6 +1661,7 @@
         this.endCycle();
       }
 
+      // Szybkie i bezbłędne pomijanie okna wygranej (Slam-Skip / Fast-track)
       presentBigWin(amount, mult) {
         return new Promise(resolve => {
           this.audio.playWinBig();
@@ -1632,8 +1671,32 @@
           let current = 0;
           const duration = 2000;
           const start = performance.now();
+          let isCounting = true;
+
+          const skipAction = () => {
+            if (isCounting) {
+              // Pierwsze kliknięcie: natychmiastowe zakończenie odliczania kwoty
+              isCounting = false;
+              current = amount;
+              this.dom.winAmt.innerText = current.toFixed(2);
+              this.dom.win.innerText = current.toFixed(2);
+              const contBtn = document.getElementById('win-continue-msg');
+              contBtn.style.display = 'block';
+              this.audio.playSFX('sine', 1200, 0.2, 0.4);
+            } else {
+              // Drugie kliknięcie: Błyskawiczne zamknięcie nakładki
+              this.dom.overlay.classList.add('opacity-0', 'pointer-events-none');
+              const contBtn = document.getElementById('win-continue-msg');
+              contBtn.style.display = 'none';
+              this.dom.overlay.removeEventListener('click', skipAction);
+              resolve();
+            }
+          };
+
+          this.dom.overlay.addEventListener('click', skipAction);
 
           const step = (now) => {
+            if (!isCounting) return; // Jeśli użytkownik pominął, zatrzymaj pętlę rAF
             const p = Math.min((now - start) / duration, 1);
             const ease = 1 - Math.pow(1 - p, 3);
             current = amount * ease;
@@ -1643,18 +1706,9 @@
             if (p < 1) {
               requestAnimationFrame(step);
             } else {
-              this.state.balance += amount;
-              this.updateUI();
+              isCounting = false;
               const contBtn = document.getElementById('win-continue-msg');
               contBtn.style.display = 'block';
-
-              const dismiss = () => {
-                this.dom.overlay.classList.add('opacity-0', 'pointer-events-none');
-                contBtn.style.display = 'none';
-                document.removeEventListener('click', dismiss);
-                resolve();
-              };
-              setTimeout(() => document.addEventListener('click', dismiss), 400);
             }
           };
           requestAnimationFrame(step);
