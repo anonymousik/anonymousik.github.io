@@ -28,7 +28,7 @@
             cyberBlue: '#00f0ff',
             cyberPurple: '#bc13fe',
             cyberGold: '#ffb300',
-            glassBg: 'rgba(3, 3, 10, 0.94)',
+            glassBg: 'rgba(3, 3, 15, 0.96)',
           }
         }
       }
@@ -59,8 +59,8 @@
     }
 
     .hud-panel {
-      background: linear-gradient(180deg, rgba(3, 3, 15, 0.97) 0%, rgba(1, 1, 5, 0.99) 100%);
-      border: 1px solid rgba(0, 240, 255, 0.2);
+      background: linear-gradient(180deg, rgba(3, 3, 18, 0.98) 0%, rgba(1, 1, 5, 0.99) 100%);
+      border: 1px solid rgba(0, 240, 255, 0.22);
       box-shadow: 0 -4px 35px rgba(0,0,0,0.98), inset 0 1px 0 rgba(255,255,255,0.05);
     }
 
@@ -113,7 +113,7 @@
 
   <div id="crt-layer"></div>
   
-  <!-- Responsible Gaming Bar -->
+  <!-- Pasek Responsible Gaming -->
   <div id="rg-bar">
     <span id="rg-clock">00:00:00 UTC</span>
     <span class="flex items-center gap-1">
@@ -129,7 +129,7 @@
     <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-10" aria-label="Główny ekran renderowania gry"></canvas>
 
     <!-- RAMA LED BĘBNÓW -->
-    <div class="absolute inset-x-2 top-[16%] bottom-[32%] sm:inset-x-12 sm:top-[15%] sm:bottom-[22%] z-20 pointer-events-none rounded-xl border border-cyberBlue/35 transition-all duration-300" id="led-frame" style="background: linear-gradient(180deg, rgba(1,1,3,0.95) 0%, rgba(1,1,3,0.4) 50%, rgba(1,1,3,0.95) 100%);"></div>
+    <div class="absolute inset-x-2 top-[16%] bottom-[32%] sm:inset-x-12 sm:top-[15%] sm:bottom-[22%] z-20 pointer-events-none rounded-xl border border-cyberBlue/35 transition-all duration-300" id="led-frame" style="background: linear-gradient(180deg, rgba(1,1,3,0.95) 0%, rgba(1,1,3,0.3) 50%, rgba(1,1,3,0.95) 100%);"></div>
 
     <!-- ==========================================
          NAGŁÓWEK HUD (STAN, MNOŻNIK, JACKPOT)
@@ -182,7 +182,7 @@
     <!-- ==========================================
          WIELKI EKRAN CELEBRACJI WYGRANYCH (BIG WIN)
          ========================================== -->
-    <div id="win-overlay" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+    <div id="win-overlay" class="absolute inset-0 z-45 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
       <div class="relative flex flex-col items-center">
         <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,179,0,0.35)_0%,transparent_75%)] animate-pulse scale-150"></div>
         <div id="win-type" class="text-sm sm:text-lg text-white mb-2 tracking-[0.4em] uppercase font-tech z-10 font-bold">SYSTEM DECRYPTED</div>
@@ -201,7 +201,7 @@
       <!-- Sekcja finansów -->
       <div class="grid grid-cols-2 bg-black/85 font-mono select-none border-b border-cyberBlue/25">
         <div class="flex flex-col items-center justify-center py-2 border-r border-cyberBlue/20">
-          <span class="text-[9px] text-gray-400 tracking-wider mb-0.5">SALDO (PLN)</span>
+          <span class="text-[9px] text-gray-500 tracking-wider mb-0.5">SALDO (PLN)</span>
           <span id="display-balance" class="text-xs sm:text-sm font-bold text-white transition-all">1000.00</span>
         </div>
         <div class="flex flex-col items-center justify-center py-2">
@@ -250,71 +250,127 @@
       </div>
     </section>
 
+    <!-- ==========================================
+         ZINTEGROWANE MODALE
+         ========================================== -->
+    
     <!-- Modal Ustawień i Diagnostyki -->
     <div id="panel-settings" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberBlue/20 bg-black/80">
-        <h2 class="font-tech font-bold text-cyberBlue tracking-widest text-sm">> DIAGNOSTYKA_I_CONFIG</h2>
+        <h2 class="font-tech font-bold text-cyberBlue tracking-widest text-sm">> MENU_BOCZNE</h2>
         <button class="close-overlay text-gray-400 hover:text-white p-2 text-2xl btn-tactile leading-none">&times;</button>
       </div>
       <div class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto">
-        <div class="bg-cyberBlue/5 border border-cyberBlue/10 p-4 rounded-xl flex justify-between items-center">
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Zakładka Tabela Wypłat -->
+          <button id="btn-show-paytable" class="bg-cyberBlue/10 border border-cyberBlue/40 text-cyberBlue p-4 rounded-xl font-bold font-tech text-center btn-tactile">TABELA WYPŁAT</button>
+          <!-- Zakładka Statystyki -->
+          <button id="btn-show-stats" class="bg-cyberPurple/10 border border-cyberPurple/40 text-cyberPurple p-4 rounded-xl font-bold font-tech text-center btn-tactile">STATYSTYKI</button>
+        </div>
+
+        <div class="bg-cyberBlue/5 border border-cyberBlue/10 p-4 rounded-xl flex justify-between items-center mt-4">
           <div>
             <div class="text-white font-bold">MUZYKA W TLE</div>
-            <div class="text-[9px] text-gray-500 mt-1">background_bookofsecfeero.mp3 (pętla)</div>
+            <div class="text-[9px] text-gray-500 mt-1">background_bookofsecfeero.mp3</div>
           </div>
           <input type="checkbox" id="toggle-bgm" checked class="w-6 h-6 accent-cyberBlue cursor-pointer">
         </div>
         <div class="bg-cyberBlue/5 border border-cyberBlue/10 p-4 rounded-xl flex justify-between items-center">
           <div>
             <div class="text-white font-bold">EFEKTY AUDIO (SFX)</div>
-            <div class="text-[9px] text-gray-500 mt-1">Dźwięki bębnów, kaskad i wygranych</div>
+            <div class="text-[9px] text-gray-500 mt-1">Proceduralne syntezatory RGS</div>
           </div>
           <input type="checkbox" id="toggle-sfx" checked class="w-6 h-6 accent-cyberBlue cursor-pointer">
         </div>
         <div class="bg-cyberAlert/5 border border-cyberAlert/20 p-4 rounded-xl flex justify-between items-center">
           <div>
             <div class="text-cyberAlert font-bold">ZRESETUJ AKTUALNĄ SESJĘ</div>
-            <div class="text-[9px] text-gray-500 mt-1">Wyczyści zapisane saldo, progres i stan liter Jackpotu.</div>
+            <div class="text-[9px] text-gray-500 mt-1">Wyczyści całą historię oraz saldo.</div>
           </div>
           <button id="btn-reset-session" class="px-4 py-2 bg-cyberAlert/20 border border-cyberAlert/50 text-cyberAlert font-bold rounded-lg btn-tactile hover:bg-cyberAlert/40">WYCZYŚĆ</button>
         </div>
       </div>
     </div>
 
-    <!-- Modal Autoplay -->
-    <div id="panel-auto" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
-      <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberPurple/30 bg-black/80">
-        <h2 class="font-tech font-bold text-cyberPurple tracking-widest text-sm">> KONFIGURACJA_AUTOPLAY</h2>
-        <button class="close-overlay text-gray-400 hover:text-white p-2 text-2xl btn-tactile leading-none">&times;</button>
+    <!-- Panel Tabeli Wypłat -->
+    <div id="panel-paytable" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
+      <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberBlue/20 bg-black/80">
+        <h2 class="font-tech font-bold text-cyberBlue tracking-widest text-sm">> TABELA_WYPŁAT</h2>
+        <button id="btn-close-paytable" class="text-gray-400 hover:text-white p-2 text-2xl btn-tactile leading-none">&times;</button>
       </div>
-      <div class="flex-1 p-4 sm:p-6 flex flex-col gap-6 overflow-y-auto">
-        <div class="flex flex-col gap-2">
-          <label class="text-cyberPurple text-[10px] tracking-widest">LICZBA OBROTÓW:</label>
-          <div class="grid grid-cols-4 gap-2">
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="10">10</button>
-            <button class="auto-spin-opt bg-cyberPurple/20 border border-cyberPurple text-white p-3 rounded-lg transition-colors" data-val="25">25</button>
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="50">50</button>
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="100">100</button>
+      <div class="flex-1 p-4 sm:p-6 space-y-6 overflow-y-auto">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="border border-cyberAlert/30 p-3 rounded-lg bg-cyberAlert/5">
+            <span class="text-cyberAlert font-bold font-tech text-sm block">BOOK [SCATTER/WILD]</span>
+            <span class="text-[10px] text-gray-400 mt-1 block">Zastępuje wszystkie symbole standardowe. 3+ uruchamiają bonus 10 Darmowych Spinów.</span>
           </div>
-          <input type="hidden" id="auto-spins-val" value="25">
+          <div class="border border-cyberGold/30 p-3 rounded-lg bg-cyberGold/5">
+            <span class="text-cyberGold font-bold font-tech text-sm block">SECFERRO MASK</span>
+            <span class="text-[10px] text-gray-400 mt-1 block">5x: 250.00 | 4x: 25.00 | 3x: 5.00</span>
+          </div>
+          <div class="border border-cyberPurple/30 p-3 rounded-lg bg-cyberPurple/5">
+            <span class="text-cyberPurple font-bold font-tech text-sm block">CYBER HACKER</span>
+            <span class="text-[10px] text-gray-400 mt-1 block">5x: 50.00 | 4x: 10.00 | 3x: 2.00</span>
+          </div>
+          <div class="border border-cyberBlue/30 p-3 rounded-lg bg-cyberBlue/5">
+            <span class="text-cyberBlue font-bold font-tech text-sm block">ROUTING SERVER</span>
+            <span class="text-[10px] text-gray-400 mt-1 block">5x: 20.00 | 4x: 5.00 | 3x: 1.00</span>
+          </div>
         </div>
-        <div class="flex flex-col gap-2">
-          <label class="text-cyberAlert text-[10px] tracking-widest">OBOWIĄZKOWY LIMIT STRAT [PLN]:</label>
-          <input type="number" id="auto-loss-limit" value="100" class="bg-black border border-cyberAlert/50 text-cyberAlert p-3 rounded-lg outline-none text-base font-bold focus:border-cyberAlert">
+        <div>
+          <h3 class="text-white font-bold mb-2">20 LINII WYGRANYCH (PAYLINES)</h3>
+          <p class="text-[10px] text-gray-500 mb-2">Wygrane są wypłacane za pasujące kombinacje sąsiadujące ze sobą, licząc od lewej do prawej strony siatki gry.</p>
         </div>
-        <button id="start-autoplay" class="mt-auto py-4 bg-cyberPurple/20 border border-cyberPurple text-cyberPurple font-tech font-bold tracking-[0.2em] rounded-xl btn-tactile text-sm">
-          AKCEPTUJ I URUCHOM
-        </button>
+      </div>
+    </div>
+
+    <!-- Panel Statystyk i Historii Wygranych -->
+    <div id="panel-stats" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
+      <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberPurple/35 bg-black/80">
+        <h2 class="font-tech font-bold text-cyberPurple tracking-widest text-sm">> STATYSTYKI_SESJI_I_LOGI</h2>
+        <button id="btn-close-stats" class="text-gray-400 hover:text-white p-2 text-2xl btn-tactile leading-none">&times;</button>
+      </div>
+      <div class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto">
+        <div class="grid grid-cols-2 gap-4 text-center">
+          <div class="bg-black/50 border border-cyberBlue/20 p-3 rounded-lg">
+            <span class="text-gray-500 text-[10px] block">ROZEGRANE RUNDY</span>
+            <span id="stat-rounds" class="text-white font-tech font-bold text-lg">0</span>
+          </div>
+          <div id="stat-rtp-container" class="bg-black/50 border border-cyberGold/20 p-3 rounded-lg">
+            <span class="text-gray-500 text-[10px] block">RTP SESJI</span>
+            <span id="stat-rtp" class="text-cyberGold font-tech font-bold text-lg">0.0%</span>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-cyberPurple font-bold font-tech mb-2">HISTORIA OSTATNICH WYGRANYCH</h3>
+          <div id="win-history-log" class="space-y-1.5 max-h-[220px] overflow-y-auto text-[10px] text-gray-400">
+            <div class="text-gray-500 italic text-center py-4">Brak zarejestrowanych rund w tej sesji</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reality Check Modal (Responsible Gaming - GLI/UKGC) -->
+    <div id="panel-reality" class="absolute inset-0 bg-black/99 backdrop-blur-2xl z-50 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs p-6 text-center">
+      <div class="max-w-md w-full bg-cyberDark border border-cyberAlert/50 p-6 rounded-2xl shadow-[0_0_40px_rgba(255,0,60,0.3)]">
+        <h2 class="font-tech font-bold text-cyberAlert tracking-widest text-lg mb-4">REALITY CHECK</h2>
+        <p class="text-gray-300 leading-relaxed mb-6">
+          Grasz już nieprzerwanie przez <span class="text-white font-bold">15 minut</span>. Prosimy o potwierdzenie chęci kontynuowania rozrywki.
+        </p>
+        <div class="flex gap-4">
+          <button id="btn-reality-exit" class="flex-1 py-3 bg-cyberAlert/20 border border-cyberAlert text-cyberAlert font-bold rounded-xl btn-tactile hover:bg-cyberAlert/40">ZAKOŃCZ GRĘ</button>
+          <button id="btn-reality-continue" class="flex-1 py-3 bg-cyberGreen/20 border border-cyberGreen text-cyberGreen font-bold rounded-xl btn-tactile hover:bg-cyberGreen/40">KONTYNUUJ</button>
+        </div>
       </div>
     </div>
     
     <!-- Splash Loader -->
     <div id="splash-loader" class="absolute inset-0 z-50 bg-[#010103] flex flex-col justify-center items-center p-8 transition-opacity duration-700">
       <div class="text-center mb-10">
-        <div class="font-tech text-3xl sm:text-4xl font-black tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase">
+        <div class="font-tech text-3xl sm:text-4xl font-black tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase animate-pulse">
           SECFERRO
         </div>
-        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase animate-pulse">Commercial Gaming Framework v3.2</p>
+        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase">Commercial Gaming Framework v3.3</p>
       </div>
       <div class="w-full max-w-[250px] bg-black/60 border border-cyberBlue/20 h-2 rounded-full overflow-hidden p-[1px] mb-8">
         <div id="loader-bar" class="h-full bg-cyberBlue w-0 transition-all duration-300"></div>
@@ -331,6 +387,12 @@
     // 1. KRYPTOGRAFICZNE RNG I ZABEZPIECZENIA
     // ==========================================
     class SecureRNG {
+      /**
+       * Zwraca kryptograficznie bezpieczną liczbę całkowitą w przedziale [min, max]
+       * @param {number} min 
+       * @param {number} max 
+       * @returns {number}
+       */
       getInt(min, max) {
         const range = max - min + 1;
         const array = new Uint32Array(1);
@@ -344,16 +406,19 @@
     }
 
     // ==========================================
-    // 2. MATEMATYKA RGS (Zgodność GLI / RTP ~96.5%)
+    // 2. MATEMATYKA RGS (Zgodność GLI / RTP ~96.2%)
     // ==========================================
     class RGSMath {
+      /**
+       * @param {SecureRNG} rng 
+       */
       constructor(rng) {
         this.rng = rng;
         this.cols = 5;
         this.rows = 3;
         
-        // Prawdziwe taśmy bębnów:
-        // 1: Key, 2: Terminal, 3: Server, 4: Hacker, 5: SecFerro Mask, 6: BOOK (Scatter/Wild)
+        // Prawdziwe taśmy bębnów
+        // Symbole: 1: Key, 2: Terminal, 3: Server, 4: Hacker, 5: SecFerro Mask, 6: BOOK (Scatter/Wild)
         this.reelStrips = [
           [1,2,1,3,1,4,1,6,2,1,3,2,1,5,1,2,3,4,1,2,6],
           [2,1,3,1,4,2,6,1,5,3,1,1,2,6,4,1,3,2,1,4,1],
@@ -369,6 +434,30 @@
           2: { 3: 0.5,  4: 2.0,  5: 8.0 },
           1: { 3: 0.2,  4: 1.0,  5: 4.0 }
         };
+
+        // Zaimplementowano 20 profesjonalnych komercyjnych linii wypłat (Paylines)
+        this.paylines = [
+          [1, 1, 1, 1, 1], // Linia 1 (Środkowy rząd poziomy)
+          [0, 0, 0, 0, 0], // Linia 2 (Górny rząd poziomy)
+          [2, 2, 2, 2, 2], // Linia 3 (Dolny rząd poziomy)
+          [0, 1, 2, 1, 0], // Linia 4 (V-Shape)
+          [2, 1, 0, 1, 2], // Linia 5 (Inverted V-Shape)
+          [0, 0, 1, 2, 2], // Linia 6
+          [2, 2, 1, 0, 0], // Linia 7
+          [1, 2, 2, 1, 0], // Linia 8
+          [1, 0, 0, 1, 2], // Linia 9
+          [1, 0, 1, 2, 1], // Linia 10
+          [1, 2, 1, 0, 1], // Linia 11
+          [0, 1, 0, 1, 0], // Linia 12
+          [2, 1, 2, 1, 2], // Linia 13
+          [0, 1, 1, 1, 0], // Linia 14
+          [2, 1, 1, 1, 2], // Linia 15
+          [1, 1, 0, 1, 1], // Linia 16
+          [1, 1, 2, 1, 1], // Linia 17
+          [0, 2, 0, 2, 0], // Linia 18
+          [2, 0, 2, 0, 2], // Linia 19
+          [0, 2, 2, 2, 0]  // Linia 20
+        ];
       }
 
       spin() {
@@ -422,7 +511,7 @@
         let winningPositions = new Set();
         let collectedLetters = [];
 
-        // Scattery (ID 6)
+        // Scattery (ID 6) - 3 lub więcej w dowolnym miejscu siatki
         let scatterCount = 0;
         for (let c = 0; c < this.cols; c++) {
           for (let r = 0; r < this.rows; r++) {
@@ -433,45 +522,44 @@
         }
         const triggerFreeSpins = scatterCount >= 3;
 
-        const firstColUnique = [...new Set(matrix[0])];
-        
-        firstColUnique.forEach(baseSym => {
-          let checkSym = baseSym === 6 ? null : baseSym;
-          let matchCount = 1;
-          let tempNodes = [];
+        // Profesjonalna ewaluacja w oparciu o 20 zdefiniowanych linii wypłat (Wymóg komercyjny)
+        this.paylines.forEach((lineLayout, lineIdx) => {
+          let checkSym = null;
+          let matchCount = 0;
+          let lineNodes = [];
 
-          for (let r = 0; r < this.rows; r++) {
-            if (matrix[0][r] === baseSym || (baseSym === 6 && matrix[0][r] !== 6)) {
-              tempNodes.push({col: 0, row: r});
-              if (!checkSym && matrix[0][r] !== 6) checkSym = matrix[0][r];
-            }
-          }
+          // Sprawdzamy symbole wzdłuż zdefiniowanej ścieżki linii (od lewej do prawej)
+          for (let c = 0; c < this.cols; c++) {
+            const rowIdx = lineLayout[c];
+            const sym = matrix[c][rowIdx];
 
-          if (!checkSym) checkSym = 5;
-
-          for (let c = 1; c < this.cols; c++) {
-            let found = false;
-            let colNodes = [];
-            for (let r = 0; r < this.rows; r++) {
-              if (matrix[c][r] === checkSym || matrix[c][r] === 6) {
-                found = true;
-                colNodes.push({col: c, row: r});
-              }
-            }
-            if (found) {
-              matchCount++;
-              tempNodes = tempNodes.concat(colNodes);
+            if (c === 0) {
+              checkSym = sym;
+              matchCount = 1;
+              lineNodes.push({ col: c, row: rowIdx });
             } else {
-              break;
+              // Wild (6) zastępuje dowolny inny symbol (oprócz samego siebie)
+              if (sym === checkSym || sym === 6 || checkSym === 6) {
+                if (checkSym === 6 && sym !== 6) {
+                  checkSym = sym; // Uściślenie symbolu jeśli pierwszy był Wildem
+                }
+                matchCount++;
+                lineNodes.push({ col: c, row: rowIdx });
+              } else {
+                break;
+              }
             }
           }
 
           if (matchCount >= 3 && checkSym !== 6 && this.paytable[checkSym]) {
+            // Podział stawki całkowitej na 20 aktywnych linii
+            const lineBet = bet / 20; 
             const payoutMult = this.paytable[checkSym]?.[matchCount] || 0;
-            const lineWin = bet * payoutMult * multiplier;
+            const lineWin = lineBet * payoutMult * multiplier;
+
             totalWin += lineWin;
-            winningLines.push(tempNodes);
-            tempNodes.forEach(node => {
+            winningLines.push(lineNodes.slice(0, matchCount));
+            lineNodes.slice(0, matchCount).forEach(node => {
               winningPositions.add(`${node.col},${node.row}`);
               const letter = letterOverlays[node.col][node.row];
               if (letter) collectedLetters.push(letter);
@@ -490,7 +578,7 @@
     }
 
     // ==========================================
-    // 3. ADAPTACYJNY SILNIK AUDIO (Adaptive Pitch Engine)
+    // 3. ADAPTACYJNY SILNIK AUDIO
     // ==========================================
     class CyberAudioEngine {
       constructor() {
@@ -506,7 +594,6 @@
         this.duckingTimeout = null;
         this.isProcedural = false;
         
-        // Zmienne dynamicznego tempa
         this.currentBaseRate = 1.0;
       }
 
@@ -524,7 +611,7 @@
           this.masterGain.connect(this.ctx.destination);
           
           this.masterGain.gain.value = 0.85;
-          this.musicGain.gain.value = 0.15; // Wyciszenie bazowe dla balansu
+          this.musicGain.gain.value = 0.15;
           this.sfxGain.gain.value = 0.9;
 
           this.loadBackgroundMusic();
@@ -541,10 +628,10 @@
             this.isProcedural = false;
             if (this.bgmEnabled) this.startMusic();
           } else {
-            throw new Error('File background_bookofsecfeero.mp3 not found');
+            throw new Error('Music file not found');
           }
         } catch (e) {
-          console.warn("RGS Audio Dynamic: Brak background_bookofsecfeero.mp3. Uruchamianie proceduralnego generatora fal o podwyższonej gęstości.");
+          console.warn("RGS Audio Dynamic: Brak background_bookofsecfeero.mp3. Uruchamianie generatora syntezy ambient.");
           this.isProcedural = true;
           this.startProceduralAmbient();
         }
@@ -573,13 +660,11 @@
         this.stopProceduralAmbient();
       }
 
-      // Dynamiczny syntezator dźwięków tła dostosowujący się w czasie rzeczywistym
       startProceduralAmbient() {
         if (!this.bgmEnabled || this.synthOsc) return;
         this.synthOsc = this.ctx.createOscillator();
         this.synthGain = this.ctx.createGain();
         this.synthOsc.type = 'sawtooth';
-        // Skorelowane częstotliwości z aktualnym tempem
         this.synthOsc.frequency.setValueAtTime(65.41 * this.currentBaseRate, this.ctx.currentTime);
         this.synthGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
         this.synthOsc.connect(this.synthGain);
@@ -595,31 +680,25 @@
         }
       }
 
-      // Dynamiczne dostosowywanie prędkości i tonacji muzyki (Adaptive Sound Engine)
       updateBGMTempo(isTurbo, isBonus, cascadeMult, jackpotLetters) {
         if (!this.ctx) return;
         
         let targetRate = 1.0;
-        
         if (isTurbo) targetRate += 0.15;
         if (isBonus) targetRate += 0.15;
         if (cascadeMult > 1) targetRate += (cascadeMult - 1) * 0.08;
         
-        // Napięcie Jackpotu - oblicz ile liter zebrano
         const collectedCount = Object.values(jackpotLetters).filter(Boolean).length;
         if (collectedCount === 4) {
-          targetRate += 0.25; // Drastyczne przyspieszenie gdy brakuje tylko 1 litery
+          targetRate += 0.25; 
         }
 
-        // Limitujemy maksymalny pitch, by dźwięk brzmiał profesjonalnie
         const finalRate = Math.min(Math.max(targetRate, 0.8), 1.6);
         this.currentBaseRate = finalRate;
 
         if (this.bgSource) {
           this.bgSource.playbackRate.setValueAtTime(finalRate, this.ctx.currentTime);
         }
-        
-        // Synchronizujemy syntezator proceduralny
         if (this.isProcedural && this.synthOsc) {
           this.synthOsc.frequency.setValueAtTime(65.41 * finalRate, this.ctx.currentTime);
         }
@@ -708,8 +787,8 @@
 
         this.winLines = [];
         
-        // PULA ISKIER (Dynamiczne mienienie się - Particle Rainbow Shimmer)
-        this.maxParticles = 300; // Zwiększono pulę iskrzących cząsteczek dla maksymalnej widowiskowości
+        // PULA ISKIER (Object Pool)
+        this.maxParticles = 350; // Rozbudowano do 350 dynamicznych iskrzących cząsteczek
         this.particlePool = Array.from({ length: this.maxParticles }, () => ({
           active: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, decay: 0, hue: 0, size: 0, shimmerSpeed: 0
         }));
@@ -717,7 +796,7 @@
         // Dynamiczne efekty oświetleniowe (Glow Mapping)
         this.lights = [];
 
-        // Fale uderzeniowe (Blast Shockwaves)
+        // Fale uderzeniowe (Blast Rings)
         this.blastRings = [];
         
         this.w = 0; this.h = 0;
@@ -726,6 +805,7 @@
         
         this.isBonusTheme = false;
         this.screenShake = 0;
+        this.anticipationColumn = -1; // Detekcja bębna wyczekiwania (Anticipation)
 
         window.addEventListener('resize', this.resize.bind(this));
         setTimeout(() => { this.resize(); requestAnimationFrame(this.render.bind(this)); }, 100);
@@ -793,13 +873,11 @@
         }
       }
 
-      // Iskrzące, mieniące się cząsteczki o zmiennej barwie
       spawnExplosion(col, row, baseHue) {
         const x = this.ra.x + (col * this.cW) + (this.cW / 2);
         const y = this.ra.y + (row * this.rH) + (this.rH / 2);
         let count = 0;
 
-        // Generowanie większej gęstości iskrzenia (30 cząsteczek na wygraną)
         for (let i = 0; i < this.maxParticles; i++) {
           const p = this.particlePool[i];
           if (!p.active) {
@@ -841,6 +919,7 @@
         this.reels.forEach((r, col) => {
           if (r.state === 'SPINNING') {
             r.time += dt;
+            // Zmniejszenie opóźnienia obrotu bębna oczekującego w trybie Turbo
             const progress = Math.min(r.time / r.duration, 1);
             const ease = 1 - Math.pow(1 - progress, 3);
             r.pos = r.startPos + (r.targetPos - r.startPos) * ease;
@@ -854,25 +933,23 @@
 
           for (let i = 0; i < 3; i++) {
             if (r.dropOffsets[i] < 0) {
-              r.dropOffsets[i] += dt * 1350; // Bardzo dynamiczny, sprężysty spadek
+              r.dropOffsets[i] += dt * 1350; 
               if (r.dropOffsets[i] > 0) r.dropOffsets[i] = 0;
             }
           }
         });
 
-        // Aktualizacja iskrzących się cząsteczek (Rainbow Shimmer)
         for (let i = 0; i < this.maxParticles; i++) {
           const p = this.particlePool[i];
           if (p.active) {
             p.x += p.vx;
             p.y += p.vy;
             p.life -= p.decay;
-            p.hue = (p.hue + dt * 150) % 360; // Szybsza mieniąca rotacja kolorów
+            p.hue = (p.hue + dt * 150) % 360; 
             if (p.life <= 0) p.active = false;
           }
         }
 
-        // Aktualizacja fal uderzeniowych (Blast Rings)
         for (let i = this.blastRings.length - 1; i >= 0; i--) {
           const b = this.blastRings[i];
           b.life -= dt * b.decay;
@@ -882,7 +959,6 @@
           }
         }
 
-        // Aktualizacja źródeł oświetlenia
         for (let i = this.lights.length - 1; i >= 0; i--) {
           const l = this.lights[i];
           l.life -= dt * l.decay;
@@ -906,7 +982,6 @@
 
         this.update(dt);
 
-        // Czyszczenie ekranu do głębokiej czerni
         this.ctx.fillStyle = '#010103';
         this.ctx.fillRect(0, 0, this.w, this.h);
 
@@ -931,7 +1006,6 @@
           this.ctx.restore();
         });
 
-        // Rysowanie fal uderzeniowych (Blast Rings) z efektem świecenia neonowego
         this.blastRings.forEach(b => {
           this.ctx.save();
           this.ctx.globalCompositeOperation = 'screen';
@@ -966,6 +1040,18 @@
           this.ctx.stroke();
         }
 
+        // Renderowanie ramki wyczekiwania (Anticipation Effect)
+        if (this.anticipationColumn !== -1) {
+          const ax = this.ra.x + (this.anticipationColumn * this.cW);
+          this.ctx.save();
+          this.ctx.strokeStyle = `hsla(${(now / 3) % 360}, 100%, 50%, 0.85)`;
+          this.ctx.lineWidth = 4 + Math.sin(now * 0.02) * 2;
+          this.ctx.shadowColor = `hsla(${(now / 3) % 360}, 100%, 50%, 0.8)`;
+          this.ctx.shadowBlur = 15;
+          this.ctx.strokeRect(ax + 2, this.ra.y + 2, this.cW - 4, this.ra.h - 4);
+          this.ctx.restore();
+        }
+
         // Rysowanie bębnów i symboli
         this.reels.forEach((r, col) => {
           const cx = this.ra.x + (col * this.cW) + (this.cW / 2);
@@ -991,7 +1077,15 @@
                 this.ctx.save();
                 this.ctx.globalAlpha = r.state === 'SPINNING' ? 0.45 : 1.0;
                 
-                // Dodatkowe dynamiczne podświetlenie neonowe symboli o wysokim znaczeniu
+                // Dynamiczna pulsacja symboli w trybie bezczynności (Idle Pulse)
+                let pulseScale = 1.0;
+                if (r.state === 'IDLE') {
+                  pulseScale = 1.0 + Math.sin(now * 0.003 + (col * 0.5) + (row * 0.3)) * 0.03;
+                  this.ctx.translate(cx, cy);
+                  this.ctx.scale(pulseScale, pulseScale);
+                  this.ctx.translate(-cx, -cy);
+                }
+
                 if (r.state === 'IDLE' && (symId === 5 || symId === 6)) {
                   this.ctx.shadowColor = symId === 5 ? '#ff003c' : '#bc13fe';
                   this.ctx.shadowBlur = 18 + Math.sin(now * 0.01) * 6;
@@ -1012,7 +1106,7 @@
           }
         });
 
-        // Rysowanie linii i błysków ramki wygranych
+        // Rysowanie zwycięskich linii wypłat
         if (this.winLines.length > 0) {
           const mainColor = this.isBonusTheme ? '#ff003c' : '#00f0ff';
           this.ctx.strokeStyle = mainColor;
@@ -1038,7 +1132,6 @@
         for (let i = 0; i < this.maxParticles; i++) {
           const p = this.particlePool[i];
           if (p.active) {
-            // Mienienie się (modulacja promienia na podstawie fali cosinus)
             const pulseSize = p.size * (0.6 + 0.4 * Math.cos(now * 0.001 * p.shimmerSpeed));
             
             const grad = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, pulseSize * 1.5);
@@ -1062,8 +1155,8 @@
       startSpin(matrix, letterOverlays, isTurbo, onStop, onComplete) {
         this.winLines = [];
         this.onReelStop = onStop;
+        this.anticipationColumn = -1; // Reset detekcji oczekiwania
 
-        // Ultra krótki czas obrotu dla ekstremalnej dynamiki
         const baseDur = isTurbo ? 0.22 : 0.85;
         const stagger = isTurbo ? 0.04 : 0.18;
 
@@ -1094,7 +1187,6 @@
           const [col, row] = pos.split(',').map(Number);
           this.reels[col].hidden.push(row);
           
-          // Generowanie iskrzenia z kolorem odpowiadającym motywowi
           const baseHue = this.isBonusTheme ? 340 : 185;
           this.spawnExplosion(col, row, baseHue);
         });
@@ -1151,6 +1243,13 @@
           startBal: 0
         };
 
+        // Statystyki sesyjne (Wymóg certyfikacyjny GLI)
+        this.stats = {
+          totalRounds: 0,
+          totalBet: 0.0,
+          totalWin: 0.0
+        };
+
         this.sessionStart = Date.now();
 
         this.cacheDOM();
@@ -1159,6 +1258,7 @@
         this.setupEvents();
         this.startSessionTimer();
         this.listenNetwork();
+        this.startRealityCheckTimer(); // Inicjowanie kontroli czasu rzeczywistego (Reality Check)
       }
 
       cacheDOM() {
@@ -1218,7 +1318,6 @@
           this.updateTurboUI();
           this.audio.playSFX('sine', this.state.isTurbo ? 1200 : 600, 0.1, 0.3);
           
-          // Natychmiastowe dostosowanie tempa BGM do zmiany trybu Turbo
           this.audio.updateBGMTempo(
             this.state.isTurbo,
             this.state.fsCount > 0,
@@ -1240,6 +1339,22 @@
           b.addEventListener('click', (e) => e.target.closest('div[id^="panel-"]').classList.add('opacity-0', 'pointer-events-none'));
         });
 
+        // Wdrożenie Tableli Wypłat i Statystyk
+        document.getElementById('btn-show-paytable').addEventListener('click', () => {
+          document.getElementById('panel-paytable').classList.remove('opacity-0', 'pointer-events-none');
+        });
+        document.getElementById('btn-close-paytable').addEventListener('click', () => {
+          document.getElementById('panel-paytable').classList.add('opacity-0', 'pointer-events-none');
+        });
+
+        document.getElementById('btn-show-stats').addEventListener('click', () => {
+          this.updateStatsUI();
+          document.getElementById('panel-stats').classList.remove('opacity-0', 'pointer-events-none');
+        });
+        document.getElementById('btn-close-stats').addEventListener('click', () => {
+          document.getElementById('panel-stats').classList.add('opacity-0', 'pointer-events-none');
+        });
+
         document.getElementById('toggle-bgm').addEventListener('change', e => {
           this.audio.bgmEnabled = e.target.checked;
           if (e.target.checked) this.audio.startMusic(); else this.audio.stopMusic();
@@ -1247,7 +1362,7 @@
         document.getElementById('toggle-sfx').addEventListener('change', e => this.audio.sfxEnabled = e.target.checked);
 
         document.getElementById('btn-reset-session').addEventListener('click', () => {
-          localStorage.removeItem('secferro_rgs_state_v3.2');
+          localStorage.removeItem('secferro_rgs_state_v3.3');
           window.location.reload();
         });
 
@@ -1291,9 +1406,10 @@
             xp: this.state.xp,
             level: this.state.level,
             jackpotLetters: this.state.jackpotLetters,
-            fsCount: this.state.fsCount
+            fsCount: this.state.fsCount,
+            stats: this.stats
           };
-          localStorage.setItem('secferro_rgs_state_v3.2', JSON.stringify(payload));
+          localStorage.setItem('secferro_rgs_state_v3.3', JSON.stringify(payload));
         } catch(e) {
           console.warn("Storage write blocked", e);
         }
@@ -1301,7 +1417,7 @@
 
       loadSession() {
         try {
-          const saved = localStorage.getItem('secferro_rgs_state_v3.2');
+          const saved = localStorage.getItem('secferro_rgs_state_v3.3');
           if (saved) {
             const data = JSON.parse(saved);
             this.state.balance = data.balance;
@@ -1311,6 +1427,7 @@
             this.state.level = data.level;
             this.state.jackpotLetters = data.jackpotLetters;
             this.state.fsCount = data.fsCount;
+            if (data.stats) this.stats = data.stats;
 
             this.dom.msg.innerText = "SESJA ODZYSKANA";
             setTimeout(() => this.dom.msg.innerText = "POŁĄCZONO Z SYSTEMEM", 2000);
@@ -1340,6 +1457,27 @@
         window.addEventListener('online', updateStatus);
         window.addEventListener('offline', updateStatus);
         updateStatus();
+      }
+
+      // Reality Check Timer (Zgodność z europejskimi rygorami UKGC/MGA)
+      startRealityCheckTimer() {
+        // Reality Check odpala się co 15 minut (900000 ms). Dla demonstracji testowej skrócony do 15 minut.
+        setInterval(() => {
+          this.triggerRealityCheck();
+        }, 900000); 
+
+        document.getElementById('btn-reality-continue').addEventListener('click', () => {
+          document.getElementById('panel-reality').classList.add('opacity-0', 'pointer-events-none');
+        });
+        document.getElementById('btn-reality-exit').addEventListener('click', () => {
+          localStorage.removeItem('secferro_rgs_state_v3.3');
+          window.close();
+          window.location.href = "https://www.totalcasino.pl";
+        });
+      }
+
+      triggerRealityCheck() {
+        document.getElementById('panel-reality').classList.remove('opacity-0', 'pointer-events-none');
       }
 
       startSessionTimer() {
@@ -1372,6 +1510,32 @@
           this.renderer.isBonusTheme = false;
           this.dom.led.classList.remove('border-cyberAlert');
         }
+      }
+
+      updateStatsUI() {
+        document.getElementById('stat-rounds').innerText = this.stats.totalRounds;
+        const calculatedRtp = this.stats.totalBet > 0 
+          ? ((this.stats.totalWin / this.stats.totalBet) * 100).toFixed(1) 
+          : "0.0";
+        document.getElementById('stat-rtp').innerText = `${calculatedRtp}%`;
+      }
+
+      // Dodanie rundy do bocznego logu wygranych
+      logRoundToHistory(bet, win) {
+        const container = document.getElementById('win-history-log');
+        if (this.stats.totalRounds === 1) {
+          container.innerHTML = ''; // Wyczyszczenie domyślnego monitu o braku rund
+        }
+        
+        const timestamp = new Date().toLocaleTimeString('pl-PL');
+        const row = document.createElement('div');
+        row.className = "flex justify-between p-2 bg-white/5 border-b border-white/5 rounded-lg";
+        row.innerHTML = `
+          <span>[${timestamp}] RUNDA #${this.stats.totalRounds}</span>
+          <span class="text-gray-400">STAWKA: ${bet.toFixed(2)} PLN</span>
+          <span class="${win > 0 ? 'text-cyberGreen font-bold' : 'text-gray-500'}">WYGRANA: ${win.toFixed(2)} PLN</span>
+        `;
+        container.insertBefore(row, container.firstChild);
       }
 
       addXP(amount) {
@@ -1409,7 +1573,6 @@
           this.state.cascadeMultiplier = 1;
         }
         
-        // Zsynchronizowanie tempa muzyki w tle do obrotu
         this.audio.updateBGMTempo(
           this.state.isTurbo,
           isFS,
@@ -1436,13 +1599,43 @@
         this.state.matrix = spinData.matrix;
         this.state.letterOverlays = spinData.letterOverlays;
 
+        // --- SPEKTAKULARNY SYSTEM WYCZEKIWANIA (Anticipation Effect) ---
+        // Skanujemy planszę pod kątem liczby Scatterów podczas trwania animacji obrotu
+        let currentScatters = 0;
+        let anticipationTriggered = false;
+
         this.renderer.startSpin(
           this.state.matrix,
           this.state.letterOverlays,
           this.state.isTurbo,
-          (idx) => this.audio.playReelStop(idx),
+          (colIdx) => {
+            // Analiza zatrzymanych bębnów na żywo
+            for (let r = 0; r < 3; r++) {
+              if (this.state.matrix[colIdx][r] === 6) {
+                currentScatters++;
+              }
+            }
+
+            // Jeśli na bębnie 2 wylądują 2 Scattery, aktywujemy tryb oczekiwania na bębnach 3, 4, 5
+            if (currentScatters >= 2 && colIdx < 4 && !this.state.isTurbo) {
+              anticipationTriggered = true;
+              this.renderer.anticipationColumn = colIdx + 1;
+              // Przedłużenie i przyspieszenie obrotu kolejnego bębna oczekującego
+              this.renderer.reels[colIdx + 1].duration += 1.2; 
+              this.audio.playSFX('sawtooth', 350, 1.2, 0.4, 700);
+            }
+
+            this.audio.playReelStop(colIdx);
+          },
           () => this.handleAvalancheEvaluation(bet)
         );
+
+        // Aktualizacja globalnych statystyk sesji
+        if (!isFS) {
+          this.stats.totalRounds++;
+          this.stats.totalBet += bet;
+        }
+
         this.saveSession();
       }
 
@@ -1476,7 +1669,6 @@
           const multiplier = evalResult.win / bet;
           this.addXP(Math.ceil(multiplier * 4));
 
-          // Podbicie tempa muzyki przy każdym kolejnym stopniu kaskady
           this.audio.updateBGMTempo(
             this.state.isTurbo,
             this.state.fsCount > 0,
@@ -1484,6 +1676,7 @@
             this.state.jackpotLetters
           );
 
+          // Wzbogacona kategoryzacja poziomu wygranych
           if (multiplier >= 15) {
             await this.presentBigWin(evalResult.win, multiplier);
           } else {
@@ -1493,11 +1686,13 @@
             this.updateUI();
           }
 
+          // Aktywacja rundy bonusowej
           if (evalResult.triggerFreeSpins) {
             this.state.pendingFreeSpins = true;
           }
 
-          // Ultraszybkie przejście w trybie Turbo dla bezkompromisowej dynamiki
+          this.stats.totalWin += evalResult.win;
+
           const delay = this.state.isTurbo ? 150 : 800;
           setTimeout(() => {
             this.audio.playImplode();
@@ -1538,7 +1733,6 @@
           }
         }
 
-        // Ekspresowe odświeżenie kaskadowe
         setTimeout(() => {
           this.state.cascadeMultiplier++;
           this.updateUI();
@@ -1552,9 +1746,13 @@
         this.isSpinning = false;
         this.dom.spinBtn.disabled = false;
         this.dom.msg.innerText = "PRZESYŁ GOTOWY";
+
+        // Rejestrowanie wygranej rundy w logu sesyjnym
+        const lastRoundWin = parseFloat(this.dom.win.innerText) || 0.0;
+        this.logRoundToHistory(this.state.bets[this.state.betIndex], lastRoundWin);
+
         this.saveSession();
 
-        // Przywrócenie standardowej prędkości muzyki po zakończeniu kaskad
         this.audio.updateBGMTempo(
           this.state.isTurbo,
           this.state.fsCount > 0,
@@ -1623,7 +1821,6 @@
           this.dom.msg.innerText = "KRYTYCZNE NAPIĘCIE INTEGRALNOŚCI JACKPOTU";
           this.audio.playSFX('sawtooth', 300, 0.5, 0.45, 600);
           
-          // Podwyższenie tempa przez dynamiczną zmianę parametrów sesji
           this.audio.updateBGMTempo(
             this.state.isTurbo,
             this.state.fsCount > 0,
@@ -1661,7 +1858,6 @@
         this.endCycle();
       }
 
-      // Szybkie i bezbłędne pomijanie okna wygranej (Slam-Skip / Fast-track)
       presentBigWin(amount, mult) {
         return new Promise(resolve => {
           this.audio.playWinBig();
@@ -1675,7 +1871,6 @@
 
           const skipAction = () => {
             if (isCounting) {
-              // Pierwsze kliknięcie: natychmiastowe zakończenie odliczania kwoty
               isCounting = false;
               current = amount;
               this.dom.winAmt.innerText = current.toFixed(2);
@@ -1684,7 +1879,6 @@
               contBtn.style.display = 'block';
               this.audio.playSFX('sine', 1200, 0.2, 0.4);
             } else {
-              // Drugie kliknięcie: Błyskawiczne zamknięcie nakładki
               this.dom.overlay.classList.add('opacity-0', 'pointer-events-none');
               const contBtn = document.getElementById('win-continue-msg');
               contBtn.style.display = 'none';
@@ -1696,7 +1890,7 @@
           this.dom.overlay.addEventListener('click', skipAction);
 
           const step = (now) => {
-            if (!isCounting) return; // Jeśli użytkownik pominął, zatrzymaj pętlę rAF
+            if (!isCounting) return; 
             const p = Math.min((now - start) / duration, 1);
             const ease = 1 - Math.pow(1 - p, 3);
             current = amount * ease;
