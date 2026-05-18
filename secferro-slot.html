@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="description" content="Book of SecFerro // SecFerro Division Tactical Slot. Designed by Anonymousik.is-a.dev">
-  <title>SecFerro Division // Terminal Engine v10.0</title>
+  <meta name="description" content="Book of SecFerro // SecFerro Division Tactical Slot. Cyber Intrusion Engine. Inspired by FerroART.">
+  <title>SecFerro Division // Terminal Intrusion Engine</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -20,12 +20,12 @@
           },
           colors: {
             cyberGreen: '#00ff41',
-            cyberDark: '#020205',
+            cyberDark: '#010103',
             cyberAlert: '#ff003c',
             cyberBlue: '#00f0ff',
             cyberWarning: '#ffea00',
-            cyberGold: '#ffb300',
-            panelBg: 'rgba(3, 3, 6, 0.98)',
+            cyberPurple: '#bc13fe',
+            panelBg: 'rgba(2, 2, 5, 0.96)',
           }
         }
       }
@@ -47,22 +47,32 @@
       touch-action: none;
     }
 
-    /* Efekt retro monitora kineskopowego CRT */
+    /* Kineskop CRT Retro Scanline */
     #crt-layer {
       position: fixed; inset: 0;
       background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-                  linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
       background-size: 100% 4px, 6px 100%;
       pointer-events: none; z-index: 9999;
       mix-blend-mode: overlay;
     }
 
-    /* Bezpieczne marginesy dla nowoczesnych smartfonów */
+    /* Glow Neon Filter */
+    .neon-glow-cyan {
+      filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6));
+    }
+    .neon-glow-alert {
+      filter: drop-shadow(0 0 8px rgba(255, 0, 60, 0.6));
+    }
+    .neon-glow-green {
+      filter: drop-shadow(0 0 8px rgba(0, 255, 65, 0.6));
+    }
+
     .safe-padding {
       padding-top: max(0.5rem, env(safe-area-inset-top));
       padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-      padding-left: max(0.75rem, env(safe-area-inset-left));
-      padding-right: max(0.75rem, env(safe-area-inset-right));
+      padding-left: max(0.5rem, env(safe-area-inset-left));
+      padding-right: max(0.5rem, env(safe-area-inset-right));
     }
 
     .hardware-accel {
@@ -72,146 +82,159 @@
 
     .btn-active:active {
       transform: scale(0.95);
-      filter: brightness(1.3);
+      filter: brightness(1.2);
+    }
+
+    /* Animacja Glitch */
+    @keyframes glitch {
+      0% { transform: translate(0) }
+      20% { transform: translate(-2px, 2px) }
+      40% { transform: translate(-2px, -2px) }
+      60% { transform: translate(2px, 2px) }
+      80% { transform: translate(2px, -2px) }
+      100% { transform: translate(0) }
+    }
+    .glitch-hover:hover {
+      animation: glitch 0.3s linear infinite;
     }
 
     @keyframes pulse-glow {
-      0%, 100% { text-shadow: 0 0 8px rgba(0, 255, 65, 0.4), 0 0 2px rgba(0, 255, 65, 0.2); opacity: 0.9; }
-      50% { text-shadow: 0 0 20px rgba(0, 255, 65, 0.8), 0 0 6px rgba(0, 255, 65, 0.4); opacity: 1; }
+      0%, 100% { text-shadow: 0 0 8px rgba(0, 255, 65, 0.3), 0 0 2px rgba(0, 255, 65, 0.1); opacity: 0.8; }
+      50% { text-shadow: 0 0 22px rgba(0, 255, 65, 0.8), 0 0 6px rgba(0, 255, 65, 0.3); opacity: 1; }
     }
     .text-pulse { animation: pulse-glow 2.5s infinite ease-in-out; }
-
-    @keyframes border-pulse {
-      0%, 100% { border-color: rgba(0, 255, 65, 0.15); box-shadow: 0 0 10px rgba(0, 255, 65, 0.02); }
-      50% { border-color: rgba(0, 255, 65, 0.5); box-shadow: 0 0 15px rgba(0, 255, 65, 0.1); }
-    }
-    .active-border-glow { animation: border-pulse 2s infinite ease-in-out; }
-
-    /* Szklany, nowoczesny futuryzm */
-    .glass-panel {
-      background: rgba(3, 3, 7, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(0, 255, 65, 0.15);
-    }
 
     input, select, button {
       outline: none;
     }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 4px;
-    }
-    ::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.2);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(0, 255, 65, 0.2);
-      border-radius: 2px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(0, 255, 65, 0.5);
-    }
   </style>
 </head>
-<body class="w-full h-full flex items-center justify-center bg-radial from-[#080812] to-[#010103]">
+<body class="w-full h-full flex items-center justify-center bg-radial from-[#04040a] to-[#010103]">
 
   <div id="crt-layer"></div>
 
   <!-- Główny Kontener Aplikacji -->
-  <div class="relative w-full h-full max-w-[500px] max-h-[100svh] flex flex-col justify-between bg-cyberDark border-x border-cyberGreen/10 shadow-[0_0_100px_rgba(0,255,65,0.05)] overflow-hidden safe-padding hardware-accel">
+  <div class="relative w-full h-full max-w-[480px] max-h-[100svh] flex flex-col justify-between bg-cyberDark border-x border-cyberGreen/10 shadow-[0_0_80px_rgba(0,255,65,0.03)] overflow-hidden safe-padding hardware-accel">
     
     <!-- ========================================== -->
-    <!-- WARSTWA 1: EKRAN ŁADOWANIA (BOOT SEQUENCE) -->
+    <!-- WARSTWA 1: PROTOKÓŁ ROZRUCHOWY (BOOTING)   -->
     <!-- ========================================== -->
-    <div id="splash-loader" class="absolute inset-0 bg-cyberDark z-50 flex flex-col justify-between p-6 transition-opacity duration-700">
+    <div id="splash-loader" class="absolute inset-0 bg-[#020205] z-50 flex flex-col justify-between p-6 transition-opacity duration-700">
       <div class="flex-1 flex flex-col justify-center items-center gap-6">
-        <div class="font-tech text-3xl font-bold tracking-[0.4em] text-cyberGreen text-center text-pulse">
+        <!-- Logo inspirowane FerroART i Hacker Maską -->
+        <div class="relative w-24 h-24 mb-2">
+          <!-- Wektorowy zarys maski cybernetycznej -->
+          <svg viewBox="0 0 100 100" class="w-full h-full text-cyberGreen neon-glow-green" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M20,30 Q50,15 80,30 L80,55 Q80,80 50,92 Q20,80 20,55 Z" />
+            <path d="M35,45 L45,45 M55,45 L65,45" stroke-linecap="round"/>
+            <path d="M30,65 Q50,80 70,65" stroke-linecap="round"/>
+            <path d="M50,15 L50,92" stroke-dasharray="2,4" opacity="0.5"/>
+          </svg>
+        </div>
+        
+        <div class="font-tech text-xl font-bold tracking-[0.35em] text-cyberGreen text-center text-pulse uppercase">
           SECFERRO DIVISION
         </div>
         
-        <!-- Pasek postępu -->
-        <div class="w-full max-w-[280px] border border-cyberGreen/20 p-1 bg-black rounded">
-          <div id="loader-bar" class="h-2 bg-gradient-to-r from-cyberBlue to-cyberGreen w-0 transition-all duration-100 shadow-[0_0_15px_rgba(0,255,65,0.6)] rounded-sm"></div>
+        <!-- Pasek postępu hakerskiego wstrzykiwania -->
+        <div class="w-full max-w-[260px] border border-cyberGreen/20 p-1 bg-black rounded-sm">
+          <div id="loader-bar" class="h-2 bg-gradient-to-r from-cyberBlue via-cyberPurple to-cyberGreen w-0 transition-all duration-100 shadow-[0_0_12px_rgba(0,255,65,0.5)]"></div>
         </div>
         
-        <!-- Status logów rozruchu -->
-        <div id="loader-status" class="font-mono text-[9px] text-cyberBlue/70 tracking-wider text-center h-4">
-          INICJOWANIE SYSTEMU...
+        <!-- Status logów -->
+        <div id="loader-status" class="font-mono text-[8px] text-cyberBlue/70 tracking-wider text-center h-4">
+          INICJOWANIE POŁĄCZENIA SYGNALNEGO...
         </div>
       </div>
       
       <div class="font-mono text-[7px] text-gray-600 text-center uppercase tracking-widest shrink-0">
-        SECFERRO CORE ENGINE v10.0 // FULLY CERTIFIED MGA & GLI-19 CORE
+        SECFERRO DIVISION // PROPRIETARY COMPLIANT RGS CORE ENGINE v10.0
       </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- WARSTWA 2: INTERAKTYWNE MENU GŁÓWNE -->
+    <!-- WARSTWA 2: INTERAKTYWNE MENU GŁÓWNE        -->
     <!-- ========================================== -->
-    <div id="main-menu" class="absolute inset-0 bg-cyberDark/95 z-40 flex flex-col justify-between p-6 transition-opacity duration-500 hidden opacity-0">
+    <div id="main-menu" class="absolute inset-0 bg-[#020204]/98 z-40 flex flex-col justify-between p-6 transition-opacity duration-500 hidden opacity-0">
       <div class="w-full flex justify-between items-center text-[9px] font-mono text-gray-500 shrink-0 border-b border-cyberGreen/10 pb-2">
-        <span>SECURITY LEVEL: AUTHENTICATED</span>
-        <span>SESSION: <span id="menu-sid" class="text-cyberBlue font-bold">SF_AWAITING</span></span>
+        <span>STATUS: ZAKOŃCZONO SZYFROWANIE</span>
+        <span>ID_SESJI: <span id="menu-sid" class="text-cyberBlue font-bold">SF_CONNECTED</span></span>
       </div>
 
-      <div class="flex-1 flex flex-col justify-center items-center gap-8 select-none">
-        <div class="text-center">
-          <h2 class="font-tech text-4xl font-bold tracking-[0.45em] text-cyberGreen text-pulse uppercase">
-            BOOK OF SECFERRO
-          </h2>
-          <p class="font-mono text-[9px] text-gray-400 mt-3 tracking-[0.25em] uppercase">EXTREME CYBER SLOT ARCHITECTURE</p>
+      <div class="flex-1 flex flex-col justify-center items-center gap-6 select-none text-center">
+        <!-- Awatar hakerski z neonową maską i słuchawkami z nadesłanych zdjęć -->
+        <div class="w-32 h-32 rounded-full border-2 border-cyberBlue/40 flex items-center justify-center p-2 bg-black/60 shadow-[0_0_25px_rgba(0,240,255,0.15)] overflow-hidden relative">
+          <!-- Ikona hakera podświetlona -->
+          <svg viewBox="0 0 120 120" class="w-20 h-20 text-cyberBlue neon-glow-cyan" fill="none" stroke="currentColor" stroke-width="2">
+            <!-- Słuchawki -->
+            <path d="M25,65 A35,35 0 0,1 95,65" stroke-width="3" />
+            <rect x="20" y="55" width="10" height="20" rx="3" fill="currentColor"/>
+            <rect x="90" y="55" width="10" height="20" rx="3" fill="currentColor"/>
+            <!-- Kaptur -->
+            <path d="M35,90 Q15,60 30,35 Q60,10 90,35 Q105,60 85,90" stroke-width="1.5" stroke-dasharray="1,1" />
+            <!-- Maska z krzyżykami zamiast oczu (jak na zdjęciach) -->
+            <path d="M40,55 L50,65 M50,55 L40,65" stroke-width="2.5" stroke="#ff003c" />
+            <path d="M70,55 L80,65 M80,55 L70,65" stroke-width="2.5" stroke="#ff003c" />
+            <path d="M45,78 Q60,88 75,78" stroke-linecap="round" />
+          </svg>
         </div>
 
-        <div id="btn-start-game" class="cursor-pointer py-4 px-8 border border-cyberGreen/30 rounded bg-black/40 hover:bg-cyberGreen/5 transition-colors text-center active-border-glow max-w-[340px]">
-          <span class="font-tech text-xs text-cyberGreen tracking-[0.25em] text-pulse uppercase block">
-            ZAKTYWUJ PROTOKÓŁ SYSTEMU
+        <div>
+          <h2 class="font-tech text-3xl font-bold tracking-[0.3em] text-cyberGreen text-pulse uppercase">
+            FERROART INTRUSION
+          </h2>
+          <p class="font-mono text-[8px] text-gray-400 mt-2 tracking-[0.2em] uppercase">BOOK OF SECFERRO // TACTICAL SLOT v10.0</p>
+        </div>
+
+        <!-- Aktywator i odblokowanie Audio -->
+        <div id="btn-start-game" class="cursor-pointer py-3.5 px-6 border border-cyberGreen/30 rounded-sm bg-black/60 hover:bg-cyberGreen/5 transition-colors text-center active-border-glow max-w-[320px] glitch-hover">
+          <span class="font-tech text-xs text-cyberGreen tracking-[0.2em] text-pulse uppercase block">
+            URUCHOM PAYLOAD I GRAJ
           </span>
         </div>
       </div>
 
       <div class="font-mono text-[7px] text-gray-600 text-center tracking-widest shrink-0">
-        DESIGNED BY ANONYMOUSIK // SECFERRO DIVISION 2026
+        POWERED BY FERRO ART: WILCZY WYROK SYSTEM
       </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- WARSTWA 3: GŁÓWNA KONSOLA SYSTEMOWA GRY -->
+    <!-- WARSTWA 3: GŁÓWNA KONSOLA SYSTEMOWA GRY    -->
     <!-- ========================================== -->
     
     <!-- NAGŁÓWEK SYSTEMOWY (UKGC/MGA Compliant) -->
-    <header class="w-full h-12 flex items-center justify-between px-3 border-b border-cyberGreen/10 bg-black/60 z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
+    <header class="w-full h-12 flex items-center justify-between px-3 border-b border-cyberGreen/10 bg-black/80 z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
       <div class="flex flex-col">
         <span class="text-cyberBlue font-bold">NODE: SECFERRO_TACTICAL_v10.0</span>
-        <span class="text-gray-500 font-mono">CZAS_SESJI: <span id="rg-session-time" class="text-cyberGreen font-bold">00:00:00</span></span>
+        <span class="text-gray-500 font-mono">CZAS_SESJI: <span id="rg-session-time" class="text-cyberGreen">00:00:00</span></span>
       </div>
       <div class="flex flex-col items-end">
         <span id="rg-clock" class="text-cyberWarning font-mono">00:00:00 UTC</span>
-        <span class="text-[8px] text-gray-500">RTP: <span class="text-cyberGreen font-bold">96.5%</span></span>
+        <span class="text-[8px] text-gray-500">SOUND: <span class="text-cyberGreen font-bold" id="sound-indicator">FERRO_ART.mp3</span></span>
       </div>
     </header>
 
     <!-- CENTRALNY VIEWPORT -->
-    <main class="relative flex-1 w-full flex flex-col justify-center items-center px-2 py-2 overflow-hidden z-10">
+    <main class="relative flex-1 w-full flex flex-col justify-center items-center px-2 py-1 overflow-hidden z-10">
       
       <!-- Nagłówek wizualny -->
-      <div class="w-full text-center py-1.5 z-20 shrink-0 select-none">
-        <h1 class="font-tech font-bold tracking-[0.35em] text-cyberGreen text-lg md:text-xl uppercase transition-colors" id="game-title">
+      <div class="w-full text-center py-1 z-20 shrink-0 select-none">
+        <h1 class="font-tech font-bold tracking-[0.35em] text-cyberGreen text-lg uppercase" id="app-title">
           <span class="text-cyberBlue font-normal">&lt;</span> BOOK_OF_SECFERRO <span class="text-cyberBlue font-normal">&gt;</span>
         </h1>
-        <div id="tx-hash-display" class="text-[8px] text-gray-500 font-mono tracking-wider truncate max-w-[280px] mx-auto mt-0.5">AWAITING_GENESIS_ENTROPY</div>
+        <div id="tx-hash-display" class="text-[8px] text-gray-600 font-mono tracking-widest truncate max-w-[280px] mx-auto mt-0.5">AWAITING_GENESIS_ENTROPY</div>
       </div>
 
-      <!-- Elastyczny kontener bębnów -->
-      <div id="canvas-container" class="relative w-full aspect-[5/3.2] max-w-[480px] border border-cyberGreen/20 rounded bg-black/95 shadow-[0_0_40px_rgba(0,255,65,0.03)] overflow-hidden z-10">
-        <!-- Overlay darmowych gier (Free Spins Bonus Tracker) -->
-        <div id="free-spin-overlay" class="absolute top-0 inset-x-0 h-8 bg-gradient-to-r from-cyberAlert/90 to-black border-b border-cyberAlert/40 flex items-center justify-between px-4 text-[10px] font-tech text-white z-20 hidden">
-          <span class="tracking-widest uppercase">FREE SPINS OVERLOAD ACTIVE</span>
-          <span class="font-bold text-cyberWarning">POZOSTAŁO: <span id="fs-remaining-counter">0</span></span>
+      <!-- Elastyczny kontener symulujący fizyczne bębny -->
+      <div id="canvas-container" class="relative w-full aspect-[5/3.2] max-w-[460px] border border-cyberGreen/20 rounded-sm bg-black/95 shadow-[0_0_40px_rgba(0,255,65,0.03)] overflow-hidden z-10">
+        <!-- Pasek informacyjny o darmowych spinach -->
+        <div id="fs-banner" class="absolute top-0 inset-x-0 h-7 bg-cyberAlert/10 border-b border-cyberAlert/30 flex items-center justify-between px-3 text-[9px] font-tech text-white z-20 hidden">
+          <span class="tracking-widest uppercase text-cyberAlert font-bold">SYSTEM OVERLOAD IN PROGRESS</span>
+          <span class="font-bold text-cyberWarning">DARMOWE RUNY: <span id="fs-count">0</span></span>
         </div>
         
-        <canvas id="gameCanvas" class="w-full h-full block" aria-label="Wektorowa matryca slotowa" role="img"></canvas>
+        <canvas id="gameCanvas" class="w-full h-full block" aria-label="Wektorowa matryca deszyfrująca" role="img"></canvas>
       </div>
 
     </main>
@@ -223,31 +246,31 @@
       <div class="w-full h-8 bg-black border-b border-cyberGreen/10 px-3 flex items-center justify-between text-[9px] font-mono select-none">
         <div class="flex items-center gap-1">
           <span class="text-cyberBlue">root@secferro:~#</span>
-          <span id="game-status" class="text-cyberGreen truncate max-w-[240px]">AWAITING_PAYLOAD_EXECUTION</span>
+          <span id="game-status" class="text-cyberGreen truncate max-w-[210px]">AWAITING_PAYLOAD_EXECUTION</span>
         </div>
         <div class="flex items-center gap-1.5">
           <div id="rgs-indicator" class="w-1.5 h-1.5 rounded-full bg-cyberGreen animate-pulse"></div>
-          <span class="text-[8px] text-gray-600">SSL_ACTIVE</span>
+          <span class="text-[8px] text-gray-600">LINK_SECURE</span>
         </div>
       </div>
 
       <!-- Pulpit klawiszy funkcyjnych -->
-      <div class="w-full flex justify-between items-center px-4 py-3 bg-gradient-to-t from-[#020204] to-[#0a0a0f]">
+      <div class="w-full flex justify-between items-center px-4 py-2.5 bg-gradient-to-t from-[#010103] to-[#08080c]">
         
         <div class="flex gap-2">
-          <!-- Diagnostyka / Ustawienia -->
-          <button id="btn-settings" class="w-11 h-11 border border-cyberGreen/25 bg-[#05050a] text-cyberGreen flex items-center justify-center rounded btn-active transition-all" aria-label="Audyt i ustawienia">
+          <!-- Konfiguracja systemu -->
+          <button id="btn-settings" class="w-11 h-11 border border-cyberGreen/25 bg-[#050508] text-cyberGreen flex items-center justify-center rounded btn-active transition-all" aria-label="Audyt i ustawienia">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
           </button>
           <!-- Autoplay limits -->
-          <button id="btn-auto" class="w-11 h-11 border border-cyberGreen/25 bg-[#05050a] text-cyberGreen flex items-center justify-center rounded btn-active transition-all" aria-label="Gra automatyczna">
+          <button id="btn-auto" class="w-11 h-11 border border-cyberGreen/25 bg-[#050508] text-cyberGreen flex items-center justify-center rounded btn-active transition-all" aria-label="Gra automatyczna">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"/></svg>
           </button>
         </div>
 
         <!-- Główny Przycisk SPIN (Touch Trigger) -->
-        <button id="btn-spin" class="relative px-10 py-3.5 border border-cyberGreen bg-cyberGreen/10 text-cyberGreen rounded active-border-glow btn-active transition-all select-none disabled:opacity-20 disabled:pointer-events-none">
-          <span class="text-sm font-tech font-bold tracking-[0.25em]">EXECUTE()</span>
+        <button id="btn-spin" class="relative px-7 py-3 border border-cyberGreen bg-cyberGreen/10 text-cyberGreen rounded active-border-glow btn-active transition-all select-none disabled:opacity-20 disabled:pointer-events-none">
+          <span class="text-xs font-tech font-bold tracking-[0.25em]">LAUNCH()</span>
         </button>
 
       </div>
@@ -255,35 +278,35 @@
       <!-- Wyświetlacze parametrów (Siatka bilansów) -->
       <div class="grid grid-cols-3 gap-0 border-t border-cyberGreen/10 bg-black text-center font-mono select-none">
         <div class="flex flex-col border-r border-cyberGreen/10 py-2">
-          <span class="text-[7px] text-gray-500 tracking-wider">SALDO</span>
-          <span id="display-balance" class="text-xs font-bold text-cyberBlue">1000.00 Ƀ</span>
+          <span class="text-[7px] text-gray-500 tracking-wider">KAPITAŁ (BALANCE)</span>
+          <span id="display-balance" class="text-[11px] font-bold text-cyberBlue">1000.00 Ƀ</span>
         </div>
         <div class="flex flex-col border-r border-cyberGreen/10 py-2 cursor-pointer hover:bg-cyberGreen/5 transition-colors" id="bet-selector">
-          <span class="text-[7px] text-gray-500 tracking-wider">STAWKA ↻</span>
-          <span id="display-bet" class="text-xs font-bold text-cyberWarning">10.00 Ƀ</span>
+          <span class="text-[7px] text-gray-500 tracking-wider">STAWKA (BET) ↻</span>
+          <span id="display-bet" class="text-[11px] font-bold text-cyberWarning">10.00 Ƀ</span>
         </div>
-        <div class="flex flex-col py-2 bg-cyberGreen/5" id="win-display-box">
-          <span class="text-[7px] text-gray-500 tracking-wider">WYGRANA</span>
-          <span id="display-win" class="text-xs font-bold text-cyberGreen">0.00 Ƀ</span>
+        <div class="flex flex-col py-2 bg-cyberGreen/5">
+          <span class="text-[7px] text-gray-500 tracking-wider">ZDESZYFROWANO (WIN)</span>
+          <span id="display-win" class="text-[11px] font-bold text-cyberGreen">0.00 Ƀ</span>
         </div>
       </div>
 
     </section>
 
     <!-- ========================================== -->
-    <!-- WARSTWY SYSTEMOWE (MODAL SYSTEM OVERLAYS) -->
+    <!-- WARSTWY SYSTEMOWE (MODALS)                 -->
     <!-- ========================================== -->
 
     <!-- RESPONSIBLE GAMING / AUTOPLAY MODAL -->
     <div id="panel-auto" class="absolute inset-0 bg-black/98 backdrop-blur-md z-50 flex flex-col p-5 opacity-0 pointer-events-none transition-opacity duration-200 select-none font-mono">
       <div class="flex justify-between items-center border-b border-cyberGreen/20 pb-2">
-        <h2 class="font-tech text-base font-bold text-cyberGreen tracking-widest">> CONTROLLER_AUTOPLAY</h2>
-        <button class="close-overlay text-cyberAlert font-mono text-lg p-1 btn-active">✕</button>
+        <h2 class="font-tech text-sm font-bold text-cyberGreen tracking-widest">> AUTOPLAY_CONFIG</h2>
+        <button class="close-overlay text-cyberAlert font-mono text-base p-1 btn-active">✕</button>
       </div>
       <div class="flex-1 flex flex-col gap-4 py-4 text-xs text-gray-300">
         
         <div class="flex flex-col gap-1">
-          <label class="text-cyberBlue text-[10px]">CYKLE AUTOPLAY:</label>
+          <label class="text-cyberBlue text-[9px]">CYKLE AUTOPLAY:</label>
           <select id="auto-spins" class="bg-[#050508] border border-cyberGreen/20 text-cyberGreen p-2 rounded outline-none text-xs">
             <option value="10">10 SPINS</option>
             <option value="25">25 SPINS</option>
@@ -293,43 +316,43 @@
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="text-cyberBlue text-[10px]">LIMIT STRAT (LOSS LIMIT) [Ƀ]:</label>
+          <label class="text-cyberBlue text-[9px]">LIMIT STRAT [Ƀ]:</label>
           <input type="number" id="auto-loss-limit" value="100" class="bg-[#050508] border border-cyberGreen/20 text-cyberAlert p-2 rounded outline-none text-xs">
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="text-cyberBlue text-[10px]">STOP PRZY JEDNORAZOWEJ WYGRANEJ [Ƀ]:</label>
+          <label class="text-cyberBlue text-[9px]">STOP PRZY WYGRANEJ JEDNORAZOWEJ [Ƀ]:</label>
           <input type="number" id="auto-win-limit" value="500" class="bg-[#050508] border border-cyberGreen/20 text-cyberGreen p-2 rounded outline-none text-xs">
         </div>
 
         <button id="start-autoplay" class="mt-auto py-3 border border-cyberGreen bg-cyberGreen/10 text-cyberGreen font-bold tracking-widest hover:bg-cyberGreen/20 transition-all rounded btn-active">
-          START_AUTOPLAY
+          INICJUJ AUTOPLAY
         </button>
       </div>
     </div>
 
-    <!-- CONFIGURATION / SYSTEM DIAGNOSTICS -->
+    <!-- CONFIGURATION / DIALOG DIAGNOSTYCZNY -->
     <div id="panel-settings" class="absolute inset-0 bg-black/98 backdrop-blur-md z-50 flex flex-col p-5 opacity-0 pointer-events-none transition-opacity duration-200 select-none font-mono">
       <div class="flex justify-between items-center border-b border-cyberGreen/20 pb-2">
-        <h2 class="font-tech text-base font-bold text-cyberGreen tracking-widest">> TERMINAL_DIAGNOSTICS</h2>
-        <button class="close-overlay text-cyberAlert font-mono text-lg p-1 btn-active">✕</button>
+        <h2 class="font-tech text-sm font-bold text-cyberGreen tracking-widest">> DIAGNOSTYKA_ASYSTENTA</h2>
+        <button class="close-overlay text-cyberAlert font-mono text-base p-1 btn-active">✕</button>
       </div>
       <div class="flex-1 flex flex-col gap-3 py-3 text-xs text-gray-300 overflow-hidden">
         
         <div class="flex justify-between items-center bg-black/40 p-2 border border-cyberGreen/10">
-          <span>DŹWIĘKI PAYLOAD_SFX</span>
+          <span>TŁO AUDIO (FERRO ART)</span>
           <input type="checkbox" id="toggle-sfx" checked class="accent-cyberGreen w-4 h-4 cursor-pointer">
         </div>
         
         <div class="flex justify-between items-center bg-black/40 p-2 border border-cyberGreen/10">
-          <span>DESZYFRACJA_TURBO (FAST SPIN)</span>
+          <span>INTENSYWNY ROZRUCH (FAST SPIN)</span>
           <input type="checkbox" id="toggle-turbo" class="accent-cyberGreen w-4 h-4 cursor-pointer">
         </div>
 
         <!-- Dziennik audytu -->
         <div class="flex-1 border border-cyberBlue/20 bg-[#020205] rounded p-3 flex flex-col overflow-hidden">
           <div class="text-[8px] text-cyberBlue mb-1.5 border-b border-cyberBlue/20 pb-1 flex justify-between shrink-0">
-            <span>SECURE_AUDIT_TRAIL (RGS)</span>
+            <span>DIAGNOSTICS_TRAIL (RGS)</span>
             <span class="text-cyberGreen font-bold" id="log-count">0 REKORDÓW</span>
           </div>
           <div id="diagnostic-log" class="overflow-y-auto text-[7px] space-y-1 flex-1 font-mono text-gray-500">
@@ -339,20 +362,17 @@
       </div>
     </div>
 
-    <!-- TRYB BONUSOWY SPECJALNY POPUP -->
-    <div id="bonus-trigger-overlay" class="absolute inset-0 bg-black/95 z-30 flex flex-col items-center justify-center p-6 opacity-0 pointer-events-none transition-opacity duration-300 select-none text-center">
-      <div class="border border-cyberAlert p-6 rounded bg-black max-w-[340px] shadow-[0_0_50px_rgba(255,0,60,0.3)]">
-        <h2 class="font-tech text-2xl font-bold text-cyberAlert tracking-widest animate-pulse">SYSTEM OVERLOAD</h2>
-        <p class="font-mono text-xs text-white my-3">PRZEŁAMANO PROTOKÓŁ ZABEZPIECZEŃ</p>
+    <!-- INTERFEJS BONUSU (POPUP SYSTEM OVERLOAD) -->
+    <div id="bonus-overlay" class="absolute inset-0 bg-black/98 z-30 flex flex-col items-center justify-center p-6 opacity-0 pointer-events-none transition-opacity duration-300 select-none text-center">
+      <div class="border border-cyberAlert p-6 rounded bg-black max-w-[320px] shadow-[0_0_50px_rgba(255,0,60,0.25)]">
+        <h2 class="font-tech text-xl font-bold text-cyberAlert tracking-widest animate-pulse">SYSTEM OVERLOAD</h2>
+        <p class="font-mono text-[10px] text-white my-3 uppercase">Włam na główny serwer SecFerro Division udany!</p>
         <div class="border-y border-cyberAlert/20 py-3 my-3">
-          <span class="font-mono text-[9px] text-gray-400 block mb-1">WYBRANY EXPANDING SYMBOL:</span>
-          <div class="h-16 flex items-center justify-center" id="bonus-symbol-display">
-            <!-- Canvas lub wektor -->
-          </div>
-          <span class="font-tech text-lg text-cyberWarning tracking-widest font-bold" id="bonus-symbol-name">BOOK</span>
+          <span class="font-mono text-[8px] text-gray-400 block mb-1">DARMOWE PRZEŁAMANIA KODU:</span>
+          <span class="font-tech text-2xl text-cyberWarning tracking-widest font-bold">10 FREE RUNS</span>
         </div>
-        <button id="btn-start-freespins" class="w-full py-2.5 bg-cyberAlert text-white font-tech font-bold tracking-widest text-sm rounded btn-active">
-          START_FREE_SPINS (10)
+        <button id="btn-start-freespins" class="w-full py-2.5 bg-cyberAlert text-white font-tech font-bold tracking-widest text-xs rounded btn-active">
+          INICJUJ OVERLOAD
         </button>
       </div>
     </div>
@@ -415,19 +435,17 @@
         this.reelsCount = 5;
         this.rowsCount = 3;
 
-        // Wypłaty za linie oparte na wartości zakładu
         this.paytable = {
-          5: { 3: 5,  4: 25, 5: 200 },  // [B:SF] (Wild / Scatter)
-          4: { 3: 3.0,4: 12, 5: 80 },   // Firewall (Shield)
-          3: { 3: 2.0,4: 8,  5: 40 },   // Crypto-key
-          2: { 3: 1.0,4: 4,  5: 20 },   // Bug (Malware)
-          1: { 3: 0.5,4: 2,  5: 10 }    // Terminal Shell
+          5: { 3: 10,  4: 50,  5: 500 },  // Haker w Neonowej Masce (Scatter / Wild)
+          4: { 3: 4.0, 4: 16,  5: 100 },  // Maska Anonymous z krzyżykami
+          3: { 3: 2.5, 4: 10,  5: 50 },   // Cyfrowy Serwer Rack
+          2: { 3: 1.5, 4: 5,   5: 25 },   // Terminal hakerski (Komenda)
+          1: { 3: 0.5, 4: 2,   5: 10 }    // Klucz deszyfrujący
         };
       }
 
-      async calculateSpin(bet, seed, inFreeSpins = false, expSymbol = null) {
-        // Symulacja autoryzowanego zapytania API (MGA Compliance Delay)
-        await new Promise(resolve => setTimeout(resolve, 120));
+      async calculateSpin(bet, seed) {
+        await new Promise(resolve => setTimeout(resolve, 150));
 
         const matrix = [];
         let numScatters = 0;
@@ -435,20 +453,17 @@
         for (let col = 0; col < this.reelsCount; col++) {
           const reel = [];
           for (let row = 0; row < this.rowsCount; row++) {
-            // Prawdopodobieństwo otrzymania Scattera (5) jest lekko zmienione dla dynamiki
-            let symbol = SecureRNG.getRandomInt(1, 6);
-            if (symbol === 5) numScatters++;
-            reel.push(symbol);
+            const sym = SecureRNG.getRandomInt(1, 6);
+            if (sym === 5) numScatters++;
+            reel.push(sym);
           }
           matrix.push(reel);
         }
 
         let winAmount = 0;
         let winLines = [];
-        let triggeredBonus = false;
-
-        // Standardowa kalkulacja wygranych na linii środkowej (Lekko uproszczone dla czytelności UI)
-        // Globalny standard: Wygrana z lewej do prawej
+        
+        // Obliczenie linii środkowej
         const line = [matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1], matrix[4][1]];
         const baseSymbol = line[0];
         let matchCount = 1;
@@ -462,158 +477,144 @@
         }
 
         if (matchCount >= 3) {
-          const multiplier = this.paytable[baseSymbol][matchCount] || 0;
-          winAmount += bet * multiplier;
+          const multiplier = this.paytable[baseSymbol][matchCount];
+          winAmount = bet * multiplier;
           winLines.push(Array.from({length: matchCount}, (_, i) => ({ col: i, row: 1 })));
         }
 
-        // Dodatkowo w darmowych grach: Obsługa ekspandującego symbolu (Expanding Symbol mechanic)
-        let isExpandingWin = false;
-        let expLines = [];
-        if (inFreeSpins && expSymbol) {
-          // Policz ile bębnów ma przynajmniej jeden wybrany symbol rozwijający się
-          const activeReels = [];
-          for (let col = 0; col < this.reelsCount; col++) {
-            if (matrix[col].includes(expSymbol)) {
-              activeReels.push(col);
-            }
-          }
-
-          // Symbole rozwijają się, jeśli uzbiera się minimalna liczba (np. min 3)
-          if (activeReels.length >= 3) {
-            isExpandingWin = true;
-            const expMult = this.paytable[expSymbol][activeReels.length] || 0;
-            winAmount += bet * expMult;
-            
-            // Generuj współrzędne dla rozszerzonych bębnów do celebracji
-            activeReels.forEach(col => {
-              for (let r = 0; r < this.rowsCount; r++) {
-                expLines.push({ col, row: r });
-              }
-            });
-          }
-        }
-
-        // Aktywacja rundy bonusowej przy min 3 scatterach (symbol "5")
-        if (!inFreeSpins && numScatters >= 3) {
-          triggeredBonus = true;
-        }
+        let triggerFreeSpins = numScatters >= 3;
 
         const entropy = await SecureRNG.sha256(Math.random().toString() + Date.now().toString());
         const txHash = await SecureRNG.sha256(`${seed}_${entropy}_${winAmount}`);
 
-        return { 
-          matrix, 
-          winAmount, 
-          winLines, 
-          txHash, 
-          triggeredBonus,
-          isExpandingWin,
-          expLines
-        };
+        return { matrix, winAmount, winLines, txHash, triggerFreeSpins };
       }
     }
 
     // ==========================================
-    // 4. PROCEDURALNY SYNTEZATOR FX (AUDIO CONTEXT)
+    // 4. SYNTEZATOR AUDIO Z INTEGRACJĄ MP3
     // ==========================================
-    class CyberSynth {
+    class CyberAudioEngine {
       constructor() {
         this.ctx = null;
         this.enabled = true;
+        this.bgMusic = null;
+        this.bgSource = null;
+        this.musicLoaded = false;
+        this.gainNode = null;
       }
 
       init() {
         if (!this.ctx) {
           this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          this.gainNode = this.ctx.createGain();
+          this.gainNode.gain.setValueAtTime(0.5, this.ctx.currentTime);
+          this.gainNode.connect(this.ctx.destination);
+          
+          this.loadBackgroundMusic();
         }
         if (this.ctx.state === 'suspended') {
           this.ctx.resume();
         }
       }
 
-      playTone(type, freq, duration, gainValue = 0.08, glideTo = null) {
+      // Ładowanie i dekodowanie utworu Ferro ART - Wilczy Wyrok
+      async loadBackgroundMusic() {
+        try {
+          const response = await fetch('FERRO ART WILCZY WYROK.mp3');
+          const arrayBuffer = await response.arrayBuffer();
+          this.bgMusic = await this.ctx.decodeAudioData(arrayBuffer);
+          this.musicLoaded = true;
+          if (this.enabled) {
+            this.startMusic();
+          }
+        } catch (e) {
+          console.warn("Błąd ładowania pliku muzycznego Ferro ART:", e);
+        }
+      }
+
+      startMusic() {
+        if (!this.musicLoaded || !this.enabled) return;
+        this.stopMusic();
+
+        this.bgSource = this.ctx.createBufferSource();
+        this.bgSource.buffer = this.bgMusic;
+        this.bgSource.loop = true;
+        
+        // Polączenie przez GainNode dla kontroli głośności
+        this.bgSource.connect(this.gainNode);
+        this.bgSource.start(0);
+      }
+
+      stopMusic() {
+        if (this.bgSource) {
+          try {
+            this.bgSource.stop();
+          } catch(e){}
+          this.bgSource = null;
+        }
+      }
+
+      setVolume(val) {
+        if (this.gainNode) {
+          this.gainNode.gain.setValueAtTime(val, this.ctx.currentTime);
+        }
+      }
+
+      playTone(type, freq, duration, gainVal = 0.08) {
         if (!this.enabled) return;
         this.init();
         if (!this.ctx) return;
 
         const osc = this.ctx.createOscillator();
-        const gainNode = this.ctx.createGain();
+        const gNode = this.ctx.createGain();
         const filter = this.ctx.createBiquadFilter();
 
         osc.type = type;
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        if (glideTo) {
-          osc.frequency.exponentialRampToValueAtTime(glideTo, this.ctx.currentTime + duration);
-        }
         
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1600, this.ctx.currentTime);
+        filter.frequency.setValueAtTime(1200, this.ctx.currentTime);
 
-        gainNode.gain.setValueAtTime(gainValue, this.ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+        gNode.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+        gNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
 
         osc.connect(filter);
-        filter.connect(gainNode);
-        gainNode.connect(this.ctx.destination);
+        filter.connect(gNode);
+        gNode.connect(this.ctx.destination);
 
         osc.start();
         osc.stop(this.ctx.currentTime + duration);
       }
 
-      playBootTune() {
-        if (!this.enabled) return;
-        this.init();
-        const notes = [130.81, 164.81, 196.00, 261.63, 329.63, 523.25];
-        notes.forEach((freq, idx) => {
-          setTimeout(() => {
-            this.playTone('sine', freq, 0.45, 0.05);
-          }, idx * 100);
-        });
-      }
-
       playSpin() {
-        this.playTone('sawtooth', 80, 0.4, 0.08, 250);
-        setTimeout(() => this.playTone('sine', 150, 0.2, 0.04), 150);
+        // Obniżenie muzyki w tle podczas spinu dla lepszej dynamiki
+        this.setVolume(0.15);
+        this.playTone('sawtooth', 85, 0.4, 0.1);
       }
 
       playStop(idx) {
-        this.playTone('triangle', 180 + (idx * 60), 0.12, 0.06);
+        this.playTone('triangle', 180 + (idx * 40), 0.1, 0.08);
       }
 
       playWin() {
-        const arpeggio = [523.25, 659.25, 783.99, 1046.50];
-        arpeggio.forEach((note, index) => {
-          setTimeout(() => {
-            this.playTone('sine', note, 0.25, 0.06);
-          }, index * 80);
-        });
+        this.setVolume(0.6); // Zwiększamy głośność muzyki przy wygranej
+        setTimeout(() => this.setVolume(0.4), 1500);
+
+        this.playTone('sine', 523.25, 0.1, 0.08); 
+        setTimeout(() => this.playTone('sine', 659.25, 0.1, 0.08), 80); 
+        setTimeout(() => this.playTone('sine', 783.99, 0.1, 0.08), 160); 
+        setTimeout(() => this.playTone('sine', 1046.50, 0.25, 0.12), 240); 
       }
 
-      playAlarm() {
-        if (!this.enabled) return;
-        this.init();
-        const duration = 0.5;
-        this.playTone('sawtooth', 350, duration, 0.06, 600);
-        setTimeout(() => {
-          this.playTone('sawtooth', 350, duration, 0.06, 600);
-        }, 500);
-      }
-
-      playMegaWin() {
-        if (!this.enabled) return;
-        this.init();
-        const run = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98, 2093.00];
-        run.forEach((note, index) => {
-          setTimeout(() => {
-            this.playTone('sine', note, 0.3, 0.05);
-          }, index * 60);
-        });
+      playAlert() {
+        this.playTone('sawtooth', 320, 0.3, 0.08);
+        setTimeout(() => this.playTone('sawtooth', 320, 0.3, 0.08), 350);
       }
     }
 
     // ==========================================
-    // 5. ZAAWANSOWANY RENDERER WEKTOROWY (DPI AWARE)
+    // 5. ZAAWANSOWANY RENDERER WEKTOROWY
     // ==========================================
     class VectorRenderer {
       constructor(canvasId) {
@@ -624,34 +625,25 @@
         this.rowsCount = 3;
 
         this.symbolStyles = {
-          1: { draw: this.drawShell.bind(this), color: '#00f0ff' },       // Terminal Shell
-          2: { draw: this.drawBug.bind(this), color: '#ff003c' },         // Malware Bug
-          3: { draw: this.drawKey.bind(this), color: '#ffea00' },         // Crypt Key
-          4: { draw: this.drawShield.bind(this), color: '#00ffff' },      // Firewall
-          5: { draw: this.drawBook.bind(this), color: '#00ff41' }         // Book of SecFerro (WILD / SCATTER)
+          1: { draw: this.drawKey.bind(this), color: '#bc13fe' },         // Klucz deszyfrujący
+          2: { draw: this.drawTerminal.bind(this), color: '#00f0ff' },    // Terminal hakerski
+          3: { draw: this.drawServer.bind(this), color: '#ffea00' },      // Serwer Rack
+          4: { draw: this.drawXmask.bind(this), color: '#ff003c' },       // Maska z krzyżykami (jak ze zdjęć)
+          5: { draw: this.drawAnonymous.bind(this), color: '#00ff41' }    // Neonowa maska Anonymous (Wild)
         };
 
-        // Obiekt stanu bębnów
         this.reels = Array.from({ length: 5 }, () => ({
-          pos: 0,
-          targetPos: 0,
-          speed: 0,
-          isSpinning: false,
-          currentMatrix: [1, 2, 3],
-          bounceTimer: 0,
-          bounceOffset: 0
+          pos: 0, targetPos: 0, speed: 0, isSpinning: false, currentMatrix: [1, 2, 3], bounceTimer: 0, bounceOffset: 0
         }));
 
         this.winLines = [];
-        this.expandingLines = [];
         this.particles = [];
-        this.needsRedraw = true;
         this.lastTime = performance.now();
         this.screenShake = 0;
-        this.themeColor = '#00ff41'; // Standardowa zieleń, zmieniana na czerwień podczas Free Spins
+        this.isRedTheme = false;
 
         this.resize();
-        window.addEventListener('resize', () => { this.resize(); this.needsRedraw = true; });
+        window.addEventListener('resize', () => { this.resize(); });
         this.loop(performance.now());
       }
 
@@ -670,104 +662,119 @@
         this.symH = this.height / this.rowsCount;
       }
 
-      setTheme(color) {
-        this.themeColor = color;
-      }
-
-      // --- WYKRESY WEKTOROWE SYMBOLI (Sygnowane neonowym żarzeniem) ---
-      drawShell(ctx, x, y, size) {
-        ctx.strokeStyle = '#00f0ff';
-        ctx.shadowColor = '#00f0ff';
-        ctx.shadowBlur = 6;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(x - size * 0.3, y - size * 0.25);
-        ctx.lineTo(x, y);
-        ctx.lineTo(x - size * 0.3, y + size * 0.25);
-        ctx.stroke();
-
-        ctx.fillStyle = '#00f0ff';
-        ctx.fillRect(x + size * 0.05, y + size * 0.15, size * 0.3, 3);
-        ctx.shadowBlur = 0;
-      }
-
-      drawBug(ctx, x, y, size) {
-        ctx.strokeStyle = '#ff003c';
-        ctx.shadowColor = '#ff003c';
-        ctx.shadowBlur = 6;
-        ctx.lineWidth = 2.5;
-        
-        // Pancerz i nogi
-        ctx.beginPath();
-        ctx.arc(x, y, size * 0.22, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(x - size * 0.22, y); ctx.lineTo(x - size * 0.42, y - size * 0.05);
-        ctx.moveTo(x + size * 0.22, y); ctx.lineTo(x + size * 0.42, y - size * 0.05);
-        ctx.moveTo(x - size * 0.18, y + size * 0.15); ctx.lineTo(x - size * 0.35, y + size * 0.3);
-        ctx.moveTo(x + size * 0.18, y + size * 0.15); ctx.lineTo(x + size * 0.35, y + size * 0.3);
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-      }
-
+      // --- WYKRESY WEKTOROWE SYMBOLI PREMIUM ---
       drawKey(ctx, x, y, size) {
-        ctx.strokeStyle = '#ffea00';
-        ctx.shadowColor = '#ffea00';
-        ctx.shadowBlur = 6;
+        ctx.strokeStyle = '#bc13fe';
         ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#bc13fe';
+        ctx.shadowBlur = 8;
         ctx.beginPath();
-        ctx.arc(x - size * 0.15, y, size * 0.15, 0, Math.PI * 2);
+        ctx.arc(x - size*0.15, y, size * 0.16, 0, Math.PI * 2);
         ctx.moveTo(x, y);
         ctx.lineTo(x + size * 0.35, y);
         ctx.lineTo(x + size * 0.35, y + size * 0.15);
         ctx.moveTo(x + size * 0.2, y);
-        ctx.lineTo(x + size * 0.2, y + size * 0.1);
+        ctx.lineTo(x + size * 0.2, y + size * 0.12);
         ctx.stroke();
         ctx.shadowBlur = 0;
       }
 
-      drawShield(ctx, x, y, size) {
-        ctx.strokeStyle = '#00ffff';
-        ctx.shadowColor = '#00ffff';
-        ctx.shadowBlur = 6;
+      drawTerminal(ctx, x, y, size) {
+        ctx.strokeStyle = '#00f0ff';
         ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 8;
         ctx.beginPath();
-        ctx.moveTo(x - size * 0.25, y - size * 0.3);
-        ctx.lineTo(x + size * 0.25, y - size * 0.3);
-        ctx.lineTo(x + size * 0.25, y);
-        ctx.quadraticCurveTo(x + size * 0.25, y + size * 0.25, x, y + size * 0.4);
-        ctx.quadraticCurveTo(x - size * 0.25, y + size * 0.25, x - size * 0.25, y);
-        ctx.closePath();
+        ctx.moveTo(x - size*0.3, y - size*0.25);
+        ctx.lineTo(x - size*0.05, y);
+        ctx.lineTo(x - size*0.3, y + size*0.25);
+        ctx.stroke();
+
+        ctx.fillStyle = '#00f0ff';
+        ctx.fillRect(x + size*0.05, y + size*0.12, size*0.3, 3);
+        ctx.shadowBlur = 0;
+      }
+
+      drawServer(ctx, x, y, size) {
+        ctx.strokeStyle = '#ffea00';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = '#ffea00';
+        ctx.shadowBlur = 8;
+        ctx.strokeRect(x - size*0.3, y - size*0.3, size*0.6, size*0.6);
+        ctx.beginPath();
+        ctx.moveTo(x - size*0.3, y - size*0.1); ctx.lineTo(x + size*0.3, y - size*0.1);
+        ctx.moveTo(x - size*0.3, y + size*0.1); ctx.lineTo(x + size*0.3, y + size*0.1);
+        ctx.stroke();
+
+        ctx.fillStyle = '#00ff41';
+        ctx.fillRect(x - size*0.2, y - size*0.22, 4, 3);
+        ctx.fillRect(x - size*0.2, y + size*0.02, 4, 3);
+        ctx.fillStyle = '#ff003c';
+        ctx.fillRect(x - size*0.2, y - size*0.02, 4, 3);
+        ctx.shadowBlur = 0;
+      }
+
+      drawXmask(ctx, x, y, size) {
+        ctx.strokeStyle = '#ff003c';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#ff003c';
+        ctx.shadowBlur = 10;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, size * 0.25, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Oczy jako świecące krzyżyki (dokładnie jak na nadesłanych zdjęciach z neonową maską)
+        ctx.beginPath();
+        ctx.moveTo(x - size*0.14, y - size*0.1); ctx.lineTo(x - size*0.04, y);
+        ctx.moveTo(x - size*0.04, y - size*0.1); ctx.lineTo(x - size*0.14, y);
+        ctx.moveTo(x + size*0.04, y - size*0.1); ctx.lineTo(x + size*0.14, y);
+        ctx.moveTo(x + size*0.14, y - size*0.1); ctx.lineTo(x + size*0.04, y);
+        
+        // Uśmiech z zaszytymi liniami
+        ctx.moveTo(x - size*0.15, y + size*0.1);
+        ctx.quadraticCurveTo(x, y + size*0.2, x + size*0.15, y + size*0.1);
         ctx.stroke();
         ctx.shadowBlur = 0;
       }
 
-      drawBook(ctx, x, y, size) {
-        ctx.shadowColor = '#00ff41';
-        ctx.shadowBlur = 12;
-        ctx.fillStyle = '#00ff41';
+      drawAnonymous(ctx, x, y, size) {
         ctx.strokeStyle = '#00ff41';
         ctx.lineWidth = 3;
-
-        ctx.strokeRect(x - size * 0.3, y - size * 0.35, size * 0.6, size * 0.7);
+        ctx.shadowColor = '#00ff41';
+        ctx.shadowBlur = 15;
+        
+        // Trójwymiarowa stylizowana maska Anonymous / Guy Fawkes z załączonych grafik
         ctx.beginPath();
-        ctx.moveTo(x, y - size * 0.35);
-        ctx.lineTo(x, y + size * 0.35);
+        ctx.moveTo(x - size * 0.25, y - size * 0.35);
+        ctx.quadraticCurveTo(x, y - size * 0.45, x + size * 0.25, y - size * 0.35);
+        ctx.lineTo(x + size * 0.25, y + size * 0.1);
+        ctx.quadraticCurveTo(x + size * 0.22, y + size * 0.32, x, y + size * 0.45);
+        ctx.quadraticCurveTo(x - size * 0.22, y + size * 0.32, x - size * 0.25, y + size * 0.1);
+        ctx.closePath();
         ctx.stroke();
 
-        ctx.font = `bold ${size * 0.28}px "Share Tech Mono", monospace`;
-        ctx.fillText("SF", x, y);
+        // Brwi, spiczasta broda, świecący neonowy łuk uśmiechu
+        ctx.beginPath();
+        ctx.moveTo(x - size*0.12, y - size*0.15);
+        ctx.quadraticCurveTo(x - size*0.06, y - size*0.2, x, y - size*0.15);
+        ctx.quadraticCurveTo(x + size*0.06, y - size*0.2, x + size*0.12, y - size*0.15);
+        
+        // Piorunujący, ostry zarost
+        ctx.moveTo(x - size*0.15, y + size*0.12);
+        ctx.lineTo(x, y + size*0.18);
+        ctx.lineTo(x + size*0.15, y + size*0.12);
+        ctx.stroke();
         ctx.shadowBlur = 0;
       }
 
-      spawnWinParticles(x, y, color) {
+      spawnParticles(x, y, color) {
         for (let i = 0; i < 15; i++) {
           this.particles.push({
             x, y,
             vx: (Math.random() - 0.5) * 6,
             vy: (Math.random() - 0.5) * 6,
-            size: Math.random() * 3 + 1.5,
+            size: Math.random() * 3.5 + 1.5,
             color,
             alpha: 1,
             decay: Math.random() * 0.02 + 0.015
@@ -775,27 +782,24 @@
         }
       }
 
-      // Główna pętla gry z fizycznymi przesunięciami
       loop(time) {
         const dt = (time - this.lastTime) / 1000;
         this.lastTime = time;
 
         this.ctx.save();
         
-        // Trzęsienie ekranu po dużych wygranych
+        // Trzęsienie ekranu przy uderzeniach wygranych
         if (this.screenShake > 0) {
           this.screenShake -= dt * 25;
           if (this.screenShake < 0) this.screenShake = 0;
-          const dx = (Math.random() - 0.5) * this.screenShake;
-          const dy = (Math.random() - 0.5) * this.screenShake;
-          this.ctx.translate(dx, dy);
+          this.ctx.translate((Math.random() - 0.5) * this.screenShake, (Math.random() - 0.5) * this.screenShake);
         }
 
         this.ctx.fillStyle = '#020205';
         this.ctx.fillRect(0, 0, this.width, this.height);
 
-        // Siatka tła
-        this.ctx.strokeStyle = 'rgba(0, 255, 65, 0.03)';
+        // Siatka tła hakerskiego (Matrix-grid)
+        this.ctx.strokeStyle = this.isRedTheme ? 'rgba(255, 0, 60, 0.04)' : 'rgba(0, 255, 65, 0.04)';
         this.ctx.lineWidth = 1;
         for (let i = 1; i < this.reelsCount; i++) {
           this.ctx.beginPath();
@@ -804,28 +808,25 @@
           this.ctx.stroke();
         }
 
-        // Fizyka obrotu bębnów (Motion Blur i Bounce)
+        // Fizyka bębnów
         this.reels.forEach((reel, i) => {
           if (reel.isSpinning) {
-            this.needsRedraw = true;
             if (reel.pos < reel.targetPos) {
-              // Gładkie przyspieszenie i twarde wyhamowanie
               reel.pos += reel.speed * dt;
               if (reel.pos >= reel.targetPos) {
                 reel.pos = reel.targetPos;
                 reel.isSpinning = false;
-                reel.bounceTimer = 0.25; // Inicjowanie odbicia amortyzowanego
+                reel.bounceTimer = 0.25; // Odbicie
                 if (this.onReelStop) this.onReelStop(i);
               }
             }
           }
 
-          // Efekt sprężyny przy zatrzymaniu (Reel Elastic Bounce)
+          // Sprężynujący bounce
           if (reel.bounceTimer > 0) {
             reel.bounceTimer -= dt;
-            reel.bounceOffset = Math.sin(reel.bounceTimer * Math.PI * 4) * (reel.bounceTimer * 18);
+            reel.bounceOffset = Math.sin(reel.bounceTimer * Math.PI * 4) * (reel.bounceTimer * 16);
             if (reel.bounceTimer <= 0) reel.bounceOffset = 0;
-            this.needsRedraw = true;
           }
         });
 
@@ -833,7 +834,7 @@
         this.ctx.textBaseline = 'middle';
         const innerSize = this.symH * 0.5;
 
-        // Renderowanie bębnów
+        // Renderowanie bębnów z motion blurem
         for (let r = 0; r < this.reelsCount; r++) {
           const reel = this.reels[r];
           const x = r * this.reelW + (this.reelW / 2);
@@ -844,15 +845,13 @@
 
             if (reel.isSpinning) {
               symbolId = (Math.abs(logicalY) % 5) + 1;
-              // Rozmycie ruchu (Motion Blur)
-              this.ctx.globalAlpha = 0.4;
+              this.ctx.globalAlpha = 0.45;
             } else {
               const rgsRow = (i + 3) % 3;
               symbolId = reel.currentMatrix[rgsRow] || 1;
               this.ctx.globalAlpha = 1.0;
             }
 
-            // Aplikacja bounce offset
             const y = (i * this.symH) + (reel.pos % this.symH) + (this.symH / 2) + reel.bounceOffset;
             const style = this.symbolStyles[symbolId];
 
@@ -882,11 +881,12 @@
           }
         });
 
-        // Ścieżki linii wygrywających (Klasyczne linie premium)
+        // Ścieżki linii zwycięstwa (Neon-glow)
         if (this.winLines.length > 0) {
-          this.ctx.strokeStyle = this.themeColor;
+          const mainThemeCol = this.isRedTheme ? '#ff003c' : '#00ff41';
+          this.ctx.strokeStyle = mainThemeCol;
           this.ctx.lineWidth = 3.5;
-          this.ctx.shadowColor = this.themeColor;
+          this.ctx.shadowColor = mainThemeCol;
           this.ctx.shadowBlur = 15;
 
           this.winLines.forEach(line => {
@@ -896,8 +896,8 @@
               const y = node.row * this.symH + (this.symH / 2);
               if (idx === 0) this.ctx.moveTo(x, y); else this.ctx.lineTo(x, y);
 
-              if (Math.random() < 0.15) {
-                this.spawnWinParticles(x, y, this.themeColor);
+              if (Math.random() < 0.2) {
+                this.spawnParticles(x, y, mainThemeCol);
               }
             });
             this.ctx.stroke();
@@ -905,44 +905,21 @@
           this.ctx.shadowBlur = 0;
         }
 
-        // Obsługa ekspandowania we darmowych grach
-        if (this.expandingLines.length > 0) {
-          this.ctx.fillStyle = 'rgba(255, 0, 60, 0.15)';
-          this.ctx.strokeStyle = '#ff003c';
-          this.ctx.lineWidth = 3;
-          this.ctx.shadowColor = '#ff003c';
-          this.ctx.shadowBlur = 20;
-
-          this.expandingLines.forEach(node => {
-            const rx = node.col * this.reelW;
-            const ry = node.row * this.symH;
-            this.ctx.fillRect(rx + 2, ry + 2, this.reelW - 4, this.symH - 4);
-            this.ctx.strokeRect(rx + 2, ry + 2, this.reelW - 4, this.symH - 4);
-
-            if (Math.random() < 0.1) {
-              this.spawnWinParticles(rx + this.reelW/2, ry + this.symH/2, '#ff003c');
-            }
-          });
-          this.ctx.shadowBlur = 0;
-        }
-
         this.ctx.restore();
 
-        this.lastTime = time;
         requestAnimationFrame((t) => this.loop(t));
       }
 
       startDecryption(rgsMatrix, isTurbo, onStop, onComplete) {
         this.winLines = [];
-        this.expandingLines = [];
         this.onReelStop = onStop;
 
         const baseSpeed = isTurbo ? 3200 : 1600;
-        const extraRots = isTurbo ? 2 : 5;
+        const extraRots = isTurbo ? 1 : 4;
 
         this.reels.forEach((reel, i) => {
           reel.isSpinning = true;
-          reel.speed = baseSpeed + (i * 220);
+          reel.speed = baseSpeed + (i * 240);
           reel.currentMatrix = [rgsMatrix[i][0], rgsMatrix[i][1], rgsMatrix[i][2]];
           const steps = (extraRots * 5) + (i * 3);
           reel.targetPos = reel.pos + (steps * this.symH);
@@ -953,17 +930,12 @@
             clearInterval(checkLock);
             onComplete();
           }
-        }, 30);
+        }, 50);
       }
 
       setWinner(lines) {
         this.winLines = lines;
-        this.screenShake = 10;
-      }
-
-      setExpandingWinner(lines) {
-        this.expandingLines = lines;
-        this.screenShake = 15;
+        this.screenShake = 12;
       }
     }
 
@@ -973,7 +945,7 @@
     class GameController {
       constructor() {
         this.compliance = new ComplianceMonitor();
-        this.audio = new CyberSynth();
+        this.audio = new CyberAudioEngine();
         this.renderer = new VectorRenderer('gameCanvas');
         this.rgs = new RGSServer();
 
@@ -983,11 +955,9 @@
           bets: [2.0, 5.0, 10.0, 20.0, 50.0],
           isActive: false,
           logs: [],
-          freeSpinsLeft: 0,
-          activeExpandingSymbol: null
+          freeSpinsLeft: 0
         };
 
-        // Bezwzględne zerowanie statusu aktywności, chroniące przed Reload Deadlock.
         this.state.isActive = false;
 
         this.autoPlay = {
@@ -1015,14 +985,12 @@
           logBox: document.getElementById('diagnostic-log'),
           logCount: document.getElementById('log-count'),
           betTrigger: document.getElementById('bet-selector'),
-          freeSpinOverlay: document.getElementById('free-spin-overlay'),
-          fsCounter: document.getElementById('fs-remaining-counter'),
-          gameTitle: document.getElementById('game-title'),
-          winDisplayBox: document.getElementById('win-display-box'),
-          bonusOverlay: document.getElementById('bonus-trigger-overlay'),
+          fsBanner: document.getElementById('fs-banner'),
+          fsCount: document.getElementById('fs-count'),
+          appTitle: document.getElementById('app-title'),
+          bonusOverlay: document.getElementById('bonus-overlay'),
           btnStartFS: document.getElementById('btn-start-freespins'),
-          bonusSymDisplay: document.getElementById('bonus-symbol-display'),
-          bonusSymName: document.getElementById('bonus-symbol-name')
+          soundIndicator: document.getElementById('sound-indicator')
         };
 
         this.runProceduralBootLoader();
@@ -1030,11 +998,11 @@
 
       runProceduralBootLoader() {
         const steps = [
-          { p: 15, t: "INICJOWANIE POŁĄCZENIA SERWERA RGS... 15%" },
-          { p: 40, t: "PRAWIDŁOWOŚĆ SZYFROWANIA CSPRNG... 40%" },
-          { p: 65, t: "GENEROWANIE STRUKTURY KLUCZY SYMBOLI... 65%" },
-          { p: 85, t: "ŁADOWANIE REJESTRÓW SECFERRO v10.0... 85%" },
-          { p: 100, t: "DOSTĘP AUTORYZOWANY - SYSTEM GOTOWY... 100%" }
+          { p: 15, t: "ŁADOWANIE JĄDRA SYSTEMU... 15%" },
+          { p: 35, t: "ŁADOWANIE UTWORU: FERRO_ART_WILCZY_WYROK... 35%" },
+          { p: 55, t: "WSTRZYKIWANIE ENTROPII CSPRNG... 55%" },
+          { p: 80, t: "KOMPILACJA REJESTRÓW MATRYCY WEKTOROWEJ... 80%" },
+          { p: 100, t: "DOSTĘP AUTORYZOWANY - SECFERRO DIVISION v10.0... 100%" }
         ];
 
         let stepIndex = 0;
@@ -1044,7 +1012,7 @@
             if (this.ui.loaderBar) this.ui.loaderBar.style.width = `${current.p}%`;
             if (this.ui.loaderStatus) this.ui.loaderStatus.innerText = current.t;
             stepIndex++;
-            setTimeout(executeStep, SecureRNG.getRandomInt(100, 250));
+            setTimeout(executeStep, SecureRNG.getRandomInt(150, 300));
           } else {
             setTimeout(() => {
               if (this.ui.splash) this.ui.splash.classList.add('opacity-0', 'pointer-events-none');
@@ -1054,12 +1022,12 @@
                   this.ui.menu.classList.add('opacity-100');
                   this.ui.menu.classList.remove('pointer-events-none');
                 }
-              }, 40);
+              }, 50);
               
               SecureRNG.sha256(Date.now().toString()).then(hash => {
                 if (this.ui.menuSid) this.ui.menuSid.innerText = hash.substring(0, 12).toUpperCase();
               });
-            }, 300);
+            }, 400);
           }
         };
 
@@ -1068,13 +1036,13 @@
 
       recoverSessionState() {
         try {
-          const data = localStorage.getItem('sf_v10_session');
+          const data = localStorage.getItem('sf_v10_intrusion');
           return data ? JSON.parse(data) : null;
         } catch(e) { return null; }
       }
 
       saveSessionState() {
-        localStorage.setItem('sf_v10_session', JSON.stringify(this.state));
+        localStorage.setItem('sf_v10_intrusion', JSON.stringify(this.state));
       }
 
       auditLog(action, details) {
@@ -1084,10 +1052,10 @@
         if (this.state.logs.length > 50) this.state.logs.pop();
 
         const p = document.createElement('p');
-        p.className = action === 'DECRYPT_SUCCESS' ? 'text-cyberGreen font-bold' : (action === 'ERR_SEC' ? 'text-cyberAlert' : 'text-gray-500');
+        p.className = action === 'DECRYPT_SUCCESS' ? 'text-cyberGreen font-bold' : (action === 'ERR_SEC' ? 'text-cyberAlert font-bold animate-pulse' : 'text-gray-500');
         p.innerText = log;
         this.ui.logBox.prepend(p);
-        this.ui.logCount.innerText = `${this.state.logs.length} REKORDÓW`;
+        this.ui.logCount.innerText = `${this.state.logs.length} WPISÓW`;
         this.saveSessionState();
       }
 
@@ -1108,14 +1076,14 @@
 
       registerTouchInputs() {
         this.ui.btnSpin.addEventListener('click', () => {
-          if (this.autoPlay.enabled) this.haltAutoplay("INTERWENCJA_GRACZA");
+          if (this.autoPlay.enabled) this.haltAutoplay("ZATRZYMANIE_GRACZA");
           else this.launchIntrusion();
         });
 
         this.ui.betTrigger.addEventListener('click', () => {
           if (this.state.isActive || this.autoPlay.enabled || this.state.freeSpinsLeft > 0) return;
           this.state.betIndex = (this.state.betIndex + 1) % this.state.bets.length;
-          this.audio.playTone('sine', 700, 0.08, 0.05);
+          this.audio.playTone('sine', 880, 0.05, 0.05);
           this.updateDisplays();
           this.saveSessionState();
         });
@@ -1136,20 +1104,30 @@
         });
 
         document.getElementById('toggle-sfx').addEventListener('change', e => {
-          this.audio.init(); this.audio.enabled = e.target.checked;
+          this.audio.init(); 
+          this.audio.enabled = e.target.checked;
+          if (this.audio.enabled) {
+            this.audio.startMusic();
+            this.ui.soundIndicator.innerText = "FERRO_ART.mp3";
+          } else {
+            this.audio.stopMusic();
+            this.ui.soundIndicator.innerText = "MUTED";
+          }
         });
 
         this.ui.btnAutoStart.addEventListener('click', () => this.startAutoplaySession());
         
         this.ui.btnStartFS.addEventListener('click', () => {
           this.ui.bonusOverlay.classList.add('opacity-0', 'pointer-events-none');
-          this.startFreeSpinsLoop();
+          this.startFreeSpinsSession();
         });
       }
 
       activateGameMode() {
         this.audio.init();
-        this.audio.playBootTune();
+        if (this.audio.enabled) {
+          this.audio.startMusic();
+        }
         
         if (this.ui.menu) {
           this.ui.menu.classList.add('opacity-0', 'pointer-events-none');
@@ -1161,7 +1139,7 @@
         this.registerTouchInputs();
         this.updateDisplays();
         this.renderHistoryLogs();
-        this.auditLog('SYS_INIT', 'Autoryzacja pomyślna. Uruchomiono protokół SecFerro Division.');
+        this.auditLog('SYS_INIT', 'Autoryzacja pomyślna. Uruchomiono protokół FerroART - Wilczy Wyrok.');
       }
 
       startAutoplaySession() {
@@ -1188,7 +1166,7 @@
 
       haltAutoplay(reason) {
         this.autoPlay.enabled = false;
-        this.ui.btnSpin.querySelector('span').innerText = `EXECUTE()`;
+        this.ui.btnSpin.querySelector('span').innerText = `LAUNCH()`;
         this.ui.btnSpin.classList.remove('border-cyberAlert', 'text-cyberAlert');
         this.auditLog('AUTO_HALT', `Przerwanie automatycznego payloadu. Powód: ${reason}`);
       }
@@ -1196,14 +1174,13 @@
       async launchIntrusion() {
         if (this.state.isActive) return;
         const currentBet = this.state.bets[this.state.betIndex];
+        const isFS = this.state.freeSpinsLeft > 0;
 
-        const isFreeSpin = this.state.freeSpinsLeft > 0;
-
-        if (!isFreeSpin && this.state.balance < currentBet) {
-          this.audio.playTone('sawtooth', 100, 0.4, 0.12);
-          this.ui.statusMsg.innerText = "BŁĄD: NIEWYSTARCZAJĄCE ŚRODKI";
-          this.auditLog('ERR_SEC', `Brak zasobów na transakcję. Saldo: ${this.state.balance}, Zakład: ${currentBet}`);
-          if (this.autoPlay.enabled) this.haltAutoplay("BRAK_ŚRODKÓW");
+        if (!isFS && this.state.balance < currentBet) {
+          this.audio.playAlert();
+          this.ui.statusMsg.innerText = "BŁĄD: BRAK_ŚRODKÓW";
+          this.auditLog('ERR_SEC', `Odrzucenie żądania. Saldo: ${this.state.balance}, Zakład: ${currentBet}`);
+          if (this.autoPlay.enabled) this.haltAutoplay("INSUFFICIENT_FUNDS");
           return;
         }
 
@@ -1211,14 +1188,14 @@
         this.ui.btnSpin.disabled = true;
         this.ui.winBox.innerText = "0.00 Ƀ";
 
-        if (isFreeSpin) {
+        if (isFS) {
           this.state.freeSpinsLeft--;
-          this.ui.fsCounter.innerText = this.state.freeSpinsLeft;
-          this.ui.statusMsg.innerText = `FREE SPIN: OVERCLOCKING W TOKU...`;
-          this.auditLog('FREE_SPIN_EXEC', `Wykonano wolny obrót. Pozostało: ${this.state.freeSpinsLeft}`);
+          this.ui.fsCount.innerText = this.state.freeSpinsLeft;
+          this.ui.statusMsg.innerText = "SYSTEM OVERLOAD: DESZYFROWANIE KODU...";
+          this.auditLog('FREE_SPIN', `Wolny run. Pozostało: ${this.state.freeSpinsLeft}`);
         } else {
           this.state.balance -= currentBet;
-          this.ui.statusMsg.innerText = "DESZYFROWANIE PAKIETÓW DANYCH...";
+          this.ui.statusMsg.innerText = "DESZYFROWANIE PAKIETÓW...";
           this.updateDisplays();
           this.saveSessionState();
         }
@@ -1226,15 +1203,10 @@
         const clientEntropy = performance.now().toString() + Math.random().toString();
 
         try {
-          const response = await this.rgs.calculateSpin(
-            currentBet, 
-            clientEntropy, 
-            isFreeSpin, 
-            this.state.activeExpandingSymbol
-          );
+          const response = await this.rgs.calculateSpin(currentBet, clientEntropy);
 
           this.ui.hashMsg.innerText = `BLOCK: ${response.txHash.substring(0, 32).toUpperCase()}`;
-          this.auditLog('PAYLOAD_SENT', `Stawka: ${currentBet} Ƀ. Hash bloku: ${response.txHash.substring(0, 10)}`);
+          this.auditLog('PAYLOAD_SENT', `Stawka: ${currentBet} Ƀ. HASH: ${response.txHash.substring(0, 10)}`);
 
           const isTurbo = document.getElementById('toggle-turbo').checked;
           this.audio.playSpin();
@@ -1248,57 +1220,42 @@
 
         } catch (err) {
           this.ui.statusMsg.innerText = "BŁĄD POŁĄCZENIA RGS";
-          this.auditLog('ERR_SEC', 'Krytyczny brak autoryzacji sesji ze strony RGS.');
+          this.auditLog('ERR_SEC', 'Brak autoryzacji transakcji ze strony RGS.');
           this.state.isActive = false;
           this.ui.btnSpin.disabled = false;
         }
       }
 
       resolveResponse(res) {
-        let currentTotalWin = res.winAmount;
+        // Przywrócenie pełnej głośności po ukończeniu spinu
+        this.audio.setVolume(0.4);
 
-        // 1. Zwykła linia wygrywająca
-        if (res.winLines.length > 0) {
+        if (res.winAmount > 0) {
+          this.state.balance += res.winAmount;
           this.renderer.setWinner(res.winLines);
           this.audio.playWin();
-          this.ui.statusMsg.innerText = `ROZSZYFROWANO LINIE // +${res.winAmount.toFixed(2)} Ƀ`;
-        }
-
-        // 2. Ekspandowanie symboli (W trybie Free Spins)
-        if (res.isExpandingWin) {
-          setTimeout(() => {
-            this.renderer.setExpandingWinner(res.expLines);
-            this.audio.playMegaWin();
-            this.ui.statusMsg.innerText = `EXPANSION CRITICAL // +${res.winAmount.toFixed(2)} Ƀ`;
-          }, 800);
-        }
-
-        if (currentTotalWin > 0) {
-          this.state.balance += currentTotalWin;
-          this.auditLog('DECRYPT_SUCCESS', `Uzyskany przychód z ekstrakcji: +${currentTotalWin.toFixed(2)} Ƀ`);
-          this.updateDisplays(currentTotalWin);
+          this.ui.statusMsg.innerText = `PRZEŁAMANIE POMYŚLNE // +${res.winAmount.toFixed(2)} Ƀ`;
+          this.auditLog('DECRYPT_SUCCESS', `Wydobyto zasoby: +${res.winAmount.toFixed(2)} Ƀ`);
         } else {
-          if (this.state.freeSpinsLeft === 0 && !res.triggeredBonus) {
-            this.ui.statusMsg.innerText = "SYSTEM CZUWANIA: GOTOWY";
-          }
+          this.ui.statusMsg.innerText = this.state.freeSpinsLeft > 0 ? "SYSTEM OVERLOAD AKTYWNY" : "SYSTEM SECFERRO GOTOWY";
         }
 
+        this.updateDisplays(res.winAmount);
+        
         this.state.isActive = false;
         this.ui.btnSpin.disabled = false;
         this.saveSessionState();
 
-        // 3. Sprawdzenie aktywacji darmowych obrotów (Scatters Trigger)
-        if (res.triggeredBonus) {
+        // Obsługa aktywacji darmowych spinów
+        if (res.triggerFreeSpins && this.state.freeSpinsLeft === 0) {
           this.triggerFreeSpinsBonus();
           return;
         }
 
-        // Obsługa trybu automatycznego / darmowych gier
         if (this.state.freeSpinsLeft > 0) {
-          setTimeout(() => this.launchIntrusion(), 1600);
-        } else if (this.state.freeSpinsLeft === 0 && this.ui.freeSpinOverlay.classList.contains('hidden') === false) {
-          // Koniec darmowych gier
-          this.exitFreeSpinsMode();
+          setTimeout(() => this.launchIntrusion(), 1200);
+        } else if (this.state.freeSpinsLeft === 0 && !this.ui.fsBanner.classList.contains('hidden')) {
+          this.exitFreeSpinsSession();
         } else if (this.autoPlay.enabled) {
           this.autoPlay.remaining--;
           this.ui.btnSpin.querySelector('span').innerText = `STOP (${this.autoPlay.remaining})`;
@@ -1309,74 +1266,38 @@
             this.haltAutoplay("ZAKOŃCZONO_ZAPLANOWANE_CYKLE");
           } else if (netLoss >= this.autoPlay.lossLimit) {
             this.haltAutoplay("PRZEKROCZONO_USTAWIONY_LIMIT_STRAT");
-          } else if (currentTotalWin >= this.autoPlay.winLimit) {
-            this.haltAutoplay("WYKRYTO_WYSOKĄ_WYGRANĄ_JEDNORAZOWĄ");
+          } else if (res.winAmount >= this.autoPlay.winLimit) {
+            this.haltAutoplay("WYKRYTO_WYSOKĄ_WYGRANĄ");
           } else {
             setTimeout(() => this.launchIntrusion(), 1200);
           }
         }
       }
 
-      // --- AKTYWACJA UNIKALNEJ RUNDY SPECJALNEJ ---
       triggerFreeSpinsBonus() {
-        if (this.autoPlay.enabled) this.haltAutoplay("BONUS_TRIGGERED");
-
+        if (this.autoPlay.enabled) this.haltAutoplay("TRIGGERED_BONUS");
         this.state.freeSpinsLeft = 10;
-        // Wybór losowego symbolu rozwijającego się (od 1 do 4, Book nie rozwija się)
-        this.state.activeExpandingSymbol = SecureRNG.getRandomInt(1, 5);
         this.saveSessionState();
 
-        this.audio.playAlarm();
-
-        // Podgląd symbolu w oknie dialogowym
-        this.ui.bonusSymName.innerText = this.getSymbolName(this.state.activeExpandingSymbol);
-        this.ui.bonusSymDisplay.innerHTML = '';
-        
-        // Dynamiczne wyrysowanie wybranego symbolu rozszerzającego
-        const canv = document.createElement('canvas');
-        canv.width = 80; canv.height = 80;
-        const cvCtx = canv.getContext('2d');
-        this.renderer.symbolStyles[this.state.activeExpandingSymbol].draw(cvCtx, 40, 40, 50);
-        this.ui.bonusSymDisplay.appendChild(canv);
-
-        // Wyświetlenie modala bonusowego
-        setTimeout(() => {
-          this.ui.bonusOverlay.classList.remove('opacity-0', 'pointer-events-none');
-        }, 1000);
+        this.audio.playAlert();
+        this.ui.bonusOverlay.classList.remove('opacity-0', 'pointer-events-none');
       }
 
-      getSymbolName(id) {
-        switch(id) {
-          case 1: return "TERMINAL SHELL [SYS]";
-          case 2: return "MALWARE BUG [ERR]";
-          case 3: return "CRYPTO-KEY [SEC]";
-          case 4: return "FIREWALL SHIELD [FLW]";
-          default: return "BOOK OF SECFERRO";
-        }
-      }
+      startFreeSpinsSession() {
+        this.renderer.isRedTheme = true;
+        this.ui.appTitle.innerHTML = `<span class="text-cyberAlert font-normal">&lt;</span> SYSTEM_OVERLOAD <span class="text-cyberAlert font-normal">&gt;</span>`;
+        this.ui.fsBanner.classList.remove('hidden');
+        this.ui.fsCount.innerText = this.state.freeSpinsLeft;
 
-      startFreeSpinsLoop() {
-        // Zmiana interfejsu na alarmowy, czerwony tryb "SYSTEM OVERLOAD"
-        this.renderer.setTheme('#ff003c');
-        this.ui.gameTitle.innerHTML = `<span class="text-cyberAlert font-normal">&lt;</span> SYSTEM_OVERLOAD <span class="text-cyberAlert font-normal">&gt;</span>`;
-        this.ui.freeSpinOverlay.classList.remove('hidden');
-        this.ui.fsCounter.innerText = this.state.freeSpinsLeft;
-        
-        this.auditLog('BONUS_START', `Rozpoczęto tryb darmowych gier. Symbol rozszerzający: ${this.getSymbolName(this.state.activeExpandingSymbol)}`);
-        
-        // Start obrotów
+        this.auditLog('BONUS_START', 'Inicjowanie awaryjnego overclockingu. Aktywowano 10 darmowych runów!');
         this.launchIntrusion();
       }
 
-      exitFreeSpinsMode() {
-        this.ui.freeSpinOverlay.classList.add('hidden');
-        this.renderer.setTheme('#00ff41');
-        this.ui.gameTitle.innerHTML = `<span class="text-cyberBlue font-normal">&lt;</span> BOOK_OF_SECFERRO <span class="text-cyberBlue font-normal">&gt;</span>`;
-        this.state.activeExpandingSymbol = null;
-        this.saveSessionState();
-
-        this.ui.statusMsg.innerText = "DESZYFROWANIE ZAKOŃCZONE. POWRÓT DO KONSOLI";
-        this.auditLog('BONUS_END', "Koniec trybu wolnych gier. Parametry bazy przywrócone.");
+      exitFreeSpinsSession() {
+        this.renderer.isRedTheme = false;
+        this.ui.appTitle.innerHTML = `<span class="text-cyberBlue font-normal">&lt;</span> BOOK_OF_SECFERRO <span class="text-cyberBlue font-normal">&gt;</span>`;
+        this.ui.fsBanner.classList.add('hidden');
+        this.auditLog('BONUS_END', 'Koniec sesji overload. Powrót do standardowego szyfrowania.');
       }
     }
 
