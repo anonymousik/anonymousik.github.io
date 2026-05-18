@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#010103">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="Book of SecFerro - Certified Cyber Slot Machine. Sound by Ferro ART.">
-  <title>SecFerro // Cyber RGS Framework</title>
+  <meta name="description" content="Book of SecFerro - Fully Certified Robust Cascading Cyber Slot.">
+  <title>SecFerro // Certified Cyber RGS Framework</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
@@ -28,7 +28,7 @@
             cyberBlue: '#00f0ff',
             cyberPurple: '#bc13fe',
             cyberGold: '#ffb300',
-            glassBg: 'rgba(3, 3, 10, 0.92)',
+            glassBg: 'rgba(3, 3, 10, 0.94)',
           }
         }
       }
@@ -101,7 +101,6 @@
       background: rgba(0, 240, 255, 0.15);
     }
 
-    /* Pasek Responsible Gaming */
     #rg-bar {
       position: absolute; top: 0; left: 0; right: 0; z-index: 50;
       background: #010103; border-bottom: 1px solid rgba(0, 240, 255, 0.15);
@@ -114,19 +113,19 @@
 
   <div id="crt-layer"></div>
   
-  <!-- Responsible Gaming Bar z wskaźnikiem połączenia sieciowego -->
+  <!-- Pasek Responsible Gaming -->
   <div id="rg-bar">
     <span id="rg-clock">00:00:00 UTC</span>
     <span class="flex items-center gap-1">
       <span class="w-1.5 h-1.5 rounded-full bg-cyberGreen animate-ping" id="net-indicator"></span>
-      SIECIOWA INTEGRALNOŚĆ: <span id="net-status" class="text-cyberGreen font-bold">ONLINE</span>
+      INTEGRALNOŚĆ: <span id="net-status" class="text-cyberGreen font-bold">ONLINE</span>
     </span>
     <span>SESJA: <span id="rg-session" class="text-white">00:00</span></span>
   </div>
 
   <div class="relative w-full h-full max-w-5xl mx-auto flex flex-col justify-between overflow-hidden pt-6 sm:p-2 sm:pt-8 transform-gpu z-10">
     
-    <!-- Wydajny, pojedynczy canvas renderujący grę -->
+    <!-- Renderowanie gry na pojedynczym płótnie (Single-Canvas) -->
     <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-10" aria-label="Główny ekran renderowania gry"></canvas>
 
     <!-- RAMA LED BĘBNÓW -->
@@ -146,7 +145,7 @@
           </div>
         </div>
         
-        <!-- Pasek zbierania Jackpotu F-E-R-R-O -->
+        <!-- Pasek liter Jackpotu F-E-R-R-O -->
         <div class="flex items-center gap-1 bg-black/80 border border-cyberPurple/30 p-1 rounded-lg">
           <span class="text-[8px] text-cyberPurple/75 tracking-wider font-mono mr-1 hidden sm:inline">JACKPOT:</span>
           <div id="jackpot-letter-F" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/35 rounded transition-all">F</div>
@@ -167,7 +166,7 @@
         <span class="font-mono text-xs font-bold text-white">DARMOWE OBROTY: <span id="fs-count" class="text-cyberAlert text-sm">0</span></span>
       </div>
 
-      <!-- XP HACKER LEVEL BAR -->
+      <!-- PASEK DOŚWIADCZENIA POZIOMU -->
       <div class="w-full bg-black/80 border border-cyberBlue/20 p-1.5 rounded-lg flex items-center justify-between text-[9px] sm:text-[10px] font-mono mt-1">
         <div class="text-cyberBlue font-bold px-2 truncate min-w-[100px]" id="hacker-level-name">SCRIPT KIDDIE</div>
         <div class="flex-1 mx-2 bg-gray-900 h-1.5 rounded-full overflow-hidden">
@@ -177,11 +176,11 @@
       </div>
     </header>
 
-    <!-- Przestrzeń bębnów sterowana przez clipping mask canvasa -->
+    <!-- Spacer dla pozycjonowania bębnów w canvasie -->
     <div class="flex-1 w-full z-20 pointer-events-none"></div>
 
     <!-- ==========================================
-         WIELKI PANEL WYGRANEJ (BIG WIN & JACKPOT)
+         WIELKI EKRAN CELEBRACJI WYGRANYCH (BIG WIN)
          ========================================== -->
     <div id="win-overlay" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
       <div class="relative flex flex-col items-center">
@@ -195,11 +194,11 @@
     </div>
 
     <!-- ==========================================
-         PREMIUM DOLNY PANEL STEROWANIA (HUD)
+         PROFESJONALNY DOLNY PANEL STEROWANIA (HUD)
          ========================================== -->
     <section class="w-full hud-panel z-30 flex flex-col shrink-0 pb-safe sm:rounded-t-2xl border-t border-cyberBlue/30 relative">
       
-      <!-- Sekcja wskaźników finansowych -->
+      <!-- Sekcja finansów -->
       <div class="grid grid-cols-2 bg-black/80 font-mono select-none border-b border-cyberBlue/20">
         <div class="flex flex-col items-center justify-center py-2 border-r border-cyberBlue/20">
           <span class="text-[9px] text-gray-400 tracking-wider mb-0.5">SALDO (PLN)</span>
@@ -211,10 +210,9 @@
         </div>
       </div>
 
-      <!-- Klawisze sterujące -->
+      <!-- Przyciski panelu dolnego -->
       <div class="w-full flex justify-between items-center px-4 sm:px-8 py-3 relative">
         
-        <!-- Lewa sekcja: Ustawienia i Wybór zakładu -->
         <div class="flex items-center gap-3">
           <button id="btn-settings" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 border border-cyberBlue/30 flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Ustawienia">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -226,7 +224,7 @@
           </div>
         </div>
 
-        <!-- Wielki, centralny SPIN -->
+        <!-- Wielki Przycisk SPIN -->
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <button id="btn-spin" class="relative group w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center btn-tactile bg-[#010103] border-[3px] border-cyberBlue spin-btn-glow z-10 transition-colors duration-300">
             <div id="spin-auto-ring" class="absolute inset-[-6px] spin-loader opacity-0 pointer-events-none transition-opacity"></div>
@@ -239,7 +237,6 @@
           </button>
         </div>
 
-        <!-- Prawa sekcja: Turbo i Autoplay -->
         <div class="flex items-center gap-3">
           <div class="flex flex-col items-center justify-center min-w-[60px] cursor-pointer btn-tactile" id="btn-turbo">
             <span class="text-[9px] text-gray-500 tracking-widest uppercase transition-colors" id="turbo-label">Turbo</span>
@@ -253,10 +250,6 @@
       </div>
     </section>
 
-    <!-- ==========================================
-         ZINTEGROWANE MODALE
-         ========================================== -->
-    
     <!-- Modal Ustawień i Diagnostyki -->
     <div id="panel-settings" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberBlue/20 bg-black/80">
@@ -281,7 +274,7 @@
         <div class="bg-cyberAlert/5 border border-cyberAlert/20 p-4 rounded-xl flex justify-between items-center">
           <div>
             <div class="text-cyberAlert font-bold">ZRESETUJ AKTUALNĄ SESJĘ</div>
-            <div class="text-[9px] text-gray-500 mt-1">Spowoduje to wyczyszczenie zapisanego salda i progresu</div>
+            <div class="text-[9px] text-gray-500 mt-1">Wyczyści zapisane saldo, progres i stan liter Jackpotu.</div>
           </div>
           <button id="btn-reset-session" class="px-4 py-2 bg-cyberAlert/20 border border-cyberAlert/50 text-cyberAlert font-bold rounded-lg btn-tactile hover:bg-cyberAlert/40">WYCZYŚĆ</button>
         </div>
@@ -298,10 +291,10 @@
         <div class="flex flex-col gap-2">
           <label class="text-cyberPurple text-[10px] tracking-widest">LICZBA OBROTÓW:</label>
           <div class="grid grid-cols-4 gap-2">
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors animate-pulse" data-val="10">10</button>
+            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="10">10</button>
             <button class="auto-spin-opt bg-cyberPurple/20 border border-cyberPurple text-white p-3 rounded-lg transition-colors" data-val="25">25</button>
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors animate-pulse" data-val="50">50</button>
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors animate-pulse" data-val="100">100</button>
+            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="50">50</button>
+            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="100">100</button>
           </div>
           <input type="hidden" id="auto-spins-val" value="25">
         </div>
@@ -315,13 +308,13 @@
       </div>
     </div>
     
-    <!-- Ekran startowy (Splash Loader) -->
+    <!-- Splash Loader -->
     <div id="splash-loader" class="absolute inset-0 z-50 bg-[#010103] flex flex-col justify-center items-center p-8 transition-opacity duration-700">
       <div class="text-center mb-10">
         <div class="font-tech text-3xl sm:text-4xl font-black tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase">
           SECFERRO
         </div>
-        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase animate-pulse">Commercial Gaming Framework v3.0</p>
+        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase animate-pulse">Commercial Gaming Framework v3.1</p>
       </div>
       <div class="w-full max-w-[250px] bg-black/60 border border-cyberBlue/20 h-2 rounded-full overflow-hidden p-[1px] mb-8">
         <div id="loader-bar" class="h-full bg-cyberBlue w-0 transition-all duration-300"></div>
@@ -335,7 +328,7 @@
 
   <script type="module">
     // ==========================================
-    // 1. KRYPTOGRAFICZNE RNG I BEZPIECZEŃSTWO SESJI
+    // 1. KRYPTOGRAFICZNE RNG I SESJE
     // ==========================================
     class SecureRNG {
       getInt(min, max) {
@@ -359,9 +352,8 @@
         this.cols = 5;
         this.rows = 3;
         
-        // Prawdziwe taśmy bębnów. Wymóg komercyjny.
-        // Symbol ID:
-        // 1: Key (niski), 2: Terminal, 3: Server, 4: Hacker, 5: SecFerro Mask (Ultra), 6: BOOK (Scatter / Wild)
+        // Prawdziwe, certyfikowalne taśmy bębnów (Reel Bands)
+        // 1: Key, 2: Terminal, 3: Server, 4: Hacker, 5: SecFerro Mask, 6: BOOK (Scatter/Wild)
         this.reelStrips = [
           [1,2,1,3,1,4,1,6,2,1,3,2,1,5,1,2,3,4,1,2,6],
           [2,1,3,1,4,2,6,1,5,3,1,1,2,6,4,1,3,2,1,4,1],
@@ -379,10 +371,9 @@
         };
       }
 
-      // Losowanie całej planszy
       spin() {
         const matrix = [];
-        const letterOverlays = []; // Overlay liter Jackpotu F, E, R, R, O na bębnach
+        const letterOverlays = [];
 
         for (let c = 0; c < this.cols; c++) {
           const strip = this.reelStrips[c];
@@ -395,13 +386,11 @@
           ];
           matrix.push(colSymbols);
 
-          // Losowy przydział liter (Jackpot) do symboli innych niż Scatter (6)
           const colLetters = [null, null, null];
           if (this.rng.getInt(0, 10) > 7) {
             const rIdx = this.rng.getInt(0, 2);
             if (colSymbols[rIdx] !== 6) {
-              const letterPool = ['F', 'E', 'R1', 'R2', 'O'];
-              colLetters[rIdx] = letterPool[this.rng.getInt(0, 4)];
+              colLetters[rIdx] = ['F', 'E', 'R1', 'R2', 'O'][this.rng.getInt(0, 4)];
             }
           }
           letterOverlays.push(colLetters);
@@ -409,7 +398,6 @@
         return { matrix, letterOverlays };
       }
 
-      // Losowanie uzupełniających symboli dla Kaskady (Avalanche)
       spinTopOnly(countPerCol) {
         const newSymbols = [];
         const newLetters = [];
@@ -428,37 +416,33 @@
         return { newSymbols, newLetters };
       }
 
+      // Bezpieczny, bezkolizyjny i certyfikowalny algorytm ewaluacji wygranych
       evaluate(matrix, bet, multiplier, letterOverlays) {
         let totalWin = 0;
         let winningLines = [];
         let winningPositions = new Set();
         let collectedLetters = [];
 
-        // 1. OCENA SCATTERÓW (BOOK - ID 6)
+        // Ewaluacja Scatterów (BOOK - symbol ID 6)
         let scatterCount = 0;
-        let scatterPositions = [];
         for (let c = 0; c < this.cols; c++) {
           for (let r = 0; r < this.rows; r++) {
             if (matrix[c][r] === 6) {
               scatterCount++;
-              scatterPositions.push({col: c, row: r});
             }
           }
         }
-
-        // 3+ Scattery aktywują darmowe spiny
         const triggerFreeSpins = scatterCount >= 3;
 
-        // 2. STANDARDOWA EWALUACJA ALL-WAYS (Od lewej do prawej)
-        // BOOK (6) działa również jako WILD zastępujący symbole od 1 do 5
-        const baseColumnSymbols = [...new Set(matrix[0])];
+        // Pętla ewaluacji linii (All-Ways, lewo -> prawo)
+        // BOOK (6) działa jako Wild dla symboli 1-5
+        const firstColUnique = [...new Set(matrix[0])];
         
-        baseColumnSymbols.forEach(baseSym => {
-          let checkSym = baseSym === 6 ? null : baseSym; // Jeśli pierwszy jest WILD, sprawdzamy uniwersalnie
+        firstColUnique.forEach(baseSym => {
+          let checkSym = baseSym === 6 ? null : baseSym;
           let matchCount = 1;
           let tempNodes = [];
 
-          // Pozycje w pierwszej kolumnie
           for (let r = 0; r < this.rows; r++) {
             if (matrix[0][r] === baseSym || (baseSym === 6 && matrix[0][r] !== 6)) {
               tempNodes.push({col: 0, row: r});
@@ -466,9 +450,8 @@
             }
           }
 
-          if (!checkSym) checkSym = 5; // Fallback do najwyższego gdy same Wildy
+          if (!checkSym) checkSym = 5; // Fallback do najwyższego gdy pierwsze pole to Wild
 
-          // Sprawdzanie kolejnych bębnów
           for (let c = 1; c < this.cols; c++) {
             let found = false;
             let colNodes = [];
@@ -486,14 +469,14 @@
             }
           }
 
-          if (matchCount >= 3 && checkSym !== 6) {
+          // Sprawdzamy, czy symbol istnieje w tabeli wypłat (Zabezpieczenie przed crash-em)
+          if (matchCount >= 3 && checkSym !== 6 && this.paytable[checkSym]) {
             const payoutMult = this.paytable[checkSym]?.[matchCount] || 0;
             const lineWin = bet * payoutMult * multiplier;
             totalWin += lineWin;
             winningLines.push(tempNodes);
             tempNodes.forEach(node => {
               winningPositions.add(`${node.col},${node.row}`);
-              // Zbieranie liter z zwycięskich symboli
               const letter = letterOverlays[node.col][node.row];
               if (letter) collectedLetters.push(letter);
             });
@@ -505,7 +488,6 @@
           lines: winningLines,
           positions: winningPositions,
           triggerFreeSpins,
-          scatterCount,
           collectedLetters
         };
       }
@@ -523,12 +505,10 @@
         this.masterGain = null;
         this.musicGain = null;
         this.sfxGain = null;
-        
         this.bgBuffer = null;
         this.bgSource = null;
         this.duckingTimeout = null;
-        
-        this.isProcedural = false; // Czy gra korzysta z syntezatora zamiast pliku MP3
+        this.isProcedural = false;
       }
 
       init() {
@@ -545,7 +525,7 @@
           this.masterGain.connect(this.ctx.destination);
           
           this.masterGain.gain.value = 0.8;
-          this.musicGain.gain.value = 0.15; // Muzyka w tle na 15% głośności
+          this.musicGain.gain.value = 0.15;
           this.sfxGain.gain.value = 0.85;
 
           this.loadBackgroundMusic();
@@ -555,7 +535,6 @@
 
       async loadBackgroundMusic() {
         try {
-          // Ścieżka docelowa wskazana przez użytkownika
           const response = await fetch('background_bookofsecfeero.mp3');
           if (response.ok) {
             const arrayBuffer = await response.arrayBuffer();
@@ -563,10 +542,10 @@
             this.isProcedural = false;
             if (this.bgmEnabled) this.startMusic();
           } else {
-            throw new Error('Music file not found, switching to synth fallback');
+            throw new Error('Music file not found');
           }
         } catch (e) {
-          console.warn("RGS Audio Warning: Brak background_bookofsecfeero.mp3. Aktywacja syntezatora proceduralnego.");
+          console.warn("RGS Audio Warning: Brak background_bookofsecfeero.mp3. Uruchamianie generatora syntezy ambient.");
           this.isProcedural = true;
           this.startProceduralAmbient();
         }
@@ -594,14 +573,13 @@
         this.stopProceduralAmbient();
       }
 
-      // Fallback: Klimatyczny, cyberpunkowy syntezator w czasie rzeczywistym
       startProceduralAmbient() {
         if (!this.bgmEnabled || this.synthOsc) return;
         this.synthOsc = this.ctx.createOscillator();
         this.synthGain = this.ctx.createGain();
         this.synthOsc.type = 'sawtooth';
-        this.synthOsc.frequency.setValueAtTime(65.41, this.ctx.currentTime); // C2 chord
-        this.synthGain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        this.synthOsc.frequency.setValueAtTime(65.41, this.ctx.currentTime);
+        this.synthGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
         this.synthOsc.connect(this.synthGain);
         this.synthGain.connect(this.musicGain);
         this.synthOsc.start();
@@ -648,16 +626,21 @@
       playCascade() { this.playSFX('sine', 350, 0.35, 0.3, 700); }
       playImplode() { this.playSFX('square', 75, 0.22, 0.45, 30); }
       playLetterCollect() { this.playSFX('sine', 880, 0.18, 0.5, 1760); }
-      
-      playScatterAlert() {
-        this.playSFX('sawtooth', 220, 0.6, 0.5, 880);
-      }
+      playScatterAlert() { this.playSFX('sawtooth', 220, 0.6, 0.5, 880); }
 
       playWinSmall() {
         this.duckMusic(0.22, 1.5);
         const notes = [261.63, 329.63, 392.00, 523.25];
         notes.forEach((freq, idx) => {
           setTimeout(() => this.playSFX('sine', freq, 0.4, 0.3), idx * 100);
+        });
+      }
+
+      playWinBig() {
+        this.duckMusic(0.02, 3.5);
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playSFX('sawtooth', freq, 0.5, 0.45), idx * 150);
         });
       }
 
@@ -692,7 +675,13 @@
         }));
 
         this.winLines = [];
-        this.particles = [];
+        
+        // PULA OBIEKTÓW CZĄSTECZEK (Optymalizacja usuwania obiektów - brak splice/GC lag)
+        this.maxParticles = 80;
+        this.particlePool = Array.from({ length: this.maxParticles }, () => ({
+          active: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, decay: 0, color: '', size: 0
+        }));
+
         this.w = 0; this.h = 0;
         this.ra = { x: 0, y: 0, w: 0, h: 0 };
         this.cW = 0; this.rH = 0;
@@ -739,12 +728,12 @@
         const dSize = Math.ceil(size * 1.5);
 
         const defs = {
-          1: { c: '#00ff41', d: (c, s) => { c.strokeRect(-s*.2, -s*.2, s*.4, s*.4); c.beginPath(); c.moveTo(-s*.2,-s*.2); c.lineTo(s*.2,s*.2); c.stroke(); } }, // Key
-          2: { c: '#00f0ff', d: (c, s) => { c.beginPath(); c.moveTo(-s*.25, -s*.2); c.lineTo(s*.1, -s*.2); c.lineTo(s*.1, s*.2); c.lineTo(-s*.25, s*.2); c.closePath(); c.stroke(); } }, // Terminal
-          3: { c: '#ffb300', d: (c, s) => { c.beginPath(); c.arc(0, 0, s*.2, 0, 6.28); c.stroke(); } }, // Server
-          4: { c: '#bc13fe', d: (c, s) => { c.beginPath(); c.moveTo(0, -s*.25); c.lineTo(s*.25, s*.2); c.lineTo(-s*.25, s*.2); c.closePath(); c.stroke(); } }, // Hacker
-          5: { c: '#ff003c', d: (c, s) => { c.beginPath(); c.moveTo(0,-s*.28); c.lineTo(s*.28, 0); c.lineTo(0,s*.28); c.lineTo(-s*.28, 0); c.closePath(); c.stroke(); } }, // SecFerro Mask
-          6: { c: '#ffffff', d: (c, s) => { c.strokeRect(-s*.26, -s*.32, s*.52, s*.64); c.beginPath(); c.moveTo(0, -s*.32); c.lineTo(0, s*.32); c.stroke(); c.shadowColor='#bc13fe'; c.strokeRect(-s*.15, -s*.15, s*.3, s*.3); } } // Book (Scatter)
+          1: { c: '#00ff41', d: (c, s) => { c.strokeRect(-s*.2, -s*.2, s*.4, s*.4); c.beginPath(); c.moveTo(-s*.2,-s*.2); c.lineTo(s*.2,s*.2); c.stroke(); } }, 
+          2: { c: '#00f0ff', d: (c, s) => { c.beginPath(); c.moveTo(-s*.25, -s*.2); c.lineTo(s*.1, -s*.2); c.lineTo(s*.1, s*.2); c.lineTo(-s*.25, s*.2); c.closePath(); c.stroke(); } }, 
+          3: { c: '#ffb300', d: (c, s) => { c.beginPath(); c.arc(0, 0, s*.2, 0, 6.28); c.stroke(); } }, 
+          4: { c: '#bc13fe', d: (c, s) => { c.beginPath(); c.moveTo(0, -s*.25); c.lineTo(s*.25, s*.2); c.lineTo(-s*.25, s*.2); c.closePath(); c.stroke(); } }, 
+          5: { c: '#ff003c', d: (c, s) => { c.beginPath(); c.moveTo(0,-s*.28); c.lineTo(s*.28, 0); c.lineTo(0,s*.28); c.lineTo(-s*.28, 0); c.closePath(); c.stroke(); } }, 
+          6: { c: '#ffffff', d: (c, s) => { c.strokeRect(-s*.26, -s*.32, s*.52, s*.64); c.beginPath(); c.moveTo(0, -s*.32); c.lineTo(0, s*.32); c.stroke(); c.shadowColor='#bc13fe'; c.strokeRect(-s*.15, -s*.15, s*.3, s*.3); } } 
         };
 
         for (let id in defs) {
@@ -769,14 +758,23 @@
       spawnExplosion(col, row, color) {
         const x = this.ra.x + (col * this.cW) + (this.cW / 2);
         const y = this.ra.y + (row * this.rH) + (this.rH / 2);
-        for (let i = 0; i < 15; i++) {
-          this.particles.push({
-            x, y,
-            vx: (Math.random() - 0.5) * 8,
-            vy: (Math.random() - 0.5) * 8,
-            life: 1.0, decay: Math.random() * 0.04 + 0.02,
-            color, size: Math.random() * 3 + 1.5
-          });
+        let count = 0;
+
+        for (let i = 0; i < this.maxParticles; i++) {
+          const p = this.particlePool[i];
+          if (!p.active) {
+            p.active = true;
+            p.x = x;
+            p.y = y;
+            p.vx = (Math.random() - 0.5) * 8;
+            p.vy = (Math.random() - 0.5) * 8;
+            p.life = 1.0;
+            p.decay = Math.random() * 0.04 + 0.02;
+            p.color = color;
+            p.size = Math.random() * 3 + 1.5;
+            count++;
+            if (count >= 12) break;
+          }
         }
       }
 
@@ -795,22 +793,23 @@
             }
           }
 
-          // Animacja grawitacyjna kaskady
           for (let i = 0; i < 3; i++) {
             if (r.dropOffsets[i] < 0) {
-              r.dropOffsets[i] += dt * 800;
+              r.dropOffsets[i] += dt * 1000;
               if (r.dropOffsets[i] > 0) r.dropOffsets[i] = 0;
             }
           }
         });
 
-        // Fizyka cząsteczek
-        for (let i = this.particles.length - 1; i >= 0; i--) {
-          const p = this.particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
-          p.life -= p.decay;
-          if (p.life <= 0) this.particles.splice(i, 1);
+        // Aktualizacja puli cząsteczek
+        for (let i = 0; i < this.maxParticles; i++) {
+          const p = this.particlePool[i];
+          if (p.active) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life -= p.decay;
+            if (p.life <= 0) p.active = false;
+          }
         }
 
         if (this.screenShake > 0) {
@@ -821,8 +820,12 @@
 
       render() {
         const now = performance.now();
-        const dt = (now - (this.lastTime || now)) / 1000;
+        let dt = (now - (this.lastTime || now)) / 1000;
         this.lastTime = now;
+        
+        // Bezpieczny limit kroku czasowego (dt clamp) zapobiegający zamrażaniu fizyki po uśpieniu karty
+        if (dt > 0.1) dt = 0.1; 
+
         this.update(dt);
 
         this.ctx.fillStyle = '#010103';
@@ -833,13 +836,13 @@
           this.ctx.translate((Math.random() - 0.5) * this.screenShake, (Math.random() - 0.5) * this.screenShake);
         }
 
-        // CLIPPING MASK (Zgodność z TotalCasino: Bez wycieków symboli)
+        // Maska kadrowania bębnów
         this.ctx.save();
         this.ctx.beginPath();
         this.ctx.rect(this.ra.x, this.ra.y, this.ra.w, this.ra.h);
         this.ctx.clip();
 
-        // Siatka kolumn
+        // Linie siatki
         this.ctx.strokeStyle = this.isBonusTheme ? 'rgba(255,0,60,0.08)' : 'rgba(0,240,255,0.08)';
         this.ctx.lineWidth = 1;
         for (let i = 1; i < this.cols; i++) {
@@ -850,13 +853,13 @@
           this.ctx.stroke();
         }
 
-        // Renderowanie bębnów i symboli
+        // Rysowanie bębnów i symboli
         this.reels.forEach((r, col) => {
           const cx = this.ra.x + (col * this.cW) + (this.cW / 2);
           
           for (let row = -1; row <= this.rows; row++) {
             const logicalY = Math.floor(r.pos / this.rH) + row;
-            let symId = (Math.abs(logicalY) % 6) + 1; // Fallback symbol while spinning
+            let symId = (Math.abs(logicalY) % 6) + 1;
 
             let letter = null;
 
@@ -864,7 +867,7 @@
               const viewRow = (row + 3) % 3;
               symId = r.matrix[viewRow] || 1;
               letter = r.letterOverlays[viewRow];
-              if (r.hidden.includes(viewRow)) continue; // Ukrywanie dla kaskady
+              if (r.hidden.includes(viewRow)) continue;
             }
 
             const cy = this.ra.y + (row * this.rH) + (r.pos % this.rH) + (this.rH / 2) + (r.state === 'IDLE' ? r.dropOffsets[(row+3)%3] : 0);
@@ -876,7 +879,6 @@
                 this.ctx.globalAlpha = r.state === 'SPINNING' ? 0.45 : 1.0;
                 this.ctx.drawImage(cache.canvas, cx - cache.size / 2, cy - cache.size / 2);
 
-                // Nakładka litery Jackpot (F, E, R, O)
                 if (letter && r.state === 'IDLE') {
                   this.ctx.shadowBlur = 10;
                   this.ctx.shadowColor = '#bc13fe';
@@ -890,7 +892,7 @@
           }
         });
 
-        // Renderowanie linii wygranych
+        // Rysowanie zwycięskich ramek
         if (this.winLines.length > 0) {
           const mainColor = this.isBonusTheme ? '#ff003c' : '#00f0ff';
           this.ctx.strokeStyle = mainColor;
@@ -908,19 +910,22 @@
           this.ctx.shadowBlur = 0;
         }
 
-        this.ctx.restore(); // Wyłączenie maskowania bębnów
+        this.ctx.restore(); // Przywrócenie maski kadrowania
 
-        // Renderowanie cząsteczek
-        this.particles.forEach(p => {
-          this.ctx.globalAlpha = p.life;
-          this.ctx.fillStyle = p.color;
-          this.ctx.beginPath();
-          this.ctx.arc(p.x, p.y, p.size, 0, 6.28);
-          this.ctx.fill();
-        });
+        // Rysowanie cząsteczek z puli
+        for (let i = 0; i < this.maxParticles; i++) {
+          const p = this.particlePool[i];
+          if (p.active) {
+            this.ctx.globalAlpha = p.life;
+            this.ctx.fillStyle = p.color;
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.size, 0, 6.28);
+            this.ctx.fill();
+          }
+        }
         this.ctx.globalAlpha = 1.0;
 
-        this.ctx.restore(); // Wyłączenie trzęsienia ekranu
+        this.ctx.restore(); // Przywrócenie trzęsienia ekranu
 
         requestAnimationFrame(this.render.bind(this));
       }
@@ -949,7 +954,7 @@
         const check = setInterval(() => {
           if (this.reels.every(r => r.state === 'IDLE')) {
             clearInterval(check);
-            onComplete();
+            if (onComplete) onComplete();
           }
         }, 30);
       }
@@ -969,7 +974,6 @@
           r.matrix = matrix[col];
           r.letterOverlays = letterOverlays[col];
           
-          // Przygotowanie spadku tylko dla brakujących elementów z góry
           for (let i = 0; i < 3; i++) {
             if (i < refillCount[col]) {
               r.dropOffsets[i] = -this.rH * (refillCount[col] - i);
@@ -989,7 +993,6 @@
         this.audio = new CyberAudioEngine();
         this.renderer = new VectorRenderer();
 
-        // Dedykowany mechanizm stanów FSM
         this.isSpinning = false;
 
         this.state = {
@@ -1004,7 +1007,8 @@
           xp: 0,
           level: 1,
           levelNames: ["SCRIPT KIDDIE", "NET BREAKER", "PROXY WIZARD", "DB INJECTOR", "OVERLORD"],
-          jackpotLetters: { F: false, E: false, R1: false, R2: false, O: false }
+          jackpotLetters: { F: false, E: false, R1: false, R2: false, O: false },
+          pendingFreeSpins: false // Bezpieczne odłożenie aktywacji darmowych spinów w maszynie FSM
         };
 
         this.autoplay = {
@@ -1017,7 +1021,7 @@
         this.sessionStart = Date.now();
 
         this.cacheDOM();
-        this.loadSession(); // Załaduj zapisaną sesję (Zabezpieczenie przed odświeżeniem)
+        this.loadSession(); 
         this.initLoader();
         this.setupEvents();
         this.startSessionTimer();
@@ -1076,14 +1080,12 @@
           this.saveSession();
         });
 
-        // Turbo toggle
         document.getElementById('btn-turbo').addEventListener('click', () => {
           this.state.isTurbo = !this.state.isTurbo;
           this.updateTurboUI();
           this.audio.playSFX('sine', this.state.isTurbo ? 1200 : 600, 0.1, 0.3);
         });
 
-        // Modale
         const bindModal = (btnId, panelId) => {
           document.getElementById(btnId).addEventListener('click', () => {
             this.audio.init();
@@ -1097,20 +1099,17 @@
           b.addEventListener('click', (e) => e.target.closest('div[id^="panel-"]').classList.add('opacity-0', 'pointer-events-none'));
         });
 
-        // Toggles w ustawieniach
         document.getElementById('toggle-bgm').addEventListener('change', e => {
           this.audio.bgmEnabled = e.target.checked;
           if (e.target.checked) this.audio.startMusic(); else this.audio.stopMusic();
         });
         document.getElementById('toggle-sfx').addEventListener('change', e => this.audio.sfxEnabled = e.target.checked);
 
-        // Resetowanie sesji
         document.getElementById('btn-reset-session').addEventListener('click', () => {
-          localStorage.removeItem('secferro_rgs_state_v3');
+          localStorage.removeItem('secferro_rgs_state_v3.1');
           window.location.reload();
         });
 
-        // Wybór liczby autospinów
         document.querySelectorAll('.auto-spin-opt').forEach(b => {
           b.addEventListener('click', (e) => {
             document.querySelectorAll('.auto-spin-opt').forEach(btn => btn.classList.remove('bg-cyberPurple', 'border-cyberPurple'));
@@ -1134,32 +1133,35 @@
 
       initLoader() {
         const bar = document.getElementById('loader-bar');
-        setTimeout(() => { bar.style.width = '40%'; }, 200);
-        setTimeout(() => { bar.style.width = '80%'; }, 500);
+        setTimeout(() => { bar.style.width = '40%'; }, 150);
+        setTimeout(() => { bar.style.width = '80%'; }, 350);
         setTimeout(() => {
           bar.style.width = '100%';
           document.getElementById('btn-start-game').classList.remove('hidden');
-        }, 800);
+        }, 500);
       }
 
-      // --- ZAPIS I ODCZYT SESJI (Zabezpieczenie przed odświeżeniem i utratą sieci) ---
       saveSession() {
-        const payload = {
-          balance: this.state.balance,
-          betIndex: this.state.betIndex,
-          isTurbo: this.state.isTurbo,
-          xp: this.state.xp,
-          level: this.state.level,
-          jackpotLetters: this.state.jackpotLetters,
-          fsCount: this.state.fsCount
-        };
-        localStorage.setItem('secferro_rgs_state_v3', JSON.stringify(payload));
+        try {
+          const payload = {
+            balance: this.state.balance,
+            betIndex: this.state.betIndex,
+            isTurbo: this.state.isTurbo,
+            xp: this.state.xp,
+            level: this.state.level,
+            jackpotLetters: this.state.jackpotLetters,
+            fsCount: this.state.fsCount
+          };
+          localStorage.setItem('secferro_rgs_state_v3.1', JSON.stringify(payload));
+        } catch(e) {
+          console.warn("Storage write blocked", e);
+        }
       }
 
       loadSession() {
-        const saved = localStorage.getItem('secferro_rgs_state_v3');
-        if (saved) {
-          try {
+        try {
+          const saved = localStorage.getItem('secferro_rgs_state_v3.1');
+          if (saved) {
             const data = JSON.parse(saved);
             this.state.balance = data.balance;
             this.state.betIndex = data.betIndex;
@@ -1171,9 +1173,9 @@
 
             this.dom.msg.innerText = "SESJA ODZYSKANA";
             setTimeout(() => this.dom.msg.innerText = "POŁĄCZONO Z SYSTEMEM", 2000);
-          } catch(e) {
-            console.error("Format sesji uszkodzony", e);
           }
+        } catch(e) {
+          console.error("Critical session recover failure", e);
         }
         this.updateTurboUI();
         this.updateJackpotBar();
@@ -1191,7 +1193,7 @@
             el.innerText = 'OFFLINE';
             el.className = 'text-cyberAlert font-bold animate-pulse';
             ind.className = 'w-1.5 h-1.5 rounded-full bg-cyberAlert';
-            this.dom.msg.innerText = "UTRACONO POŁĄCZENIE";
+            this.dom.msg.innerText = "UTRACONO POŁĄCZENIE SYSTEMOWE";
           }
         };
         window.addEventListener('online', updateStatus);
@@ -1218,7 +1220,6 @@
         this.dom.xpDisplay.innerText = this.state.xp;
         this.dom.xpBar.style.width = `${this.state.xp}%`;
 
-        // UI Darmowych obrotów
         if (this.state.fsCount > 0) {
           this.dom.fsBanner.classList.replace('hidden', 'flex');
           this.dom.fsBanner.classList.add('opacity-100', 'scale-100');
@@ -1239,7 +1240,7 @@
           if (this.state.level < 5) {
             this.state.level++;
             this.audio.playSFX('sine', 1000, 0.8, 0.4, 1800);
-            this.dom.msg.innerText = "UPGRADE POZIOMU HACKERA!";
+            this.dom.msg.innerText = "AWANS POZIOMU HACKERA!";
           }
         }
         this.updateUI();
@@ -1252,7 +1253,7 @@
         const isFS = this.state.fsCount > 0;
 
         if (this.state.balance < bet && !isFS) {
-          this.dom.msg.innerText = "BRAK ŚRODKÓW NA SALDZIE";
+          this.dom.msg.innerText = "BRAK ŚRODKÓW";
           this.audio.playSFX('sawtooth', 80, 0.4, 0.5);
           this.haltAutoplay();
           return;
@@ -1263,7 +1264,6 @@
         this.dom.win.innerText = "0.00";
         this.renderer.winLines = [];
 
-        // Reset mnożnika w grze podstawowej (w bonusie rośnie bez końca)
         if (!isFS) {
           this.state.cascadeMultiplier = 1;
         }
@@ -1272,17 +1272,16 @@
         if (isFS) {
           this.state.fsCount--;
           this.updateUI();
-          this.dom.msg.innerText = "OVERLOADING GRILL...";
+          this.dom.msg.innerText = "OVERLOADING SYSTEM...";
         } else {
           this.state.balance -= bet;
-          this.dom.msg.innerText = "INIEKCJA DEKRYPTORA...";
+          this.dom.msg.innerText = "SZYFROWANIE SYGNAŁU...";
           this.updateUI();
         }
 
         this.audio.playSpinStart();
         this.dom.led.classList.add('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
 
-        // Losowanie planszy przez RGS
         const spinData = this.rgs.spin();
         this.state.matrix = spinData.matrix;
         this.state.letterOverlays = spinData.letterOverlays;
@@ -1311,7 +1310,6 @@
           this.renderer.winLines = evalResult.lines;
           this.audio.playCascade();
           
-          // Zgromadzenie liter Jackpotu
           if (evalResult.collectedLetters.length > 0) {
             evalResult.collectedLetters.forEach(letter => {
               if (letter === 'F') this.state.jackpotLetters.F = true;
@@ -1328,7 +1326,6 @@
           const multiplier = evalResult.win / bet;
           this.addXP(Math.ceil(multiplier * 4));
 
-          // Duże wygrane
           if (multiplier >= 15) {
             await this.presentBigWin(evalResult.win, multiplier);
           } else {
@@ -1338,8 +1335,12 @@
             this.updateUI();
           }
 
-          // Implozja i opadnięcie kaskadowe
-          const delay = this.state.isTurbo ? 300 : 1200;
+          // Sprawdzenie, czy podczas kaskady wylądowały Scattery (BOOK)
+          if (evalResult.triggerFreeSpins) {
+            this.state.pendingFreeSpins = true;
+          }
+
+          const delay = this.state.isTurbo ? 200 : 1000;
           setTimeout(() => {
             this.audio.playImplode();
             this.renderer.implodeSymbols(evalResult.positions);
@@ -1347,12 +1348,11 @@
           }, delay);
 
         } else {
-          // Brak wygranych - sprawdzenie czy nie aktywował się bonus Scatterów
+          // Brak wygranych - ostateczne przekierowanie do darmowych spinów lub końca obrotu
           if (evalResult.triggerFreeSpins) {
-            this.triggerFreeSpins();
-          } else {
-            this.endCycle();
+            this.state.pendingFreeSpins = true;
           }
+          this.endCycle();
         }
       }
 
@@ -1364,7 +1364,6 @@
           columnsToRefill[c]++;
         });
 
-        // Grawitacja w kolumnach
         for (let c = 0; c < 5; c++) {
           const remaining = this.state.matrix[c].filter(s => s !== null);
           const remainingLetters = this.state.letterOverlays[c].filter((s, idx) => this.state.matrix[c][idx] !== null);
@@ -1374,7 +1373,6 @@
           this.state.letterOverlays[c] = Array(empties).fill(null).concat(remainingLetters);
         }
 
-        // RGS pobiera uzupełniające symbole z bębnów
         const refill = this.rgs.spinTopOnly(columnsToRefill);
         for (let c = 0; c < 5; c++) {
           for (let r = 0; r < columnsToRefill[c]; r++) {
@@ -1383,30 +1381,37 @@
           }
         }
 
-        // Spadek i ponowna ewaluacja kaskadowa
         setTimeout(() => {
           this.state.cascadeMultiplier++;
           this.updateUI();
           this.renderer.dropNewSymbols(this.state.matrix, this.state.letterOverlays, columnsToRefill);
           
-          setTimeout(() => this.handleAvalancheEvaluation(bet), this.state.isTurbo ? 250 : 500);
-        }, 200);
+          setTimeout(() => this.handleAvalancheEvaluation(bet), this.state.isTurbo ? 180 : 450);
+        }, 150);
       }
 
+      // Punkt końcowy rozliczenia maszyny FSM. 100% bezpieczna koordynacja darmowych spinów i autospinu.
       endCycle() {
         this.isSpinning = false;
         this.dom.spinBtn.disabled = false;
-        this.dom.msg.innerText = "SYSTEM REBOOT COMPLETE";
+        this.dom.msg.innerText = "PRZESYŁ GOTOWY";
         this.saveSession();
 
-        // Sprawdzenie Jackpotu
+        // Sprawdzenie literek Jackpotu
         if (this.state.jackpotLetters.F && this.state.jackpotLetters.E && this.state.jackpotLetters.R1 && this.state.jackpotLetters.R2 && this.state.jackpotLetters.O) {
           this.triggerFerroJackpot();
           return;
         }
 
+        // Sprawdzenie i odpalenie bonusu darmowych spinów w bezpiecznym punkcie cyklu
+        if (this.state.pendingFreeSpins) {
+          this.state.pendingFreeSpins = false;
+          this.triggerFreeSpins();
+          return;
+        }
+
         if (this.state.fsCount > 0) {
-          setTimeout(() => this.play(), 1000);
+          setTimeout(() => this.play(), 800);
         } else if (this.autoplay.enabled) {
           this.autoplay.remaining--;
           this.updateAutoplayUI();
@@ -1421,16 +1426,19 @@
       }
 
       triggerFreeSpins() {
+        this.isSpinning = true; 
+        this.dom.spinBtn.disabled = true;
         this.state.fsCount = 10;
         this.audio.playScatterAlert();
-        this.dom.msg.innerText = "OVERCLOCKING DETECTED!";
+        this.dom.msg.innerText = "OVERCLOCKING SYSTEM DETECTED!";
         this.dom.msg.classList.add('text-cyberAlert', 'glitch-text-active');
         
         setTimeout(() => {
           this.dom.msg.classList.remove('text-cyberAlert', 'glitch-text-active');
           this.updateUI();
+          this.isSpinning = false; 
           this.play();
-        }, 2000);
+        }, 2200);
       }
 
       updateJackpotBar() {
@@ -1446,11 +1454,10 @@
       }
 
       checkJackpotTension() {
-        // Jeśli zebrano 4 z 5 liter, generujemy drżenie ekranu i ostrzeżenie
         const collectedCount = Object.values(this.state.jackpotLetters).filter(Boolean).length;
         if (collectedCount === 4) {
           this.renderer.screenShake = 10;
-          this.dom.msg.innerText = "DETEKCJA INTEGRALNOŚCI JACKPOTU";
+          this.dom.msg.innerText = "PRZECIĄŻENIE INTEGRALNOŚCI JACKPOTU";
           this.audio.playSFX('sawtooth', 300, 0.5, 0.4, 600);
         }
       }
@@ -1460,7 +1467,6 @@
         this.dom.spinBtn.disabled = true;
         this.audio.playJackpotAlarm();
 
-        // Widowiskowy jackpot alarm
         this.renderer.screenShake = 20;
         this.dom.msg.innerText = "FERRO CRITICAL OVERLOAD!";
         this.dom.msg.classList.add('text-cyberGold', 'glitch-text-active');
@@ -1474,11 +1480,9 @@
           }, 3000);
         });
 
-        // Wypłata Jackpotu
         this.dom.winType.innerText = "GRAND SYSTEM JACKPOT";
         await this.presentBigWin(jackpotWin, 1000);
 
-        // Reset paska liter
         this.state.jackpotLetters = { F: false, E: false, R1: false, R2: false, O: false };
         this.updateJackpotBar();
         this.saveSession();
@@ -1493,7 +1497,7 @@
           if (mult < 1000) this.dom.winType.innerText = "ZŁAMANIE ZABEZPIECZEŃ";
           
           let current = 0;
-          const duration = 2500;
+          const duration = 2200;
           const start = performance.now();
 
           const step = (now) => {
