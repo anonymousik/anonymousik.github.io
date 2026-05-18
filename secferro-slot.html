@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -267,7 +268,7 @@
       </div>
     </section>
 
-    <!-- Modals (Settings, Paytable, Stats, Auto) remain identical but hidden by default -->
+    <!-- Modals (Settings, Paytable, Stats, Auto) -->
     <div id="panel-settings" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberBlue/20 bg-black/80">
         <h2 class="font-tech font-bold text-cyberBlue tracking-widest text-sm">> DIAGNOSTYKA_I_CONFIG</h2>
@@ -278,6 +279,22 @@
           <button id="btn-show-paytable" class="bg-cyberBlue/10 border border-cyberBlue/40 text-cyberBlue p-4 rounded-xl font-bold font-tech text-center btn-tactile">TABELA WYPŁAT</button>
           <button id="btn-show-stats" class="bg-cyberPurple/10 border border-cyberPurple/40 text-cyberPurple p-4 rounded-xl font-bold font-tech text-center btn-tactile">STATYSTYKI</button>
         </div>
+
+        <div class="bg-cyberBlue/5 border border-cyberBlue/10 p-4 rounded-xl flex justify-between items-center mt-4">
+          <div>
+            <div class="text-white font-bold">MUZYKA W TLE</div>
+            <div class="text-[9px] text-gray-500 mt-1">procedural_synth_secferro</div>
+          </div>
+          <input type="checkbox" id="toggle-bgm" checked class="w-6 h-6 accent-cyberBlue cursor-pointer">
+        </div>
+        <div class="bg-cyberBlue/5 border border-cyberBlue/10 p-4 rounded-xl flex justify-between items-center">
+          <div>
+            <div class="text-white font-bold">EFEKTY AUDIO (SFX)</div>
+            <div class="text-[9px] text-gray-500 mt-1">Dźwięki bębnów, kaskad i wygranych</div>
+          </div>
+          <input type="checkbox" id="toggle-sfx" checked class="w-6 h-6 accent-cyberBlue cursor-pointer">
+        </div>
+
         <div class="bg-cyberAlert/5 border border-cyberAlert/20 p-4 rounded-xl flex justify-between items-center mt-4">
           <div>
             <div class="text-cyberAlert font-bold">ZRESETUJ AKTUALNĄ SESJĘ</div>
@@ -498,6 +515,9 @@
         this.masterGain = null; this.musicGain = null; this.sfxGain = null;
         this.bgBuffer = null; this.bgSource = null;
         this.heartbeatTimer = null;
+        this.synthOsc = null; this.synthGain = null;
+        this.isProcedural = false;
+        this.currentBaseRate = 1.0;
       }
 
       init() {
@@ -508,8 +528,92 @@
           this.musicGain.connect(this.masterGain); this.sfxGain.connect(this.masterGain);
           this.masterGain.connect(this.ctx.destination);
           this.masterGain.gain.value = 0.85; this.musicGain.gain.value = 0.15; this.sfxGain.gain.value = 0.9;
+          
+          this.loadBackgroundMusic();
         }
         if (this.ctx.state === 'suspended') this.ctx.resume();
+      }
+
+      async loadBackgroundMusic() {
+        try {
+          const response = await fetch('background_bookofsecfeero.mp3');
+          if (response.ok) {
+            const arrayBuffer = await response.arrayBuffer();
+            this.bgBuffer = await this.ctx.decodeAudioData(arrayBuffer);
+            this.isProcedural = false;
+            if (this.bgmEnabled) this.startMusic();
+          } else {
+            throw new Error('Fallback to procedural');
+          }
+        } catch (e) {
+          this.isProcedural = true;
+          this.startProceduralAmbient();
+        }
+      }
+
+      startMusic() {
+        if (this.isProcedural) {
+          this.startProceduralAmbient();
+          return;
+        }
+        if (!this.bgBuffer || !this.bgmEnabled || this.bgSource) return;
+        this.bgSource = this.ctx.createBufferSource();
+        this.bgSource.buffer = this.bgBuffer;
+        this.bgSource.loop = true;
+        this.bgSource.connect(this.musicGain);
+        this.bgSource.playbackRate.value = this.currentBaseRate;
+        this.bgSource.start(0);
+      }
+
+      stopMusic() {
+        if (this.bgSource) {
+          try { this.bgSource.stop(); } catch(e){}
+          this.bgSource.disconnect();
+          this.bgSource = null;
+        }
+        this.stopProceduralAmbient();
+      }
+
+      startProceduralAmbient() {
+        if (!this.bgmEnabled || this.synthOsc || !this.ctx) return;
+        this.synthOsc = this.ctx.createOscillator();
+        this.synthGain = this.ctx.createGain();
+        this.synthOsc.type = 'sawtooth';
+        this.synthOsc.frequency.setValueAtTime(65.41 * this.currentBaseRate, this.ctx.currentTime);
+        this.synthGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+        this.synthOsc.connect(this.synthGain);
+        this.synthGain.connect(this.musicGain);
+        this.synthOsc.start();
+      }
+
+      stopProceduralAmbient() {
+        if (this.synthOsc) {
+          try { this.synthOsc.stop(); } catch(e){}
+          this.synthOsc.disconnect();
+          this.synthOsc = null;
+        }
+      }
+
+      updateBGMTempo(isTurbo, isBonus, cascadeMult, jackpotLetters) {
+        if (!this.ctx) return;
+        
+        let targetRate = 1.0;
+        if (isTurbo) targetRate += 0.20;
+        if (isBonus) targetRate += 0.15;
+        if (cascadeMult > 1) targetRate += (cascadeMult - 1) * 0.08;
+        
+        const collectedCount = Object.values(jackpotLetters).filter(Boolean).length;
+        if (collectedCount === 4) targetRate += 0.25; 
+
+        const finalRate = Math.min(Math.max(targetRate, 0.8), 1.6);
+        this.currentBaseRate = finalRate;
+
+        if (this.bgSource) {
+          this.bgSource.playbackRate.setValueAtTime(finalRate, this.ctx.currentTime);
+        }
+        if (this.isProcedural && this.synthOsc) {
+          this.synthOsc.frequency.setValueAtTime(65.41 * finalRate, this.ctx.currentTime);
+        }
       }
 
       playSFX(type, freq, dur, vol = 0.4, slideFreq = null) {
@@ -561,7 +665,7 @@
         }
       }
       playBigWinChord() {
-        const notes = [130.81, 164.81, 196.00, 261.63, 329.63, 392.00, 523.25]; // C major chord massive
+        const notes = [130.81, 164.81, 196.00, 261.63, 329.63, 392.00, 523.25];
         notes.forEach(f => this.playSFX('sawtooth', f, 3.0, 0.2, f * 1.01));
         this.playDeepImpact();
       }
@@ -709,7 +813,9 @@
         this.ctx.fillRect(0, 0, this.w, this.h);
 
         this.ctx.save();
-        if (this.screenShake > 0) this.ctx.translate((Math.random() - 0.5) * this.screenShake, (Math.random() - 0.5) * this.screenShake);
+        if (this.screenShake > 0) {
+          this.ctx.translate((Math.random() - 0.5) * this.screenShake, (Math.random() - 0.5) * this.screenShake);
+        }
 
         this.blastRings.forEach(b => {
           this.ctx.save(); this.ctx.globalCompositeOperation = 'screen';
@@ -871,17 +977,123 @@
           bal: get('display-balance'), bet: get('display-bet'), win: get('display-win'), msg: get('status-msg'),
           multDisp: get('multiplier-display'), spinBtn: get('btn-spin'), overlay: get('win-overlay'),
           winAmt: get('win-amount-counter'), winType: get('win-type'), fsBanner: get('fs-banner'), fsCount: get('fs-count'),
-          led: get('led-frame'), vignette: get('tension-vignette'), jackpotBg: get('jackpot-glow-bg')
+          led: get('led-frame'), vignette: get('tension-vignette'), jackpotBg: get('jackpot-glow-bg'),
+          
+          // Przywrócone elementy sterowania:
+          btnTurbo: get('btn-turbo'),
+          turboLabel: get('turbo-label'),
+          turboIcon: get('turbo-icon'),
+          btnSettings: get('btn-settings'),
+          btnAuto: get('btn-auto'),
+          betSel: get('bet-selector'),
+          holdProgressBar: get('hold-progress-bar'),
+          autoRing: get('spin-auto-ring'),
+          autoCount: get('auto-spin-count'),
+          spinIcon: get('spin-icon')
         };
       }
 
       setupEvents() {
+        // Start gry z ekranu ładowania
         document.getElementById('btn-start-game').addEventListener('click', () => {
-          this.audio.init(); document.getElementById('splash-loader').remove(); this.updateUI();
+          this.audio.init(); 
+          document.getElementById('splash-loader').remove(); 
+          this.updateUI();
+          this.audio.startMusic();
         });
         
+        // Kliknięcie SPIN
         this.dom.spinBtn.addEventListener('mousedown', () => { if(!this.isSpinning) this.play(); });
         this.dom.spinBtn.addEventListener('touchstart', (e) => { e.preventDefault(); if(!this.isSpinning) this.play(); }, {passive:false});
+
+        // Ustawienia / Diagnostyka (Show)
+        this.dom.btnSettings.addEventListener('click', () => {
+          this.audio.init();
+          document.getElementById('panel-settings').classList.remove('opacity-0', 'pointer-events-none');
+        });
+
+        // Autoplay (Show)
+        this.dom.btnAuto.addEventListener('click', () => {
+          this.audio.init();
+          document.getElementById('panel-auto').classList.remove('opacity-0', 'pointer-events-none');
+        });
+
+        // Zamykanie modali diagnostycznych i configu (uniwersalne)
+        document.querySelectorAll('.close-overlay').forEach(b => {
+          b.addEventListener('click', (e) => {
+            e.target.closest('div[id^="panel-"]').classList.add('opacity-0', 'pointer-events-none');
+          });
+        });
+
+        // Wybór Stawki
+        this.dom.betSel.addEventListener('click', () => {
+          if (this.isSpinning || this.state.fsCount > 0) return;
+          this.state.betIndex = (this.state.betIndex + 1) % this.state.bets.length;
+          this.audio.playSFX('sine', 880, 0.08, 0.3);
+          this.updateUI();
+          this.saveSession();
+        });
+
+        // TRYB TURBO - PRZYWRÓCONE I NAPRAWIONE
+        this.dom.btnTurbo.addEventListener('click', () => {
+          this.state.isTurbo = !this.state.isTurbo;
+          this.updateTurboUI();
+          this.audio.playSFX('sine', this.state.isTurbo ? 1200 : 600, 0.1, 0.3);
+          
+          this.audio.updateBGMTempo(
+            this.state.isTurbo,
+            this.state.fsCount > 0,
+            this.state.cascadeMultiplier,
+            this.state.jackpotLetters
+          );
+          this.saveSession();
+        });
+
+        // Tabela Wypłat w modalach
+        document.getElementById('btn-show-paytable').addEventListener('click', () => {
+          document.getElementById('panel-paytable').classList.remove('opacity-0', 'pointer-events-none');
+        });
+        document.getElementById('btn-close-paytable').addEventListener('click', () => {
+          document.getElementById('panel-paytable').classList.add('opacity-0', 'pointer-events-none');
+        });
+
+        // Statystyki w modalach
+        document.getElementById('btn-show-stats').addEventListener('click', () => {
+          this.updateStatsUI();
+          document.getElementById('panel-stats').classList.remove('opacity-0', 'pointer-events-none');
+        });
+        document.getElementById('btn-close-stats').addEventListener('click', () => {
+          document.getElementById('panel-stats').classList.add('opacity-0', 'pointer-events-none');
+        });
+
+        // Obsługa przełączników dźwięku
+        document.getElementById('toggle-bgm').addEventListener('change', e => {
+          this.audio.bgmEnabled = e.target.checked;
+          if (e.target.checked) this.audio.startMusic(); else this.audio.stopMusic();
+        });
+        document.getElementById('toggle-sfx').addEventListener('change', e => {
+          this.audio.sfxEnabled = e.target.checked;
+        });
+
+        // Resetowanie Sesji
+        document.getElementById('btn-reset-session').addEventListener('click', () => {
+          localStorage.removeItem('secferro_v4');
+          window.location.reload();
+        });
+
+        // Opcje Autoplay - wygoda konfiguracji
+        document.querySelectorAll('.auto-spin-opt').forEach(b => {
+          b.addEventListener('click', (e) => {
+            document.querySelectorAll('.auto-spin-opt').forEach(btn => btn.classList.remove('bg-cyberPurple', 'border-cyberPurple'));
+            e.target.classList.add('bg-cyberPurple', 'border-cyberPurple');
+            document.getElementById('auto-spins-val').value = e.target.dataset.val;
+          });
+        });
+
+        // Uruchomienie Autoplay
+        document.getElementById('start-autoplay').addEventListener('click', () => {
+          this.startAutoplay();
+        });
       }
 
       initLoader() {
@@ -890,7 +1102,15 @@
       }
 
       saveSession() { localStorage.setItem('secferro_v4', JSON.stringify(this.state)); }
-      loadSession() { const s = localStorage.getItem('secferro_v4'); if(s) { Object.assign(this.state, JSON.parse(s)); this.updateJackpotBar(); } }
+      
+      loadSession() { 
+        const s = localStorage.getItem('secferro_v4'); 
+        if(s) { 
+          Object.assign(this.state, JSON.parse(s)); 
+          this.updateJackpotBar(); 
+        } 
+        this.updateTurboUI();
+      }
 
       updateUI() {
         this.dom.bal.innerText = this.state.balance.toFixed(2);
@@ -904,12 +1124,34 @@
         }
       }
 
+      updateTurboUI() {
+        if (this.state.isTurbo) {
+          this.dom.turboLabel.classList.replace('text-gray-500', 'text-cyberBlue');
+          this.dom.turboIcon.classList.replace('text-gray-500', 'text-cyberBlue');
+        } else {
+          this.dom.turboLabel.classList.replace('text-cyberBlue', 'text-gray-500');
+          this.dom.turboIcon.classList.replace('text-cyberBlue', 'text-gray-500');
+        }
+      }
+
+      updateStatsUI() {
+        document.getElementById('stat-rounds').innerText = this.stats.totalRounds;
+        const calculatedRtp = this.stats.totalBet > 0 
+          ? ((this.stats.totalWin / this.stats.totalBet) * 100).toFixed(1) 
+          : "0.0";
+        document.getElementById('stat-rtp').innerText = `${calculatedRtp}%`;
+      }
+
       async play() {
         if (this.isSpinning) return;
         const bet = this.state.bets[this.state.betIndex];
         const isFS = this.state.fsCount > 0;
 
-        if (this.state.balance < bet && !isFS) { this.dom.msg.innerText = "BRAK ŚRODKÓW"; return; }
+        if (this.state.balance < bet && !isFS) { 
+          this.dom.msg.innerText = "BRAK ŚRODKÓW"; 
+          this.haltAutoplay();
+          return; 
+        }
 
         this.isSpinning = true; this.dom.spinBtn.disabled = true; this.dom.win.innerText = "0.00";
         if (!isFS) this.state.cascadeMultiplier = 1;
@@ -917,13 +1159,20 @@
 
         if (isFS) this.state.fsCount--; else this.state.balance -= bet;
         
+        this.audio.updateBGMTempo(
+          this.state.isTurbo,
+          isFS,
+          this.state.cascadeMultiplier,
+          this.state.jackpotLetters
+        );
+
         this.audio.playSFX('sawtooth', 100, 0.5, 0.4, 50);
         this.dom.led.classList.add('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
 
         const spinData = this.rgs.spin();
         this.state.matrix = spinData.matrix; this.state.letterOverlays = spinData.letterOverlays;
 
-        // ANTICIPATION LOGIC (Wstrzymanie oddechu)
+        // ANTICIPATION LOGIC
         let scatters = 0; let tensionCols = [];
         for(let c=0; c<5; c++) {
           if(this.state.matrix[c].includes(6)) scatters++;
@@ -931,17 +1180,17 @@
         }
         
         const jpCollected = Object.values(this.state.jackpotLetters).filter(Boolean).length;
-        if (jpCollected === 4) tensionCols = [2,3,4]; // Wysokie napięcie dla Jackpota
+        if (jpCollected === 4) tensionCols = [2,3,4]; 
         
         let hasTension = false;
 
         this.renderer.startSpin(
           this.state.matrix, this.state.letterOverlays, this.state.isTurbo, tensionCols,
           (colIdx) => {
-            if (tensionCols.includes(colIdx + 1)) {
+            if (tensionCols.includes(colIdx + 1) && !this.state.isTurbo) {
               hasTension = true;
               this.renderer.anticipationColumn = colIdx + 1;
-              this.renderer.globalTimeScale = 0.25; // SLOW MOTION
+              this.renderer.globalTimeScale = 0.25; 
               this.dom.vignette.classList.add('heartbeat-active');
               this.audio.startHeartbeat();
             } else if (hasTension && !tensionCols.includes(colIdx + 1)) {
@@ -995,6 +1244,7 @@
 
           this.stats.totalWin += evalResult.win;
 
+          const dropDelay = this.state.isTurbo ? 200 : 600;
           setTimeout(() => {
             this.audio.playSFX('square', 80, 0.3, 0.5);
             evalResult.positions.forEach(pos => {
@@ -1003,7 +1253,7 @@
             });
             this.renderer.screenShake = 15;
             this.triggerCascadeDrop(bet, evalResult.positions, evalResult.triggerFreeSpins);
-          }, 600);
+          }, dropDelay);
 
         } else {
           this.endCycle(evalResult.triggerFreeSpins);
@@ -1034,21 +1284,22 @@
           }
         }
 
+        const dropDelay = this.state.isTurbo ? 80 : 200;
+        const reEvalDelay = this.state.isTurbo ? 150 : 400;
+
         setTimeout(() => {
           this.state.cascadeMultiplier++; this.updateUI();
           this.renderer.dropNewSymbols(this.state.matrix, this.state.letterOverlays, columnsToRefill);
-          setTimeout(() => this.handleAvalancheEvaluation(bet), 400);
-        }, 200);
+          setTimeout(() => this.handleAvalancheEvaluation(bet), reEvalDelay);
+        }, dropDelay);
       }
 
-      // NAPRAWA ZAWIESZENIA JACKPOTA: endCycle teraz odpowiednio zarządza przerwaniem pętli i odczekaniem na Jackpota
       async endCycle(pendingFS) {
         this.saveSession();
 
         const jpCollected = Object.values(this.state.jackpotLetters).filter(Boolean).length;
         if (jpCollected === 5) {
           await this.triggerFerroJackpot();
-          // Kod poniżej odpali się dopiero po całkowitym zakończeniu animacji Jackpota
         }
 
         if (pendingFS) {
@@ -1065,7 +1316,18 @@
         this.dom.spinBtn.disabled = false;
         this.dom.msg.innerText = "PRZESYŁ GOTOWY";
 
-        if (this.state.fsCount > 0) { setTimeout(() => this.play(), 800); }
+        if (this.state.fsCount > 0) { 
+          setTimeout(() => this.play(), 800); 
+        } else if (this.autoplay.enabled) {
+          this.autoplay.remaining--;
+          this.updateAutoplayUI();
+
+          if (this.autoplay.remaining <= 0) {
+            this.haltAutoplay();
+          } else {
+            setTimeout(() => { if (this.autoplay.enabled) this.play(); }, this.state.isTurbo ? 150 : 650);
+          }
+        }
       }
 
       async triggerFerroJackpot() {
@@ -1074,14 +1336,13 @@
         this.renderer.screenShake = 30;
         this.dom.jackpotBg.classList.replace('opacity-0', 'opacity-100');
         
-        await new Promise(r => setTimeout(r, 2500)); // Napięcie przed nagrodą
+        await new Promise(r => setTimeout(r, 2500)); 
         
         const jackpotWin = this.state.bets[this.state.betIndex] * 1000;
         this.dom.winType.innerText = "GRAND SYSTEM JACKPOT";
         
-        await this.presentBigWin(jackpotWin, 1000); // Czekamy aż gracz zamknie okno wygranej
+        await this.presentBigWin(jackpotWin, 1000); 
         
-        // Resetowanie stanu Jackpota po jego wypłaceniu
         this.state.jackpotLetters = { F: false, E: false, R1: false, R2: false, O: false };
         this.updateJackpotBar();
         this.dom.jackpotBg.classList.replace('opacity-100', 'opacity-0');
@@ -1112,7 +1373,7 @@
               this.state.balance += amount;
               this.dom.win.innerText = amount.toFixed(2);
               this.updateUI();
-              resolve(); // Uwolnienie promise -> Kontynuacja gry
+              resolve(); 
             }
           };
 
@@ -1128,6 +1389,39 @@
           };
           requestAnimationFrame(step);
         });
+      }
+
+      startAutoplay() {
+        const spins = parseInt(document.getElementById('auto-spins-val').value) || 10;
+        document.getElementById('panel-auto').classList.add('opacity-0', 'pointer-events-none');
+
+        this.autoplay = {
+          enabled: true,
+          remaining: spins
+        };
+
+        this.updateAutoplayUI();
+        this.play();
+      }
+
+      updateAutoplayUI() {
+        if (this.autoplay.enabled) {
+          this.dom.spinIcon.classList.add('opacity-0');
+          this.dom.autoRing.classList.remove('opacity-0');
+          this.dom.autoCount.classList.remove('opacity-0');
+          this.dom.autoCount.innerText = this.autoplay.remaining;
+          this.dom.spinBtn.classList.replace('border-cyberBlue', 'border-cyberPurple');
+        } else {
+          this.dom.spinIcon.classList.remove('opacity-0');
+          this.dom.autoRing.classList.add('opacity-0');
+          this.dom.autoCount.classList.add('opacity-0');
+          this.dom.spinBtn.classList.replace('border-cyberPurple', 'border-cyberBlue');
+        }
+      }
+
+      haltAutoplay() {
+        this.autoplay.enabled = false;
+        this.updateAutoplayUI();
       }
 
       updateJackpotBar() {
