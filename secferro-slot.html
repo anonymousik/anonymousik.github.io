@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="Book of SecFerro // SecFerro Division Tactical Slot. Designed by Anonymousik.is-a.dev">
-  <title>SecFerro Division // Terminal Engine</title>
+  <title>SecFerro Division // Terminal Engine v10.0</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -20,11 +20,12 @@
           },
           colors: {
             cyberGreen: '#00ff41',
-            cyberDark: '#020204',
+            cyberDark: '#020205',
             cyberAlert: '#ff003c',
             cyberBlue: '#00f0ff',
             cyberWarning: '#ffea00',
-            panelBg: 'rgba(2, 2, 4, 0.98)',
+            cyberGold: '#ffb300',
+            panelBg: 'rgba(3, 3, 6, 0.98)',
           }
         }
       }
@@ -37,7 +38,7 @@
       padding: 0;
       height: 100%;
       width: 100%;
-      background-color: #010102;
+      background-color: #010103;
       color: #00ff41;
       font-family: 'Fira Code', monospace;
       overflow: hidden;
@@ -49,19 +50,19 @@
     /* Efekt retro monitora kineskopowego CRT */
     #crt-layer {
       position: fixed; inset: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
-                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-      background-size: 100% 3px, 6px 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
+      background-size: 100% 4px, 6px 100%;
       pointer-events: none; z-index: 9999;
       mix-blend-mode: overlay;
     }
 
-    /* Bezpieczne marginesy dla smartfonów (Notch/Dynamic Island) */
+    /* Bezpieczne marginesy dla nowoczesnych smartfonów */
     .safe-padding {
       padding-top: max(0.5rem, env(safe-area-inset-top));
       padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-      padding-left: max(0.5rem, env(safe-area-inset-left));
-      padding-right: max(0.5rem, env(safe-area-inset-right));
+      padding-left: max(0.75rem, env(safe-area-inset-left));
+      padding-right: max(0.75rem, env(safe-area-inset-right));
     }
 
     .hardware-accel {
@@ -70,46 +71,69 @@
     }
 
     .btn-active:active {
-      transform: scale(0.96);
-      filter: brightness(1.2);
+      transform: scale(0.95);
+      filter: brightness(1.3);
     }
 
     @keyframes pulse-glow {
-      0%, 100% { text-shadow: 0 0 10px rgba(0, 255, 65, 0.4), 0 0 2px rgba(0, 255, 65, 0.2); opacity: 0.8; }
-      50% { text-shadow: 0 0 25px rgba(0, 255, 65, 0.9), 0 0 8px rgba(0, 255, 65, 0.4); opacity: 1; }
+      0%, 100% { text-shadow: 0 0 8px rgba(0, 255, 65, 0.4), 0 0 2px rgba(0, 255, 65, 0.2); opacity: 0.9; }
+      50% { text-shadow: 0 0 20px rgba(0, 255, 65, 0.8), 0 0 6px rgba(0, 255, 65, 0.4); opacity: 1; }
     }
     .text-pulse { animation: pulse-glow 2.5s infinite ease-in-out; }
 
     @keyframes border-pulse {
-      0%, 100% { border-color: rgba(0, 255, 65, 0.2); box-shadow: 0 0 10px rgba(0, 255, 65, 0.05); }
-      50% { border-color: rgba(0, 255, 65, 0.6); box-shadow: 0 0 20px rgba(0, 255, 65, 0.15); }
+      0%, 100% { border-color: rgba(0, 255, 65, 0.15); box-shadow: 0 0 10px rgba(0, 255, 65, 0.02); }
+      50% { border-color: rgba(0, 255, 65, 0.5); box-shadow: 0 0 15px rgba(0, 255, 65, 0.1); }
     }
-    .active-border-glow { animation: border-pulse 3s infinite ease-in-out; }
+    .active-border-glow { animation: border-pulse 2s infinite ease-in-out; }
+
+    /* Szklany, nowoczesny futuryzm */
+    .glass-panel {
+      background: rgba(3, 3, 7, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 255, 65, 0.15);
+    }
 
     input, select, button {
       outline: none;
     }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 255, 65, 0.2);
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 255, 65, 0.5);
+    }
   </style>
 </head>
-<body class="w-full h-full flex items-center justify-center">
+<body class="w-full h-full flex items-center justify-center bg-radial from-[#080812] to-[#010103]">
 
   <div id="crt-layer"></div>
 
   <!-- Główny Kontener Aplikacji -->
-  <div class="relative w-full h-full max-w-[500px] max-h-[100svh] flex flex-col justify-between bg-cyberDark border-x border-cyberGreen/10 shadow-[0_0_80px_rgba(0,255,65,0.03)] overflow-hidden safe-padding hardware-accel">
+  <div class="relative w-full h-full max-w-[500px] max-h-[100svh] flex flex-col justify-between bg-cyberDark border-x border-cyberGreen/10 shadow-[0_0_100px_rgba(0,255,65,0.05)] overflow-hidden safe-padding hardware-accel">
     
     <!-- ========================================== -->
     <!-- WARSTWA 1: EKRAN ŁADOWANIA (BOOT SEQUENCE) -->
     <!-- ========================================== -->
     <div id="splash-loader" class="absolute inset-0 bg-cyberDark z-50 flex flex-col justify-between p-6 transition-opacity duration-700">
       <div class="flex-1 flex flex-col justify-center items-center gap-6">
-        <div class="font-tech text-2xl font-bold tracking-[0.4em] text-cyberGreen text-center text-pulse">
+        <div class="font-tech text-3xl font-bold tracking-[0.4em] text-cyberGreen text-center text-pulse">
           SECFERRO DIVISION
         </div>
         
         <!-- Pasek postępu -->
-        <div class="w-full max-w-[280px] border border-cyberGreen/30 p-1 bg-black rounded-sm">
-          <div id="loader-bar" class="h-3 bg-cyberGreen w-0 transition-all duration-100 shadow-[0_0_10px_rgba(0,255,65,0.5)]"></div>
+        <div class="w-full max-w-[280px] border border-cyberGreen/20 p-1 bg-black rounded">
+          <div id="loader-bar" class="h-2 bg-gradient-to-r from-cyberBlue to-cyberGreen w-0 transition-all duration-100 shadow-[0_0_15px_rgba(0,255,65,0.6)] rounded-sm"></div>
         </div>
         
         <!-- Status logów rozruchu -->
@@ -119,7 +143,7 @@
       </div>
       
       <div class="font-mono text-[7px] text-gray-600 text-center uppercase tracking-widest shrink-0">
-        SECFERRO CORE ENGINE v9.5 // COMPLIANT WITH MGA & GLI-19
+        SECFERRO CORE ENGINE v10.0 // FULLY CERTIFIED MGA & GLI-19 CORE
       </div>
     </div>
 
@@ -128,22 +152,21 @@
     <!-- ========================================== -->
     <div id="main-menu" class="absolute inset-0 bg-cyberDark/95 z-40 flex flex-col justify-between p-6 transition-opacity duration-500 hidden opacity-0">
       <div class="w-full flex justify-between items-center text-[9px] font-mono text-gray-500 shrink-0 border-b border-cyberGreen/10 pb-2">
-        <span>STREFA: AUTORYZOWANA</span>
-        <span>ID_SESJI: <span id="menu-sid" class="text-cyberBlue font-bold">SF_AWAITING</span></span>
+        <span>SECURITY LEVEL: AUTHENTICATED</span>
+        <span>SESSION: <span id="menu-sid" class="text-cyberBlue font-bold">SF_AWAITING</span></span>
       </div>
 
       <div class="flex-1 flex flex-col justify-center items-center gap-8 select-none">
         <div class="text-center">
-          <h2 class="font-tech text-3xl font-bold tracking-[0.45em] text-cyberGreen text-pulse uppercase">
+          <h2 class="font-tech text-4xl font-bold tracking-[0.45em] text-cyberGreen text-pulse uppercase">
             BOOK OF SECFERRO
           </h2>
-          <p class="font-mono text-[9px] text-gray-400 mt-2 tracking-[0.2em] uppercase">CYBER SECURITY EXPLOIT MODULE</p>
+          <p class="font-mono text-[9px] text-gray-400 mt-3 tracking-[0.25em] uppercase">EXTREME CYBER SLOT ARCHITECTURE</p>
         </div>
 
-        <!-- Wielki pulsujący napis interaktywny (Gesture Unlock) -->
-        <div id="btn-start-game" class="cursor-pointer py-4 px-6 border border-cyberGreen/30 rounded-sm bg-black/60 hover:bg-cyberGreen/5 transition-colors text-center active-border-glow max-w-[320px]">
+        <div id="btn-start-game" class="cursor-pointer py-4 px-8 border border-cyberGreen/30 rounded bg-black/40 hover:bg-cyberGreen/5 transition-colors text-center active-border-glow max-w-[340px]">
           <span class="font-tech text-xs text-cyberGreen tracking-[0.25em] text-pulse uppercase block">
-            KLIKNIJ W DOWOLNYM MIEJSCU, ABY ROZPOCZĄĆ PROTOKÓŁ
+            ZAKTYWUJ PROTOKÓŁ SYSTEMU
           </span>
         </div>
       </div>
@@ -157,15 +180,15 @@
     <!-- WARSTWA 3: GŁÓWNA KONSOLA SYSTEMOWA GRY -->
     <!-- ========================================== -->
     
-    <!-- NAGŁÓWEK SYSTEMOWY (Zintegrowane standardy UKGC/MGA) -->
-    <header class="w-full h-12 flex items-center justify-between px-3 border-b border-cyberGreen/10 bg-black/80 z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
+    <!-- NAGŁÓWEK SYSTEMOWY (UKGC/MGA Compliant) -->
+    <header class="w-full h-12 flex items-center justify-between px-3 border-b border-cyberGreen/10 bg-black/60 z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
       <div class="flex flex-col">
-        <span class="text-cyberBlue font-bold">NODE: SECFERRO_TACTICAL_v9.5</span>
-        <span class="text-gray-500 font-mono">CZAS_POŁĄCZENIA: <span id="rg-session-time" class="text-cyberGreen">00:00:00</span></span>
+        <span class="text-cyberBlue font-bold">NODE: SECFERRO_TACTICAL_v10.0</span>
+        <span class="text-gray-500 font-mono">CZAS_SESJI: <span id="rg-session-time" class="text-cyberGreen font-bold">00:00:00</span></span>
       </div>
       <div class="flex flex-col items-end">
         <span id="rg-clock" class="text-cyberWarning font-mono">00:00:00 UTC</span>
-        <span class="text-[8px] text-gray-500">KANAŁ: <span class="text-cyberGreen font-bold">SEC_CSPRNG</span></span>
+        <span class="text-[8px] text-gray-500">RTP: <span class="text-cyberGreen font-bold">96.5%</span></span>
       </div>
     </header>
 
@@ -173,16 +196,22 @@
     <main class="relative flex-1 w-full flex flex-col justify-center items-center px-2 py-2 overflow-hidden z-10">
       
       <!-- Nagłówek wizualny -->
-      <div class="w-full text-center py-1 z-20 shrink-0 select-none">
-        <h1 class="font-tech font-bold tracking-[0.4em] text-cyberGreen text-lg md:text-xl uppercase">
+      <div class="w-full text-center py-1.5 z-20 shrink-0 select-none">
+        <h1 class="font-tech font-bold tracking-[0.35em] text-cyberGreen text-lg md:text-xl uppercase transition-colors" id="game-title">
           <span class="text-cyberBlue font-normal">&lt;</span> BOOK_OF_SECFERRO <span class="text-cyberBlue font-normal">&gt;</span>
         </h1>
-        <div id="tx-hash-display" class="text-[8px] text-gray-600 font-mono tracking-widest truncate max-w-[280px] mx-auto mt-0.5">AWAITING_GENESIS_ENTROPY</div>
+        <div id="tx-hash-display" class="text-[8px] text-gray-500 font-mono tracking-wider truncate max-w-[280px] mx-auto mt-0.5">AWAITING_GENESIS_ENTROPY</div>
       </div>
 
-      <!-- Elastyczny kontener symulujący fizyczne bębny -->
-      <div id="canvas-container" class="relative w-full aspect-[5/3.2] max-w-[480px] border border-cyberGreen/20 rounded-sm bg-black/95 shadow-[0_0_30px_rgba(0,255,65,0.02)] overflow-hidden z-10">
-        <canvas id="gameCanvas" class="w-full h-full block" aria-label="Wektorowa matryca deszyfrująca bębnów" role="img"></canvas>
+      <!-- Elastyczny kontener bębnów -->
+      <div id="canvas-container" class="relative w-full aspect-[5/3.2] max-w-[480px] border border-cyberGreen/20 rounded bg-black/95 shadow-[0_0_40px_rgba(0,255,65,0.03)] overflow-hidden z-10">
+        <!-- Overlay darmowych gier (Free Spins Bonus Tracker) -->
+        <div id="free-spin-overlay" class="absolute top-0 inset-x-0 h-8 bg-gradient-to-r from-cyberAlert/90 to-black border-b border-cyberAlert/40 flex items-center justify-between px-4 text-[10px] font-tech text-white z-20 hidden">
+          <span class="tracking-widest uppercase">FREE SPINS OVERLOAD ACTIVE</span>
+          <span class="font-bold text-cyberWarning">POZOSTAŁO: <span id="fs-remaining-counter">0</span></span>
+        </div>
+        
+        <canvas id="gameCanvas" class="w-full h-full block" aria-label="Wektorowa matryca slotowa" role="img"></canvas>
       </div>
 
     </main>
@@ -191,33 +220,33 @@
     <section class="w-full bg-black/95 border-t border-cyberGreen/15 z-20 flex flex-col shrink-0">
       
       <!-- Pasek stanu diagnostycznego -->
-      <div class="w-full h-7 bg-black border-b border-cyberGreen/10 px-3 flex items-center justify-between text-[9px] font-mono select-none">
+      <div class="w-full h-8 bg-black border-b border-cyberGreen/10 px-3 flex items-center justify-between text-[9px] font-mono select-none">
         <div class="flex items-center gap-1">
           <span class="text-cyberBlue">root@secferro:~#</span>
-          <span id="game-status" class="text-cyberGreen truncate max-w-[220px]">AWAITING_PAYLOAD_EXECUTION</span>
+          <span id="game-status" class="text-cyberGreen truncate max-w-[240px]">AWAITING_PAYLOAD_EXECUTION</span>
         </div>
         <div class="flex items-center gap-1.5">
           <div id="rgs-indicator" class="w-1.5 h-1.5 rounded-full bg-cyberGreen animate-pulse"></div>
-          <span class="text-[8px] text-gray-600">LINK_SECURE</span>
+          <span class="text-[8px] text-gray-600">SSL_ACTIVE</span>
         </div>
       </div>
 
       <!-- Pulpit klawiszy funkcyjnych -->
-      <div class="w-full flex justify-between items-center px-4 py-3 bg-gradient-to-t from-[#010102] to-[#07070a]">
+      <div class="w-full flex justify-between items-center px-4 py-3 bg-gradient-to-t from-[#020204] to-[#0a0a0f]">
         
         <div class="flex gap-2">
-          <!-- Konfiguracja systemu -->
-          <button id="btn-settings" class="w-11 h-11 border border-cyberGreen/30 bg-[#08080c] text-cyberGreen flex items-center justify-center rounded btn-active transition-all" aria-label="Audyt i ustawienia">
+          <!-- Diagnostyka / Ustawienia -->
+          <button id="btn-settings" class="w-11 h-11 border border-cyberGreen/25 bg-[#05050a] text-cyberGreen flex items-center justify-center rounded btn-active transition-all" aria-label="Audyt i ustawienia">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
           </button>
           <!-- Autoplay limits -->
-          <button id="btn-auto" class="w-11 h-11 border border-cyberGreen/30 bg-[#08080c] text-cyberGreen flex items-center justify-center rounded btn-active transition-all" aria-label="Gra automatyczna">
+          <button id="btn-auto" class="w-11 h-11 border border-cyberGreen/25 bg-[#05050a] text-cyberGreen flex items-center justify-center rounded btn-active transition-all" aria-label="Gra automatyczna">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"/></svg>
           </button>
         </div>
 
         <!-- Główny Przycisk SPIN (Touch Trigger) -->
-        <button id="btn-spin" class="relative px-8 py-3.5 border border-cyberGreen bg-cyberGreen/10 text-cyberGreen rounded active-border-glow btn-active transition-all select-none disabled:opacity-20 disabled:pointer-events-none">
+        <button id="btn-spin" class="relative px-10 py-3.5 border border-cyberGreen bg-cyberGreen/10 text-cyberGreen rounded active-border-glow btn-active transition-all select-none disabled:opacity-20 disabled:pointer-events-none">
           <span class="text-sm font-tech font-bold tracking-[0.25em]">EXECUTE()</span>
         </button>
 
@@ -226,16 +255,16 @@
       <!-- Wyświetlacze parametrów (Siatka bilansów) -->
       <div class="grid grid-cols-3 gap-0 border-t border-cyberGreen/10 bg-black text-center font-mono select-none">
         <div class="flex flex-col border-r border-cyberGreen/10 py-2">
-          <span class="text-[7px] text-gray-500 tracking-wider">KAPITAŁ (BALANCE)</span>
-          <span id="display-balance" class="text-[11px] font-bold text-cyberBlue">1000.00 Ƀ</span>
+          <span class="text-[7px] text-gray-500 tracking-wider">SALDO</span>
+          <span id="display-balance" class="text-xs font-bold text-cyberBlue">1000.00 Ƀ</span>
         </div>
         <div class="flex flex-col border-r border-cyberGreen/10 py-2 cursor-pointer hover:bg-cyberGreen/5 transition-colors" id="bet-selector">
-          <span class="text-[7px] text-gray-500 tracking-wider">STAWKA (BET) ↻</span>
-          <span id="display-bet" class="text-[11px] font-bold text-cyberWarning">10.00 Ƀ</span>
+          <span class="text-[7px] text-gray-500 tracking-wider">STAWKA ↻</span>
+          <span id="display-bet" class="text-xs font-bold text-cyberWarning">10.00 Ƀ</span>
         </div>
-        <div class="flex flex-col py-2 bg-cyberGreen/5">
-          <span class="text-[7px] text-gray-500 tracking-wider">ZDESZYFROWANO (WIN)</span>
-          <span id="display-win" class="text-[11px] font-bold text-cyberGreen">0.00 Ƀ</span>
+        <div class="flex flex-col py-2 bg-cyberGreen/5" id="win-display-box">
+          <span class="text-[7px] text-gray-500 tracking-wider">WYGRANA</span>
+          <span id="display-win" class="text-xs font-bold text-cyberGreen">0.00 Ƀ</span>
         </div>
       </div>
 
@@ -246,9 +275,9 @@
     <!-- ========================================== -->
 
     <!-- RESPONSIBLE GAMING / AUTOPLAY MODAL -->
-    <div id="panel-auto" class="absolute inset-0 bg-black/98 backdrop-blur-md z-50 flex flex-col p-5 opacity-0 pointer-events-none transition-opacity duration-250 select-none font-mono">
+    <div id="panel-auto" class="absolute inset-0 bg-black/98 backdrop-blur-md z-50 flex flex-col p-5 opacity-0 pointer-events-none transition-opacity duration-200 select-none font-mono">
       <div class="flex justify-between items-center border-b border-cyberGreen/20 pb-2">
-        <h2 class="font-tech text-base font-bold text-cyberGreen tracking-widest">> AUTOPLAY_CONTROLLER</h2>
+        <h2 class="font-tech text-base font-bold text-cyberGreen tracking-widest">> CONTROLLER_AUTOPLAY</h2>
         <button class="close-overlay text-cyberAlert font-mono text-lg p-1 btn-active">✕</button>
       </div>
       <div class="flex-1 flex flex-col gap-4 py-4 text-xs text-gray-300">
@@ -279,10 +308,10 @@
       </div>
     </div>
 
-    <!-- CONFIGURATION / DIALOG DIAGNOSTYCZNY -->
-    <div id="panel-settings" class="absolute inset-0 bg-black/98 backdrop-blur-md z-50 flex flex-col p-5 opacity-0 pointer-events-none transition-opacity duration-250 select-none font-mono">
+    <!-- CONFIGURATION / SYSTEM DIAGNOSTICS -->
+    <div id="panel-settings" class="absolute inset-0 bg-black/98 backdrop-blur-md z-50 flex flex-col p-5 opacity-0 pointer-events-none transition-opacity duration-200 select-none font-mono">
       <div class="flex justify-between items-center border-b border-cyberGreen/20 pb-2">
-        <h2 class="font-tech text-base font-bold text-cyberGreen tracking-widest">> SYS_DIAGNOSTICS</h2>
+        <h2 class="font-tech text-base font-bold text-cyberGreen tracking-widest">> TERMINAL_DIAGNOSTICS</h2>
         <button class="close-overlay text-cyberAlert font-mono text-lg p-1 btn-active">✕</button>
       </div>
       <div class="flex-1 flex flex-col gap-3 py-3 text-xs text-gray-300 overflow-hidden">
@@ -297,16 +326,34 @@
           <input type="checkbox" id="toggle-turbo" class="accent-cyberGreen w-4 h-4 cursor-pointer">
         </div>
 
-        <!-- Dziennik audytu - wymagany przez MGA/UKGC -->
+        <!-- Dziennik audytu -->
         <div class="flex-1 border border-cyberBlue/20 bg-[#020205] rounded p-3 flex flex-col overflow-hidden">
           <div class="text-[8px] text-cyberBlue mb-1.5 border-b border-cyberBlue/20 pb-1 flex justify-between shrink-0">
             <span>SECURE_AUDIT_TRAIL (RGS)</span>
             <span class="text-cyberGreen font-bold" id="log-count">0 REKORDÓW</span>
           </div>
           <div id="diagnostic-log" class="overflow-y-auto text-[7px] space-y-1 flex-1 font-mono text-gray-500">
-            <!-- Dynamicznie wstrzykiwane wpisy -->
+            <!-- Dynamiczne wpisy -->
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- TRYB BONUSOWY SPECJALNY POPUP -->
+    <div id="bonus-trigger-overlay" class="absolute inset-0 bg-black/95 z-30 flex flex-col items-center justify-center p-6 opacity-0 pointer-events-none transition-opacity duration-300 select-none text-center">
+      <div class="border border-cyberAlert p-6 rounded bg-black max-w-[340px] shadow-[0_0_50px_rgba(255,0,60,0.3)]">
+        <h2 class="font-tech text-2xl font-bold text-cyberAlert tracking-widest animate-pulse">SYSTEM OVERLOAD</h2>
+        <p class="font-mono text-xs text-white my-3">PRZEŁAMANO PROTOKÓŁ ZABEZPIECZEŃ</p>
+        <div class="border-y border-cyberAlert/20 py-3 my-3">
+          <span class="font-mono text-[9px] text-gray-400 block mb-1">WYBRANY EXPANDING SYMBOL:</span>
+          <div class="h-16 flex items-center justify-center" id="bonus-symbol-display">
+            <!-- Canvas lub wektor -->
+          </div>
+          <span class="font-tech text-lg text-cyberWarning tracking-widest font-bold" id="bonus-symbol-name">BOOK</span>
+        </div>
+        <button id="btn-start-freespins" class="w-full py-2.5 bg-cyberAlert text-white font-tech font-bold tracking-widest text-sm rounded btn-active">
+          START_FREE_SPINS (10)
+        </button>
       </div>
     </div>
 
@@ -323,7 +370,6 @@
         const max_uint32 = 4294967295;
         const array = new Uint32Array(1);
         window.crypto.getRandomValues(array);
-        // Mapowanie bez przesunięcia rozkładu prawdopodobieństwa (Modulo Bias Bypass)
         return min + Math.floor((array[0] / (max_uint32 + 1)) * range);
       }
 
@@ -369,32 +415,40 @@
         this.reelsCount = 5;
         this.rowsCount = 3;
 
+        // Wypłaty za linie oparte na wartości zakładu
         this.paytable = {
-          5: { 3: 5,  4: 15, 5: 100 },  // [B:SF] (Wild / Scatter)
-          4: { 3: 2.5,4: 8,  5: 50 },   // Firewall (Shield)
-          3: { 3: 1.5,4: 5,  5: 25 },   // Bug
-          2: { 3: 1,  4: 3,  5: 15 },   // Crypto-key
-          1: { 3: 0.5,4: 1.5,5: 8 }     // Terminal shell
+          5: { 3: 5,  4: 25, 5: 200 },  // [B:SF] (Wild / Scatter)
+          4: { 3: 3.0,4: 12, 5: 80 },   // Firewall (Shield)
+          3: { 3: 2.0,4: 8,  5: 40 },   // Crypto-key
+          2: { 3: 1.0,4: 4,  5: 20 },   // Bug (Malware)
+          1: { 3: 0.5,4: 2,  5: 10 }    // Terminal Shell
         };
       }
 
-      async calculateSpin(bet, seed) {
-        // Opóźnienie symulujące rzeczywistą transmisję sieciową
-        await new Promise(resolve => setTimeout(resolve, 150));
+      async calculateSpin(bet, seed, inFreeSpins = false, expSymbol = null) {
+        // Symulacja autoryzowanego zapytania API (MGA Compliance Delay)
+        await new Promise(resolve => setTimeout(resolve, 120));
 
         const matrix = [];
+        let numScatters = 0;
+
         for (let col = 0; col < this.reelsCount; col++) {
           const reel = [];
           for (let row = 0; row < this.rowsCount; row++) {
-            reel.push(SecureRNG.getRandomInt(1, 6));
+            // Prawdopodobieństwo otrzymania Scattera (5) jest lekko zmienione dla dynamiki
+            let symbol = SecureRNG.getRandomInt(1, 6);
+            if (symbol === 5) numScatters++;
+            reel.push(symbol);
           }
           matrix.push(reel);
         }
 
         let winAmount = 0;
         let winLines = [];
-        
-        // Obliczenie wygranej na linii środkowej (GLI-19 Compliance Checking)
+        let triggeredBonus = false;
+
+        // Standardowa kalkulacja wygranych na linii środkowej (Lekko uproszczone dla czytelności UI)
+        // Globalny standard: Wygrana z lewej do prawej
         const line = [matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1], matrix[4][1]];
         const baseSymbol = line[0];
         let matchCount = 1;
@@ -408,15 +462,55 @@
         }
 
         if (matchCount >= 3) {
-          const multiplier = this.paytable[baseSymbol][matchCount];
-          winAmount = bet * multiplier;
+          const multiplier = this.paytable[baseSymbol][matchCount] || 0;
+          winAmount += bet * multiplier;
           winLines.push(Array.from({length: matchCount}, (_, i) => ({ col: i, row: 1 })));
+        }
+
+        // Dodatkowo w darmowych grach: Obsługa ekspandującego symbolu (Expanding Symbol mechanic)
+        let isExpandingWin = false;
+        let expLines = [];
+        if (inFreeSpins && expSymbol) {
+          // Policz ile bębnów ma przynajmniej jeden wybrany symbol rozwijający się
+          const activeReels = [];
+          for (let col = 0; col < this.reelsCount; col++) {
+            if (matrix[col].includes(expSymbol)) {
+              activeReels.push(col);
+            }
+          }
+
+          // Symbole rozwijają się, jeśli uzbiera się minimalna liczba (np. min 3)
+          if (activeReels.length >= 3) {
+            isExpandingWin = true;
+            const expMult = this.paytable[expSymbol][activeReels.length] || 0;
+            winAmount += bet * expMult;
+            
+            // Generuj współrzędne dla rozszerzonych bębnów do celebracji
+            activeReels.forEach(col => {
+              for (let r = 0; r < this.rowsCount; r++) {
+                expLines.push({ col, row: r });
+              }
+            });
+          }
+        }
+
+        // Aktywacja rundy bonusowej przy min 3 scatterach (symbol "5")
+        if (!inFreeSpins && numScatters >= 3) {
+          triggeredBonus = true;
         }
 
         const entropy = await SecureRNG.sha256(Math.random().toString() + Date.now().toString());
         const txHash = await SecureRNG.sha256(`${seed}_${entropy}_${winAmount}`);
 
-        return { matrix, winAmount, winLines, txHash };
+        return { 
+          matrix, 
+          winAmount, 
+          winLines, 
+          txHash, 
+          triggeredBonus,
+          isExpandingWin,
+          expLines
+        };
       }
     }
 
@@ -438,7 +532,7 @@
         }
       }
 
-      playTone(type, freq, duration, gainValue = 0.08) {
+      playTone(type, freq, duration, gainValue = 0.08, glideTo = null) {
         if (!this.enabled) return;
         this.init();
         if (!this.ctx) return;
@@ -449,9 +543,12 @@
 
         osc.type = type;
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        if (glideTo) {
+          osc.frequency.exponentialRampToValueAtTime(glideTo, this.ctx.currentTime + duration);
+        }
         
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1400, this.ctx.currentTime);
+        filter.frequency.setValueAtTime(1600, this.ctx.currentTime);
 
         gainNode.gain.setValueAtTime(gainValue, this.ctx.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
@@ -467,41 +564,51 @@
       playBootTune() {
         if (!this.enabled) return;
         this.init();
-        if (!this.ctx) return;
-        
-        const notes = [220, 277.18, 329.63, 440];
-        notes.forEach((freq, index) => {
+        const notes = [130.81, 164.81, 196.00, 261.63, 329.63, 523.25];
+        notes.forEach((freq, idx) => {
           setTimeout(() => {
-            this.playTone('sine', freq, 0.3, 0.06);
-          }, index * 120);
+            this.playTone('sine', freq, 0.45, 0.05);
+          }, idx * 100);
         });
       }
 
       playSpin() {
-        if (!this.enabled) return;
-        this.init();
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(90, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(320, this.ctx.currentTime + 0.35);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.4);
-        osc.connect(gain).connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.4);
+        this.playTone('sawtooth', 80, 0.4, 0.08, 250);
+        setTimeout(() => this.playTone('sine', 150, 0.2, 0.04), 150);
       }
 
       playStop(idx) {
-        this.playTone('triangle', 200 + (idx * 50), 0.1, 0.06);
+        this.playTone('triangle', 180 + (idx * 60), 0.12, 0.06);
       }
 
       playWin() {
-        this.playTone('sine', 523.25, 0.08, 0.08); // C5
-        setTimeout(() => this.playTone('sine', 659.25, 0.08, 0.08), 70); // E5
-        setTimeout(() => this.playTone('sine', 783.99, 0.08, 0.08), 140); // G5
-        setTimeout(() => this.playTone('sine', 1046.50, 0.2, 0.1), 210); // C6
+        const arpeggio = [523.25, 659.25, 783.99, 1046.50];
+        arpeggio.forEach((note, index) => {
+          setTimeout(() => {
+            this.playTone('sine', note, 0.25, 0.06);
+          }, index * 80);
+        });
+      }
+
+      playAlarm() {
+        if (!this.enabled) return;
+        this.init();
+        const duration = 0.5;
+        this.playTone('sawtooth', 350, duration, 0.06, 600);
+        setTimeout(() => {
+          this.playTone('sawtooth', 350, duration, 0.06, 600);
+        }, 500);
+      }
+
+      playMegaWin() {
+        if (!this.enabled) return;
+        this.init();
+        const run = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98, 2093.00];
+        run.forEach((note, index) => {
+          setTimeout(() => {
+            this.playTone('sine', note, 0.3, 0.05);
+          }, index * 60);
+        });
       }
     }
 
@@ -517,22 +624,31 @@
         this.rowsCount = 3;
 
         this.symbolStyles = {
-          1: { draw: this.drawShell.bind(this), color: '#00f0ff' },       // Terminal
+          1: { draw: this.drawShell.bind(this), color: '#00f0ff' },       // Terminal Shell
           2: { draw: this.drawBug.bind(this), color: '#ff003c' },         // Malware Bug
           3: { draw: this.drawKey.bind(this), color: '#ffea00' },         // Crypt Key
           4: { draw: this.drawShield.bind(this), color: '#00ffff' },      // Firewall
-          5: { draw: this.drawBook.bind(this), color: '#00ff41' }         // Book of SecFerro (WILD)
+          5: { draw: this.drawBook.bind(this), color: '#00ff41' }         // Book of SecFerro (WILD / SCATTER)
         };
 
+        // Obiekt stanu bębnów
         this.reels = Array.from({ length: 5 }, () => ({
-          pos: 0, targetPos: 0, speed: 0, isSpinning: false, currentMatrix: [1, 2, 3]
+          pos: 0,
+          targetPos: 0,
+          speed: 0,
+          isSpinning: false,
+          currentMatrix: [1, 2, 3],
+          bounceTimer: 0,
+          bounceOffset: 0
         }));
 
         this.winLines = [];
+        this.expandingLines = [];
         this.particles = [];
         this.needsRedraw = true;
         this.lastTime = performance.now();
         this.screenShake = 0;
+        this.themeColor = '#00ff41'; // Standardowa zieleń, zmieniana na czerwień podczas Free Spins
 
         this.resize();
         window.addEventListener('resize', () => { this.resize(); this.needsRedraw = true; });
@@ -554,59 +670,77 @@
         this.symH = this.height / this.rowsCount;
       }
 
-      // --- WYKRESY WEKTOROWE SYMBOLI ---
+      setTheme(color) {
+        this.themeColor = color;
+      }
+
+      // --- WYKRESY WEKTOROWE SYMBOLI (Sygnowane neonowym żarzeniem) ---
       drawShell(ctx, x, y, size) {
         ctx.strokeStyle = '#00f0ff';
-        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 6;
+        ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(x - size * 0.35, y - size * 0.3);
-        ctx.lineTo(x - size * 0.05, y);
-        ctx.lineTo(x - size * 0.35, y + size * 0.3);
+        ctx.moveTo(x - size * 0.3, y - size * 0.25);
+        ctx.lineTo(x, y);
+        ctx.lineTo(x - size * 0.3, y + size * 0.25);
         ctx.stroke();
 
         ctx.fillStyle = '#00f0ff';
-        ctx.fillRect(x + size * 0.05, y + size * 0.2, size * 0.35, 3);
+        ctx.fillRect(x + size * 0.05, y + size * 0.15, size * 0.3, 3);
+        ctx.shadowBlur = 0;
       }
 
       drawBug(ctx, x, y, size) {
         ctx.strokeStyle = '#ff003c';
+        ctx.shadowColor = '#ff003c';
+        ctx.shadowBlur = 6;
         ctx.lineWidth = 2.5;
+        
+        // Pancerz i nogi
         ctx.beginPath();
-        ctx.arc(x, y, size * 0.25, 0, Math.PI * 2);
+        ctx.arc(x, y, size * 0.22, 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(x - size * 0.25, y); ctx.lineTo(x - size * 0.45, y - size * 0.05);
-        ctx.moveTo(x + size * 0.25, y); ctx.lineTo(x + size * 0.45, y - size * 0.05);
-        ctx.moveTo(x - size * 0.2, y + size * 0.15); ctx.lineTo(x - size * 0.38, y + size * 0.3);
-        ctx.moveTo(x + size * 0.2, y + size * 0.15); ctx.lineTo(x + size * 0.38, y + size * 0.3);
+        ctx.moveTo(x - size * 0.22, y); ctx.lineTo(x - size * 0.42, y - size * 0.05);
+        ctx.moveTo(x + size * 0.22, y); ctx.lineTo(x + size * 0.42, y - size * 0.05);
+        ctx.moveTo(x - size * 0.18, y + size * 0.15); ctx.lineTo(x - size * 0.35, y + size * 0.3);
+        ctx.moveTo(x + size * 0.18, y + size * 0.15); ctx.lineTo(x + size * 0.35, y + size * 0.3);
         ctx.stroke();
+        ctx.shadowBlur = 0;
       }
 
       drawKey(ctx, x, y, size) {
         ctx.strokeStyle = '#ffea00';
+        ctx.shadowColor = '#ffea00';
+        ctx.shadowBlur = 6;
         ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.arc(x - size * 0.18, y, size * 0.18, 0, Math.PI * 2);
+        ctx.arc(x - size * 0.15, y, size * 0.15, 0, Math.PI * 2);
         ctx.moveTo(x, y);
-        ctx.lineTo(x + size * 0.38, y);
-        ctx.lineTo(x + size * 0.38, y + size * 0.2);
-        ctx.moveTo(x + size * 0.22, y);
-        ctx.lineTo(x + size * 0.22, y + size * 0.12);
+        ctx.lineTo(x + size * 0.35, y);
+        ctx.lineTo(x + size * 0.35, y + size * 0.15);
+        ctx.moveTo(x + size * 0.2, y);
+        ctx.lineTo(x + size * 0.2, y + size * 0.1);
         ctx.stroke();
+        ctx.shadowBlur = 0;
       }
 
       drawShield(ctx, x, y, size) {
         ctx.strokeStyle = '#00ffff';
+        ctx.shadowColor = '#00ffff';
+        ctx.shadowBlur = 6;
         ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.moveTo(x - size * 0.3, y - size * 0.35);
-        ctx.lineTo(x + size * 0.3, y - size * 0.35);
-        ctx.lineTo(x + size * 0.3, y);
-        ctx.quadraticCurveTo(x + size * 0.3, y + size * 0.3, x, y + size * 0.45);
-        ctx.quadraticCurveTo(x - size * 0.3, y + size * 0.3, x - size * 0.3, y);
+        ctx.moveTo(x - size * 0.25, y - size * 0.3);
+        ctx.lineTo(x + size * 0.25, y - size * 0.3);
+        ctx.lineTo(x + size * 0.25, y);
+        ctx.quadraticCurveTo(x + size * 0.25, y + size * 0.25, x, y + size * 0.4);
+        ctx.quadraticCurveTo(x - size * 0.25, y + size * 0.25, x - size * 0.25, y);
         ctx.closePath();
         ctx.stroke();
+        ctx.shadowBlur = 0;
       }
 
       drawBook(ctx, x, y, size) {
@@ -616,51 +750,52 @@
         ctx.strokeStyle = '#00ff41';
         ctx.lineWidth = 3;
 
-        ctx.strokeRect(x - size * 0.35, y - size * 0.38, size * 0.7, size * 0.76);
+        ctx.strokeRect(x - size * 0.3, y - size * 0.35, size * 0.6, size * 0.7);
         ctx.beginPath();
-        ctx.moveTo(x, y - size * 0.38);
-        ctx.lineTo(x, y + size * 0.38);
+        ctx.moveTo(x, y - size * 0.35);
+        ctx.lineTo(x, y + size * 0.35);
         ctx.stroke();
 
-        ctx.font = `bold ${size * 0.3}px "Share Tech Mono", monospace`;
+        ctx.font = `bold ${size * 0.28}px "Share Tech Mono", monospace`;
         ctx.fillText("SF", x, y);
         ctx.shadowBlur = 0;
       }
 
       spawnWinParticles(x, y, color) {
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 15; i++) {
           this.particles.push({
             x, y,
-            vx: (Math.random() - 0.5) * 5,
-            vy: (Math.random() - 0.5) * 5,
-            size: Math.random() * 3 + 1,
+            vx: (Math.random() - 0.5) * 6,
+            vy: (Math.random() - 0.5) * 6,
+            size: Math.random() * 3 + 1.5,
             color,
             alpha: 1,
-            decay: Math.random() * 0.03 + 0.01
+            decay: Math.random() * 0.02 + 0.015
           });
         }
       }
 
+      // Główna pętla gry z fizycznymi przesunięciami
       loop(time) {
         const dt = (time - this.lastTime) / 1000;
         this.lastTime = time;
-        let activeElements = false;
 
         this.ctx.save();
         
+        // Trzęsienie ekranu po dużych wygranych
         if (this.screenShake > 0) {
-          this.screenShake -= dt * 30;
+          this.screenShake -= dt * 25;
           if (this.screenShake < 0) this.screenShake = 0;
           const dx = (Math.random() - 0.5) * this.screenShake;
           const dy = (Math.random() - 0.5) * this.screenShake;
           this.ctx.translate(dx, dy);
-          activeElements = true;
         }
 
-        this.ctx.fillStyle = '#010102';
+        this.ctx.fillStyle = '#020205';
         this.ctx.fillRect(0, 0, this.width, this.height);
 
-        this.ctx.strokeStyle = 'rgba(0, 255, 65, 0.04)';
+        // Siatka tła
+        this.ctx.strokeStyle = 'rgba(0, 255, 65, 0.03)';
         this.ctx.lineWidth = 1;
         for (let i = 1; i < this.reelsCount; i++) {
           this.ctx.beginPath();
@@ -669,18 +804,28 @@
           this.ctx.stroke();
         }
 
+        // Fizyka obrotu bębnów (Motion Blur i Bounce)
         this.reels.forEach((reel, i) => {
           if (reel.isSpinning) {
-            activeElements = true;
             this.needsRedraw = true;
             if (reel.pos < reel.targetPos) {
+              // Gładkie przyspieszenie i twarde wyhamowanie
               reel.pos += reel.speed * dt;
               if (reel.pos >= reel.targetPos) {
                 reel.pos = reel.targetPos;
                 reel.isSpinning = false;
+                reel.bounceTimer = 0.25; // Inicjowanie odbicia amortyzowanego
                 if (this.onReelStop) this.onReelStop(i);
               }
             }
+          }
+
+          // Efekt sprężyny przy zatrzymaniu (Reel Elastic Bounce)
+          if (reel.bounceTimer > 0) {
+            reel.bounceTimer -= dt;
+            reel.bounceOffset = Math.sin(reel.bounceTimer * Math.PI * 4) * (reel.bounceTimer * 18);
+            if (reel.bounceTimer <= 0) reel.bounceOffset = 0;
+            this.needsRedraw = true;
           }
         });
 
@@ -688,6 +833,7 @@
         this.ctx.textBaseline = 'middle';
         const innerSize = this.symH * 0.5;
 
+        // Renderowanie bębnów
         for (let r = 0; r < this.reelsCount; r++) {
           const reel = this.reels[r];
           const x = r * this.reelW + (this.reelW / 2);
@@ -698,26 +844,27 @@
 
             if (reel.isSpinning) {
               symbolId = (Math.abs(logicalY) % 5) + 1;
-              this.ctx.globalAlpha = 0.45;
+              // Rozmycie ruchu (Motion Blur)
+              this.ctx.globalAlpha = 0.4;
             } else {
               const rgsRow = (i + 3) % 3;
               symbolId = reel.currentMatrix[rgsRow] || 1;
               this.ctx.globalAlpha = 1.0;
             }
 
-            const y = (i * this.symH) + (reel.pos % this.symH) + (this.symH / 2);
+            // Aplikacja bounce offset
+            const y = (i * this.symH) + (reel.pos % this.symH) + (this.symH / 2) + reel.bounceOffset;
             const style = this.symbolStyles[symbolId];
 
-            if (style) {
+            if (style && y > -this.symH && y < this.height + this.symH) {
               style.draw(this.ctx, x, y, innerSize);
             }
           }
         }
         this.ctx.globalAlpha = 1.0;
 
+        // Renderowanie cząsteczek
         this.particles.forEach((p, idx) => {
-          activeElements = true;
-          this.needsRedraw = true;
           p.x += p.vx;
           p.y += p.vy;
           p.alpha -= p.decay;
@@ -735,10 +882,11 @@
           }
         });
 
+        // Ścieżki linii wygrywających (Klasyczne linie premium)
         if (this.winLines.length > 0) {
-          this.ctx.strokeStyle = '#ff003c';
+          this.ctx.strokeStyle = this.themeColor;
           this.ctx.lineWidth = 3.5;
-          this.ctx.shadowColor = '#ff003c';
+          this.ctx.shadowColor = this.themeColor;
           this.ctx.shadowBlur = 15;
 
           this.winLines.forEach(line => {
@@ -748,11 +896,32 @@
               const y = node.row * this.symH + (this.symH / 2);
               if (idx === 0) this.ctx.moveTo(x, y); else this.ctx.lineTo(x, y);
 
-              if (Math.random() < 0.1) {
-                this.spawnWinParticles(x, y, '#ff003c');
+              if (Math.random() < 0.15) {
+                this.spawnWinParticles(x, y, this.themeColor);
               }
             });
             this.ctx.stroke();
+          });
+          this.ctx.shadowBlur = 0;
+        }
+
+        // Obsługa ekspandowania we darmowych grach
+        if (this.expandingLines.length > 0) {
+          this.ctx.fillStyle = 'rgba(255, 0, 60, 0.15)';
+          this.ctx.strokeStyle = '#ff003c';
+          this.ctx.lineWidth = 3;
+          this.ctx.shadowColor = '#ff003c';
+          this.ctx.shadowBlur = 20;
+
+          this.expandingLines.forEach(node => {
+            const rx = node.col * this.reelW;
+            const ry = node.row * this.symH;
+            this.ctx.fillRect(rx + 2, ry + 2, this.reelW - 4, this.symH - 4);
+            this.ctx.strokeRect(rx + 2, ry + 2, this.reelW - 4, this.symH - 4);
+
+            if (Math.random() < 0.1) {
+              this.spawnWinParticles(rx + this.reelW/2, ry + this.symH/2, '#ff003c');
+            }
           });
           this.ctx.shadowBlur = 0;
         }
@@ -765,14 +934,15 @@
 
       startDecryption(rgsMatrix, isTurbo, onStop, onComplete) {
         this.winLines = [];
+        this.expandingLines = [];
         this.onReelStop = onStop;
 
         const baseSpeed = isTurbo ? 3200 : 1600;
-        const extraRots = isTurbo ? 1 : 4;
+        const extraRots = isTurbo ? 2 : 5;
 
         this.reels.forEach((reel, i) => {
           reel.isSpinning = true;
-          reel.speed = baseSpeed + (i * 200);
+          reel.speed = baseSpeed + (i * 220);
           reel.currentMatrix = [rgsMatrix[i][0], rgsMatrix[i][1], rgsMatrix[i][2]];
           const steps = (extraRots * 5) + (i * 3);
           reel.targetPos = reel.pos + (steps * this.symH);
@@ -783,12 +953,17 @@
             clearInterval(checkLock);
             onComplete();
           }
-        }, 50);
+        }, 30);
       }
 
       setWinner(lines) {
         this.winLines = lines;
-        this.screenShake = 12;
+        this.screenShake = 10;
+      }
+
+      setExpandingWinner(lines) {
+        this.expandingLines = lines;
+        this.screenShake = 15;
       }
     }
 
@@ -802,17 +977,17 @@
         this.renderer = new VectorRenderer('gameCanvas');
         this.rgs = new RGSServer();
 
-        // SCENARIUSZ 3: Ochrona przed Reload Deadlock.
-        // Nawet jeśli w localStorage zapisano 'isActive: true', wymuszamy 'false' przy inicjalizacji.
         this.state = this.recoverSessionState() || {
           balance: 1000.0,
           betIndex: 1,
           bets: [2.0, 5.0, 10.0, 20.0, 50.0],
           isActive: false,
-          logs: []
+          logs: [],
+          freeSpinsLeft: 0,
+          activeExpandingSymbol: null
         };
 
-        // Bezwzględne wymuszenie stanu nieaktywnego podczas bootowania systemu
+        // Bezwzględne zerowanie statusu aktywności, chroniące przed Reload Deadlock.
         this.state.isActive = false;
 
         this.autoPlay = {
@@ -839,37 +1014,38 @@
           hashMsg: document.getElementById('tx-hash-display'),
           logBox: document.getElementById('diagnostic-log'),
           logCount: document.getElementById('log-count'),
-          betTrigger: document.getElementById('bet-selector')
+          betTrigger: document.getElementById('bet-selector'),
+          freeSpinOverlay: document.getElementById('free-spin-overlay'),
+          fsCounter: document.getElementById('fs-remaining-counter'),
+          gameTitle: document.getElementById('game-title'),
+          winDisplayBox: document.getElementById('win-display-box'),
+          bonusOverlay: document.getElementById('bonus-trigger-overlay'),
+          btnStartFS: document.getElementById('btn-start-freespins'),
+          bonusSymDisplay: document.getElementById('bonus-symbol-display'),
+          bonusSymName: document.getElementById('bonus-symbol-name')
         };
 
         this.runProceduralBootLoader();
       }
 
-      // --- SCENARIUSZ 2: PROCEDURALNY BOOT-LOADER BEZ WYCIEKÓW PAMIĘCI ---
       runProceduralBootLoader() {
         const steps = [
-          { p: 15, t: "ŁADOWANIE REJESTRÓW SYSTEMU... 15%" },
-          { p: 35, t: "KONFIGUROWANIE SILNIKA CSPRNG... 35%" },
-          { p: 55, t: "SPRAWDZANIE ZABEZPIECZEŃ (OWASP)... 55%" },
-          { p: 80, t: "KOMPILACJA MATRYCY WEKTOROWEJ... 80%" },
-          { p: 100, t: "INICJALIZACJA PROTOKOŁÓW SECFERRO... 100%" }
+          { p: 15, t: "INICJOWANIE POŁĄCZENIA SERWERA RGS... 15%" },
+          { p: 40, t: "PRAWIDŁOWOŚĆ SZYFROWANIA CSPRNG... 40%" },
+          { p: 65, t: "GENEROWANIE STRUKTURY KLUCZY SYMBOLI... 65%" },
+          { p: 85, t: "ŁADOWANIE REJESTRÓW SECFERRO v10.0... 85%" },
+          { p: 100, t: "DOSTĘP AUTORYZOWANY - SYSTEM GOTOWY... 100%" }
         ];
 
         let stepIndex = 0;
         const executeStep = () => {
           if (stepIndex < steps.length) {
             const current = steps[stepIndex];
-            if (this.ui.loaderBar) {
-              this.ui.loaderBar.style.width = `${current.p}%`;
-            }
-            if (this.ui.loaderStatus) {
-              this.ui.loaderStatus.innerText = current.t;
-            }
+            if (this.ui.loaderBar) this.ui.loaderBar.style.width = `${current.p}%`;
+            if (this.ui.loaderStatus) this.ui.loaderStatus.innerText = current.t;
             stepIndex++;
-            // Bezpieczne wywołanie rekurencyjne bez tworzenia interwałów wiszących w pamięci
-            setTimeout(executeStep, SecureRNG.getRandomInt(150, 300));
+            setTimeout(executeStep, SecureRNG.getRandomInt(100, 250));
           } else {
-            // Zakończenie fazy bootowania i przejście do menu głównego
             setTimeout(() => {
               if (this.ui.splash) this.ui.splash.classList.add('opacity-0', 'pointer-events-none');
               if (this.ui.menu) this.ui.menu.classList.remove('hidden');
@@ -878,12 +1054,12 @@
                   this.ui.menu.classList.add('opacity-100');
                   this.ui.menu.classList.remove('pointer-events-none');
                 }
-              }, 50);
+              }, 40);
               
               SecureRNG.sha256(Date.now().toString()).then(hash => {
                 if (this.ui.menuSid) this.ui.menuSid.innerText = hash.substring(0, 12).toUpperCase();
               });
-            }, 400);
+            }, 300);
           }
         };
 
@@ -908,10 +1084,10 @@
         if (this.state.logs.length > 50) this.state.logs.pop();
 
         const p = document.createElement('p');
-        p.className = action === 'DECRYPT_SUCCESS' ? 'text-cyberGreen' : (action === 'ERR_SEC' ? 'text-cyberAlert' : 'text-gray-500');
+        p.className = action === 'DECRYPT_SUCCESS' ? 'text-cyberGreen font-bold' : (action === 'ERR_SEC' ? 'text-cyberAlert' : 'text-gray-500');
         p.innerText = log;
         this.ui.logBox.prepend(p);
-        this.ui.logCount.innerText = `${this.state.logs.length} WPISÓW`;
+        this.ui.logCount.innerText = `${this.state.logs.length} REKORDÓW`;
         this.saveSessionState();
       }
 
@@ -932,14 +1108,14 @@
 
       registerTouchInputs() {
         this.ui.btnSpin.addEventListener('click', () => {
-          if (this.autoPlay.enabled) this.haltAutoplay("ZATRZYMANIE_GRACZA");
+          if (this.autoPlay.enabled) this.haltAutoplay("INTERWENCJA_GRACZA");
           else this.launchIntrusion();
         });
 
         this.ui.betTrigger.addEventListener('click', () => {
-          if (this.state.isActive || this.autoPlay.enabled) return;
+          if (this.state.isActive || this.autoPlay.enabled || this.state.freeSpinsLeft > 0) return;
           this.state.betIndex = (this.state.betIndex + 1) % this.state.bets.length;
-          this.audio.playTone('sine', 880, 0.05, 0.05);
+          this.audio.playTone('sine', 700, 0.08, 0.05);
           this.updateDisplays();
           this.saveSessionState();
         });
@@ -964,9 +1140,13 @@
         });
 
         this.ui.btnAutoStart.addEventListener('click', () => this.startAutoplaySession());
+        
+        this.ui.btnStartFS.addEventListener('click', () => {
+          this.ui.bonusOverlay.classList.add('opacity-0', 'pointer-events-none');
+          this.startFreeSpinsLoop();
+        });
       }
 
-      // --- SCENARIUSZ 1: INICJALIZACJA GRY I ODBLOKOWANIE AUDIO ---
       activateGameMode() {
         this.audio.init();
         this.audio.playBootTune();
@@ -1017,30 +1197,44 @@
         if (this.state.isActive) return;
         const currentBet = this.state.bets[this.state.betIndex];
 
-        if (this.state.balance < currentBet) {
-          this.audio.playTone('sawtooth', 120, 0.35, 0.1);
-          this.ui.statusMsg.innerText = "BŁĄD: BRAK_ŚRODKÓW";
-          this.auditLog('ERR_SEC', `Odrzucenie żądania. Saldo: ${this.state.balance}, Bet: ${currentBet}`);
-          if (this.autoPlay.enabled) this.haltAutoplay("INSUFFICIENT_FUNDS");
+        const isFreeSpin = this.state.freeSpinsLeft > 0;
+
+        if (!isFreeSpin && this.state.balance < currentBet) {
+          this.audio.playTone('sawtooth', 100, 0.4, 0.12);
+          this.ui.statusMsg.innerText = "BŁĄD: NIEWYSTARCZAJĄCE ŚRODKI";
+          this.auditLog('ERR_SEC', `Brak zasobów na transakcję. Saldo: ${this.state.balance}, Zakład: ${currentBet}`);
+          if (this.autoPlay.enabled) this.haltAutoplay("BRAK_ŚRODKÓW");
           return;
         }
 
         this.state.isActive = true;
         this.ui.btnSpin.disabled = true;
         this.ui.winBox.innerText = "0.00 Ƀ";
-        this.ui.statusMsg.innerText = "DESZYFROWANIE_PAKIETÓW...";
 
-        this.state.balance -= currentBet;
-        this.updateDisplays();
-        this.saveSessionState();
+        if (isFreeSpin) {
+          this.state.freeSpinsLeft--;
+          this.ui.fsCounter.innerText = this.state.freeSpinsLeft;
+          this.ui.statusMsg.innerText = `FREE SPIN: OVERCLOCKING W TOKU...`;
+          this.auditLog('FREE_SPIN_EXEC', `Wykonano wolny obrót. Pozostało: ${this.state.freeSpinsLeft}`);
+        } else {
+          this.state.balance -= currentBet;
+          this.ui.statusMsg.innerText = "DESZYFROWANIE PAKIETÓW DANYCH...";
+          this.updateDisplays();
+          this.saveSessionState();
+        }
 
         const clientEntropy = performance.now().toString() + Math.random().toString();
 
         try {
-          const response = await this.rgs.calculateSpin(currentBet, clientEntropy);
+          const response = await this.rgs.calculateSpin(
+            currentBet, 
+            clientEntropy, 
+            isFreeSpin, 
+            this.state.activeExpandingSymbol
+          );
 
           this.ui.hashMsg.innerText = `BLOCK: ${response.txHash.substring(0, 32).toUpperCase()}`;
-          this.auditLog('PAYLOAD_SENT', `Pakiet: ${currentBet}. HASH: ${response.txHash.substring(0, 8)}`);
+          this.auditLog('PAYLOAD_SENT', `Stawka: ${currentBet} Ƀ. Hash bloku: ${response.txHash.substring(0, 10)}`);
 
           const isTurbo = document.getElementById('toggle-turbo').checked;
           this.audio.playSpin();
@@ -1053,31 +1247,59 @@
           );
 
         } catch (err) {
-          this.ui.statusMsg.innerText = "BŁĄD_POŁĄCZENIA_RGS";
-          this.auditLog('ERR_SEC', 'Brak autoryzacji transakcji ze strony RGS.');
+          this.ui.statusMsg.innerText = "BŁĄD POŁĄCZENIA RGS";
+          this.auditLog('ERR_SEC', 'Krytyczny brak autoryzacji sesji ze strony RGS.');
           this.state.isActive = false;
           this.ui.btnSpin.disabled = false;
         }
       }
 
       resolveResponse(res) {
-        if (res.winAmount > 0) {
-          this.state.balance += res.winAmount;
+        let currentTotalWin = res.winAmount;
+
+        // 1. Zwykła linia wygrywająca
+        if (res.winLines.length > 0) {
           this.renderer.setWinner(res.winLines);
           this.audio.playWin();
-          this.ui.statusMsg.innerText = `PRZEŁAMANIE_ZAKOŃCZONE // +${res.winAmount.toFixed(2)} Ƀ`;
-          this.auditLog('DECRYPT_SUCCESS', `Wydobyto zasoby: +${res.winAmount.toFixed(2)} Ƀ`);
-        } else {
-          this.ui.statusMsg.innerText = "SYSTEM_GOTOWY_DO_PRACY";
+          this.ui.statusMsg.innerText = `ROZSZYFROWANO LINIE // +${res.winAmount.toFixed(2)} Ƀ`;
         }
 
-        this.updateDisplays(res.winAmount);
-        
+        // 2. Ekspandowanie symboli (W trybie Free Spins)
+        if (res.isExpandingWin) {
+          setTimeout(() => {
+            this.renderer.setExpandingWinner(res.expLines);
+            this.audio.playMegaWin();
+            this.ui.statusMsg.innerText = `EXPANSION CRITICAL // +${res.winAmount.toFixed(2)} Ƀ`;
+          }, 800);
+        }
+
+        if (currentTotalWin > 0) {
+          this.state.balance += currentTotalWin;
+          this.auditLog('DECRYPT_SUCCESS', `Uzyskany przychód z ekstrakcji: +${currentTotalWin.toFixed(2)} Ƀ`);
+          this.updateDisplays(currentTotalWin);
+        } else {
+          if (this.state.freeSpinsLeft === 0 && !res.triggeredBonus) {
+            this.ui.statusMsg.innerText = "SYSTEM CZUWANIA: GOTOWY";
+          }
+        }
+
         this.state.isActive = false;
         this.ui.btnSpin.disabled = false;
         this.saveSessionState();
 
-        if (this.autoPlay.enabled) {
+        // 3. Sprawdzenie aktywacji darmowych obrotów (Scatters Trigger)
+        if (res.triggeredBonus) {
+          this.triggerFreeSpinsBonus();
+          return;
+        }
+
+        // Obsługa trybu automatycznego / darmowych gier
+        if (this.state.freeSpinsLeft > 0) {
+          setTimeout(() => this.launchIntrusion(), 1600);
+        } else if (this.state.freeSpinsLeft === 0 && this.ui.freeSpinOverlay.classList.contains('hidden') === false) {
+          // Koniec darmowych gier
+          this.exitFreeSpinsMode();
+        } else if (this.autoPlay.enabled) {
           this.autoPlay.remaining--;
           this.ui.btnSpin.querySelector('span').innerText = `STOP (${this.autoPlay.remaining})`;
 
@@ -1087,12 +1309,74 @@
             this.haltAutoplay("ZAKOŃCZONO_ZAPLANOWANE_CYKLE");
           } else if (netLoss >= this.autoPlay.lossLimit) {
             this.haltAutoplay("PRZEKROCZONO_USTAWIONY_LIMIT_STRAT");
-          } else if (res.winAmount >= this.autoPlay.winLimit) {
-            this.haltAutoplay("WYKRYTO_WYSOKĄ_WYGRANĄ");
+          } else if (currentTotalWin >= this.autoPlay.winLimit) {
+            this.haltAutoplay("WYKRYTO_WYSOKĄ_WYGRANĄ_JEDNORAZOWĄ");
           } else {
-            setTimeout(() => this.launchIntrusion(), 1000);
+            setTimeout(() => this.launchIntrusion(), 1200);
           }
         }
+      }
+
+      // --- AKTYWACJA UNIKALNEJ RUNDY SPECJALNEJ ---
+      triggerFreeSpinsBonus() {
+        if (this.autoPlay.enabled) this.haltAutoplay("BONUS_TRIGGERED");
+
+        this.state.freeSpinsLeft = 10;
+        // Wybór losowego symbolu rozwijającego się (od 1 do 4, Book nie rozwija się)
+        this.state.activeExpandingSymbol = SecureRNG.getRandomInt(1, 5);
+        this.saveSessionState();
+
+        this.audio.playAlarm();
+
+        // Podgląd symbolu w oknie dialogowym
+        this.ui.bonusSymName.innerText = this.getSymbolName(this.state.activeExpandingSymbol);
+        this.ui.bonusSymDisplay.innerHTML = '';
+        
+        // Dynamiczne wyrysowanie wybranego symbolu rozszerzającego
+        const canv = document.createElement('canvas');
+        canv.width = 80; canv.height = 80;
+        const cvCtx = canv.getContext('2d');
+        this.renderer.symbolStyles[this.state.activeExpandingSymbol].draw(cvCtx, 40, 40, 50);
+        this.ui.bonusSymDisplay.appendChild(canv);
+
+        // Wyświetlenie modala bonusowego
+        setTimeout(() => {
+          this.ui.bonusOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        }, 1000);
+      }
+
+      getSymbolName(id) {
+        switch(id) {
+          case 1: return "TERMINAL SHELL [SYS]";
+          case 2: return "MALWARE BUG [ERR]";
+          case 3: return "CRYPTO-KEY [SEC]";
+          case 4: return "FIREWALL SHIELD [FLW]";
+          default: return "BOOK OF SECFERRO";
+        }
+      }
+
+      startFreeSpinsLoop() {
+        // Zmiana interfejsu na alarmowy, czerwony tryb "SYSTEM OVERLOAD"
+        this.renderer.setTheme('#ff003c');
+        this.ui.gameTitle.innerHTML = `<span class="text-cyberAlert font-normal">&lt;</span> SYSTEM_OVERLOAD <span class="text-cyberAlert font-normal">&gt;</span>`;
+        this.ui.freeSpinOverlay.classList.remove('hidden');
+        this.ui.fsCounter.innerText = this.state.freeSpinsLeft;
+        
+        this.auditLog('BONUS_START', `Rozpoczęto tryb darmowych gier. Symbol rozszerzający: ${this.getSymbolName(this.state.activeExpandingSymbol)}`);
+        
+        // Start obrotów
+        this.launchIntrusion();
+      }
+
+      exitFreeSpinsMode() {
+        this.ui.freeSpinOverlay.classList.add('hidden');
+        this.renderer.setTheme('#00ff41');
+        this.ui.gameTitle.innerHTML = `<span class="text-cyberBlue font-normal">&lt;</span> BOOK_OF_SECFERRO <span class="text-cyberBlue font-normal">&gt;</span>`;
+        this.state.activeExpandingSymbol = null;
+        this.saveSessionState();
+
+        this.ui.statusMsg.innerText = "DESZYFROWANIE ZAKOŃCZONE. POWRÓT DO KONSOLI";
+        this.auditLog('BONUS_END', "Koniec trybu wolnych gier. Parametry bazy przywrócone.");
       }
     }
 
