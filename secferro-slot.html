@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#010103">
-  <meta name="description" content="Book of SecFerro - Professional Grade Cyber Slot. Sound by Ferro ART.">
-  <title>SecFerro Division // Pro Intrusion Engine</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Book of SecFerro - Immersive Fullscreen Cyber Slot. Sound by Ferro ART.">
+  <title>SecFerro Division // Fullscreen Intrusion Pro</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
@@ -26,7 +28,7 @@
             cyberBlue: '#00f0ff',
             cyberPurple: '#bc13fe',
             cyberGold: '#ffb300',
-            glassBg: 'rgba(3, 3, 8, 0.75)',
+            glassBg: 'rgba(2, 2, 6, 0.75)',
             glassBorder: 'rgba(0, 240, 255, 0.12)',
           }
         }
@@ -57,36 +59,38 @@
       transform: translateZ(0);
     }
 
+    /* Bezpieczne strefy na brzegach ekranów bezramkowych */
     .safe-padding {
       padding-top: max(0.5rem, env(safe-area-inset-top));
       padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-      padding-left: max(0.5rem, env(safe-area-inset-left));
-      padding-right: max(0.5rem, env(safe-area-inset-right));
+      padding-left: max(0.75rem, env(safe-area-inset-left));
+      padding-right: max(0.75rem, env(safe-area-inset-right));
     }
 
-    .glass-panel {
-      background: rgba(3, 3, 7, 0.8);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(0, 240, 255, 0.15);
-      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+    /* Pływające Panele HUD (Glassmorphism) */
+    .hud-panel {
+      background: rgba(4, 4, 10, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(0, 240, 255, 0.12);
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
     }
 
     .btn-tactile {
-      transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: all 0.12s cubic-bezier(0.2, 0.8, 0.2, 1);
       will-change: transform, filter, box-shadow;
     }
     .btn-tactile:active:not(:disabled) {
-      transform: scale(0.93) translateY(1px);
-      filter: brightness(1.25);
-      box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+      transform: scale(0.92) translateY(1px);
+      filter: brightness(1.3);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
     }
     .btn-tactile:disabled {
-      opacity: 0.25; filter: grayscale(1); pointer-events: none;
+      opacity: 0.2; filter: grayscale(1); pointer-events: none;
     }
 
     .matrix-shimmer {
-      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.15), transparent);
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.18), transparent);
       background-size: 200% 100%;
       animation: shimmer 2s infinite linear;
     }
@@ -97,25 +101,28 @@
     }
   </style>
 </head>
-<body class="w-full h-full flex items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#070714] via-[#010103] to-black">
+<body class="w-full h-full flex items-center justify-center bg-black overflow-hidden select-none">
 
   <div id="crt-layer"></div>
 
-  <!-- Główny Kontener Gry -->
-  <div class="relative w-full h-full max-w-[480px] max-h-[100svh] flex flex-col justify-between overflow-hidden safe-padding transform-gpu">
+  <!-- Główny Kontener Pełnoekranowy -->
+  <div class="relative w-full h-full flex flex-col justify-between overflow-hidden safe-padding transform-gpu">
     
+    <!-- Tła i silniki graficzne (Zajmują 100% przestrzeni urządzenia) -->
+    <canvas id="matrixBackground" class="absolute inset-0 w-full h-full opacity-40 pointer-events-none mix-blend-screen z-0"></canvas>
+    <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-10" aria-label="Główny wielkoformatowy ekran gry"></canvas>
+
     <!-- ==========================================
-         WARSTWA 1: PRE-BOOT SCREEN (CYBERNETIC INITIALIZATION)
+         WARSTWA 1: PRE-BOOT SCREEN (INITIALIZATION)
          ========================================== -->
     <div id="splash-loader" class="absolute inset-0 z-50 bg-[#010103] flex flex-col justify-between p-8 transition-opacity duration-700">
       <div class="flex-1 flex flex-col justify-center items-center gap-8">
         
-        <!-- Animowane logo neonowe z maską -->
         <div class="relative w-28 h-28 flex items-center justify-center">
           <div class="absolute inset-0 rounded-full border border-cyberBlue/20 animate-[spin_6s_linear_infinite]"></div>
-          <div class="absolute inset-2 rounded-full border-2 border-dashed border-cyberPurple/25 animate-[spin_4s_linear_infinite_reverse]"></div>
+          <div class="absolute inset-2 rounded-full border border-cyberPurple/25 animate-[spin_4s_linear_infinite_reverse]"></div>
           
-          <svg viewBox="0 0 100 100" class="w-16 h-16 text-cyberBlue drop-shadow-[0_0_20px_rgba(0,240,255,0.8)] animate-pulse" fill="none" stroke="currentColor" stroke-width="2.5">
+          <svg viewBox="0 0 100 100" class="w-16 h-16 text-cyberBlue drop-shadow-[0_0_20px_rgba(0,240,255,0.8)]" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M20,30 Q50,15 80,30 L80,55 Q80,80 50,92 Q20,80 20,55 Z" stroke-linejoin="round"/>
             <path d="M35,45 L45,45 M55,45 L65,45" stroke-linecap="round" stroke="#ff003c" stroke-width="3.5"/>
             <path d="M30,68 Q50,83 70,68" stroke-linecap="round"/>
@@ -123,122 +130,107 @@
         </div>
         
         <div class="text-center">
-          <div class="font-tech text-2xl font-black tracking-[0.45em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase">
+          <div class="font-tech text-3xl font-black tracking-[0.5em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase">
             SECFERRO
           </div>
-          <p class="font-mono text-[8px] text-gray-500 tracking-[0.3em] mt-2 uppercase">PRO INTRUSION SYSTEM</p>
+          <p class="font-mono text-[9px] text-gray-500 tracking-[0.3em] mt-2 uppercase">IMMERSIVE FULLSCREEN SYSTEM</p>
         </div>
         
-        <!-- Pasek postępu buforowania GPU -->
         <div class="w-full max-w-[220px] bg-black/60 border border-cyberBlue/20 h-2 rounded-full overflow-hidden p-[2px]">
           <div id="loader-bar" class="h-full bg-gradient-to-r from-cyberPurple via-cyberBlue to-cyberGreen rounded-full w-0 shadow-[0_0_15px_#bc13fe] transition-all duration-300"></div>
         </div>
         
         <div id="loader-status" class="font-mono text-[8px] text-cyberBlue/60 tracking-widest text-center uppercase animate-pulse">
-          KOMPILACJA WEKTORÓW DO PAMIĘCI PODRĘCZNEJ...
+          DOSTOSOWYWANIE ROZDZIELCZOŚCI WYŚWIETLACZA...
         </div>
-      </div>
-      
-      <div class="font-mono text-[7px] text-gray-600 text-center uppercase tracking-widest">
-        POWERED BY FERRO ART // OPTIMIZED SLOT PIPELINE v11.0
       </div>
     </div>
 
     <!-- ==========================================
          WARSTWA 2: INTERAKTYWNE MENU
          ========================================== -->
-    <div id="main-menu" class="absolute inset-0 z-40 bg-[#010103]/98 flex flex-col justify-between p-6 transition-opacity duration-500 hidden opacity-0 backdrop-blur-2xl">
+    <div id="main-menu" class="absolute inset-0 z-40 bg-black/95 flex flex-col justify-between p-6 transition-opacity duration-500 hidden opacity-0 backdrop-blur-3xl">
       <div class="w-full flex justify-between items-center text-[9px] font-mono text-cyberBlue/50 shrink-0 border-b border-cyberBlue/10 pb-2">
-        <span>SECURITY: ROOT_BYPASS</span>
-        <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 bg-cyberGreen rounded-full animate-ping"></div> RGS SYNCED</span>
+        <span>SECURITY: FULLSCREEN_INTEGRITY</span>
+        <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 bg-cyberGreen rounded-full animate-ping"></div> GRID READY</span>
       </div>
 
       <div class="flex-1 flex flex-col justify-center items-center gap-8 select-none text-center">
-        <!-- Wizualizacja cybernetycznej fuzji -->
         <div class="relative w-32 h-32 flex items-center justify-center">
           <div class="absolute inset-0 rounded-full bg-cyberPurple/5 animate-ping duration-2000"></div>
           <svg viewBox="0 0 120 120" class="w-24 h-24 text-cyberBlue drop-shadow-[0_0_15px_rgba(0,240,255,0.4)]" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="60" cy="60" r="45" stroke-dasharray="2,4" />
-            <!-- Maska w neonie -->
             <path d="M40,50 L50,60 M50,50 L40,60 M70,50 L80,60 M80,50 L70,60" stroke="#ff003c" stroke-width="3" />
             <path d="M42,75 Q60,90 78,75" stroke="#00ff41" stroke-width="2.5" />
           </svg>
         </div>
 
         <div>
-          <span class="font-mono text-[10px] text-gray-500 tracking-widest block mb-1">DŹWIĘK GŁÓWNY</span>
+          <span class="font-mono text-[10px] text-gray-500 tracking-widest block mb-1">AUDIOWIZUALNE TŁO REAKTYWNE</span>
           <span class="font-tech text-lg text-cyberPurple tracking-wider font-bold">FERRO ART</span>
           <span class="font-mono text-xs text-cyberBlue block mt-1 uppercase tracking-[0.2em]">"WILCZY WYROK"</span>
         </div>
 
         <button id="btn-start-game" class="btn-tactile matrix-shimmer relative px-8 py-3.5 rounded-lg border border-cyberBlue/30 text-cyberBlue hover:border-cyberBlue">
           <span class="font-tech text-xs font-bold tracking-[0.3em] uppercase">
-            AUTORYZUJ I ZAKTYWUJ
+            WEJDŹ DO PEŁNEGO EKRANU
           </span>
         </button>
       </div>
     </div>
 
     <!-- ==========================================
-         WARSTWA 3: GŁÓWNY INTERFEJS GRY
+         NAGŁÓWEK HUD (UNOSZĄCY SIĘ NAD GRĄ)
          ========================================== -->
-    
-    <!-- Nagłówek statystyk -->
-    <header class="w-full h-10 flex items-center justify-between px-4 glass-panel border-x-0 border-t-0 z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
-      <div class="flex items-center gap-2">
-        <span class="text-cyberBlue font-bold drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">FERRO_ENGINE_PRO</span>
+    <header class="w-full h-11 flex items-center justify-between px-4 hud-panel rounded-lg z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
+      <div class="flex items-center gap-3">
+        <span class="text-cyberBlue font-bold drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">FERRO_ULTIMATE</span>
         <span class="text-gray-500 font-mono hidden sm:inline">// FPS: <span id="fps-display" class="text-cyberGreen">60</span></span>
+      </div>
+      <!-- Panel informacyjny o darmowych spinach wbudowany bezpośrednio w nagłówek HUD -->
+      <div id="fs-banner" class="opacity-0 scale-95 transition-all duration-300 flex items-center gap-2 border border-cyberAlert/30 px-3 py-1 rounded bg-cyberAlert/10">
+        <span class="font-bold text-cyberAlert tracking-widest">SYSTEM OVERLOAD</span>
+        <span class="font-mono text-[10px] font-bold text-cyberWarning">RUNS: <span id="fs-count">0</span></span>
       </div>
       <div class="flex items-center gap-3">
         <span id="rg-clock" class="text-gray-400 font-mono">00:00:00 UTC</span>
       </div>
     </header>
 
-    <!-- Canvas Główny wraz z Tłem Reaktywnym -->
-    <main class="relative flex-1 w-full flex flex-col justify-center items-center p-3 overflow-hidden z-10">
-      
-      <!-- Inteligentne tło reagujące na pasmo wysokich tonów (Matrix Code rain) oraz basu -->
-      <canvas id="matrixBackground" class="absolute inset-0 w-full h-full opacity-35 pointer-events-none mix-blend-screen"></canvas>
-
-      <!-- Status komunikatora hakerskiego -->
-      <div class="w-full text-center mb-2.5 z-20 shrink-0 select-none">
-        <h1 class="font-tech font-black tracking-[0.35em] text-cyberBlue text-lg md:text-xl drop-shadow-[0_0_12px_rgba(0,240,255,0.4)]" id="game-title">
-          BOOK OF SECFERRO
-        </h1>
-        <div id="status-msg" class="text-[8px] text-cyberPurple font-mono tracking-widest mt-0.5 h-3 font-bold uppercase transition-all">
-          AWAITING_INTRUSION_SEED
-        </div>
+    <!-- ==========================================
+         CENTRALNY SYSTEM STATUSÓW / KOMUNIKATÓW
+         ========================================== -->
+    <div class="w-full text-center z-20 pointer-events-none select-none mt-4">
+      <h1 class="font-tech font-black tracking-[0.45em] text-cyberBlue text-lg md:text-2xl drop-shadow-[0_0_15px_rgba(0,240,255,0.45)]" id="game-title">
+        BOOK OF SECFERRO
+      </h1>
+      <div id="status-msg" class="text-[9px] text-cyberPurple font-mono tracking-widest mt-0.5 h-3 font-bold uppercase transition-all">
+        AWAITING_INTRUSION_SEED
       </div>
+    </div>
 
-      <!-- Ramka bębnów (DPI-Aware Canvas) -->
-      <div id="canvas-container" class="relative w-full aspect-[5/3.2] max-w-[460px] rounded-xl glass-panel shadow-[0_0_60px_rgba(0,240,255,0.06)] overflow-hidden z-10">
-        
-        <!-- Overlock Free Run Banner -->
-        <div id="fs-banner" class="absolute top-0 inset-x-0 h-8 bg-gradient-to-r from-cyberAlert/90 to-transparent border-b border-cyberAlert/40 flex items-center justify-between px-4 text-[10px] font-tech text-white z-20 transform -translate-y-full transition-transform duration-300">
-          <span class="tracking-widest font-black animate-pulse">SYSTEM OVERLOAD INTRUSION</span>
-          <span class="font-bold bg-black/60 px-2.5 py-0.5 rounded border border-cyberAlert/20">RUNS: <span id="fs-count" class="text-cyberWarning">0</span></span>
-        </div>
-        
-        <!-- Mega Win Overlay -->
-        <div id="win-overlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
-          <div class="font-tech text-3xl font-black text-cyberGold text-center px-4">
-            <div id="win-type" class="text-xs text-white mb-2 tracking-[0.3em] uppercase">SYSTEM DECRYPTED</div>
-            <span id="win-amount-counter" class="text-4xl">0.00</span> <span class="text-2xl">Ƀ</span>
-          </div>
-        </div>
+    <!-- Puste pole na środku pozwala wektorowej matrycy wypełnić cały wolny ekran -->
+    <div class="flex-1 w-full z-10 pointer-events-none"></div>
 
-        <canvas id="gameCanvas" class="w-full h-full block" aria-label="Główny silnik gry"></canvas>
+    <!-- ==========================================
+         ZINTEGROWANY, DUŻY WIN OVERLAY (DUŻE WYGRANE)
+         ========================================== -->
+    <div id="win-overlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+      <div class="font-tech text-3xl font-black text-cyberGold text-center px-4">
+        <div id="win-type" class="text-xs text-white mb-2 tracking-[0.3em] uppercase">SYSTEM DECRYPTED</div>
+        <span id="win-amount-counter" class="text-5xl">0.00</span> <span class="text-3xl">Ƀ</span>
       </div>
+    </div>
 
-    </main>
-
-    <!-- Ergonomiczny, mobilny panel dolny -->
-    <section class="w-full glass-panel border-x-0 border-b-0 z-20 flex flex-col shrink-0 rounded-t-2xl pb-safe">
+    <!-- ==========================================
+         MOBILNY, PŁYWAJĄCY PANEL STEROWANIA (HUD)
+         ========================================== -->
+    <section class="w-full hud-panel z-20 flex flex-col shrink-0 rounded-xl mb-safe mt-auto">
       
-      <!-- Siatka statystyk i stawek -->
-      <div class="grid grid-cols-3 gap-1 p-2 bg-black/60 text-center font-mono select-none rounded-t-2xl">
+      <!-- Panel finansowy -->
+      <div class="grid grid-cols-3 gap-1 p-2 bg-black/40 text-center font-mono select-none rounded-t-xl border-b border-cyberBlue/5">
         <div class="flex flex-col justify-center py-1">
-          <span class="text-[8px] text-gray-500 tracking-wider mb-0.5">KAPITAŁ</span>
+          <span class="text-[8px] text-gray-500 tracking-wider mb-0.5">SALDO</span>
           <span id="display-balance" class="text-xs font-bold text-white transition-all">1000.00 Ƀ</span>
         </div>
         <div class="flex flex-col justify-center py-1 bg-cyberBlue/10 rounded cursor-pointer btn-tactile border border-cyberBlue/20" id="bet-selector">
@@ -251,22 +243,22 @@
         </div>
       </div>
 
-      <!-- Panel Akcji kluczowych -->
-      <div class="w-full flex justify-between items-center px-6 py-2 pb-4">
+      <!-- Klawisze sterujące -->
+      <div class="w-full flex justify-between items-center px-6 py-3">
         
         <div class="flex gap-4">
-          <button id="btn-settings" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Settings">
+          <button id="btn-settings" class="w-12 h-12 rounded-full hud-panel flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Settings">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
           </button>
-          <button id="btn-auto" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Autoplay">
+          <button id="btn-auto" class="w-12 h-12 rounded-full hud-panel flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Autoplay">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"/></svg>
           </button>
         </div>
 
-        <!-- Przycisk SPIN (Touch Zone Optimized) -->
-        <button id="btn-spin" class="relative group w-20 h-20 rounded-full flex items-center justify-center btn-tactile border-[3px] border-cyberBlue bg-black/60 shadow-[0_0_30px_rgba(0,240,255,0.25)] hover:shadow-[0_0_50px_rgba(0,240,255,0.45)]">
+        <!-- Wielki Przycisk SPIN -->
+        <button id="btn-spin" class="relative group w-16 h-16 rounded-full flex items-center justify-center btn-tactile border-[3px] border-cyberBlue bg-black/60 shadow-[0_0_30px_rgba(0,240,255,0.25)] hover:shadow-[0_0_50px_rgba(0,240,255,0.45)]">
           <div class="absolute inset-1 rounded-full border border-dashed border-cyberBlue/40 group-hover:animate-[spin_6s_linear_infinite]"></div>
-          <svg class="w-8 h-8 text-cyberBlue ml-1 drop-shadow-[0_0_6px_#00f0ff]" fill="currentColor" viewBox="0 0 24 24">
+          <svg class="w-7 h-7 text-cyberBlue ml-1 drop-shadow-[0_0_6px_#00f0ff]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z"/>
           </svg>
         </button>
@@ -274,7 +266,9 @@
       </div>
     </section>
 
-    <!-- Modale Systemowe -->
+    <!-- ==========================================
+         MODALE KONFIGURACYJNE
+         ========================================== -->
     <div id="panel-settings" class="absolute inset-0 bg-black/95 backdrop-blur-3xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-5 border-b border-cyberBlue/20">
         <h2 class="font-tech font-bold text-cyberBlue tracking-widest">> DIAGNOSTYKA_SYSTEMU</h2>
@@ -407,7 +401,6 @@
         if (this.ctx.state === 'suspended') this.ctx.resume();
       }
 
-      // Elastyczne i bezbłędne wczytywanie pliku (obsługa spacji i podkreśleń)
       async loadMusic() {
         const filenames = ['background_bookofsecfeero.mp3', 'FERRO ART WILCZY WYROK.mp3'];
         for (let name of filenames) {
@@ -454,7 +447,6 @@
         }, timeSec * 1000);
       }
 
-      // Pobieranie intensywności basu
       getBassIntensity() {
         if (!this.analyser) return 0;
         this.analyser.getByteFrequencyData(this.freqData);
@@ -463,7 +455,6 @@
         return sum / (4 * 255);
       }
 
-      // Pobieranie intensywności tonów wysokich
       getTrebleIntensity() {
         if (!this.analyser) return 0;
         this.analyser.getByteFrequencyData(this.freqData);
@@ -584,7 +575,6 @@
 
         this.resize();
         window.addEventListener('resize', () => this.resize());
-        this.preRenderSymbols(); // Ekspercki pre-rendering
 
         requestAnimationFrame(this.loop.bind(this));
       }
@@ -604,13 +594,16 @@
         this.w = rect.width; this.h = rect.height;
         this.cW = this.w / this.cols; this.rH = this.h / this.rows;
 
+        // Przeregulowanie wielkości deszczu kodu Matrix na pełnym ekranie
+        this.initMatrixRain();
+
         // Po zmianie rozmiaru należy wygenerować cache symboli na nowo
         this.preRenderSymbols();
       }
 
       // Kompilacja wektorów do dedykowanych buforów offscreen (Wydajność klasy AAA)
       preRenderSymbols() {
-        const size = (this.rH || 100) * 0.6;
+        const size = (this.rH || 100) * 0.5;
         const pad = 24;
         const dSize = Math.ceil(size + pad * 2);
 
@@ -677,7 +670,8 @@
 
       // Inicjalizacja binarnego kodu Matrix w tle
       initMatrixRain() {
-        const columnsCount = Math.ceil(480 / 12);
+        this.matrixColumns = [];
+        const columnsCount = Math.ceil(this.w / 14) || 35;
         for (let i = 0; i < columnsCount; i++) {
           this.matrixColumns.push({
             x: i * 14,
@@ -1100,7 +1094,7 @@
 
         if (this.state.fsCount > 0) {
           setTimeout(() => this.play(), 1000);
-        } else if (this.state.fsCount === 0 && !this.dom.fsBanner.classList.contains('-translate-y-full')) {
+        } else if (this.state.fsCount === 0 && this.dom.fsBanner.classList.contains('opacity-100')) {
           this.endFreeSpins();
         } else if (this.autoPlay.enabled) {
           this.autoPlay.remaining--;
@@ -1155,7 +1149,8 @@
         this.renderer.isBonusTheme = true;
         this.audio.playSFX('sawtooth', 180, 1.4, 0.7);
 
-        this.dom.fsBanner.classList.remove('-translate-y-full');
+        this.dom.fsBanner.classList.remove('opacity-0', 'scale-95');
+        this.dom.fsBanner.classList.add('opacity-100', 'scale-100');
         this.dom.fsCount.innerText = this.state.fsCount;
         this.dom.statusMsg.innerText = "OVERCLOCKING INTRUSION DETECTED";
 
@@ -1167,7 +1162,8 @@
 
       endFreeSpins() {
         this.renderer.isBonusTheme = false;
-        this.dom.fsBanner.classList.add('-translate-y-full');
+        this.dom.fsBanner.classList.remove('opacity-100', 'scale-100');
+        this.dom.fsBanner.classList.add('opacity-0', 'scale-95');
         this.dom.statusMsg.innerText = "SYSTEM REBOOT COMPLETE";
       }
 
