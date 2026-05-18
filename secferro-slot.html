@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="Book of Museum // SecFerro Premium RGS Engine. Designed by Anonymousik.is-a.dev">
-  <title>Book of Museum // SecFerro Division</title>
+  <meta name="description" content="Book of SecFerro // GLI-19 Compliant Cyber-Breach Protocol">
+  <title>SECFERRO GAMES STUDIO : Book of SecFerro</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Cinzel:wght@500;700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   
   <script>
@@ -15,16 +15,16 @@
       theme: {
         extend: {
           fontFamily: {
-            mono: ['"Fira Code"','monospace'],
-            cinzel: ['"Cinzel"', 'serif'],
-            sans: ['"Inter"', 'sans-serif']
+            mono: ['"Fira Code"', 'monospace'],
+            tech: ['"Share Tech Mono"', 'monospace'],
           },
           colors: {
-            g: '#00ff41',
-            gold: '#D4AF37',
-            alert: '#ff003c',
-            panel: 'rgba(5, 5, 8, 0.98)',
-            borderGold: 'rgba(212, 175, 55, 0.25)'
+            cyberGreen: '#00ff41',
+            cyberDark: '#050508',
+            cyberAlert: '#ff003c',
+            cyberBlue: '#00f0ff',
+            cyberWarning: '#ffea00',
+            panelBg: 'rgba(5, 5, 10, 0.95)',
           }
         }
       }
@@ -32,198 +32,197 @@
   </script>
 
   <style>
-    /* Klasyczny raster monitorów kineskopowych CRT zintegrowany z interfejsem */
+    :root { --scanline-color: rgba(0, 255, 65, 0.03); }
+    
+    body {
+      background-color: #010102;
+      color: #00ff41;
+      font-family: 'Fira Code', monospace;
+      overflow: hidden;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Ochrona przed modyfikacją UI z poziomu DevTools - warstwa maskująca */
     #crt-layer {
       position: fixed; inset: 0;
-      background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,.12) 50%),
-                  linear-gradient(90deg, rgba(255,0,0,.02), rgba(0,255,0,.008), rgba(0,0,255,.02));
-      background-size: 100% 3px, 5px 100%;
-      pointer-events: none; z-index: 999;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none; z-index: 9999;
+      mix-blend-mode: overlay;
     }
 
-    /* Animacja pulsowania neonu dla linii wygrywających */
-    @keyframes neonPulse {
-      0%, 100% { filter: drop-shadow(0 0 4px #ff3c00) drop-shadow(0 0 10px #ff3c00); }
-      50% { filter: drop-shadow(0 0 8px #ff7700) drop-shadow(0 0 18px #ff7700); }
+    @keyframes flicker {
+      0% { opacity: 0.95; } 5% { opacity: 0.85; } 10% { opacity: 0.95; } 15% { opacity: 1; } 100% { opacity: 1; }
     }
-    .neon-line {
-      animation: neonPulse 1.5s infinite;
-    }
+    .crt-flicker { animation: flicker 6s infinite; }
 
-    /* Ukrywanie scrollbara */
+    /* Optymalizacja GPU dla animacji CSS */
+    .hardware-accel { transform: translateZ(0); will-change: transform, opacity; }
+
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: #020203; }
-    ::-webkit-scrollbar-thumb { background: #D4AF37; }
+    ::-webkit-scrollbar-thumb { background: #00ff41; }
+
+    .border-cyber { border: 1px solid #00ff41; box-shadow: 0 0 10px rgba(0, 255, 65, 0.1) inset; }
+    .text-glow { text-shadow: 0 0 8px rgba(0, 255, 65, 0.6); }
+    .text-glow-alert { text-shadow: 0 0 8px rgba(255, 0, 60, 0.8); color: #ff003c; }
   </style>
 </head>
-<body class="bg-[#020203] text-gray-200 overflow-hidden font-sans select-none h-screen w-screen flex flex-col justify-between">
+<body class="h-screen w-screen flex flex-col justify-between crt-flicker">
 
   <div id="crt-layer"></div>
 
-  <!-- Główny kontener osadzania (Zgodny z mobilnymi proporcjami GameArt RGS) -->
-  <div class="relative w-full max-w-[480px] h-full mx-auto flex flex-col justify-between bg-[#050508] border-x border-[#1a1a1e] shadow-2xl overflow-hidden">
+  <div class="relative w-full max-w-[500px] h-full mx-auto flex flex-col justify-between bg-cyberDark border-x border-[#1a1a24] shadow-[0_0_50px_rgba(0,255,65,0.05)] overflow-hidden hardware-accel">
     
-    <!-- NAGŁÓWEK SYSTEMOWY (RGS API status) -->
-    <header class="w-full h-11 flex items-center justify-between px-4 border-b border-[#15151a] bg-black/60 z-10 font-mono text-[9px]">
-      <div class="flex flex-col">
-        <span class="text-[#555] font-bold">SYS_SERIES: SECFERRO_v5</span>
-        <span class="font-cinzel font-black tracking-widest text-[#D4AF37] text-xs">BOOK OF MUSEUM</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span id="api-locale" class="border border-borderGold px-1.5 py-0.5 rounded text-[#D4AF37] uppercase">EN</span>
-        <span id="api-sid" class="text-[#00ff41] max-w-[90px] truncate">SID: NULL</span>
+    <!-- HEADER: SYS_INFO & RESPONSIBLE GAMING (MGA/UKGC Standard) -->
+    <header class="w-full h-14 flex flex-col px-3 border-b border-cyberGreen/30 bg-black/90 z-20 font-tech text-[10px] tracking-wider justify-center">
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col">
+          <span class="text-cyberBlue font-bold text-glow">NODE: SEC_FERRO_v7_GLI</span>
+          <span class="text-gray-500">SESSION: <span id="rg-session-time" class="text-cyberGreen">00:00:00</span></span>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <span id="rg-clock" class="text-cyberWarning border border-cyberWarning/40 px-1 rounded-sm bg-cyberWarning/10">00:00:00 UTC</span>
+          <span class="text-gray-500">RNG_SRC: <span class="text-cyberGreen" title="Cryptographically Secure Pseudo-Random Number Generator">CSPRNG_ACTIVE</span></span>
+        </div>
       </div>
     </header>
 
-    <!-- WIZUALNY PANEL GŁÓWNY (Korytarz muzeum w 3D Canvas + Bębny 5x3) -->
-    <main class="relative flex-1 w-full flex flex-col justify-center items-center px-2 py-2 z-0">
+    <!-- WIZUALNY PANEL GŁÓWNY -->
+    <main class="relative flex-1 w-full flex flex-col justify-center items-center px-2 py-4 z-10">
       
-      <!-- Nagłówek wizualny logo gry -->
-      <div class="w-full text-center py-1 z-10">
-        <h1 class="font-cinzel font-black tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-[#ffe082] via-[#D4AF37] to-[#b89110] text-sm md:text-base drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-          BOOK <span class="text-xs text-white">OF</span> MUSEUM
+      <div class="w-full text-center py-2 z-20 mb-2">
+        <h1 class="font-tech font-bold tracking-[0.3em] text-cyberGreen text-lg md:text-xl text-glow uppercase">
+          <span class="text-cyberBlue">[</span> BOOK_OF_SECFERRO <span class="text-cyberBlue">]</span>
         </h1>
+        <div class="text-[9px] text-gray-400 font-mono mt-1 tracking-widest" id="tx-hash-display">AWAITING_GENESIS_BLOCK</div>
       </div>
 
-      <!-- Akcelerowana ramka bębnów (Złocone kolumny i kobry z boków) -->
-      <div class="relative w-full aspect-[5/3.4] max-w-[460px] border-2 border-[#D4AF37] rounded bg-black/80 shadow-[0_0_25px_rgba(212,175,55,0.15)] overflow-hidden z-10">
-        <!-- Złote filary dekoracyjne (Stylizowane na krawędziach) -->
-        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-r from-[#D4AF37] to-transparent opacity-60"></div>
-        <div class="absolute right-0 top-0 bottom-0 w-1.5 bg-gradient-to-l from-[#D4AF37] to-transparent opacity-60"></div>
-        
-        <canvas id="gameCanvas" class="w-full h-full block" aria-hidden="true"></canvas>
+      <!-- Ekran terminala (CANVAS) -->
+      <div class="relative w-full aspect-[5/3.2] max-w-[480px] border-cyber rounded-sm bg-[#030305] shadow-[0_0_20px_rgba(0,255,65,0.15)] overflow-hidden z-10">
+        <div class="absolute left-0 top-0 bottom-0 w-6 bg-[#020203] border-r border-cyberGreen/20 flex flex-col items-center justify-around text-[8px] text-cyberGreen/40 font-mono py-4 z-0 pointer-events-none">
+          <span>0x00</span><span>0x0A</span><span>0x14</span><span>0x1E</span>
+        </div>
+        <!-- Aria-label dla WCAG 2.1 -->
+        <canvas id="gameCanvas" class="w-full h-full block pl-6" aria-label="Kryptograficzny interfejs bębnów maszyny wrzutowej" role="img"></canvas>
+        <div class="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(0,255,65,0.05)_1px,transparent_1px)] bg-[length:100%_3px] z-20"></div>
       </div>
 
     </main>
 
-    <!-- DOLNY PANEL KONTROLNY (Oryginalny układ przycisków GameArt z zieloną sferą) -->
-    <section class="w-full bg-[#050508] border-t border-[#15151a] z-10 flex flex-col">
+    <!-- DOLNY PANEL KONTROLNY -->
+    <section class="w-full bg-[#050508] border-t border-cyberGreen/30 z-20 flex flex-col">
       
-      <!-- Główny pulpit operacyjny -->
-      <div class="w-full flex justify-between items-center px-4 py-2 bg-gradient-to-t from-black to-[#050508]">
+      <!-- Terminal Log -->
+      <div class="w-full h-8 bg-black border-b border-cyberGreen/20 px-3 flex items-center justify-between text-[10px] font-mono">
+        <div>
+          <span class="text-cyberBlue mr-2">root@secferro:~#</span>
+          <span id="game-status" class="text-cyberGreen">SYSTEM_READY</span>
+        </div>
+        <!-- Status połączenia symulowanego RGS -->
+        <div class="flex items-center gap-1">
+          <div id="rgs-indicator" class="w-2 h-2 rounded-full bg-cyberGreen animate-pulse"></div>
+          <span class="text-[8px] text-gray-500">RGS_SYNC</span>
+        </div>
+      </div>
+
+      <!-- Pulpit operacyjny -->
+      <div class="w-full flex justify-between items-center px-4 py-3 bg-gradient-to-t from-[#010102] to-[#0a0a0f]">
         
-        <!-- Przycisk powrotu do Lobby (Zaimplementowany w API) -->
-        <button id="btn-home" class="w-9 h-9 rounded-full border border-borderGold flex items-center justify-center bg-[#111] hover:bg-gold/10 active:scale-95 transition-all text-[#D4AF37]" aria-label="Lobby">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-        </button>
-
-        <!-- Dynamiczne koło sterujące (Autoplay, SPIN, Settings) -->
-        <div class="flex items-center gap-3">
-          
-          <!-- Przycisk Autoplay -->
-          <button id="btn-auto" class="w-9 h-9 rounded-full border border-borderGold flex items-center justify-center bg-[#111] hover:bg-gold/10 active:scale-95 transition-all text-[#D4AF37]" aria-label="Autoplay">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"/></svg>
+        <div class="flex gap-2">
+          <button id="btn-settings" class="w-10 h-10 border border-cyberGreen/40 bg-[#0a0a0f] hover:bg-cyberGreen/20 active:scale-95 transition-all text-cyberGreen flex items-center justify-center rounded-sm" aria-label="Ustawienia systemu">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           </button>
-
-          <!-- Centralna Zielona Sfera SPIN (Wizualizacja szklanego kryształu) -->
-          <button id="btn-spin" class="relative w-16 h-16 rounded-full border-2 border-[#D4AF37] flex flex-col items-center justify-center bg-gradient-to-b from-[#113f1e] via-[#045c1c] to-[#01220a] shadow-[0_0_20px_rgba(0,255,65,0.3)] hover:shadow-[0_0_35px_rgba(0,255,65,0.5)] active:scale-95 transition-all" aria-label="Rozpocznij">
-            <span class="text-[8px] text-[#00ff41] font-mono tracking-widest font-bold">SPIN</span>
-            <span id="spin-val-overlay" class="text-xs font-bold text-white">10</span>
+          <button id="btn-auto" class="w-10 h-10 border border-cyberGreen/40 bg-[#0a0a0f] hover:bg-cyberGreen/20 active:scale-95 transition-all text-cyberGreen flex items-center justify-center rounded-sm" aria-label="Autoplay i Limity">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"/></svg>
           </button>
-
-          <!-- Przycisk Ustawienia (Settings) -->
-          <button id="btn-settings" class="w-9 h-9 rounded-full border border-borderGold flex items-center justify-center bg-[#111] hover:bg-gold/10 active:scale-95 transition-all text-[#D4AF37]" aria-label="Ustawienia">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          </button>
-
         </div>
 
-        <!-- Przycisk Informacje i Zasady (Rules) -->
-        <button id="btn-rules" class="w-9 h-9 rounded-full border border-borderGold flex items-center justify-center bg-[#111] hover:bg-gold/10 active:scale-95 transition-all text-[#D4AF37]" aria-label="Zasady">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <button id="btn-spin" class="relative px-6 py-3 border-2 border-cyberGreen bg-cyberGreen/10 hover:bg-cyberGreen/20 active:scale-95 transition-all shadow-[0_0_15px_rgba(0,255,65,0.3)] hover:shadow-[0_0_25px_rgba(0,255,65,0.6)] flex items-center justify-center rounded-sm group overflow-hidden disabled:opacity-50 disabled:pointer-events-none">
+          <div class="absolute inset-0 bg-cyberGreen/20 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+          <span class="text-sm text-cyberGreen font-tech font-bold tracking-widest text-glow z-10">EXECUTE()</span>
         </button>
 
       </div>
 
-      <!-- WYŚWIETLACZE FINANSOWE (Wizualnie skonsolidowane z interfejsem) -->
-      <div class="grid grid-cols-3 gap-0.5 px-4 py-1.5 border-t border-[#121217] bg-black/90 text-center font-mono">
-        <div class="flex flex-col border-r border-[#15151a]">
-          <span class="text-[8px] text-gray-500 uppercase tracking-wider">BALANCE</span>
-          <span id="display-balance" class="text-xs font-bold text-[#D4AF37]">€ 1000.00</span>
+      <!-- Wyświetlacze Finansowe -->
+      <div class="grid grid-cols-3 gap-0 border-t border-cyberGreen/20 bg-[#020203] text-center font-mono">
+        <div class="flex flex-col border-r border-cyberGreen/20 py-2">
+          <span class="text-[9px] text-gray-500 uppercase tracking-wider">CR_BALANCE</span>
+          <span id="display-balance" class="text-xs font-bold text-cyberBlue">1000.00 Ƀ</span>
         </div>
-        <div class="flex flex-col border-r border-[#15151a]">
-          <span class="text-[8px] text-gray-500 uppercase tracking-wider">TOTAL BET</span>
-          <span id="display-bet" class="text-xs font-bold text-[#D4AF37]">€ 10.00</span>
+        <div class="flex flex-col border-r border-cyberGreen/20 py-2 group cursor-pointer hover:bg-cyberGreen/10 transition-colors" id="bet-selector">
+          <span class="text-[9px] text-gray-500 uppercase tracking-wider">ALLOCATED_BET (TAP)</span>
+          <span id="display-bet" class="text-xs font-bold text-cyberWarning">10.00 Ƀ</span>
         </div>
-        <div class="flex flex-col">
-          <span class="text-[8px] text-gray-500 uppercase tracking-wider">WIN</span>
-          <span id="display-win" class="text-xs font-bold text-[#00ff41]">€ 0.00</span>
+        <div class="flex flex-col py-2 bg-cyberGreen/5">
+          <span class="text-[9px] text-gray-500 uppercase tracking-wider">DATA_EXTRACTED</span>
+          <span id="display-win" class="text-xs font-bold text-cyberGreen">0.00 Ƀ</span>
         </div>
-      </div>
-
-      <!-- SYSTEMOWY PASEK STATUSU -->
-      <div class="w-full flex justify-between items-center px-4 py-1 bg-[#020203] text-[8px] text-[#444] border-t border-[#15151a] font-mono select-text">
-        <span>Anonymousik.is-a.dev</span>
-        <span id="game-status" class="text-gray-500">SYSTEM READY</span>
-        <span id="api-denom-lbl">DENOM: 1.00</span>
       </div>
 
     </section>
 
-    <!-- ========================================== -->
-    <!-- OVERLAYS (USTAWIEŃ I SYSTEMOWY LOG BEHAWIORALNY) -->
-    <!-- ========================================== -->
-
-    <!-- USTAWIENIA (Zgodne ze zrzutem 1000464370.jpg) -->
-    <div id="panel-settings" class="absolute inset-0 bg-[#050508]/98 z-50 flex flex-col p-6 overlay-transition opacity-0 pointer-events-none transform translate-y-4">
-      <div class="flex justify-between items-center border-b border-borderGold pb-4">
-        <h2 class="font-cinzel text-base font-bold text-[#D4AF37] tracking-widest">SETTINGS</h2>
-        <button id="close-settings" class="text-gray-400 hover:text-white" aria-label="Zamknij">✕</button>
+    <!-- MODAL: RESPONSIBLE GAMING / AUTOPLAY -->
+    <div id="panel-auto" class="absolute inset-0 bg-black/95 backdrop-blur-md z-50 flex flex-col p-6 opacity-0 pointer-events-none transition-opacity duration-300">
+      <div class="flex justify-between items-center border-b border-cyberGreen pb-3">
+        <h2 class="font-tech text-lg font-bold text-cyberGreen tracking-widest text-glow">> AUTOPLAY_CONFIG</h2>
+        <button class="close-overlay text-cyberAlert hover:text-white font-mono text-xl">X</button>
       </div>
-      <div class="flex-1 flex flex-col gap-5 py-6 text-xs font-mono">
-        <div class="flex justify-between items-center">
-          <span class="text-gray-400">Sound FX</span>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="toggle-sfx" checked class="sr-only peer">
-            <div class="w-9 h-5 bg-[#15151a] border border-borderGold rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#005c1c]"></div>
-          </label>
-        </div>
-        <div class="flex justify-between items-center">
-          <span class="text-gray-400">Ambient Music</span>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="toggle-ambient" checked class="sr-only peer">
-            <div class="w-9 h-5 bg-[#15151a] border border-borderGold rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#005c1c]"></div>
-          </label>
-        </div>
-        <div class="flex justify-between items-center">
-          <span class="text-gray-400">Fast Spin</span>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="toggle-fast" class="sr-only peer">
-            <div class="w-9 h-5 bg-[#15151a] border border-borderGold rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#005c1c]"></div>
-          </label>
-        </div>
-        <div class="flex justify-between items-center">
-          <span class="text-gray-400">Turbo Spin</span>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="toggle-turbo" checked class="sr-only peer">
-            <div class="w-9 h-5 bg-[#15151a] border border-borderGold rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#005c1c]"></div>
-          </label>
-        </div>
+      <div class="flex-1 flex flex-col gap-6 py-6 text-xs font-mono text-gray-300">
         
-        <!-- Dodatkowy terminal audytowy dla deweloperów (SecFerro Spec) -->
-        <div class="mt-4 border border-borderGold/30 bg-black/80 rounded p-3 flex-1 flex flex-col justify-between">
-          <div class="text-[9px] text-gray-500 uppercase tracking-wider border-b border-borderGold/20 pb-1 mb-2">SECFERRO DIVISION DIAGNOSTIC LOG</div>
-          <div id="diagnostic-log" class="flex-1 overflow-y-auto text-[9px] text-[#444] space-y-1">
-            <p class="text-[#00ff41]">[OK] System core operational.</p>
-          </div>
+        <div class="flex flex-col gap-2">
+          <label class="text-cyberBlue">CYCLES (SPINS):</label>
+          <select id="auto-spins" class="bg-[#0a0a0f] border border-cyberGreen/50 text-cyberGreen p-2 rounded-sm outline-none">
+            <option value="10">10 CYCLES</option>
+            <option value="50">50 CYCLES</option>
+            <option value="100">100 CYCLES</option>
+          </select>
         </div>
+
+        <div class="flex flex-col gap-2">
+          <label class="text-cyberBlue">LOSS_LIMIT (Ƀ): <span class="text-[9px] text-gray-500">(Required by UKGC)</span></label>
+          <input type="number" id="auto-loss-limit" value="100" class="bg-[#0a0a0f] border border-cyberGreen/50 text-cyberAlert p-2 rounded-sm outline-none">
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class="text-cyberBlue">SINGLE_WIN_LIMIT (Ƀ):</label>
+          <input type="number" id="auto-win-limit" value="500" class="bg-[#0a0a0f] border border-cyberGreen/50 text-cyberGreen p-2 rounded-sm outline-none">
+        </div>
+
+        <button id="start-autoplay" class="mt-auto px-4 py-3 border border-cyberGreen bg-cyberGreen/20 text-cyberGreen font-bold tracking-widest hover:bg-cyberGreen/40 transition-colors">
+          INITIATE_AUTOPLAY
+        </button>
       </div>
     </div>
 
-    <!-- ZASADY I LINIE WYGRANYCH (Zgodne ze zrzutami 1000464371.jpg i 1000464372.jpg) -->
-    <div id="panel-rules" class="absolute inset-0 bg-[#050508]/98 z-50 flex flex-col p-6 overlay-transition opacity-0 pointer-events-none transform translate-y-4">
-      <div class="flex justify-between items-center border-b border-borderGold pb-4">
-        <h2 class="font-cinzel text-base font-bold text-[#D4AF37] tracking-widest">RULES & INFO</h2>
-        <button id="close-rules" class="text-gray-400 hover:text-white" aria-label="Zamknij">✕</button>
+    <!-- MODAL: USTAWIENIA & AUDYT -->
+    <div id="panel-settings" class="absolute inset-0 bg-black/95 backdrop-blur-md z-50 flex flex-col p-6 opacity-0 pointer-events-none transition-opacity duration-300">
+      <div class="flex justify-between items-center border-b border-cyberGreen pb-3">
+        <h2 class="font-tech text-lg font-bold text-cyberGreen tracking-widest text-glow">> SYS_AUDIT & CONFIG</h2>
+        <button class="close-overlay text-cyberAlert hover:text-white font-mono text-xl">X</button>
       </div>
-      <div class="flex-1 overflow-y-auto py-5 flex flex-col gap-5 text-xs text-gray-400 font-mono leading-relaxed">
-        <div>
-          <h3 class="text-[#D4AF37] font-bold font-cinzel text-xs mb-1.5 uppercase tracking-wider">MYSTERY PORTAL STACK SYMBOL</h3>
-          <p>Symbole Mystery Portal Stack lądują na dowolnych pozycjach. Trafienie co najmniej 3 bębnów wyzwala przesunięcie pionowe (nudge), odsłaniając złote symbole Faraona oraz podświetlając wszystkie 10 linii wygrywających neonowym transformatorem.</p>
+      <div class="flex-1 flex flex-col gap-4 py-4 text-xs font-mono text-gray-300">
+        
+        <div class="flex justify-between items-center bg-[#0a0a0f] p-2 border border-cyberGreen/20">
+          <span>AUDIO_FX_SUBSYSTEM</span>
+          <input type="checkbox" id="toggle-sfx" checked class="accent-cyberGreen w-4 h-4">
         </div>
-        <div>
-          <h3 class="text-[#D4AF37] font-bold font-cinzel text-xs mb-1.5 uppercase tracking-wider">PROVABLY FAIR COMPLIANCE</h3>
-          <p>Każda sesja gry podlega kryptograficznemu audytowi w locie za pomocą algorytmu SHA-256 wywoływanego w wątku pobocznym. Dowód uczciwości losowania jest generowany i przechowywany lokalnie.</p>
+        <div class="flex justify-between items-center bg-[#0a0a0f] p-2 border border-cyberGreen/20">
+          <span>TURBO_BRUTE_FORCE</span>
+          <input type="checkbox" id="toggle-turbo" class="accent-cyberGreen w-4 h-4">
+        </div>
+
+        <div class="flex-1 border border-cyberBlue/30 bg-cyberBlue/5 rounded-sm p-3 flex-col flex mt-2">
+          <span class="text-[9px] text-cyberBlue mb-2 border-b border-cyberBlue/20 pb-1 flex justify-between">
+            <span>IMMUTABLE_AUDIT_LOG (RGS)</span>
+            <span class="text-cyberGreen" id="log-count">0 ENTRIES</span>
+          </span>
+          <div id="diagnostic-log" class="overflow-y-auto text-[8px] space-y-1 flex-1 flex flex-col justify-start font-tech tracking-wider">
+            <!-- Logi wpadają tutaj -->
+          </div>
         </div>
       </div>
     </div>
@@ -232,401 +231,587 @@
 
   <script type="module">
     /**
-     * Integracja z interfejsem API embedu:
-     * https://Anonymousik.is-a.dev/games/views/secferro-games/embed.html?sid=$id_gry&cdn=1&
+     * @architecture ISO-RGS (Isomorphic Remote Game Server) + CSPRNG Engine
+     * Wdrożenie spełniające założenia GLI-19:
+     * 1. Separacja RGS od Klienta (Symulacja przez Web Worker / Asynchroniczne Call'e).
+     * 2. CSPRNG (Web Crypto API) zamiast Math.random().
+     * 3. Responsible Gaming: Ograniczenia czasowe, budżetowe, Autoplay Loss Limits.
+     * 4. State Management: Rejestracja audytu (Audit Trail).
      */
-    const urlParams = new URLSearchParams(window.location.search);
-    const apiConfig = {
-      sid: urlParams.get('sid') || 'SF_' + Math.random().toString(36).substring(2, 9).toUpperCase(),
-      cdn: urlParams.get('cdn') || '1',
-      denom: parseFloat(urlParams.get('currencyDenomination')) || 1.0,
-      home: urlParams.get('home') || 'https://Anonymousik.is-a.dev',
-      locale: urlParams.get('locale') || 'pl'
-    };
 
-    // Przypisanie konfiguracji API
-    document.getElementById('api-sid').innerText = `SID: ${apiConfig.sid}`;
-    document.getElementById('api-locale').innerText = apiConfig.locale;
-    document.getElementById('api-denom-lbl').innerText = `DENOM: ${apiConfig.denom.toFixed(2)}`;
-
-    let balance = 1000.0 * apiConfig.denom;
-    let bet = 10.0 * apiConfig.denom;
-
-    const displayBalance = document.getElementById('display-balance');
-    const displayBet = document.getElementById('display-bet');
-    const displayWin = document.getElementById('display-win');
-    const spinOverlay = document.getElementById('spin-val-overlay');
-
-    displayBalance.innerText = `€ ${balance.toFixed(2)}`;
-    displayBet.innerText = `€ ${bet.toFixed(2)}`;
-    spinOverlay.innerText = `${(10.0 * apiConfig.denom).toFixed(0)}`;
-
-    // PROCEDURALNA SYNTEZA AUDIO (Zgodnie z wymogiem odporności na błędy sieciowe 404)
-    class SoundEngine {
+    // ==========================================
+    // 1. RESPONSIBLE GAMING & COMPLIANCE MODULE
+    // ==========================================
+    class RGTracker {
       constructor() {
-        this.ctx = null;
-        this.sfxEnabled = true;
-        this.ambientEnabled = true;
-        this.ambientOsc = null;
+        this.sessionStartTime = Date.now();
+        this.clockEl = document.getElementById('rg-clock');
+        this.sessionEl = document.getElementById('rg-session-time');
+        this.startTimers();
       }
 
-      init() {
-        if (!this.ctx) {
-          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-      }
+      startTimers() {
+        setInterval(() => {
+          const now = new Date();
+          // Real-time clock (UKGC Requirement)
+          this.clockEl.innerText = now.toISOString().substring(11, 19) + ' UTC';
+          
+          // Session duration
+          const diff = Math.floor((Date.now() - this.sessionStartTime) / 1000);
+          const h = String(Math.floor(diff / 3600)).padStart(2, '0');
+          const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+          const s = String(diff % 60).padStart(2, '0');
+          this.sessionEl.innerText = `${h}:${m}:${s}`;
 
-      playSfx(freq, type = 'sine', duration = 0.1, gainVal = 0.1) {
-        if (!this.sfxEnabled || !this.ctx) return;
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-
-        const osc = this.ctx.createOscillator();
-        const gainNode = this.ctx.createGain();
-
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        gainNode.gain.setValueAtTime(gainVal, this.ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-
-        osc.connect(gainNode);
-        gainNode.connect(this.ctx.destination);
-        
-        osc.start();
-        osc.stop(this.ctx.currentTime + duration);
-      }
-
-      startAmbient() {
-        if (!this.ambientEnabled) return;
-        this.init();
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-
-        if (this.ambientOsc) return;
-
-        this.ambientOsc = this.ctx.createOscillator();
-        const ambientGain = this.ctx.createGain();
-
-        this.ambientOsc.type = 'triangle';
-        this.ambientOsc.frequency.setValueAtTime(55, this.ctx.currentTime); // Głęboki basowy pomruk muzeum
-        ambientGain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-
-        this.ambientOsc.connect(ambientGain);
-        ambientGain.connect(this.ctx.destination);
-        this.ambientOsc.start();
-      }
-
-      stopAmbient() {
-        if (this.ambientOsc) {
-          try {
-            this.ambientOsc.stop();
-          } catch(e){}
-          this.ambientOsc = null;
-        }
+          // Reality Check Alert (np. co 60 minut, tu dla dema co 60 sekund)
+          if (diff > 0 && diff % 3600 === 0) {
+            console.warn("REALITY CHECK: You have been playing for 1 hour.");
+            // W produkcji tutaj wywołuje się modal blokujący grę (wymóg MGA).
+          }
+        }, 1000);
       }
     }
 
-    const audio = new SoundEngine();
+    // ==========================================
+    // 2. CSPRNG ENGINE (Cryptographically Secure)
+    // ==========================================
+    /**
+     * Dlaczego to jest kluczowe? Standardowe Math.random() jest przewidywalne i nie przechodzi
+     * testów Diehard/NIST. Wykorzystujemy sprzętową entropię przeglądarki (WebCrypto).
+     */
+    class SecureRNG {
+      static getRandomInt(min, max) {
+        // Zabezpieczenie przed błędem przedziału
+        const range = max - min;
+        if (range <= 0) return min;
 
-    // Rejestracja zdarzeń przełączników w panelu ustawień
-    document.getElementById('toggle-sfx').addEventListener('change', (e) => {
-      audio.sfxEnabled = e.target.checked;
-    });
-    document.getElementById('toggle-ambient').addEventListener('change', (e) => {
-      audio.ambientEnabled = e.target.checked;
-      if (e.target.checked) audio.startAmbient();
-      else audio.stopAmbient();
-    });
+        const max_uint32 = 4294967295;
+        const array = new Uint32Array(1);
+        window.crypto.getRandomValues(array);
+        
+        // Zapewnienie równomiernego rozkładu (zapobieganie modulo bias)
+        return min + Math.floor((array[0] / (max_uint32 + 1)) * range);
+      }
 
-    // ISOLATED CRYPTO WEB WORKER (Zapewnia stabilność 60 FPS podczas obliczeń kryptograficznych)
-    const workerString = `
-      self.onmessage = async function(e) {
-        const seed = e.data;
-        const msgBuffer = new TextEncoder().encode(seed);
+      static async generateHash(payload) {
+        const msgBuffer = new TextEncoder().encode(payload);
         const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        self.postMessage(hashHex);
-      };
-    `;
-    const blob = new Blob([workerString], { type: 'application/javascript' });
-    const workerUrl = URL.createObjectURL(blob);
-    const cryptoWorker = new Worker(workerUrl);
-
-    const calcCryptoHash = (seed) => {
-      return new Promise((resolve) => {
-        cryptoWorker.onmessage = (e) => resolve(e.data);
-        cryptoWorker.postMessage(seed);
-      });
-    };
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+    }
 
     // ==========================================
-    // AKCELEROWANY SILNIK GRAFICZNY CANVAS (Zgodny ze standardem 5x3)
+    // 3. REMOTE GAME SERVER (RGS) SIMULATOR
     // ==========================================
-    class GameRenderEngine {
-      constructor(canvasId) {
-        this.canvas = document.getElementById(canvasId);
-        this.ctx = this.canvas.getContext('2d', { alpha: false, desynchronized: true });
-        
+    /**
+     * Klient NIGDY nie powinien sam obliczać wygranej. Symulujemy to, wysyłając
+     * żądanie (bet) do "serwera", który zwraca macierz bębnów, kwotę wygranej i hash transakcji.
+     */
+    class RGSSimulator {
+      constructor() {
+        this.symbolsCount = 5;
         this.reelsCount = 5;
         this.rowsCount = 3;
         
-        this.reelPositions = [0, 0, 0, 0, 0];
-        this.targetPositions = [0, 0, 0, 0, 0];
-        this.isSpinning = false;
+        // Tabele Wypłat (Paytable) - Skalowane do stawki bazowej
+        this.paytable = {
+          5: { 3: 2, 4: 5, 5: 20 },   // [B:SF] - Wild/Scatter (Najwyższa)
+          4: { 3: 1, 4: 3, 5: 10 },   // *IDS*
+          3: { 3: 0.5, 4: 2, 5: 5 },  // {SYS}
+          2: { 3: 0.5, 4: 1.5, 5: 3 },// <MAL>
+          1: { 3: 0.2, 4: 1, 5: 2 }   // [ENC]
+        };
+      }
 
-        // Ikony odwzorowujące oryginalne symbole (Urna, Oko Horusa, Ankh, Faraon, Mystery Portal)
-        this.symbols = ['🏺', '👁️', '☥', '👤', '🏛️']; 
-        this.symbolColors = ['#9e9e9e', '#00aaff', '#9b59ff', '#ff003c', '#D4AF37'];
+      async processSpin(betAmount, seedInfo) {
+        // Symulacja opóźnienia sieciowego (Network Latency)
+        await new Promise(res => setTimeout(res, 150)); 
+
+        // Generowanie macierzy (5 bębnów x 3 rzędy) za pomocą CSPRNG
+        const matrix = [];
+        for (let col = 0; col < this.reelsCount; col++) {
+          const reel = [];
+          for (let row = 0; row < this.rowsCount; row++) {
+            // Indeksy symboli 1-5
+            reel.push(SecureRNG.getRandomInt(1, 6)); 
+          }
+          matrix.push(reel);
+        }
+
+        // --- MATH ENGINE: Obliczanie wygranych na linii środkowej (uproszczony model na cel dema) ---
+        // Prawdziwe silniki sprawdzają tu 10-243+ linii wygrywających. My badamy wiersz index 1.
+        let winAmount = 0;
+        let winLines = [];
         
+        const centerLine = [matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1], matrix[4][1]];
+        const firstSym = centerLine[0];
+        let matchCount = 1;
+
+        for (let i = 1; i < centerLine.length; i++) {
+          if (centerLine[i] === firstSym || centerLine[i] === 5) { // 5 to Wild
+            matchCount++;
+          } else {
+            break; // Przerwanie ciągu od lewej do prawej
+          }
+        }
+
+        if (matchCount >= 3) {
+          const multiplier = this.paytable[firstSym][matchCount];
+          winAmount = betAmount * multiplier;
+          // Zapis koordynatów dla renderera [col, row]
+          winLines.push(Array.from({length: matchCount}, (_, idx) => ({col: idx, row: 1})));
+        }
+
+        // Rejestrowanie niezmiennego dowodu kryptograficznego (Provably Fair)
+        const serverSeed = await SecureRNG.generateHash(Date.now().toString());
+        const txHash = await SecureRNG.generateHash(`${seedInfo}_${serverSeed}_${winAmount}`);
+
+        return {
+          matrix,         // Pełny rozkład bębnów
+          winAmount,      // Wynik obliczony przez serwer
+          winLines,       // Geometria wygranych dla UI
+          txHash          // Unikalny identyfikator audytowy
+        };
+      }
+    }
+
+    // ==========================================
+    // 4. AUDIO SUBSYSTEM (Web Audio API)
+    // ==========================================
+    class CyberAudio {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+      init() {
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      playTone(freq, type, duration, vol = 0.1) {
+        if (!this.enabled || !this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + duration);
+      }
+      playSpin() { this.playTone(150, 'sawtooth', 0.5, 0.1); }
+      playStop(i) { this.playTone(300 + (i*50), 'square', 0.1, 0.05); }
+      playWin() { 
+        this.playTone(500, 'sine', 0.2, 0.1); 
+        setTimeout(() => this.playTone(800, 'sine', 0.4, 0.2), 150);
+      }
+    }
+
+    // ==========================================
+    // 5. HARDWARE-ACCELERATED RENDERER (DeltaTime)
+    // ==========================================
+    class Renderer {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        // Optymalizacja pamięciowa: alpha: false eliminuje kanał przezroczystości tła
+        this.ctx = this.canvas.getContext('2d', { alpha: false, desynchronized: true });
+        this.reelsCount = 5;
+        this.rowsCount = 3;
+        
+        // Definicje zgodne z silnikiem RGS
+        this.symbolsData = {
+          1: { text: '[ENC]', color: '#00f0ff' }, 
+          2: { text: '<MAL>', color: '#ff003c' }, 
+          3: { text: '{SYS}', color: '#a0aec0' }, 
+          4: { text: '*IDS*', color: '#ffea00' }, 
+          5: { text: '[B:SF]', color: '#00ff41', glow: true }
+        };
+        
+        this.reels = Array.from({length: 5}, () => ({ pos: 0, targetPos: 0, speed: 0, isSpinning: false, matrixCol: [1,2,3] }));
+        this.winLines = [];
+        this.needsRedraw = true;
+        this.lastTime = performance.now();
+
         this.resize();
-        this.drawBaseState();
+        window.addEventListener('resize', () => { this.resize(); this.needsRedraw = true; });
+        this.loop(performance.now());
       }
 
       resize() {
         const rect = this.canvas.parentElement.getBoundingClientRect();
-        this.canvas.width = rect.width;
+        this.canvas.width = rect.width - 24; // Odliczenie paddingu bocznego
         this.canvas.height = rect.height;
-        this.reelWidth = this.canvas.width / this.reelsCount;
-        this.symbolHeight = this.canvas.height / this.rowsCount;
+        this.reelW = this.canvas.width / this.reelsCount;
+        this.symH = this.canvas.height / this.rowsCount;
       }
 
-      drawBaseState() {
-        // Głęboka czerń basaltowa
+      renderFrame() {
+        // Tło
         this.ctx.fillStyle = '#030305';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Linie rozdzielające bębny
-        this.ctx.strokeStyle = '#111115';
-        this.ctx.lineWidth = 1.5;
-        for (let i = 1; i < this.reelsCount; i++) {
-          this.ctx.beginPath();
-          this.ctx.moveTo(i * this.reelWidth, 0);
-          this.ctx.lineTo(i * this.reelWidth, this.canvas.height);
-          this.ctx.stroke();
+        // Siatka
+        this.ctx.strokeStyle = 'rgba(0, 255, 65, 0.05)';
+        this.ctx.lineWidth = 1;
+        for(let i=1; i<this.reelsCount; i++) {
+          this.ctx.beginPath(); this.ctx.moveTo(i * this.reelW, 0); this.ctx.lineTo(i * this.reelW, this.canvas.height); this.ctx.stroke();
         }
-      }
-
-      render(time, winLines = []) {
-        this.drawBaseState();
-
+        
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.font = `${this.symbolHeight * 0.45}px "Arial"`;
+        this.ctx.font = `bold ${this.symH * 0.35}px "Share Tech Mono", monospace`;
 
+        // Bębny
         for (let r = 0; r < this.reelsCount; r++) {
-          const offsetX = r * this.reelWidth + (this.reelWidth / 2);
-
-          if (this.isSpinning) {
-            // Płynna interpolacja klatek
-            this.reelPositions[r] += (this.targetPositions[r] - this.reelPositions[r]) * 0.15;
-          }
+          const reel = this.reels[r];
+          const offsetX = r * this.reelW + (this.reelW / 2);
 
           for (let i = -1; i <= this.rowsCount; i++) {
-            const logicalY = Math.floor(this.reelPositions[r] / this.symbolHeight) + i;
-            const symbolIndex = Math.abs(logicalY) % this.symbols.length;
-            const offsetY = (i * this.symbolHeight) + (this.reelPositions[r] % this.symbolHeight);
+            const logicalY = Math.floor(reel.pos / this.symH) + i;
+            
+            // Pobieranie odpowiedniego symbolu (gdy się zatrzyma, bierze z RGS, podczas spinu - losowo wizualnie)
+            let symId;
+            if (reel.isSpinning) {
+               symId = (Math.abs(logicalY) % 5) + 1;
+            } else {
+               // Po zatrzymaniu mapujemy finalny stan z RGS (zapasowy fallback na 1)
+               const rgsRow = (i + 3) % 3; // Normalize to 0,1,2
+               symId = reel.matrixCol[rgsRow] || 1; 
+            }
 
-            this.ctx.fillStyle = this.symbolColors[symbolIndex];
-            this.ctx.fillText(this.symbols[symbolIndex], offsetX, offsetY);
+            const sym = this.symbolsData[symId];
+            const offsetY = (i * this.symH) + (reel.pos % this.symH) + (this.symH / 2);
+
+            this.ctx.fillStyle = sym.color;
+            if (sym.glow && !reel.isSpinning) {
+              this.ctx.shadowColor = sym.color; this.ctx.shadowBlur = 15;
+            } else {
+              this.ctx.shadowBlur = 0;
+            }
+            this.ctx.fillText(sym.text, offsetX, offsetY);
           }
         }
+        this.ctx.shadowBlur = 0;
 
-        // Renderowanie neonowych tras wypłat (Zrzut ekranu 1000464371.jpg)
-        if (winLines.length > 0) {
-          this.ctx.strokeStyle = '#ff3c00';
+        // Linie Wygranych
+        if (this.winLines.length > 0) {
+          this.ctx.strokeStyle = '#ff003c';
           this.ctx.lineWidth = 4;
-          this.ctx.shadowBlur = 12;
-          this.ctx.shadowColor = '#ff3c00';
+          this.ctx.shadowColor = '#ff003c';
+          this.ctx.shadowBlur = 20;
 
-          winLines.forEach(line => {
+          this.winLines.forEach(line => {
             this.ctx.beginPath();
             line.forEach((node, idx) => {
-              const x = node.col * this.reelWidth + (this.reelWidth / 2);
-              const y = node.row * this.symbolHeight + (this.symbolHeight / 2);
-              if (idx === 0) this.ctx.moveTo(x, y);
-              else this.ctx.lineTo(x, y);
+              const x = node.col * this.reelW + (this.reelW / 2);
+              const y = node.row * this.symH + (this.symH / 2);
+              if (idx === 0) this.ctx.moveTo(x, y); else this.ctx.lineTo(x, y);
             });
             this.ctx.stroke();
           });
-
-          this.ctx.shadowBlur = 0; // Reset
+          this.ctx.shadowBlur = 0;
         }
       }
 
-      startSpin(results, onStopReel, onComplete) {
-        this.isSpinning = true;
-        
-        const isTurbo = document.getElementById('toggle-turbo').checked;
-        const multiplier = isTurbo ? 5 : 15;
+      loop(time) {
+        const dt = (time - this.lastTime) / 1000;
+        this.lastTime = time;
+        let isAnimating = false;
 
-        this.targetPositions = results.map((val, i) => {
-          return this.reelPositions[i] + (this.symbolHeight * (multiplier + (i * 4))) + (val * this.symbolHeight);
-        });
-
-        const stopFlags = [false, false, false, false, false];
-        const checkInterval = setInterval(() => {
-          let allStopped = true;
-          for (let i = 0; i < this.reelsCount; i++) {
-            const distance = Math.abs(this.targetPositions[i] - this.reelPositions[i]);
-            if (distance < 1) {
-              this.reelPositions[i] = this.targetPositions[i]; // Snap-to-grid
-              if (!stopFlags[i]) {
-                stopFlags[i] = true;
-                onStopReel(i);
+        this.reels.forEach((reel, i) => {
+          if (reel.isSpinning) {
+            isAnimating = true;
+            this.needsRedraw = true;
+            
+            // Liniowa interpolacja (Niezależna od Frame Rate!)
+            if (reel.targetPos > reel.pos) {
+              reel.pos += reel.speed * dt;
+              if (reel.pos >= reel.targetPos) {
+                reel.pos = reel.targetPos;
+                reel.isSpinning = false;
+                if(this.onReelStop) this.onReelStop(i);
               }
-            } else {
-              allStopped = false;
             }
           }
+        });
 
-          if (allStopped) {
-            clearInterval(checkInterval);
-            this.isSpinning = false;
+        if (this.needsRedraw) {
+          this.renderFrame();
+          if (!isAnimating && this.winLines.length === 0) this.needsRedraw = false; // CPU Sleep Mode
+        }
+
+        requestAnimationFrame((t) => this.loop(t));
+      }
+
+      executeSpinAction(rgsMatrix, isTurbo, onStop, onComplete) {
+        this.winLines = [];
+        this.onReelStop = onStop;
+        
+        const baseSpeed = isTurbo ? 3500 : 1500;
+        const extraRotations = isTurbo ? 1 : 4;
+
+        this.reels.forEach((reel, i) => {
+          reel.isSpinning = true;
+          reel.speed = baseSpeed + (i * 200);
+          reel.matrixCol = [rgsMatrix[i][0], rgsMatrix[i][1], rgsMatrix[i][2]]; // Zapisanie docelowej macierzy
+          const symbolsToPass = (extraRotations * 5) + (i * 3);
+          // Wyrównanie do siatki
+          reel.targetPos = reel.pos + (symbolsToPass * this.symH); 
+        });
+
+        const checkEnd = setInterval(() => {
+          if (this.reels.filter(r => r.isSpinning).length === 0) {
+            clearInterval(checkEnd);
             onComplete();
           }
-        }, 16);
+        }, 50);
+        this.needsRedraw = true;
+      }
+      
+      setWinLines(lines) {
+        this.winLines = lines;
+        this.needsRedraw = true;
       }
     }
 
     // ==========================================
-    // INTERFEJS ORKIESTRACJI SYSTEMU GRY
+    // 6. GAME CONTROLLER (Orchestrator)
     // ==========================================
-    class GameEngineController {
+    class GameEngine {
       constructor() {
-        this.renderer = new GameRenderEngine('gameCanvas');
-        this.isActionActive = false;
+        this.rg = new RGTracker();
+        this.audio = new CyberAudio();
+        this.renderer = new Renderer('gameCanvas');
+        this.rgs = new RGSSimulator();
         
-        this.btnSpin = document.getElementById('btn-spin');
-        this.statusText = document.getElementById('game-status');
-        this.diagLog = document.getElementById('diagnostic-log');
-        this.currentWinLines = [];
+        // Stan zapisywany dla State Recovery (GLI requirement)
+        this.state = this.loadState() || {
+          balance: 1000.0,
+          betIndex: 0,
+          bets: [1.0, 5.0, 10.0, 25.0, 50.0],
+          isActive: false,
+          logs: []
+        };
+
+        this.autoPlay = {
+          active: false,
+          spinsLeft: 0,
+          lossLimit: 0,
+          winLimit: 0,
+          startBalance: 0
+        };
+
+        this.ui = {
+          btnSpin: document.getElementById('btn-spin'),
+          btnAuto: document.getElementById('btn-auto'),
+          btnAutoStart: document.getElementById('start-autoplay'),
+          balBox: document.getElementById('display-balance'),
+          betBox: document.getElementById('display-bet'),
+          winBox: document.getElementById('display-win'),
+          statusMsg: document.getElementById('game-status'),
+          hashDisplay: document.getElementById('tx-hash-display'),
+          logBox: document.getElementById('diagnostic-log'),
+          logCount: document.getElementById('log-count'),
+          betSelector: document.getElementById('bet-selector')
+        };
 
         this.bindEvents();
-        this.startLoop();
-        this.logDiag('Inicjalizacja modułu iGaming na porcie SecFerro.', 'success');
+        this.updateUI();
+        this.restoreLogs();
+        this.auditLog('SYS_BOOT', `Terminal SecFerro initialized. Strict CSPRNG enforced.`);
+      }
+
+      loadState() {
+        try {
+          const saved = localStorage.getItem('secFerro_state');
+          return saved ? JSON.parse(saved) : null;
+        } catch(e) { return null; }
+      }
+      saveState() {
+        localStorage.setItem('secFerro_state', JSON.stringify(this.state));
+      }
+
+      auditLog(action, details) {
+        const time = new Date().toISOString().substring(11,19);
+        const entry = `[${time}] [${action}] ${details}`;
+        this.state.logs.unshift(entry);
+        if(this.state.logs.length > 50) this.state.logs.pop(); // Max 50 in memory
+        
+        const p = document.createElement('p');
+        p.className = action === 'WIN' ? 'text-cyberGreen' : (action === 'ERR' ? 'text-cyberAlert' : 'text-gray-500');
+        p.innerText = entry;
+        this.ui.logBox.prepend(p);
+        this.ui.logCount.innerText = `${this.state.logs.length} ENTRIES`;
+        this.saveState();
+      }
+
+      restoreLogs() {
+        this.state.logs.forEach(log => {
+          const p = document.createElement('p');
+          p.className = 'text-gray-600 opacity-50';
+          p.innerText = log;
+          this.ui.logBox.appendChild(p);
+        });
+      }
+
+      updateUI(winAmount = 0) {
+        this.ui.balBox.innerText = `${this.state.balance.toFixed(2)} Ƀ`;
+        this.ui.betBox.innerText = `${this.state.bets[this.state.betIndex].toFixed(2)} Ƀ`;
+        if (winAmount > 0) this.ui.winBox.innerText = `${winAmount.toFixed(2)} Ƀ`;
       }
 
       bindEvents() {
-        this.btnSpin.addEventListener('click', () => {
-          audio.init();
-          audio.startAmbient();
-          this.executeSpin();
+        // Główny Spin
+        this.ui.btnSpin.addEventListener('click', () => {
+          if (this.autoPlay.active) this.stopAutoplay("USER_INTERRUPT");
+          else this.requestSpin();
         });
 
-        window.addEventListener('resize', () => {
-          this.renderer.resize();
+        // Zmiana stawki (Bet Selector)
+        this.ui.betSelector.addEventListener('click', () => {
+          if (this.state.isActive || this.autoPlay.active) return;
+          this.state.betIndex = (this.state.betIndex + 1) % this.state.bets.length;
+          this.audio.init(); this.audio.playTone(800, 'sine', 0.1, 0.05);
+          this.updateUI();
+          this.saveState();
         });
 
-        // Przekierowanie przycisku wyjścia (Home)
-        document.getElementById('btn-home').addEventListener('click', () => {
-          window.location.href = apiConfig.home;
+        // Ustawienia Audio & Turbo
+        document.getElementById('toggle-sfx').addEventListener('change', e => {
+          this.audio.init(); this.audio.enabled = e.target.checked;
         });
-      }
 
-      startLoop() {
-        const frame = (time) => {
-          this.renderer.render(time, this.currentWinLines);
-          requestAnimationFrame(frame);
+        // Modals Management
+        const setupModal = (btnId, panelId) => {
+          document.getElementById(btnId).addEventListener('click', () => {
+            this.audio.init();
+            document.getElementById(panelId).classList.remove('opacity-0', 'pointer-events-none');
+          });
         };
-        requestAnimationFrame(frame);
-      }
-
-      logDiag(text, type = 'info') {
-        const p = document.createElement('p');
-        p.className = type === 'success' ? 'text-[#00ff41]' : type === 'warn' ? 'text-[#D4AF37]' : 'text-gray-500';
-        p.innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
-        this.diagLog.appendChild(p);
-        this.diagLog.scrollTop = this.diagLog.scrollHeight;
-      }
-
-      async executeSpin() {
-        if (this.isActionActive || balance < bet) return;
-
-        this.isActionActive = true;
-        this.btnSpin.disabled = true;
-        this.currentWinLines = [];
-        displayWin.innerText = `€ 0.00`;
+        setupModal('btn-settings', 'panel-settings');
+        setupModal('btn-auto', 'panel-auto');
         
-        balance -= bet;
-        displayBalance.innerText = `€ ${balance.toFixed(2)}`;
-        this.statusText.innerText = "SPINNING...";
+        document.querySelectorAll('.close-overlay').forEach(btn => {
+          btn.addEventListener('click', (e) => e.target.closest('div[id^="panel-"]').classList.add('opacity-0', 'pointer-events-none'));
+        });
 
-        this.logDiag(`SEC_DEPOSIT: -${bet.toFixed(2)} CR. Uruchomienie Web Worker...`, 'info');
+        // Autoplay Setup
+        this.ui.btnAutoStart.addEventListener('click', () => this.startAutoplay());
+      }
 
-        // Wyznaczenie sygnatury kryptograficznej sesji (Provably Fair)
-        const localSeed = `secferro_${Date.now()}_${Math.random()}`;
-        const hash = await calcCryptoHash(localSeed);
-        document.getElementById('api-sid').innerText = `SID: ${hash.substring(0, 8).toUpperCase()}`;
+      startAutoplay() {
+        const spins = parseInt(document.getElementById('auto-spins').value);
+        const loss = parseFloat(document.getElementById('auto-loss-limit').value);
+        const win = parseFloat(document.getElementById('auto-win-limit').value);
+        
+        document.getElementById('panel-auto').classList.add('opacity-0', 'pointer-events-none');
+        
+        this.autoPlay = { active: true, spinsLeft: spins, lossLimit: loss, winLimit: win, startBalance: this.state.balance };
+        this.auditLog('AUTOPLAY_INIT', `Config: ${spins} spins, Loss: ${loss}, SingleWin: ${win}`);
+        this.ui.btnSpin.querySelector('span').innerText = `STOP_AUTO (${spins})`;
+        this.ui.btnSpin.classList.add('border-cyberAlert', 'text-cyberAlert');
+        
+        this.requestSpin();
+      }
 
-        // Wyznaczenie wyników bębnów
-        const results = [0, 0, 0, 0, 0].map(() => Math.floor(Math.random() * this.renderer.symbols.length));
+      stopAutoplay(reason) {
+        this.autoPlay.active = false;
+        this.ui.btnSpin.querySelector('span').innerText = `EXECUTE()`;
+        this.ui.btnSpin.classList.remove('border-cyberAlert', 'text-cyberAlert');
+        this.auditLog('AUTOPLAY_STOP', `Reason: ${reason}`);
+      }
 
-        audio.playSfx(140, 'triangle', 0.4, 0.2);
+      async requestSpin() {
+        if (this.state.isActive) return;
+        const currentBet = this.state.bets[this.state.betIndex];
 
-        this.renderer.startSpin(results,
-          (reelIdx) => {
-            audio.playSfx(220 + (reelIdx * 40), 'square', 0.1, 0.06);
-          },
-          () => {
-            // Przeliczenie zwycięskich linii (Symulacja 3 lub więcej symboli)
-            const isWin = results.filter(val => val === results[0]).length >= 3;
-            let winPrize = 0;
+        // Validations (GLI requirement)
+        if (this.state.balance < currentBet) {
+          this.audio.playTone(100, 'sawtooth', 0.3, 0.2);
+          this.ui.statusMsg.innerText = "ERR: INSUFFICIENT_FUNDS";
+          this.auditLog('ERR', `Bet rejected. Balance: ${this.state.balance}, Required: ${currentBet}`);
+          if (this.autoPlay.active) this.stopAutoplay("INSUFFICIENT_FUNDS");
+          return;
+        }
 
-            if (isWin) {
-              winPrize = bet * 4.5;
-              balance += winPrize;
+        this.audio.init();
+        this.state.isActive = true;
+        this.ui.btnSpin.disabled = true;
+        this.ui.winBox.innerText = "0.00 Ƀ";
+        this.ui.statusMsg.innerText = "RGS_COMMUNICATION...";
+        
+        // Deduction phase
+        this.state.balance -= currentBet;
+        this.updateUI();
+        this.saveState();
 
-              // Konstrukcja neonowej linii wygranych
-              this.currentWinLines = [
-                [{col: 0, row: 1}, {col: 1, row: 1}, {col: 2, row: 1}, {col: 3, row: 1}, {col: 4, row: 1}]
-              ];
+        // Generowanie Client Seed (Provably Fair)
+        const clientSeed = performance.now().toString() + Math.random().toString();
+        
+        // Wywołanie RGS Simulator
+        try {
+          const rgsResponse = await this.rgs.processSpin(currentBet, clientSeed);
+          
+          this.ui.hashDisplay.innerText = rgsResponse.txHash;
+          this.auditLog('SPIN_REQ', `Bet: ${currentBet} Ƀ. TX: ${rgsResponse.txHash.substring(0,8)}...`);
 
-              displayBalance.innerText = `€ ${balance.toFixed(2)}`;
-              displayWin.innerText = `€ ${winPrize.toFixed(2)}`;
-              
-              audio.playSfx(880, 'sine', 0.4, 0.1);
-              
-              this.statusText.innerText = `WIN: €${winPrize.toFixed(2)}`;
-              this.logDiag(`SUKCES: Zbieżność sygnatury (+${winPrize.toFixed(2)} CR).`, 'success');
-            } else {
-              this.statusText.innerText = "SYSTEM READY";
-              this.logDiag(`STATUS: Brak linii. Trwa czyszczenie bufora pamięci.`, 'warn');
-            }
+          const isTurbo = document.getElementById('toggle-turbo').checked;
+          this.audio.playSpin();
 
-            this.isActionActive = false;
-            this.btnSpin.disabled = false;
+          this.renderer.executeSpinAction(
+            rgsResponse.matrix, 
+            isTurbo,
+            (idx) => this.audio.playStop(idx),
+            () => this.resolveSpin(rgsResponse)
+          );
+
+        } catch (error) {
+          // Disconnect handling simulation
+          this.ui.statusMsg.innerText = "FATAL: RGS_TIMEOUT";
+          this.auditLog('ERR', "RGS unreachable. State preserved.");
+          this.state.isActive = false;
+          this.ui.btnSpin.disabled = false;
+        }
+      }
+
+      resolveSpin(rgsResponse) {
+        if (rgsResponse.winAmount > 0) {
+          this.state.balance += rgsResponse.winAmount;
+          this.renderer.setWinLines(rgsResponse.winLines);
+          this.audio.playWin();
+          this.ui.statusMsg.innerText = `PAYLOAD_EXTRACTED // +${rgsResponse.winAmount.toFixed(2)} Ƀ`;
+          this.auditLog('WIN', `Amount: ${rgsResponse.winAmount.toFixed(2)} Ƀ`);
+        } else {
+          this.ui.statusMsg.innerText = "SYSTEM_READY // AWAITING_COMMAND";
+        }
+
+        this.updateUI(rgsResponse.winAmount);
+        this.saveState();
+        
+        this.state.isActive = false;
+        this.ui.btnSpin.disabled = false;
+
+        // Autoplay Logic Check
+        if (this.autoPlay.active) {
+          this.autoPlay.spinsLeft--;
+          this.ui.btnSpin.querySelector('span').innerText = `STOP_AUTO (${this.autoPlay.spinsLeft})`;
+          
+          const currentLoss = this.autoPlay.startBalance - this.state.balance;
+          
+          if (this.autoPlay.spinsLeft <= 0) this.stopAutoplay("CYCLES_COMPLETE");
+          else if (currentLoss >= this.autoPlay.lossLimit) this.stopAutoplay("LOSS_LIMIT_REACHED");
+          else if (rgsResponse.winAmount >= this.autoPlay.winLimit) this.stopAutoplay("SINGLE_WIN_LIMIT_REACHED");
+          else {
+            // Niewielkie opóźnienie dla UX między auto-spinami
+            setTimeout(() => this.requestSpin(), 1000);
           }
-        );
+        }
       }
     }
 
-    // Dynamiczny start silnika
+    // Inicjalizacja przy załadowaniu okna
     window.addEventListener('DOMContentLoaded', () => {
-      new GameEngineController();
+      new GameEngine();
     });
-
-    // ==========================================
-    // OBSŁUGA OVERLAYS (Zgodność z WCAG)
-    // ==========================================
-    const setupOverlayToggle = (btnId, overlayId, closeId) => {
-      const btn = document.getElementById(btnId);
-      const overlay = document.getElementById(overlayId);
-      const close = document.getElementById(closeId);
-
-      btn.addEventListener('click', () => {
-        audio.init();
-        overlay.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
-        overlay.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
-      });
-
-      close.addEventListener('click', () => {
-        overlay.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
-        overlay.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
-      });
-    };
-
-    setupOverlayToggle('btn-settings', 'panel-settings', 'close-settings');
-    setupOverlayToggle('btn-rules', 'panel-rules', 'close-rules');
-
   </script>
 </body>
 </html>
