@@ -74,7 +74,6 @@
       100% { box-shadow: 0 0 40px rgba(188,19,254,0.8), inset 0 0 20px rgba(0,240,255,0.6); }
     }
 
-    /* Ekstremalny Glitch CSS dla wielkich wygranych */
     .glitch-extreme {
       position: relative; color: white; z-index: 1;
       animation: glitch-anim-1 0.2s infinite linear alternate-reverse;
@@ -98,7 +97,6 @@
       animation: quantum-pulse 0.5s infinite alternate;
     }
     @keyframes quantum-pulse { 0% { filter: brightness(1); } 100% { filter: brightness(1.5); transform: scale(1.05); } }
-
   </style>
 </head>
 <body class="w-full h-full flex flex-col items-center justify-center bg-black overflow-hidden select-none">
@@ -113,7 +111,7 @@
 
   <div class="relative w-full h-full max-w-5xl mx-auto flex flex-col justify-between overflow-hidden pt-6 sm:p-2 sm:pt-8 transform-gpu z-10">
     
-    <!-- Renderowanie Canvas (Hardware Accelerated, RGB Splitting Capable) -->
+    <!-- Renderowanie Canvas (Hardware Accelerated) -->
     <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-10"></canvas>
 
     <!-- RAMA LED BĘBNÓW Z EFEKTEM GŁĘBI -->
@@ -155,7 +153,6 @@
 
     <!-- PROFESJONALNY HUD -->
     <section class="w-full hud-panel z-30 flex flex-col shrink-0 pb-safe sm:rounded-t-3xl relative">
-      
       <div class="grid grid-cols-2 bg-black/60 font-mono select-none border-b border-cyberBlue/20">
         <div class="flex flex-col items-center justify-center py-2.5 border-r border-cyberBlue/20 bg-gradient-to-r from-transparent to-cyberBlue/5">
           <span class="text-[9px] text-cyberBlue/60 tracking-widest mb-0.5">KAPITAŁ OPERACYJNY</span>
@@ -168,7 +165,6 @@
       </div>
 
       <div class="w-full flex justify-between items-center px-4 sm:px-10 py-4 relative">
-        
         <div class="flex items-center gap-3">
           <button id="btn-settings" class="w-12 h-12 rounded-full bg-black/80 border border-cyberBlue/40 flex items-center justify-center btn-tactile hover:shadow-[0_0_15px_rgba(0,240,255,0.4)]">
             <svg class="w-5 h-5 text-cyberBlue pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -216,7 +212,7 @@
 
   <script type="module">
     // ==========================================
-    // 1. KRYPTOGRAFICZNE RNG
+    // 1. KRYPTOGRAFICZNE RNG (CSPRNG)
     // ==========================================
     class SecureRNG {
       getInt(min, max) {
@@ -238,7 +234,6 @@
         this.cols = 5;
         this.rows = 3;
         
-        // Zoptymalizowane taśmy dla dużej zmienności
         this.reelStrips = [
           [1,2,1,3,1,4,1,5,2,1,3,2,1,6,1,2,3,4,1,2,5],
           [2,1,3,1,4,2,5,1,6,3,1,1,2,5,4,1,3,2,1,4,1],
@@ -247,22 +242,20 @@
           [1,2,1,3,1,5,4,1,6,2,1,3,2,1,5,4,1,3,2,1,1]
         ];
 
-        // Modyfikowana tabela - mniejsze bazowe, potężne mnożniki z kaskad
         this.paytable = {
           6: { 3: 5.0,  4: 15.0, 5: 100.0 }, // Scatter
-          5: { 3: 1.5,  4: 5.0,  5: 25.0 },  // High 1
-          4: { 3: 1.0,  4: 3.0,  5: 15.0 },  // High 2
-          3: { 3: 0.5,  4: 1.5,  5: 5.0 },   // Low 1
-          2: { 3: 0.2,  4: 0.8,  5: 2.5 },   // Low 2
-          1: { 3: 0.1,  4: 0.5,  5: 1.5 }    // Low 3
-          // ID 7: QUANTUM WILD (spawned procedurally, no direct payout line unless combined)
+          5: { 3: 1.5,  4: 5.0,  5: 25.0 },  
+          4: { 3: 1.0,  4: 3.0,  5: 15.0 },  
+          3: { 3: 0.5,  4: 1.5,  5: 5.0 },   
+          2: { 3: 0.2,  4: 0.8,  5: 2.5 },   
+          1: { 3: 0.1,  4: 0.5,  5: 1.5 }    
         };
 
         this.paylines = [
           [1,1,1,1,1], [0,0,0,0,0], [2,2,2,2,2], [0,1,2,1,0], [2,1,0,1,2],
           [0,0,1,2,2], [2,2,1,0,0], [1,2,2,1,0], [1,0,0,1,2], [1,0,1,2,1],
           [1,2,1,0,1], [0,1,0,1,0], [2,1,2,1,2], [0,1,1,1,0], [2,1,1,1,2]
-        ]; // 15 Linii dla wyższej wariancji
+        ]; 
       }
 
       spin() {
@@ -293,7 +286,6 @@
         let winningLines = [];
         let winningPositions = new Set();
         
-        // Obliczenie mnożnika kwantowego: 2^(chainLevel-1). Czyli: 1x, 2x, 4x, 8x, 16x...
         const quantumMultiplier = Math.pow(2, chainLevel - 1);
 
         this.paylines.forEach((lineLayout) => {
@@ -310,7 +302,6 @@
               matchCount = 1;
               lineNodes.push({ col: c, row: rowIdx });
             } else {
-              // 7 to Quantum Wild
               if (sym === checkSym || sym === 7 || checkSym === 7) {
                 if (checkSym === 7 && sym !== 7) checkSym = sym; 
                 matchCount++;
@@ -332,7 +323,6 @@
           }
         });
 
-        // 35% szans na pojawienie się Quantum Wild w miejscu eksplozji
         let spawnWildAt = null;
         if (winningPositions.size > 0 && this.rng.getInt(1, 100) <= 35) {
           const arr = Array.from(winningPositions);
@@ -344,7 +334,7 @@
     }
 
     // ==========================================
-    // 3. SYNTEZA AUDIO (Noise Explosions & Shepard Tone Logic)
+    // 3. SYNTEZA AUDIO (Noise Explosions)
     // ==========================================
     class CyberAudioEngine {
       constructor() {
@@ -372,7 +362,6 @@
         osc.start(); osc.stop(this.ctx.currentTime + dur);
       }
 
-      // Potężna generacja proceduralnego szumu dla uderzeń "BOOM"
       playBoomShot(intensityMultiplier) {
         if (!this.enabled || !this.ctx) return;
         const dur = 0.8 + (intensityMultiplier * 0.2);
@@ -380,20 +369,18 @@
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
         
-        // Brown Noise (niższe częstotliwości)
         let lastOut = 0;
         for (let i = 0; i < bufferSize; i++) {
             const white = Math.random() * 2 - 1;
             data[i] = (lastOut + (0.02 * white)) / 1.02;
             lastOut = data[i];
-            data[i] *= 3.5; // Kompensacja wzmocnienia
+            data[i] *= 3.5; 
         }
 
         const noiseSrc = this.ctx.createBufferSource();
         noiseSrc.buffer = buffer;
         const filter = this.ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        // Filtr opada wraz z eksplozją
         filter.frequency.setValueAtTime(800 * intensityMultiplier, this.ctx.currentTime);
         filter.frequency.exponentialRampToValueAtTime(10, this.ctx.currentTime + dur);
 
@@ -404,14 +391,12 @@
         noiseSrc.connect(filter); filter.connect(g); g.connect(this.masterGain);
         noiseSrc.start();
 
-        // Sub-bass oomph
         this.playTone('sine', 80, dur, 1.0, 20);
       }
 
       playSpinStart() { this.playTone('sawtooth', 100, 0.4, 0.3, 30); }
       playReelStop(idx) { this.playTone('triangle', 150 + (idx * 30), 0.1, 0.4); }
       
-      // Pitch rośnie z każdą kaskadą
       playCascadeLine(chainLevel) { 
         const baseFreq = 300 + (chainLevel * 80);
         this.playTone('sine', baseFreq, 0.4, 0.4, baseFreq * 2); 
@@ -427,7 +412,7 @@
     }
 
     // ==========================================
-    // 4. OBJECT POOLING RENDERER (RGB Split / Bloom / Zero GC)
+    // 4. OBJECT POOLING RENDERER (DPI Aware)
     // ==========================================
     class VectorRenderer {
       constructor() {
@@ -451,8 +436,8 @@
         this.w = 0; this.h = 0; this.ra = { x:0, y:0, w:0, h:0 }; this.cW = 0; this.rH = 0;
         
         this.screenShake = 0;
-        this.glitchIntensity = 0; // Siła aberracji chromatycznej (RGB Split)
-        this.globalBloom = 0;     // Błysk ekranu (Boom Flash)
+        this.glitchIntensity = 0; 
+        this.globalBloom = 0;     
 
         window.addEventListener('resize', this.resize.bind(this));
         setTimeout(() => { this.resize(); requestAnimationFrame(this.render.bind(this)); }, 50);
@@ -487,7 +472,6 @@
           4: { c: '#bc13fe', d: (c, s) => { c.beginPath(); c.moveTo(0,-s*.25); c.lineTo(s*.25,s*.2); c.lineTo(-s*.25,s*.2); c.closePath(); c.stroke(); } }, 
           5: { c: '#ff003c', d: (c, s) => { c.beginPath(); c.moveTo(0,-s*.28); c.lineTo(s*.28,0); c.lineTo(0,s*.28); c.lineTo(-s*.28,0); c.closePath(); c.stroke(); } }, 
           6: { c: '#ffffff', d: (c, s) => { c.strokeRect(-s*.26,-s*.32,s*.52,s*.64); c.shadowColor='#bc13fe'; c.strokeRect(-s*.15,-s*.15,s*.3,s*.3); } },
-          // QUANTUM WILD (ID 7) - Rotująca gwiazda
           7: { c: '#ff00aa', d: (c, s) => { 
                 c.shadowBlur = s*0.6; c.shadowColor = '#ff00aa'; c.fillStyle='#ffffff';
                 c.beginPath(); c.arc(0,0,s*0.18,0,6.28); c.fill();
@@ -511,7 +495,7 @@
       triggerBoomShot(intensityMultiplier) {
         this.screenShake = 30 * intensityMultiplier;
         this.glitchIntensity = 15 * intensityMultiplier;
-        this.globalBloom = 1.0; // Flash ekranu
+        this.globalBloom = 1.0; 
       }
 
       spawnExplosion(col, row, baseHue, intensity = 1.0) {
@@ -530,7 +514,6 @@
           }
         }
 
-        // Shockwaves (Rings)
         for (let i = 0; i < this.maxR; i++) {
           const r = this.poolR[i];
           if (!r.active) {
@@ -551,7 +534,13 @@
             const prog = Math.min(r.time / r.duration, 1);
             const ease = 1 - Math.pow(1 - prog, 3);
             r.pos = r.startPos + (r.targetPos - r.startPos) * ease;
-            if (prog >= 1) { r.state = 'IDLE'; r.pos = r.targetPos; if (this.onReelStop) this.onReelStop(col); }
+            
+            // POPRAWKA BŁĘDU BLOKOWANIA: Używamy zadeklarowanej zmiennej lokalnej 'prog' zamiast nieistniejącej 'progress'
+            if (prog >= 1) { 
+              r.state = 'IDLE'; 
+              r.pos = r.targetPos; 
+              if (this.onReelStop) this.onReelStop(col); 
+            }
           }
 
           for (let i = 0; i < 3; i++) {
@@ -570,8 +559,7 @@
         return activeElements || this.winLines.length > 0;
       }
 
-      drawScene(now, isGlitchPass, colorOverride) {
-        // Tło Canvas
+      drawScene(now, isGlitchPass) {
         this.ctx.fillStyle = '#010103';
         if (!isGlitchPass) this.ctx.fillRect(0, 0, this.w, this.h);
 
@@ -582,11 +570,19 @@
             this.ctx.translate(dx, dy);
         }
 
-        // Bębny - maska
         this.ctx.save();
         this.ctx.beginPath(); this.ctx.rect(this.ra.x, this.ra.y, this.ra.w, this.ra.h); this.ctx.clip();
 
-        // Rysowanie symboli
+        this.ctx.strokeStyle = this.isBonusTheme ? 'rgba(255,0,60,0.12)' : 'rgba(0,240,255,0.12)';
+        this.ctx.lineWidth = 1;
+        for (let i = 1; i < this.cols; i++) {
+          const x = this.ra.x + (i * this.cW);
+          this.ctx.beginPath();
+          this.ctx.moveTo(x, this.ra.y);
+          this.ctx.lineTo(x, this.ra.y + this.ra.h);
+          this.ctx.stroke();
+        }
+
         this.reels.forEach((r, col) => {
           const cx = this.ra.x + (col * this.cW) + (this.cW / 2);
           for (let row = -1; row <= this.rows; row++) {
@@ -607,14 +603,12 @@
                 this.ctx.save();
                 this.ctx.translate(cx, cy);
                 
-                // Trail particle generation podczas spadania
                 if (r.state === 'IDLE' && r.dropOffsets[vRow] < 0 && Math.random() > 0.5 && !isGlitchPass) {
                     this.spawnTrail(cx, cy, sId);
                 }
 
                 if (r.state === 'SPINNING') this.ctx.globalAlpha = 0.35;
                 
-                // Animacja Quantum Wild (Rotation & Scaling)
                 if (r.state === 'IDLE' && sId === 7) {
                     this.ctx.rotate(now * 0.002);
                     const ws = r.wildScale[vRow];
@@ -625,8 +619,6 @@
                 }
 
                 if (isGlitchPass) {
-                    // Wymuszenie koloru (Red / Cyan) bez nadpisywania całego obrazka jest trudne w canvas 2D bez getImageData
-                    // Używamy globalCompositeOperation dla efektu
                     this.ctx.globalCompositeOperation = 'lighter';
                     this.ctx.globalAlpha = 0.5;
                 }
@@ -638,7 +630,6 @@
           }
         });
 
-        // Wyróżnienie Quantum Chain Wygrywających Linii
         if (this.winLines.length > 0 && !isGlitchPass) {
           this.ctx.strokeStyle = '#ff00aa'; this.ctx.lineWidth = 4;
           this.ctx.shadowColor = '#ff00aa'; this.ctx.shadowBlur = 20 + Math.sin(now*0.01)*10;
@@ -650,9 +641,8 @@
           });
           this.ctx.shadowBlur = 0;
         }
-        this.ctx.restore(); // Koniec maski
+        this.ctx.restore(); 
 
-        // Efekty cząsteczkowe na pełnym ekranie
         if (!isGlitchPass) {
             this.ctx.globalCompositeOperation = 'screen';
             for (let i = 0; i < this.maxP; i++) {
@@ -666,7 +656,6 @@
                     this.ctx.fillStyle = g; this.ctx.beginPath(); this.ctx.arc(p.x, p.y, s*2, 0, 6.28); this.ctx.fill();
                 }
             }
-            // Rings
             for (let i=0; i<this.maxR; i++) {
                 const r = this.poolR[i];
                 if (r.active) {
@@ -679,11 +668,10 @@
             this.ctx.globalCompositeOperation = 'source-over';
         }
         
-        this.ctx.restore(); // Przywrócenie transformacji z shake
+        this.ctx.restore(); 
       }
 
       spawnTrail(x, y, symId) {
-          // Minimalistyczne iskrzenie w trakcie opadania
           for(let i=0; i<2; i++) {
               const p = this.poolP.find(part => !part.active);
               if (p) {
@@ -702,33 +690,27 @@
         const requiresFrame = this.update(dt);
 
         if (requiresFrame) {
-            // ABERRACJA CHROMATYCZNA (RGB SPLIT)
             if (this.glitchIntensity > 0) {
-                // Pass 1: Red Shift
                 this.ctx.save();
                 this.ctx.translate(this.glitchIntensity * (Math.random()-0.5), 0);
-                this.drawScene(now, false, null); // Base pass
+                this.drawScene(now, false); 
                 this.ctx.restore();
 
-                // Pass 2: Blue/Cyan Shift overdrawn
                 this.ctx.save();
                 this.ctx.translate(-this.glitchIntensity * (Math.random()-0.5), 0);
                 this.ctx.globalAlpha = 0.5;
                 this.ctx.globalCompositeOperation = 'screen';
-                this.drawScene(now, true, null); // Glitch pass
+                this.drawScene(now, true); 
                 this.ctx.restore();
             } else {
-                // Standard Rendering
-                this.drawScene(now, false, null);
+                this.drawScene(now, false);
             }
 
-            // GIGANTYCZNY BŁYSK POST-PROCESSING (BOOM LIGHTING SHOT)
             if (this.globalBloom > 0) {
                 this.ctx.fillStyle = `rgba(255, 255, 255, ${this.globalBloom * 0.8})`;
                 this.ctx.globalCompositeOperation = 'screen';
                 this.ctx.fillRect(0, 0, this.w, this.h);
                 
-                // Wypalenie radialne od środka matrycy
                 const grad = this.ctx.createRadialGradient(this.w/2, this.h/2, 0, this.w/2, this.h/2, this.w * this.globalBloom);
                 grad.addColorStop(0, `rgba(0, 240, 255, ${this.globalBloom})`);
                 grad.addColorStop(1, 'transparent');
@@ -752,15 +734,14 @@
         const c = setInterval(() => { if (this.reels.every(r => r.state === 'IDLE')) { clearInterval(c); onComplete(); } }, 20);
       }
 
-      implodeSymbols(positions, chainLevel, quantumMultiplier) {
+      implodeSymbols(positions, chainLevel) {
         positions.forEach(pos => {
           const [col, row] = pos.split(',').map(Number);
           this.reels[col].hidden.push(row);
-          // Kolor eksplozji zmienia się w zależności od potęgi mnożnika
           const hue = Math.min(180 + (chainLevel * 30), 320); 
           this.spawnExplosion(col, row, hue, 1.0 + (chainLevel * 0.2));
         });
-        this.triggerBoomShot(1.0 + (chainLevel * 0.3)); // Kamera trzęsie się mocniej z każdą kaskadą!
+        this.triggerBoomShot(1.0 + (chainLevel * 0.3)); 
       }
 
       dropNewSymbols(matrix, refillCount, spawnWildAt) {
@@ -771,10 +752,9 @@
           }
         });
         
-        // Animacja powiększenia jeśli Quantum Wild się pojawił
         if (spawnWildAt) {
             const [c, r] = spawnWildAt.split(',').map(Number);
-            this.reels[c].wildScale[r] = 3.0; // Pojawia się potężny i kurczy do x1
+            this.reels[c].wildScale[r] = 3.0; 
         }
       }
     }
@@ -792,7 +772,7 @@
         this.isSpinning = false;
         this.state = {
           balance: 1000.0, bets: [2.0, 5.0, 10.0, 20.0, 50.0], betIndex: 1, isTurbo: false,
-          chainLevel: 1, matrix: null // chainLevel kontroluje potęgowanie kaskady
+          chainLevel: 1, matrix: null 
         };
 
         this.cacheDOM(); this.setupEvents();
@@ -812,7 +792,6 @@
           this.audio.init(); document.getElementById('splash-loader').remove(); this.updateUI();
         });
 
-        // PointerEvents API dla natychmiastowej reakcji
         this.d.spinBtn.addEventListener('pointerdown', (e) => {
            if (!this.isSpinning) {
                this.d.spinBtn.setPointerCapture(e.pointerId);
@@ -837,7 +816,6 @@
         this.d.bal.innerText = this.state.balance.toFixed(2);
         this.d.bet.innerText = this.state.bets[this.state.betIndex].toFixed(2);
         
-        // Wyróżnienie mnożnika kaskadowego
         const multVal = Math.pow(2, this.state.chainLevel - 1);
         this.d.multDisp.innerText = `x${multVal}`;
         if (multVal > 1) {
@@ -869,24 +847,29 @@
       }
 
       async handleAvalanche(bet) {
-        const res = this.rgs.evaluate(this.state.matrix, bet, this.state.chainLevel);
+        try {
+          const res = this.rgs.evaluate(this.state.matrix, bet, this.state.chainLevel);
 
-        if (res.win > 0) {
-          this.renderer.winLines = res.lines;
-          this.audio.playCascadeLine(this.state.chainLevel);
-          this.d.msg.innerText = `QUANTUM MULTIPLIER: x${res.quantumMultiplier}`;
+          if (res.win > 0) {
+            this.renderer.winLines = res.lines;
+            this.audio.playCascadeLine(this.state.chainLevel);
+            this.d.msg.innerText = `QUANTUM MULTIPLIER: x${res.quantumMultiplier}`;
 
-          const mult = res.win / bet;
-          if (mult >= 50) await this.presentBigWin(res.win); // Massive boom win
-          else { this.state.balance += res.win; this.d.win.innerText = res.win.toFixed(2); this.updateUI(); }
+            const mult = res.win / bet;
+            if (mult >= 50) await this.presentBigWin(res.win); 
+            else { this.state.balance += res.win; this.d.win.innerText = res.win.toFixed(2); this.updateUI(); }
 
-          const delay = this.state.isTurbo ? 200 : 700;
-          setTimeout(() => {
-            this.renderer.implodeSymbols(res.positions, this.state.chainLevel, res.quantumMultiplier);
-            this.triggerDrop(bet, res.positions, res.spawnWildAt);
-          }, delay);
+            const delay = this.state.isTurbo ? 200 : 700;
+            setTimeout(() => {
+              this.renderer.implodeSymbols(res.positions, this.state.chainLevel, res.quantumMultiplier);
+              this.triggerDrop(bet, res.positions, res.spawnWildAt);
+            }, delay);
 
-        } else {
+          } else {
+            this.endCycle();
+          }
+        } catch(e) {
+          console.error("Critical cascade error. Automatic recovery triggered.", e);
           this.endCycle();
         }
       }
@@ -895,11 +878,10 @@
         const colsToRefill = [0,0,0,0,0];
         positions.forEach(pos => { const [c, r] = pos.split(',').map(Number); this.state.matrix[c][r] = null; colsToRefill[c]++; });
 
-        // Aplikacja Quantum Wild na pustym miejscu!
         if (spawnWildAt) {
             const [c, r] = spawnWildAt.split(',').map(Number);
-            this.state.matrix[c][r] = 7; // ID 7 = Quantum Wild
-            colsToRefill[c]--; // Jedno miejsce jest już zajęte
+            this.state.matrix[c][r] = 7; 
+            colsToRefill[c]--; 
             this.audio.playQuantumSpawn();
         }
 
@@ -924,7 +906,7 @@
       presentBigWin(amount) {
         return new Promise(resolve => {
           this.audio.playWinBig();
-          this.renderer.triggerBoomShot(2.5); // MEGA BOOM LIGHTING
+          this.renderer.triggerBoomShot(2.5); 
           this.d.overlay.classList.remove('opacity-0', 'pointer-events-none');
           
           let cur = 0; const dur = 2000; const st = performance.now();
