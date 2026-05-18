@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Book of Museum // SecFerro Premium RGS Engine. Designed by Anonymousik.is-a.dev">
+  <title>Book of Museum // SecFerro Division</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Cinzel:wght@500;700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['"Fira Code"','monospace'],
+            cinzel: ['"Cinzel"', 'serif'],
+            sans: ['"Inter"', 'sans-serif']
+          },
+          colors: {
+            g: '#00ff41',
+            gold: '#D4AF37',
+            alert: '#ff003c',
+            panel: 'rgba(5, 5, 8, 0.98)',
+            borderGold: 'rgba(212, 175, 55, 0.25)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Klasyczny raster monitorów kineskopowych CRT zintegrowany z interfejsem */
+    #crt-layer {
+      position: fixed; inset: 0;
+      background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,.12) 50%),
+                  linear-gradient(90deg, rgba(255,0,0,.02), rgba(0,255,0,.008), rgba(0,0,255,.02));
+      background-size: 100% 3px, 5px 100%;
+      pointer-events: none; z-index: 999;
+    }
+
+    /* Animacja pulsowania neonu dla linii wygrywających */
+    @keyframes neonPulse {
+      0%, 100% { filter: drop-shadow(0 0 4px #ff3c00) drop-shadow(0 0 10px #ff3c00); }
+      50% { filter: drop-shadow(0 0 8px #ff7700) drop-shadow(0 0 18px #ff7700); }
+    }
+    .neon-line {
+      animation: neonPulse 1.5s infinite;
+    }
+
+    /* Ukrywanie scrollbara */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #020203; }
+    ::-webkit-scrollbar-thumb { background: #D4AF37; }
+  </style>
+</head>
+<body class="bg-[#020203] text-gray-200 overflow-hidden font-sans select-none h-screen w-screen flex flex-col justify-between">
+
+  <div id="crt-layer"></div>
+
+  <!-- Główny kontener osadzania (Zgodny z mobilnymi proporcjami GameArt RGS) -->
+  <div class="relative w-full max-w-[480px] h-full mx-auto flex flex-col justify-between bg-[#050508] border-x border-[#1a1a1e] shadow-2xl overflow-hidden">
+    
+    <!-- NAGŁÓWEK SYSTEMOWY (RGS API status) -->
+    <header class="w-full h-11 flex items-center justify-between px-4 border-b border-[#15151a] bg-black/60 z-10 font-mono text-[9px]">
+      <div class="flex flex-col">
+        <span class="text-[#555] font-bold">SYS_SERIES: SECFERRO_v5</span>
+        <span class="font-cinzel font-black tracking-widest text-[#D4AF37] text-xs">BOOK OF MUSEUM</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="api-locale" class="border border-borderGold px-1.5 py-0.5 rounded text-[#D4AF37] uppercase">EN</span>
+        <span id="api-sid" class="text-[#00ff41] max-w-[90px] truncate">SID: NULL</span>
+      </div>
+    </header>
+
+    <!-- WIZUALNY PANEL GŁÓWNY (Korytarz muzeum w 3D Canvas + Bębny 5x3) -->
+    <main class="relative flex-1 w-full flex flex-col justify-center items-center px-2 py-2 z-0">
+      
+      <!-- Nagłówek wizualny logo gry -->
+      <div class="w-full text-center py-1 z-10">
+        <h1 class="font-cinzel font-black tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-[#ffe082] via-[#D4AF37] to-[#b89110] text-sm md:text-base drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          BOOK <span class="text-xs text-white">OF</span> MUSEUM
+        </h1>
+      </div>
+
+      <!-- Akcelerowana ramka bębnów (Złocone kolumny i kobry z boków) -->
+      <div class="relative w-full aspect-[5/3.4] max-w-[460px] border-2 border-[#D4AF37] rounded bg-black/80 shadow-[0_0_25px_rgba(212,175,55,0.15)] overflow-hidden z-10">
+        <!-- Złote filary dekoracyjne (Stylizowane na krawędziach) -->
+        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-r from-[#D4AF37] to-transparent opacity-60"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-1.5 bg-gradient-to-l from-[#D4AF37] to-transparent opacity-60"></div>
+        
+        <canvas id="gameCanvas" class="w-full h-full block" aria-hidden="true"></canvas>
+      </div>
+
+    </main>
+
+    <!-- DOLNY PANEL KONTROLNY (Oryginalny układ przycisków GameArt z zieloną sferą) -->
+    <section class="w-full bg-[#050508] border-t border-[#15151a] z-10 flex flex-col">
+      
+      <!-- Główny pulpit operacyjny -->
+      <div class="w-full flex justify-between items-center px-4 py-2 bg-gradient-to-t from-black to-[#050508]">
+        
+        <!-- Przycisk powrotu do Lobby (Zaimplementowany w API) -->
+        <button id="btn-home" class="w-9 h-9 rounded-full border border-borderGold flex items-center justify-center bg-[#111] hover:bg-gold/10 active:scale-95 transition-all text-[#D4AF37]" aria-label="Lobby">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </button>
+
+        <!-- Dynamiczne koło sterujące (Autoplay, SPIN, Settings) -->
+        <div class="flex items-center gap-3">
+          
+          <!-- Przycisk Autoplay -->
+          <button id="btn-auto" class="w-9 h-9 rounded-full border border-borderGold flex items-center justify-center bg-[#111] hover:bg-gold/10 active:scale-95 transition-all text-[#D4AF37]" aria-label="Autoplay">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"/></svg>
+          </button>
+
+          <!-- Centralna Zielona Sfera SPIN (Wizualizacja szklanego kryształu) -->
+          <button id="btn-spin" class="relative w-16 h-16 rounded-full border-2 border-[#D4AF37] flex flex-col items-center justify-center bg-gradient-to-b from-[#113f1e] via-[#045c1c] to-[#01220a] shadow-[0_0_20px_rgba(0,255,65,0.3)] hover:shadow-[0_0_35px_rgba(0,255,65,0.5)] active:scale-95 transition-all" aria-label="Rozpocznij">
+            <span class="text-[8px] text-[#00ff41] font-mono tracking-widest font-bold">SPIN</span>
+            <span id="spin-val-overlay" class="text-xs font-bold text-white">10</span>
+          </button>
+
+          <!-- Przycisk Ustawienia (Settings) -->
+          <button id="btn-settings" class="w-9 h-9 rounded-full border border-borderGold flex items-center justify-center bg-[#111] hover:bg-gold/10 active:scale-95 transition-all text-[#D4AF37]" aria-label="Ustawienia">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </button>
+
+        </div>
+
+        <!-- Przycisk Informacje i Zasady (Rules) -->
+        <button id="btn-rules" class="w-9 h-9 rounded-full border border-borderGold flex items-center justify-center bg-[#111] hover:bg-gold/10 active:scale-95 transition-all text-[#D4AF37]" aria-label="Zasady">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </button>
+
+      </div>
+
+      <!-- WYŚWIETLACZE FINANSOWE (Wizualnie skonsolidowane z interfejsem) -->
+      <div class="grid grid-cols-3 gap-0.5 px-4 py-1.5 border-t border-[#121217] bg-black/90 text-center font-mono">
+        <div class="flex flex-col border-r border-[#15151a]">
+          <span class="text-[8px] text-gray-500 uppercase tracking-wider">BALANCE</span>
+          <span id="display-balance" class="text-xs font-bold text-[#D4AF37]">€ 1000.00</span>
+        </div>
+        <div class="flex flex-col border-r border-[#15151a]">
+          <span class="text-[8px] text-gray-500 uppercase tracking-wider">TOTAL BET</span>
+          <span id="display-bet" class="text-xs font-bold text-[#D4AF37]">€ 10.00</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[8px] text-gray-500 uppercase tracking-wider">WIN</span>
+          <span id="display-win" class="text-xs font-bold text-[#00ff41]">€ 0.00</span>
+        </div>
+      </div>
+
+      <!-- SYSTEMOWY PASEK STATUSU -->
+      <div class="w-full flex justify-between items-center px-4 py-1 bg-[#020203] text-[8px] text-[#444] border-t border-[#15151a] font-mono select-text">
+        <span>Anonymousik.is-a.dev</span>
+        <span id="game-status" class="text-gray-500">SYSTEM READY</span>
+        <span id="api-denom-lbl">DENOM: 1.00</span>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- OVERLAYS (USTAWIEŃ I SYSTEMOWY LOG BEHAWIORALNY) -->
+    <!-- ========================================== -->
+
+    <!-- USTAWIENIA (Zgodne ze zrzutem 1000464370.jpg) -->
+    <div id="panel-settings" class="absolute inset-0 bg-[#050508]/98 z-50 flex flex-col p-6 overlay-transition opacity-0 pointer-events-none transform translate-y-4">
+      <div class="flex justify-between items-center border-b border-borderGold pb-4">
+        <h2 class="font-cinzel text-base font-bold text-[#D4AF37] tracking-widest">SETTINGS</h2>
+        <button id="close-settings" class="text-gray-400 hover:text-white" aria-label="Zamknij">✕</button>
+      </div>
+      <div class="flex-1 flex flex-col gap-5 py-6 text-xs font-mono">
+        <div class="flex justify-between items-center">
+          <span class="text-gray-400">Sound FX</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="toggle-sfx" checked class="sr-only peer">
+            <div class="w-9 h-5 bg-[#15151a] border border-borderGold rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#005c1c]"></div>
+          </label>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-400">Ambient Music</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="toggle-ambient" checked class="sr-only peer">
+            <div class="w-9 h-5 bg-[#15151a] border border-borderGold rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#005c1c]"></div>
+          </label>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-400">Fast Spin</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="toggle-fast" class="sr-only peer">
+            <div class="w-9 h-5 bg-[#15151a] border border-borderGold rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#005c1c]"></div>
+          </label>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-400">Turbo Spin</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="toggle-turbo" checked class="sr-only peer">
+            <div class="w-9 h-5 bg-[#15151a] border border-borderGold rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#005c1c]"></div>
+          </label>
+        </div>
+        
+        <!-- Dodatkowy terminal audytowy dla deweloperów (SecFerro Spec) -->
+        <div class="mt-4 border border-borderGold/30 bg-black/80 rounded p-3 flex-1 flex flex-col justify-between">
+          <div class="text-[9px] text-gray-500 uppercase tracking-wider border-b border-borderGold/20 pb-1 mb-2">SECFERRO DIVISION DIAGNOSTIC LOG</div>
+          <div id="diagnostic-log" class="flex-1 overflow-y-auto text-[9px] text-[#444] space-y-1">
+            <p class="text-[#00ff41]">[OK] System core operational.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZASADY I LINIE WYGRANYCH (Zgodne ze zrzutami 1000464371.jpg i 1000464372.jpg) -->
+    <div id="panel-rules" class="absolute inset-0 bg-[#050508]/98 z-50 flex flex-col p-6 overlay-transition opacity-0 pointer-events-none transform translate-y-4">
+      <div class="flex justify-between items-center border-b border-borderGold pb-4">
+        <h2 class="font-cinzel text-base font-bold text-[#D4AF37] tracking-widest">RULES & INFO</h2>
+        <button id="close-rules" class="text-gray-400 hover:text-white" aria-label="Zamknij">✕</button>
+      </div>
+      <div class="flex-1 overflow-y-auto py-5 flex flex-col gap-5 text-xs text-gray-400 font-mono leading-relaxed">
+        <div>
+          <h3 class="text-[#D4AF37] font-bold font-cinzel text-xs mb-1.5 uppercase tracking-wider">MYSTERY PORTAL STACK SYMBOL</h3>
+          <p>Symbole Mystery Portal Stack lądują na dowolnych pozycjach. Trafienie co najmniej 3 bębnów wyzwala przesunięcie pionowe (nudge), odsłaniając złote symbole Faraona oraz podświetlając wszystkie 10 linii wygrywających neonowym transformatorem.</p>
+        </div>
+        <div>
+          <h3 class="text-[#D4AF37] font-bold font-cinzel text-xs mb-1.5 uppercase tracking-wider">PROVABLY FAIR COMPLIANCE</h3>
+          <p>Każda sesja gry podlega kryptograficznemu audytowi w locie za pomocą algorytmu SHA-256 wywoływanego w wątku pobocznym. Dowód uczciwości losowania jest generowany i przechowywany lokalnie.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    /**
+     * Integracja z interfejsem API embedu:
+     *
