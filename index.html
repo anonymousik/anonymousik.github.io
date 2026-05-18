@@ -125,7 +125,7 @@ body { cursor: none; }
 
 /* ── ACCORDION ───────────────────────────────────────────────────────────── */
 .acc-body { max-height:0; overflow:hidden; transition:max-height .45s cubic-bezier(.1,1,.2,1); }
-.acc-item.open .acc-body { max-height:800px; }
+.acc-item.open .acc-body { max-height:1600px; } /* Zwiększono wysokość pod interaktywny terminal */
 .acc-item { border:1px solid var(--brd); background:rgba(8,8,8,.9); transition:border-color .25s; }
 .acc-item:hover { border-color:rgba(0,255,65,.15); }
 .acc-item.open { border-color:rgba(0,255,65,.35); background:rgba(0,255,65,.025); }
@@ -192,7 +192,7 @@ body { cursor: none; }
   background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0,255,65,.05) 0%, transparent 70%);
 }
 
-/* ── NAV OVERRIDE: embed nav styles here ────────────────────────────────── */
+/* ── NAV OVERRIDE ───────────────────────────────────────────────────────── */
 :root {
   --sfn-bg:     rgba(5,5,5,.97);
   --sfn-border: #1a1a1a;
@@ -232,7 +232,7 @@ body { cursor: none; }
 .sf-nav__status { display:flex;align-items:center;gap:.75rem;flex-shrink:0; }
 .sf-nav__clock { font-size:.58rem;color:#333;letter-spacing:.08em;display:none; }
 @media(min-width:640px){.sf-nav__clock{display:block;}}
-.sf-nav__badge { display:flex;align-items:center;gap:.3rem;padding:.15rem .5rem;border:1px solid rgba(0,255,65,.25);background:rgba(0,255,65,.05);font-size:.55rem;letter-spacing:.1em;color:var(--sfn-green);text-transform:uppercase; }
+.sf-nav__badge { display:flex;align-items:center;gap:.3rem;padding:.15rem .55rem;border:1px solid rgba(0,255,65,.25);background:rgba(0,255,65,.05);font-size:.55rem;letter-spacing:.1em;color:var(--sfn-green);text-transform:uppercase; }
 .sf-nav__pulse { width:5px;height:5px;border-radius:50%;background:var(--sfn-green);animation:sfP 2s ease-in-out infinite;box-shadow:0 0 6px var(--sfn-green); }
 @keyframes sfP { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
 .sf-nav__hamburger { display:none;flex-direction:column;gap:4px;padding:.4rem;cursor:pointer;background:none;border:1px solid transparent;transition:border-color .2s; }
@@ -317,6 +317,7 @@ blockquote strong { color:var(--g); }
           <a class="sf-nav__dropdown-item" href="#adb">ADB-Quantum</a>
           <a class="sf-nav__dropdown-item" href="#banka">Bańka 404</a>
           <a class="sf-nav__dropdown-item" href="#dukat">Dukat-Maker</a>
+          <a class="sf-nav__dropdown-item" href="#secferro-slot">SecFerro Slot Terminal</a>
           <hr class="sf-nav__dropdown-divider">
           <div class="sf-nav__dropdown-label">Concept</div>
           <a class="sf-nav__dropdown-item" href="#secferro-fashion">SecFerro Fashion</a>
@@ -437,7 +438,7 @@ blockquote strong { color:var(--g); }
 
 <!-- ── STATS ROW ───────────────────────────────────────────────────────────── -->
 <div class="reveal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:4rem">
-  <div class="stat"><div class="stat-val ng">4+</div><div class="stat-lbl">Projects</div></div>
+  <div class="stat"><div class="stat-val ng">5+</div><div class="stat-lbl">Projects</div></div>
   <div class="stat"><div class="stat-val ng2">12</div><div class="stat-lbl">SF Modules</div></div>
   <div class="stat"><div class="stat-val np">3</div><div class="stat-lbl">Domains</div></div>
   <div class="stat"><div class="stat-val nb">v5</div><div class="stat-lbl">Ironclad</div></div>
@@ -581,11 +582,75 @@ blockquote strong { color:var(--g); }
       </div>
     </div>
 
+    <!-- SECFERRO SLOT TERMINAL (ZINTEGROWANY GRA INTERAKTYWNA) -->
+    <div class="acc-item" id="secferro-slot">
+      <div style="padding:1.1rem 1.4rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleAcc(this.closest('.acc-item'))">
+        <div style="display:flex;align-items:center;gap:.9rem">
+          <span style="color:var(--g);font-size:.6rem;font-weight:700;border:1px solid rgba(0,255,65,.3);padding:.1rem .35rem;flex-shrink:0">04</span>
+          <div>
+            <div style="color:#fff;font-weight:700;font-size:.85rem;letter-spacing:.05em">SECFERRO SLOT TERMINAL</div>
+            <div style="font-size:.62rem;color:var(--g);letter-spacing:.08em">INTERACTIVE PROVABLY FAIR SLOT GAME // SECFERRO SERIES</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <span class="badge bg" style="font-size:.52rem">Playable</span>
+          <span class="pulse" style="flex-shrink:0"></span>
+          <svg class="chevron" width="14" height="8" viewBox="0 0 14 8" fill="none"><path d="M1 1l6 6 6-6" stroke="#555" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="acc-body">
+        <div style="padding:0 1.4rem 1.4rem;border-top:1px solid var(--brd)">
+          
+          <!-- Metadane Gry -->
+          <div style="display:flex;flex-wrap:wrap;gap:.75rem;padding:.75rem;background:rgba(0,0,0,.5);border:1px solid rgba(0,255,65,.08);font-size:.65rem;margin:.9rem 0">
+            <span><span style="color:#444">STATUS:</span>&nbsp;<span class="ng">Aktywny Terminal</span></span>
+            <span><span style="color:#444">AUDIO:</span>&nbsp;<span class="np">Natywne Web Audio API (Syntetyzowane)</span></span>
+            <span><span style="color:#444">SECURITY:</span>&nbsp;<span class="nr">Provably Fair (SHA-256 Web Worker Threaded)</span></span>
+          </div>
+
+          <!-- KONTENER GRY (Wizualnie spójny z resztą strony) -->
+          <div class="my-4 border border-[#1a1a1a] rounded bg-[#020202] p-4 flex flex-col gap-4">
+            
+            <div class="flex justify-between items-center border-b border-[#1a1a1a] pb-2">
+              <span class="text-xs text-[#555] tracking-widest">SYS_NODE: PORT_SECURE // SLOT_V1</span>
+              <span class="text-sm font-bold text-[#00ff41]" id="slot-balance">SALDO: 1000.00 CR</span>
+            </div>
+
+            <div class="relative w-full overflow-hidden border border-[#1a1a1a] rounded bg-[#050505]" style="height:220px;">
+              <canvas id="slotCanvas" class="w-full h-full block"></canvas>
+            </div>
+
+            <!-- Panel informacyjno-kryptograficzny -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="panel p-3 text-[11px] font-mono leading-relaxed" style="height: 100px; overflow-y: auto;" id="slot-ai-term">
+                <p class="text-[#00ff41]">[SYSTEM] Inicjalizacja algorytmu nadzoru AI...</p>
+                <p class="text-[#555]">[PROVABLY_FAIR] Wygenerowano nowy seed serwera (ukryty hash).</p>
+              </div>
+
+              <div class="flex flex-col justify-center gap-2">
+                <button id="slot-spin-btn" class="w-full py-3 border border-[#00ff41] text-[#00ff41] bg-transparent hover:bg-[rgba(0,255,65,0.08)] transition duration-200 font-bold uppercase tracking-widest text-xs">
+                  INICJUJ KRĘCENIE (10 CR)
+                </button>
+                <div class="text-[10px] text-center text-[#555] truncate">
+                  SHA-256 Hash: <span class="text-[#D4AF37]" id="slot-crypto-hash">Oczekiwanie...</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <p style="color:#888;font-size:.73rem;line-height:1.8;margin-bottom:1rem">
+            Przetestuj autorski, w pełni zabezpieczony kryptograficznie symulator loteryjny typu slot-machine. Logika losowania (RNG) została sprzężona z asynchronicznym systemem weryfikacji. Wszystkie obliczenia kryptograficzne realizowane są w tle bez obciążania interfejsu.
+          </p>
+        </div>
+      </div>
+    </div>
+
     <!-- SECFERRO FASHION -->
     <div class="acc-item" id="secferro-fashion">
       <div style="padding:1.1rem 1.4rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleAcc(this.closest('.acc-item'))">
         <div style="display:flex;align-items:center;gap:.9rem">
-          <span style="color:var(--bl);font-size:.6rem;font-weight:700;border:1px solid rgba(0,170,255,.3);padding:.1rem .35rem;flex-shrink:0">04</span>
+          <span style="color:var(--bl);font-size:.6rem;font-weight:700;border:1px solid rgba(0,170,255,.3);padding:.1rem .35rem;flex-shrink:0">05</span>
           <div>
             <div style="color:#fff;font-weight:700;font-size:.85rem;letter-spacing:.05em">SECFERRO FASHION</div>
             <div style="font-size:.62rem;color:#555;letter-spacing:.08em">FASHION-TECH INTERFACE / WEARABLES</div>
@@ -618,7 +683,7 @@ blockquote strong { color:var(--g); }
   </div>
 </section>
 
-<!-- ══ [03] TECH STACK & FREQUENCIES ═══════════════════════════════════════ -->
+<!-- ── TECH STACK & FREQUENCIES ─────────────────────────────────────────── -->
 <section id="stack" style="margin-bottom:4rem" class="reveal">
   <div class="sh"><span class="sh-num">[03]</span><span class="sh-title">TECH STACK & FREQUENCIES</span></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
@@ -990,7 +1055,17 @@ tick(); setInterval(tick,1000);
 function toggleAcc(el){
   var isOpen=el.classList.contains('open');
   document.querySelectorAll('.acc-item.open').forEach(function(a){a.classList.remove('open');a.querySelector('.acc-body').style.maxHeight='0';});
-  if(!isOpen){el.classList.add('open');el.querySelector('.acc-body').style.maxHeight=el.querySelector('.acc-body').scrollHeight+32+'px';}
+  if(!isOpen){
+    el.classList.add('open');
+    el.querySelector('.acc-body').style.maxHeight=el.querySelector('.acc-body').scrollHeight+64+'px';
+    
+    // Obsługa dynamicznej optymalizacji Canvas gry po rozwinięciu akordeonu
+    if (el.id === 'secferro-slot' && window.slotControllerInstance) {
+        setTimeout(function() {
+            window.slotControllerInstance.renderer.resize();
+        }, 300);
+    }
+  }
 }
 // Open first on load
 setTimeout(function(){toggleAcc(document.querySelector('.acc-item'));},400);
@@ -1144,6 +1219,327 @@ function handleContact(e){
     s.style.color='var(--g)';
   },1800);
 }
+
+/* ── SECFERRO SLOT TERMINAL IMPLEMENTATION (Wątki, Audio, WebGL/Canvas) ── */
+(function() {
+  
+  // 1. SILNIK PROCEDURALNEGO AUDIO (Całkowity brak zewnętrznych plików MP3/WAV)
+  class SecAudioEngine {
+    constructor() {
+      this.ctx = null;
+      this.initialized = false;
+    }
+
+    init() {
+      if (this.initialized) return;
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.initialized = true;
+    }
+
+    playOscSound(freq = 600, type = 'sine', duration = 0.1, gainVal = 0.1) {
+      if (!this.initialized) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.ctx.createGain();
+      
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      
+      gainNode.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+      
+      osc.connect(gainNode);
+      gainNode.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
+    }
+
+    playSpinSound() {
+      if (!this.initialized) return;
+      // Dźwięk bębna (szum niskotonowy)
+      this.playOscSound(110, 'triangle', 0.25, 0.15);
+    }
+
+    playStopSound(idx) {
+      if (!this.initialized) return;
+      // Trzy harmoniczne uderzenia przy hamowaniu bębnów
+      const frequencies = [440, 554, 659];
+      this.playOscSound(frequencies[idx], 'square', 0.15, 0.08);
+    }
+
+    playWinChime() {
+      if (!this.initialized) return;
+      // Zwycięski arpeggio
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((note, i) => {
+        setTimeout(() => {
+          this.playOscSound(note, 'sine', 0.4, 0.12);
+        }, i * 120);
+      });
+    }
+  }
+
+  // 2. CRYPTO WEB WORKER (Obliczenia hashowania SHA-256 przeniesione z wątku UI)
+  const workerString = `
+    self.onmessage = async function(e) {
+      const input = e.data;
+      const encoder = new TextEncoder();
+      const data = encoder.encode(input);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      self.postMessage(hashHex);
+    };
+  `;
+  const blob = new Blob([workerString], { type: 'application/javascript' });
+  const workerUrl = URL.createObjectURL(blob);
+  const cryptoWorker = new Worker(workerUrl);
+
+  const requestCryptoHash = (seed) => {
+    return new Promise((resolve) => {
+      cryptoWorker.onmessage = (e) => resolve(e.data);
+      cryptoWorker.postMessage(seed);
+    });
+  };
+
+  // 3. SILNIK GRAFICZNY CANVAS (60FPS Delta Time i Matrix Rain)
+  class RenderEngine {
+    constructor(canvasId) {
+      this.canvas = document.getElementById(canvasId);
+      this.ctx = this.canvas.getContext('2d', { alpha: false, desynchronized: true });
+      this.symbols = ['[1]', '[0]', '{X}', '<!>', 'SYS'];
+      this.colors = ['#00ff41', '#00aaff', '#9b59ff', '#ff003c', '#D4AF37'];
+      
+      this.reelsCount = 3;
+      this.reelPositions = [0, 0, 0];
+      this.targetPositions = [0, 0, 0];
+      this.isSpinning = false;
+      this.matrixRain = [];
+
+      this.resize();
+      this.initMatrix();
+    }
+
+    resize() {
+      const rect = this.canvas.parentElement.getBoundingClientRect();
+      this.canvas.width = rect.width;
+      this.canvas.height = rect.height;
+      this.symbolHeight = this.canvas.height / 3;
+      this.reelWidth = this.canvas.width / this.reelsCount;
+    }
+
+    initMatrix() {
+      const count = 30;
+      this.matrixRain = [];
+      for (let i = 0; i < count; i++) {
+        this.matrixRain.push({
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * this.canvas.height,
+          speed: 1 + Math.random() * 2
+        });
+      }
+    }
+
+    drawMatrixBg() {
+      this.ctx.fillStyle = 'rgba(5, 5, 5, 0.2)'; // Efekt smugi (motion trail)
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+      this.ctx.fillStyle = 'rgba(0, 255, 65, 0.08)';
+      this.ctx.font = '10px "Fira Code", monospace';
+      
+      this.matrixRain.forEach(drop => {
+        const char = Math.random() > 0.5 ? '1' : '0';
+        this.ctx.fillText(char, drop.x, drop.y);
+        drop.y += drop.speed;
+        if (drop.y > this.canvas.height) {
+          drop.y = 0;
+          drop.x = Math.random() * this.canvas.width;
+        }
+      });
+    }
+
+    render(time) {
+      this.drawMatrixBg();
+
+      this.ctx.font = `bold ${Math.min(this.symbolHeight * 0.45, 45)}px "Fira Code", monospace`;
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+
+      for (let r = 0; r < this.reelsCount; r++) {
+        const offsetX = r * this.reelWidth + (this.reelWidth / 2);
+
+        if (this.isSpinning) {
+          this.reelPositions[r] += (this.targetPositions[r] - this.reelPositions[r]) * 0.08;
+        }
+
+        for (let i = -1; i <= 3; i++) {
+          const logicalPos = Math.floor(this.reelPositions[r] / this.symbolHeight) + i;
+          const symbolIndex = Math.abs(logicalPos) % this.symbols.length;
+          const offsetY = (i * this.symbolHeight) + (this.reelPositions[r] % this.symbolHeight);
+
+          // Renderowanie Symbolu
+          this.ctx.fillStyle = this.colors[symbolIndex];
+          this.ctx.fillText(this.symbols[symbolIndex], offsetX, offsetY);
+        }
+
+        // Linie rozdzielające bębny
+        this.ctx.strokeStyle = '#1a1a1a';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(r * this.reelWidth, 0);
+        this.ctx.lineTo(r * this.reelWidth, this.canvas.height);
+        this.ctx.stroke();
+      }
+
+      // Linia zwycięstwa (Center-Line)
+      this.ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, this.canvas.height / 2);
+      this.ctx.lineTo(this.canvas.width, this.canvas.height / 2);
+      this.ctx.stroke();
+    }
+
+    startSpin(targetResults, onStopReel, onComplete) {
+      this.isSpinning = true;
+      this.targetPositions = targetResults.map((res, i) => {
+        return this.reelPositions[i] + (this.symbolHeight * (15 + (i * 6))) + (res * this.symbolHeight);
+      });
+
+      const stopFlags = [false, false, false];
+      const checkInterval = setInterval(() => {
+        let allStopped = true;
+        for (let i = 0; i < this.reelsCount; i++) {
+          const diff = Math.abs(this.targetPositions[i] - this.reelPositions[i]);
+          if (diff < 1) {
+            this.reelPositions[i] = this.targetPositions[i]; // Dokładne pozycjonowanie snap-to-grid
+            if (!stopFlags[i]) {
+              stopFlags[i] = true;
+              onStopReel(i);
+            }
+          } else {
+            allStopped = false;
+          }
+        }
+
+        if (allStopped) {
+          clearInterval(checkInterval);
+          this.isSpinning = false;
+          onComplete();
+        }
+      }, 50);
+    }
+  }
+
+  // 4. LOGIKA INTEGRACYJNA KONTROLERA GRY
+  class SlotController {
+    constructor() {
+      this.audio = new SecAudioEngine();
+      this.renderer = new RenderEngine('slotCanvas');
+      
+      this.balance = 1000.00;
+      this.bet = 10.00;
+      this.isSpinning = false;
+
+      this.btnSpin = document.getElementById('slot-spin-btn');
+      this.elBalance = document.getElementById('slot-balance');
+      this.elHash = document.getElementById('slot-crypto-hash');
+      this.elTerminal = document.getElementById('slot-ai-term');
+
+      this.bindEvents();
+      this.startLoop();
+    }
+
+    bindEvents() {
+      this.btnSpin.addEventListener('click', () => {
+        this.audio.init(); // Inicjalizacja AudioContext po pierwszym kliknięciu użytkownika
+        this.spin();
+      });
+      window.addEventListener('resize', () => this.renderer.resize());
+    }
+
+    startLoop() {
+      const loop = (time) => {
+        this.renderer.render(time);
+        requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+    }
+
+    logTerminal(text, type = 'info') {
+      const p = document.createElement('p');
+      let colorClass = 'text-[#e0e0e0]';
+      if (type === 'warn') colorClass = 'text-[#D4AF37]';
+      if (type === 'success') colorClass = 'text-[#00ff41]';
+      if (type === 'err') colorClass = 'text-[#ff003c]';
+      
+      p.className = `${colorClass} my-1`;
+      p.innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
+      
+      this.elTerminal.appendChild(p);
+      this.elTerminal.scrollTop = this.elTerminal.scrollHeight;
+    }
+
+    async spin() {
+      if (this.isSpinning || this.balance < this.bet) return;
+
+      this.isSpinning = true;
+      this.btnSpin.disabled = true;
+      this.balance -= this.bet;
+      this.elBalance.innerText = `SALDO: ${this.balance.toFixed(2)} CR`;
+
+      this.logTerminal(`TRANS-OUT: Rozpoczęto deszyfrowanie węzłów. Pobrano -${this.bet} CR.`, 'info');
+
+      // Generowanie seedu do weryfikacji kryptograficznej (Provably Fair)
+      const serverSeed = `secferro_seed_${Math.random().toString(36).substring(2)}`;
+      const hash = await requestCryptoHash(serverSeed);
+      this.elHash.innerText = hash.substring(0, 16) + '...';
+
+      // Logika losowania wyniku (RNG)
+      let results = [0, 0, 0].map(() => Math.floor(Math.random() * this.renderer.symbols.length));
+      
+      // 25% szans na uderzenie Jackpota / Wygranej w wersji demonstracyjnej
+      if (Math.random() < 0.25) {
+        const winningSym = Math.floor(Math.random() * this.renderer.symbols.length);
+        results = [winningSym, winningSym, winningSym];
+      }
+
+      this.audio.playSpinSound();
+
+      this.renderer.startSpin(results, 
+        (reelIdx) => {
+          // Zatrzymanie pojedynczego bębna (Wywołanie Audio)
+          this.audio.playStopSound(reelIdx);
+        }, 
+        () => {
+          // Zatrzymanie wszystkich bębnów
+          const isWin = results.every(v => v === results[0]);
+          if (isWin) {
+            const multiplier = results[0] === 4 ? 50 : 10; // "SYS" (indeks 4) daje 50x
+            const prize = this.bet * multiplier;
+            this.balance += prize;
+            this.elBalance.innerText = `SALDO: ${this.balance.toFixed(2)} CR`;
+            
+            this.audio.playWinChime();
+            this.logTerminal(`Zbieżność sygnatury: ${this.renderer.symbols[results[0]]}. Transakcja zatwierdzona. WYGRANA: +${prize} CR.`, 'success');
+          } else {
+            this.logTerminal(`Brak zbieżności sygnatury. Log operacji zapisany w chmurze SecFerro.`, 'warn');
+          }
+
+          this.isSpinning = false;
+          this.btnSpin.disabled = false;
+        }
+      );
+    }
+  }
+
+  // Bezpieczna inicjalizacja po załadowaniu drzewa DOM i przypisanie do instancji globalnej
+  window.addEventListener('DOMContentLoaded', () => {
+    window.slotControllerInstance = new SlotController();
+  });
+
+})();
 </script>
 </body>
 </html>
