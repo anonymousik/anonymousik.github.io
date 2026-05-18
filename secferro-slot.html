@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#010103">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="Book of SecFerro - Cyber Intrusion Masterpiece. Dynamic Audio by Ferro ART.">
-  <title>SecFerro Division // Hacker Core Pro</title>
+  <meta name="description" content="Book of SecFerro - Fullscreen Cascading Cyber Slot. Sound by Ferro ART.">
+  <title>SecFerro Division // Avalanche Cyber Slot Pro</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
@@ -28,7 +28,7 @@
             cyberBlue: '#00f0ff',
             cyberPurple: '#bc13fe',
             cyberGold: '#ffb300',
-            glassBg: 'rgba(2, 2, 8, 0.82)',
+            glassBg: 'rgba(2, 2, 8, 0.85)',
             glassBorder: 'rgba(0, 240, 255, 0.15)',
           }
         }
@@ -59,13 +59,19 @@
       transform: translateZ(0);
     }
 
-    /* Pływające Panele HUD (Glassmorphism) */
+    .safe-padding {
+      padding-top: max(0.5rem, env(safe-area-inset-top));
+      padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+      padding-left: max(0.75rem, env(safe-area-inset-left));
+      padding-right: max(0.75rem, env(safe-area-inset-right));
+    }
+
     .hud-panel {
-      background: rgba(4, 4, 12, 0.8);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(4, 4, 14, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(0, 240, 255, 0.15);
-      box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.85), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+      box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.9), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
     }
 
     .btn-tactile {
@@ -75,40 +81,37 @@
     .btn-tactile:active:not(:disabled) {
       transform: scale(0.9) translateY(2px);
       filter: brightness(1.4);
-      box-shadow: 0 0 30px rgba(0, 240, 255, 0.7);
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.7);
     }
     .btn-tactile:disabled {
       opacity: 0.15; filter: grayscale(1); pointer-events: none;
     }
 
-    /* Efekt LED Strobe */
     @keyframes led-flash {
-      0%, 100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2), inset 0 0 5px rgba(0, 240, 255, 0.2); }
-      50% { box-shadow: 0 0 25px rgba(0, 240, 255, 0.8), inset 0 0 15px rgba(0, 240, 255, 0.6); }
+      0%, 100% { box-shadow: 0 0 8px rgba(0, 240, 255, 0.25), inset 0 0 8px rgba(0, 240, 255, 0.25); }
+      50% { box-shadow: 0 0 30px rgba(0, 240, 255, 0.9), inset 0 0 20px rgba(0, 240, 255, 0.7); border-color: #00f0ff; }
     }
     .led-border {
-      animation: led-flash 1.5s infinite ease-in-out;
+      animation: led-flash 1.2s infinite ease-in-out;
     }
 
-    /* Wygląd ekranu bębnów w trybie Overload */
-    .overload-led {
-      animation: overload-flash 0.8s infinite ease-in-out;
-    }
     @keyframes overload-flash {
-      0%, 100% { box-shadow: 0 0 8px rgba(255, 0, 60, 0.3), inset 0 0 8px rgba(255, 0, 60, 0.3); }
-      50% { box-shadow: 0 0 35px rgba(255, 0, 60, 0.9), inset 0 0 25px rgba(255, 0, 60, 0.7); border-color: #ff003c; }
+      0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 60, 0.35), inset 0 0 10px rgba(255, 0, 60, 0.35); }
+      50% { box-shadow: 0 0 40px rgba(255, 0, 60, 0.95), inset 0 0 30px rgba(255, 0, 60, 0.75); border-color: #ff003c; }
+    }
+    .overload-led {
+      animation: overload-flash 0.6s infinite ease-in-out;
     }
 
-    /* Efekty Glitch CSS */
     @keyframes text-glitch {
-      0% { text-shadow: 2px -1px 0 #ff003c, -2px 1px 0 #bc13fe; }
-      25% { text-shadow: -1px 2px 0 #00f0ff, 2px -2px 0 #ff003c; }
-      50% { text-shadow: 2px 2px 0 #ffb300, -1px -1px 0 #00f0ff; }
-      75% { text-shadow: -2px -2px 0 #bc13fe, 1px 2px 0 #ff003c; }
-      100% { text-shadow: 2px -1px 0 #ff003c, -2px 1px 0 #bc13fe; }
+      0% { text-shadow: 2px -1.5px 0 #ff003c, -2px 1.5px 0 #bc13fe; }
+      25% { text-shadow: -1.5px 2px 0 #00f0ff, 2px -2px 0 #ff003c; }
+      50% { text-shadow: 2px 2px 0 #ffb300, -1.5px -1.5px 0 #00f0ff; }
+      75% { text-shadow: -2px -2px 0 #bc13fe, 1.5px 2px 0 #ff003c; }
+      100% { text-shadow: 2px -1.5px 0 #ff003c, -2px 1.5px 0 #bc13fe; }
     }
     .glitch-text-active {
-      animation: text-glitch 0.15s infinite linear;
+      animation: text-glitch 0.12s infinite linear;
     }
   </style>
 </head>
@@ -119,14 +122,13 @@
   <!-- Główny Kontener Pełnoekranowy -->
   <div class="relative w-full h-full flex flex-col justify-between overflow-hidden p-3 sm:p-5 transform-gpu z-10">
     
-    <!-- Tła interaktywne na 100% szerokości i wysokości urządzenia -->
+    <!-- Renderery wielkoformatowe -->
     <canvas id="matrixBackground" class="absolute inset-0 w-full h-full opacity-45 pointer-events-none mix-blend-screen z-0"></canvas>
-    <!-- Glitch Overlay Canvas -->
     <canvas id="glitchCanvas" class="absolute inset-0 w-full h-full opacity-35 pointer-events-none mix-blend-screen z-20"></canvas>
     <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-10" aria-label="Główny ekran renderowania gry"></canvas>
 
     <!-- ==========================================
-         WARSTWA 1: PRE-BOOT SCREEN (CYBERNETIC INITIALIZATION)
+         WARSTWA 1: PRE-BOOT SCREEN
          ========================================== -->
     <div id="splash-loader" class="absolute inset-0 z-50 bg-[#010103] flex flex-col justify-between p-8 transition-opacity duration-700">
       <div class="flex-1 flex flex-col justify-center items-center gap-8">
@@ -146,7 +148,7 @@
           <div class="font-tech text-2xl font-black tracking-[0.5em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase">
             SECFERRO
           </div>
-          <p class="font-mono text-[9px] text-gray-500 tracking-[0.3em] mt-2 uppercase">CYBER INTRUSION CORE ENGINE</p>
+          <p class="font-mono text-[9px] text-gray-500 tracking-[0.3em] mt-2 uppercase">CASCADING CASCADE ENGINE v12.0</p>
         </div>
         
         <div class="w-full max-w-[220px] bg-black/60 border border-cyberBlue/20 h-2 rounded-full overflow-hidden p-[2px]">
@@ -154,18 +156,18 @@
         </div>
         
         <div id="loader-status" class="font-mono text-[8px] text-cyberBlue/60 tracking-widest text-center uppercase animate-pulse">
-          INICJOWANIE REJESTRÓW LED I FILTRÓW GLITCH...
+          INICJOWANIE SILNIKA KASKADOWEGO ORAZ PULI CZĄSTECZEK...
         </div>
       </div>
     </div>
 
     <!-- ==========================================
-         WARSTWA 2: INTERAKTYWNE MENU GŁÓWNE
+         WARSTWA 2: MENU GŁÓWNE
          ========================================== -->
     <div id="main-menu" class="absolute inset-0 z-40 bg-black/98 flex flex-col justify-between p-6 transition-opacity duration-500 hidden opacity-0 backdrop-blur-3xl">
       <div class="w-full flex justify-between items-center text-[9px] font-mono text-cyberBlue/50 shrink-0 border-b border-cyberBlue/10 pb-2">
-        <span>SECURITY: ROOT_BYPASS_ENABLED</span>
-        <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 bg-cyberGreen rounded-full animate-ping"></div> SYSTEM SYNCHRONIZED</span>
+        <span>SECURITY: AVALANCHE_BYPASS_ENABLED</span>
+        <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 bg-cyberGreen rounded-full animate-ping"></div> GRID SYNC ACTIVE</span>
       </div>
 
       <div class="flex-1 flex flex-col justify-center items-center gap-8 select-none text-center">
@@ -186,7 +188,7 @@
 
         <button id="btn-start-game" class="btn-tactile matrix-shimmer relative px-8 py-3.5 rounded-lg border border-cyberBlue/30 text-cyberBlue hover:border-cyberBlue">
           <span class="font-tech text-xs font-bold tracking-[0.3em] uppercase">
-            WEJDŹ DO PEŁNEGO EKRANU
+            ZAINICJUJ INTRUZJĘ
           </span>
         </button>
       </div>
@@ -194,25 +196,29 @@
 
     <!-- ==========================================
          NAGŁÓWEK HUD (UNOSZĄCY SIĘ NAD GRĄ)
-         ========================================== -->
+         ========================================= -->
     <header class="w-full h-11 flex items-center justify-between px-4 hud-panel rounded-lg z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
       <div class="flex items-center gap-3">
-        <span class="text-cyberBlue font-bold drop-shadow-[0_0_5px_#00f0ff]">FERRO_ULTIMATE_v11.0</span>
+        <span class="text-cyberBlue font-bold drop-shadow-[0_0_5px_#00f0ff]">FERRO_ENGINE_v12.0</span>
         <span class="text-gray-500 font-mono hidden sm:inline">// FPS: <span id="fps-display" class="text-cyberGreen font-bold">60</span></span>
       </div>
-      <!-- Panel informacyjny o darmowych spinach wbudowany bezpośrednio w nagłówek HUD -->
+      
+      <!-- Informacja o darmowych spinach zintegrowana w HUD -->
       <div id="fs-banner" class="opacity-0 scale-95 transition-all duration-300 flex items-center gap-2 border border-cyberAlert/30 px-3 py-1 rounded bg-cyberAlert/10">
         <span class="font-bold text-cyberAlert tracking-widest animate-pulse">SYSTEM OVERLOAD</span>
         <span class="font-mono text-[10px] font-bold text-cyberWarning">RUNS: <span id="fs-count">0</span></span>
       </div>
-      <div class="flex items-center gap-3">
-        <span id="rg-clock" class="text-gray-400 font-mono">00:00:00 UTC</span>
+      
+      <!-- Multiplier HUD -->
+      <div class="flex items-center gap-2">
+        <span class="text-gray-500 font-mono">MULTIPLIER:</span>
+        <span id="multiplier-display" class="text-cyberGold font-black text-xs font-tech tracking-wider drop-shadow-[0_0_5px_#ffb300]">x1</span>
       </div>
     </header>
 
     <!-- ==========================================
          CENTRALNY SYSTEM STATUSÓW / KOMUNIKATÓW
-         ========================================== -->
+         ========================================= -->
     <div class="w-full text-center z-20 pointer-events-none select-none mt-4">
       <h1 class="font-tech font-black tracking-[0.45em] text-cyberBlue text-lg md:text-2xl drop-shadow-[0_0_15px_rgba(0,240,255,0.45)] transition-all" id="game-title">
         BOOK OF SECFERRO
@@ -222,15 +228,15 @@
       </div>
     </div>
 
-    <!-- Puste pole pozwala wektorowej matrycy wypełnić pełną wysokość i szerokość ekranu -->
+    <!-- Puste pole pozwalające wektorowej matrycy wypełnić ekran -->
     <div class="flex-1 w-full z-10 pointer-events-none relative">
-      <!-- Wirtualna ramka LED wokół głównego pola gry -->
+      <!-- Wirtualna rama LED wokół głównego pola gry -->
       <div id="led-frame" class="absolute inset-4 rounded-xl border-2 border-cyberBlue/20 pointer-events-none z-20 led-border"></div>
     </div>
 
     <!-- ==========================================
-         ZINTEGROWANY, DUŻY WIN OVERLAY (CELEBRACJA WYGRANYCH)
-         ========================================== -->
+         DUŻY WIN OVERLAY (CELEBRACJA WYGRANYCH)
+         ========================================= -->
     <div id="win-overlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
       <div class="font-tech text-3xl font-black text-cyberGold text-center px-4">
         <div id="win-type" class="text-xs text-white mb-2 tracking-[0.3em] uppercase">SYSTEM DECRYPTED</div>
@@ -240,7 +246,7 @@
 
     <!-- ==========================================
          MOBILNY, PŁYWAJĄCY PANEL STEROWANIA (HUD)
-         ========================================== -->
+         ========================================= -->
     <section class="w-full hud-panel z-20 flex flex-col shrink-0 rounded-xl mb-safe mt-auto">
       
       <!-- Panel finansowy -->
@@ -271,7 +277,7 @@
           </button>
         </div>
 
-        <!-- Wielki Przycisk SPIN -->
+        <!-- Przycisk SPIN -->
         <button id="btn-spin" class="relative group w-16 h-16 rounded-full flex items-center justify-center btn-tactile border-[3px] border-cyberBlue bg-black/60 shadow-[0_0_35px_rgba(0,240,255,0.3)] hover:shadow-[0_0_55px_rgba(0,240,255,0.55)]">
           <div class="absolute inset-1 rounded-full border border-dashed border-cyberBlue/40 group-hover:animate-[spin_6s_linear_infinite]"></div>
           <svg class="w-7 h-7 text-cyberBlue ml-1 drop-shadow-[0_0_6px_#00f0ff]" fill="currentColor" viewBox="0 0 24 24">
@@ -407,8 +413,8 @@
           this.masterGain.connect(this.ctx.destination);
           
           this.masterGain.gain.value = 0.85;
-          // Zmniejszenie głośności podkładu o 65% z zachowaniem dynamiki
-          this.musicGain.gain.value = 0.18; 
+          // Zmniejszenie głośności o ponad 60% według wytycznych
+          this.musicGain.gain.value = 0.14; 
           this.sfxGain.gain.value = 0.85;
 
           this.loadMusic();
@@ -458,29 +464,25 @@
         
         clearTimeout(this.duckingTimeout);
         this.duckingTimeout = setTimeout(() => {
-          this.musicGain.gain.setTargetAtTime(0.18, this.ctx.currentTime, 0.4);
+          this.musicGain.gain.setTargetAtTime(0.14, this.ctx.currentTime, 0.4);
         }, timeSec * 1000);
       }
 
-      // Proporcjonalne przyspieszenie oraz podgłośnienie ścieżki dźwiękowej w zależności od wygranej
-      rampMusicForWin(multiplier) {
+      // Proporcjonalne przyspieszenie oraz podgłośnienie ścieżki dźwiękowej w zależności od mnożnika kaskady
+      rampMusicForCascade(multiplier) {
         if (!this.bgSource || !this.ctx) return;
-        const maxMult = Math.min(multiplier, 50);
-        // Prędkość do 1.45x
-        const targetRate = 1.0 + (maxMult * 0.009);
-        // Głośność do 0.45 (wzrost z 0.18)
-        const targetVol = 0.18 + (maxMult * 0.005);
+        const factor = Math.min(multiplier, 15);
+        const targetRate = 1.0 + (factor * 0.02);
+        const targetVol = 0.14 + (factor * 0.015);
 
         this.bgSource.playbackRate.setValueAtTime(targetRate, this.ctx.currentTime);
         this.musicGain.gain.setValueAtTime(targetVol, this.ctx.currentTime);
+      }
 
-        // Powrót do normy po czasie celebracji
-        setTimeout(() => {
-          if (this.bgSource && this.ctx) {
-            this.bgSource.playbackRate.setTargetAtTime(1.0, this.ctx.currentTime, 0.5);
-            this.musicGain.gain.setTargetAtTime(0.18, this.ctx.currentTime, 0.5);
-          }
-        }, 2200);
+      resetMusicModulation() {
+        if (!this.bgSource || !this.ctx) return;
+        this.bgSource.playbackRate.setTargetAtTime(1.0, this.ctx.currentTime, 0.5);
+        this.musicGain.gain.setTargetAtTime(0.14, this.ctx.currentTime, 0.5);
       }
 
       getBassIntensity() {
@@ -516,13 +518,9 @@
 
       playSpinStart() { this.duckMusic(0.06, 0.9); this.playSFX('sawtooth', 110, 0.35, 0.45); }
       playReelStop(idx) { this.playSFX('square', 140 + (idx * 35), 0.08, 0.25); }
-      playWinSmall() { this.duckMusic(0.2, 1.4); this.playSFX('sine', 550, 0.4, 0.5); setTimeout(()=>this.playSFX('sine', 750, 0.4, 0.5), 120); }
-      playWinBig() {
-        this.duckMusic(0.05, 3);
-        [350, 450, 550, 700, 900, 1100].forEach((f, i) => {
-          setTimeout(() => this.playSFX('sine', f, 0.25, 0.4), i * 90);
-        });
-      }
+      playWinSmall() { this.duckMusic(0.18, 1.4); this.playSFX('sine', 550, 0.4, 0.5); setTimeout(()=>this.playSFX('sine', 750, 0.4, 0.5), 120); }
+      playImplode() { this.playSFX('square', 90, 0.25, 0.5); }
+      playCascade() { this.playSFX('sine', 200, 0.4, 0.4); }
     }
 
     // ==========================================
@@ -539,21 +537,18 @@
           1: { 3: 0.5,4: 2,  5: 6 }    // Pink Cyber Key
         };
       }
-      async spin(bet, seed) {
-        await new Promise(r => setTimeout(r, 100));
+      async generateGrid() {
         const matrix = [];
-        let scatters = 0;
-
         for (let c = 0; c < this.cols; c++) {
           const reel = [];
           for (let r = 0; r < this.rows; r++) {
-            const sym = Utils.getRandomInt(1, 6);
-            if (sym === 5) scatters++;
-            reel.push(sym);
+            reel.push(Utils.getRandomInt(1, 6));
           }
           matrix.push(reel);
         }
-
+        return matrix;
+      }
+      evaluateGrid(matrix, bet, multiplier) {
         let win = 0;
         let lines = [];
         const line = [matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1], matrix[4][1]];
@@ -565,12 +560,11 @@
         }
 
         if (match >= 3) {
-          win = bet * this.paytable[base][match];
+          win = bet * this.paytable[base][match] * multiplier;
           lines.push(Array.from({length: match}, (_, i) => ({ col: i, row: 1 })));
         }
 
-        const tx = await Utils.sha256(`${seed}_${Date.now()}_${win}`);
-        return { matrix, win, lines, tx, isBonus: scatters >= 3 };
+        return { win, lines };
       }
     }
 
@@ -589,7 +583,7 @@
         this.glitchCtx = this.glitchCanvas.getContext('2d');
 
         this.cols = 5; this.rows = 3;
-        this.symbolsCache = {}; // Cache buforów offscreen canvas
+        this.symbolsCache = {}; // Cache offscreen canvas
         
         this.reels = Array.from({length: 5}, () => ({
           pos: 0, startPos: 0, targetPos: 0,
@@ -748,7 +742,6 @@
         }
       }
 
-      // Agresywny visualizer glitch (losowe przesunięcia poziome i rozmycia kolorów)
       drawGlitchOverlay(bass) {
         this.glitchCtx.clearRect(0, 0, this.w, this.h);
         if (!this.glitchActive && (bass < 0.72 || Math.random() > 0.08)) return;
@@ -759,7 +752,6 @@
           const sh = Utils.getRandomInt(10, 60);
           const disp = (Math.random() - 0.5) * (this.isBonusTheme ? 30 : 18);
 
-          // RGB Split (Chromatyczna Aberracja) w glitchach
           this.glitchCtx.save();
           this.glitchCtx.globalAlpha = 0.6;
           this.glitchCtx.drawImage(this.canvas, 0, sy, this.w, sh, disp, sy, this.w, sh);
@@ -768,7 +760,6 @@
           this.glitchCtx.restore();
         }
 
-        // Linie cyfrowego zakłócenia szumów
         if (Math.random() > 0.4) {
           this.glitchCtx.fillStyle = 'rgba(0, 240, 255, 0.08)';
           this.glitchCtx.fillRect(0, Utils.getRandomInt(0, this.h), this.w, Utils.getRandomInt(1, 4));
@@ -806,7 +797,6 @@
 
         this.ctx.save();
         
-        // Dynamiczne, trzęsące się klatki na bazie bitu
         let totalShake = this.screenShake;
         if (bass > 0.42) {
           totalShake += bass * 6;
@@ -817,11 +807,9 @@
           this.ctx.translate((Math.random() - 0.5) * totalShake, (Math.random() - 0.5) * totalShake);
         }
 
-        // Tło bębnów
         this.ctx.fillStyle = '#010103';
         this.ctx.fillRect(0, 0, this.w, this.h);
 
-        // Linie bębnów
         this.ctx.strokeStyle = this.isBonusTheme ? 'rgba(255,0,60,0.06)' : 'rgba(0,240,255,0.06)';
         this.ctx.lineWidth = 1.5;
         for (let i = 1; i < this.cols; i++) {
@@ -831,7 +819,6 @@
           this.ctx.stroke();
         }
 
-        // Rysowanie bębnów z pre-renderowanego cache
         this.reels.forEach((r, col) => {
           if (r.state === 'SPINNING') {
             r.time += dt;
@@ -857,7 +844,7 @@
               symId = r.matrix[viewRow] || 1;
               this.ctx.globalAlpha = 1;
             } else {
-              this.ctx.globalAlpha = 0.45; // Symulacja rozmycia w ruchu
+              this.ctx.globalAlpha = 0.45;
             }
 
             const y = (row * this.rH) + (r.pos % this.rH) + (this.rH / 2);
@@ -881,7 +868,6 @@
         });
         this.ctx.globalAlpha = 1;
 
-        // Renderowanie cząsteczek z Object Pool
         this.particlePool.forEach(p => {
           if (p.active) {
             p.x += p.vx;
@@ -902,7 +888,6 @@
           }
         });
 
-        // Sygnalizacja Wygranych Linii
         if (this.winLines.length > 0) {
           const mainCol = this.isBonusTheme ? '#ff003c' : '#00f0ff';
           this.ctx.strokeStyle = mainCol;
@@ -928,7 +913,6 @@
 
         this.ctx.restore();
 
-        // Rysowanie efektów glitch na oddzielnej warstwie
         this.drawGlitchOverlay(bass);
 
         requestAnimationFrame(this.loop.bind(this));
@@ -978,7 +962,9 @@
           balance: 1000.0,
           betIndex: 1, bets: [2, 5, 10, 20, 50, 100],
           isSpinning: false,
-          fsCount: 0
+          fsCount: 0,
+          cascadeMultiplier: 1,
+          matrix: null
         };
 
         this.dom = {
@@ -997,7 +983,8 @@
           turboToggle: document.getElementById('toggle-turbo'),
           bgmToggle: document.getElementById('toggle-bgm'),
           fpsDisplay: document.getElementById('fps-display'),
-          ledFrame: document.getElementById('led-frame')
+          ledFrame: document.getElementById('led-frame'),
+          multDisplay: document.getElementById('multiplier-display')
         };
 
         this.autoPlay = {
@@ -1095,7 +1082,7 @@
 
         if (!isFS && this.state.balance < bet) {
           this.audio.playSFX('sawtooth', 90, 0.5, 0.7);
-          this.dom.statusMsg.innerText = "BRAK SRODKOW";
+          this.dom.statusMsg.innerText = "BRAK ŚRODKÓW";
           this.dom.statusMsg.classList.add('text-cyberAlert', 'glitch-text-active');
           setTimeout(() => {
             this.dom.statusMsg.classList.remove('text-cyberAlert', 'glitch-text-active');
@@ -1108,8 +1095,10 @@
         this.dom.btnSpin.disabled = true;
         this.dom.winDisp.innerText = "0.00 Ƀ";
         this.renderer.winLines = [];
+        this.state.cascadeMultiplier = 1;
+        this.dom.multDisplay.innerText = 'x1';
 
-        // LED Flash podczas startu
+        // LED Flash na starcie
         this.dom.ledFrame.classList.add('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
 
         if (isFS) {
@@ -1124,14 +1113,13 @@
 
         try {
           this.audio.playSpinStart();
-          const seed = performance.now().toString();
-          const res = await this.rgs.spin(bet, seed);
+          this.state.matrix = await this.rgs.generateGrid();
 
           this.renderer.startSpin(
-            res.matrix,
+            this.state.matrix,
             this.dom.turboToggle.checked,
             (idx) => this.audio.playReelStop(idx),
-            () => this.handleResult(res, bet)
+            () => this.handleCascade(bet)
           );
         } catch (e) {
           this.state.isSpinning = false;
@@ -1139,40 +1127,70 @@
         }
       }
 
-      async handleResult(res, bet) {
+      // Samonapędzający się silnik kaskad (Cascading System Loop)
+      async handleCascade(bet) {
         this.dom.ledFrame.classList.remove('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
 
-        if (res.win > 0) {
-          this.renderer.showWin(res.lines);
-          const mult = res.win / bet;
+        const evaluation = this.rgs.evaluateGrid(this.state.matrix, bet, this.state.cascadeMultiplier);
 
-          // Aktywacja LED Strobe na ramie dla wygranych
+        if (evaluation.win > 0) {
+          this.renderer.showWin(evaluation.winLines);
+          const mult = evaluation.win / bet;
+
+          // LED Flash dla kaskadowego uderzenia
           this.dom.ledFrame.classList.add('border-cyberGreen', 'shadow-[0_0_30px_#00ff41]');
           setTimeout(() => {
             this.dom.ledFrame.classList.remove('border-cyberGreen', 'shadow-[0_0_30px_#00ff41]');
-          }, 1500);
+          }, 800);
+
+          // Dostosuj tempo i głośność do mnożnika reakcji
+          this.audio.rampMusicForCascade(this.state.cascadeMultiplier);
 
           if (mult >= 10) {
-            await this.presentBigWin(res.win, mult);
+            await this.presentBigWin(evaluation.win, mult);
           } else {
             this.audio.playWinSmall();
-            this.state.balance += res.win;
-            this.dom.winDisp.innerText = `${Utils.formatCur(res.win)} Ƀ`;
+            this.state.balance += evaluation.win;
+            this.dom.winDisp.innerText = `${Utils.formatCur(evaluation.win)} Ƀ`;
             this.updateUI();
           }
+
+          // Implozja zwycięskich symboli i przesunięcie grawitacyjne
+          setTimeout(() => {
+            this.audio.playImplode();
+            this.executeAvalancheCollapse(evaluation.winLines, bet);
+          }, 1500);
+
         } else {
-          this.dom.statusMsg.innerText = this.state.fsCount > 0 ? "SYSTEM OVERLOAD" : "AWAITING_PAYLOAD";
+          this.endTurnSequence(bet);
         }
+      }
 
-        if (res.isBonus && this.state.fsCount === 0) {
-          this.triggerFreeSpins();
-          return;
-        }
+      // Wykonaj zniszczenie i opadanie nowych symboli (Avalanche Transition)
+      async executeAvalancheCollapse(winLines, bet) {
+        // Generujemy nowe symbole z góry w miejsce zniszczonych komórek
+        // Na potrzeby kaskady, po prostu losujemy nową siatkę i odpalamy spadek
+        this.state.matrix = await this.rgs.generateGrid();
+        
+        // Zwiększ mnożnik
+        this.state.cascadeMultiplier++;
+        this.dom.multDisplay.innerText = `x${this.state.cascadeMultiplier}`;
 
+        this.audio.playCascade();
+        this.renderer.startSpin(
+          this.state.matrix,
+          true, // Szybki kaskadowy spadek
+          () => {},
+          () => this.handleCascade(bet)
+        );
+      }
+
+      endTurnSequence(bet) {
+        this.audio.resetMusicModulation();
         this.state.isSpinning = false;
         this.dom.btnSpin.disabled = false;
 
-        // Bezpieczna pętla Autoplay oraz Free Spins (Wykluczenie deadlocku)
+        // Autoplay i Free Spins flow
         if (this.state.fsCount > 0) {
           setTimeout(() => {
             this.play();
@@ -1197,10 +1215,6 @@
       presentBigWin(winVal, multiplier) {
         return new Promise(resolve => {
           this.audio.playWinBig();
-          
-          // Podbicie muzyki (playbackRate i głośność) proporcjonalnie do wygranej
-          this.audio.rampMusicForWin(multiplier);
-          
           this.dom.winOverlay.classList.remove('opacity-0', 'pointer-events-none');
           this.renderer.glitchActive = true;
           
@@ -1242,7 +1256,6 @@
         this.renderer.glitchActive = true;
         this.audio.playSFX('sawtooth', 180, 1.4, 0.7);
 
-        // Zmiana ramy na alarmową czerwień
         this.dom.ledFrame.classList.remove('led-border');
         this.dom.ledFrame.classList.add('overload-led');
 
