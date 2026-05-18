@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#010103">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="Book of SecFerro - Cyber Slot.">
+  <meta name="description" content="Book of SecFerro - Certified Premium Cascading Cyber Slot.">
   <title>SecFerro // Tier-1 Cyber RGS Engine</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -411,7 +411,7 @@
         <div class="font-tech text-3xl sm:text-4xl font-black tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase animate-pulse">
           SECFERRO
         </div>
-        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase animate-pulse">Cinematic Engine v4.3</p>
+        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase animate-pulse">Cinematic Engine v4.4</p>
       </div>
       <div class="w-full max-w-[250px] bg-black/60 border border-cyberBlue/20 h-2 rounded-full overflow-hidden p-[1px] mb-8">
         <div id="loader-bar" class="h-full bg-cyberBlue w-0 transition-all duration-300"></div>
@@ -424,14 +424,20 @@
   </div>
 
   <script type="module">
+    // Bezpieczne kryptograficzne RNG kompatybilne z WebView i HTTP/IFrame sandbox
     class SecureRNG {
       getInt(min, max) {
         const range = max - min + 1;
-        const array = new Uint32Array(1);
-        window.crypto.getRandomValues(array);
-        const maxLimit = Math.floor(4294967296 / range) * range;
-        while (array[0] >= maxLimit) { window.crypto.getRandomValues(array); }
-        return min + (array[0] % range);
+        if (window.crypto && window.crypto.getRandomValues) {
+          const array = new Uint32Array(1);
+          window.crypto.getRandomValues(array);
+          const maxLimit = Math.floor(4294967296 / range) * range;
+          while (array[0] >= maxLimit) { window.crypto.getRandomValues(array); }
+          return min + (array[0] % range);
+        } else {
+          // Stabilny fallback dla środowisk bez Crypto API
+          return Math.floor(Math.random() * range) + min;
+        }
       }
     }
 
@@ -563,16 +569,22 @@
 
       init() {
         if (!this.ctx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          this.ctx = new AudioContext();
-          this.masterGain = this.ctx.createGain(); this.musicGain = this.ctx.createGain(); this.sfxGain = this.ctx.createGain();
-          this.musicGain.connect(this.masterGain); this.sfxGain.connect(this.masterGain);
-          this.masterGain.connect(this.ctx.destination);
-          this.masterGain.gain.value = 0.85; this.musicGain.gain.value = 0.15; this.sfxGain.gain.value = 0.9;
-          
-          this.loadBackgroundMusic();
+          try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+            this.masterGain = this.ctx.createGain(); this.musicGain = this.ctx.createGain(); this.sfxGain = this.ctx.createGain();
+            this.musicGain.connect(this.masterGain); this.sfxGain.connect(this.masterGain);
+            this.masterGain.connect(this.ctx.destination);
+            this.masterGain.gain.value = 0.85; this.musicGain.gain.value = 0.15; this.sfxGain.gain.value = 0.9;
+            
+            this.loadBackgroundMusic();
+          } catch (e) {
+            console.warn("Błąd inicjalizacji audio context:", e);
+          }
         }
-        if (this.ctx.state === 'suspended') this.ctx.resume();
+        if (this.ctx && this.ctx.state === 'suspended') {
+          try { this.ctx.resume(); } catch(e) {}
+        }
       }
 
       async loadBackgroundMusic() {
@@ -598,12 +610,14 @@
           return;
         }
         if (!this.bgBuffer || !this.bgmEnabled || this.bgSource) return;
-        this.bgSource = this.ctx.createBufferSource();
-        this.bgSource.buffer = this.bgBuffer;
-        this.bgSource.loop = true;
-        this.bgSource.connect(this.musicGain);
-        this.bgSource.playbackRate.value = this.currentBaseRate;
-        this.bgSource.start(0);
+        try {
+          this.bgSource = this.ctx.createBufferSource();
+          this.bgSource.buffer = this.bgBuffer;
+          this.bgSource.loop = true;
+          this.bgSource.connect(this.musicGain);
+          this.bgSource.playbackRate.value = this.currentBaseRate;
+          this.bgSource.start(0);
+        } catch(e) {}
       }
 
       stopMusic() {
@@ -617,14 +631,16 @@
 
       startProceduralAmbient() {
         if (!this.bgmEnabled || this.synthOsc || !this.ctx) return;
-        this.synthOsc = this.ctx.createOscillator();
-        this.synthGain = this.ctx.createGain();
-        this.synthOsc.type = 'sawtooth';
-        this.synthOsc.frequency.setValueAtTime(65.41 * this.currentBaseRate, this.ctx.currentTime);
-        this.synthGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
-        this.synthOsc.connect(this.synthGain);
-        this.synthGain.connect(this.musicGain);
-        this.synthOsc.start();
+        try {
+          this.synthOsc = this.ctx.createOscillator();
+          this.synthGain = this.ctx.createGain();
+          this.synthOsc.type = 'sawtooth';
+          this.synthOsc.frequency.setValueAtTime(65.41 * this.currentBaseRate, this.ctx.currentTime);
+          this.synthGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+          this.synthOsc.connect(this.synthGain);
+          this.synthGain.connect(this.musicGain);
+          this.synthOsc.start();
+        } catch(e) {}
       }
 
       stopProceduralAmbient() {
@@ -659,25 +675,29 @@
 
       playSFX(type, freq, dur, vol = 0.4, slideFreq = null) {
         if (!this.sfxEnabled || !this.ctx) return;
-        const osc = this.ctx.createOscillator(); const g = this.ctx.createGain();
-        osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        if (slideFreq) osc.frequency.exponentialRampToValueAtTime(slideFreq, this.ctx.currentTime + dur);
-        g.gain.setValueAtTime(vol, this.ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
-        osc.connect(g); g.connect(this.sfxGain);
-        osc.start(); osc.stop(this.ctx.currentTime + dur);
+        try {
+          const osc = this.ctx.createOscillator(); const g = this.ctx.createGain();
+          osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          if (slideFreq) osc.frequency.exponentialRampToValueAtTime(slideFreq, this.ctx.currentTime + dur);
+          g.gain.setValueAtTime(vol, this.ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
+          osc.connect(g); g.connect(this.sfxGain);
+          osc.start(); osc.stop(this.ctx.currentTime + dur);
+        } catch(e) {}
       }
 
       playDeepImpact() {
         if (!this.sfxEnabled || !this.ctx) return;
-        const osc = this.ctx.createOscillator(); const g = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(20, this.ctx.currentTime + 1.2);
-        g.gain.setValueAtTime(1.0, this.ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.2);
-        osc.connect(g); g.connect(this.sfxGain);
-        osc.start(); osc.stop(this.ctx.currentTime + 1.2);
+        try {
+          const osc = this.ctx.createOscillator(); const g = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(20, this.ctx.currentTime + 1.2);
+          g.gain.setValueAtTime(1.0, this.ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.2);
+          osc.connect(g); g.connect(this.sfxGain);
+          osc.start(); osc.stop(this.ctx.currentTime + 1.2);
+        } catch(e) {}
       }
 
       startHeartbeat() {
@@ -715,7 +735,15 @@
     class CinematicRenderer {
       constructor() {
         this.canvas = document.getElementById('gameCanvas');
-        this.ctx = this.canvas.getContext('2d', { alpha: false, desynchronized: true });
+        try {
+          this.ctx = this.canvas.getContext('2d', { alpha: false, desynchronized: true });
+        } catch (e) {
+          this.ctx = this.canvas.getContext('2d');
+        }
+        if (!this.ctx) {
+          this.ctx = this.canvas.getContext('2d');
+        }
+        
         this.cols = 5; this.rows = 3;
         this.symsCache = {};
         
@@ -738,9 +766,12 @@
 
       resize() {
         const dpr = window.devicePixelRatio || 1;
-        const rect = this.canvas.parentElement.getBoundingClientRect();
-        this.canvas.width = rect.width * dpr; this.canvas.height = rect.height * dpr;
-        this.w = rect.width; this.h = rect.height;
+        const rect = this.canvas.parentElement ? this.canvas.parentElement.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
+        this.canvas.width = (rect.width || window.innerWidth) * dpr;
+        this.canvas.height = (rect.height || window.innerHeight) * dpr;
+        this.w = rect.width || window.innerWidth;
+        this.h = rect.height || window.innerHeight;
+
         this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
         const isMobile = this.w < 640;
@@ -750,12 +781,16 @@
 
         this.ra = { x: sideMargin, y: topMargin, w: this.w - (sideMargin * 2), h: this.h - topMargin - bottomMargin };
         this.cW = this.ra.w / this.cols; this.rH = this.ra.h / this.rows;
-        if (this.cW > 0) this.preRenderSymbols();
+        if (this.cW > 0 && this.rH > 0 && !isNaN(this.cW) && !isNaN(this.rH)) {
+          this.preRenderSymbols();
+        }
       }
 
       preRenderSymbols() {
         const size = Math.min(this.cW, this.rH) * 0.58;
-        const dSize = Math.ceil(size * 1.5);
+        if (isNaN(size) || size <= 0) return;
+        const dSize = Math.max(1, Math.ceil(size * 1.5));
+        
         const defs = {
           1: { c: '#00ff41', d: (c, s) => { c.strokeRect(-s*.2, -s*.2, s*.4, s*.4); c.beginPath(); c.moveTo(-s*.2,-s*.2); c.lineTo(s*.2,s*.2); c.stroke(); } }, 
           2: { c: '#00f0ff', d: (c, s) => { c.beginPath(); c.moveTo(-s*.25, -s*.2); c.lineTo(s*.1, -s*.2); c.lineTo(s*.1, s*.2); c.lineTo(-s*.25, s*.2); c.closePath(); c.stroke(); } }, 
@@ -1063,7 +1098,6 @@
           fsFinalMult: get('fs-final-mult'),
           btnCloseFSSummary: get('btn-close-fs-summary'),
 
-          // Naprawione/Przywrócone selektory interfejsu systemu doświadczenia i rang hakerskich:
           levelName: get('hacker-level-name'),
           xpBar: get('level-xp-bar'),
           xpDisplay: get('hacker-xp-display')
@@ -1143,7 +1177,11 @@
         });
 
         document.getElementById('btn-reset-session').addEventListener('click', () => {
-          localStorage.removeItem('secferro_v4');
+          try {
+            if (typeof localStorage !== 'undefined') {
+              localStorage.removeItem('secferro_v4');
+            }
+          } catch(e) {}
           window.location.reload();
         });
 
@@ -1168,6 +1206,17 @@
         });
       }
 
+      initLoader() {
+        setTimeout(() => {
+          const lBar = document.getElementById('loader-bar');
+          if (lBar) lBar.style.width = '100%';
+        }, 300);
+        setTimeout(() => {
+          const btnStart = document.getElementById('btn-start-game');
+          if (btnStart) btnStart.classList.remove('hidden');
+        }, 500);
+      }
+
       startSessionTimer() {
         setInterval(() => {
           const diff = Math.floor((Date.now() - this.sessionStart) / 1000);
@@ -1176,7 +1225,11 @@
           const rgSession = document.getElementById('rg-session');
           const rgClock = document.getElementById('rg-clock');
           if (rgSession) rgSession.innerText = `${mins}:${secs}`;
-          if (rgClock) rgClock.innerText = new Date().toISOString().substring(11, 19) + ' UTC';
+          if (rgClock) {
+            try {
+              rgClock.innerText = new Date().toISOString().substring(11, 19) + ' UTC';
+            } catch(e) {}
+          }
         }, 1000);
       }
 
@@ -1203,11 +1256,13 @@
 
       saveSession() { 
         try {
-          const payload = {
-            state: this.state,
-            stats: this.stats
-          };
-          localStorage.setItem('secferro_v4', JSON.stringify(payload)); 
+          if (typeof localStorage !== 'undefined') {
+            const payload = {
+              state: this.state,
+              stats: this.stats
+            };
+            localStorage.setItem('secferro_v4', JSON.stringify(payload)); 
+          }
         } catch(e) {
           console.warn("Zapis sesji zablokowany:", e);
         }
@@ -1215,13 +1270,15 @@
       
       loadSession() { 
         try {
-          const s = localStorage.getItem('secferro_v4'); 
-          if(s) { 
-            const data = JSON.parse(s);
-            if (data.state) Object.assign(this.state, data.state); 
-            if (data.stats) Object.assign(this.stats, data.stats);
-            this.updateJackpotBar(); 
-          } 
+          if (typeof localStorage !== 'undefined') {
+            const s = localStorage.getItem('secferro_v4'); 
+            if(s) { 
+              const data = JSON.parse(s);
+              if (data.state) Object.assign(this.state, data.state); 
+              if (data.stats) Object.assign(this.stats, data.stats);
+              this.updateJackpotBar(); 
+            } 
+          }
         } catch(e) {
           console.error("Błąd podczas odczytu sesji:", e);
         }
@@ -1233,7 +1290,6 @@
         this.dom.bet.innerText = this.state.bets[this.state.betIndex].toFixed(2);
         this.dom.multDisp.innerText = `x${this.state.cascadeMultiplier * this.state.level}`;
         
-        // Bezpieczna aktualizacja interfejsu rang i paska doświadczenia:
         if (this.dom.levelName) {
           this.dom.levelName.innerText = this.state.levelNames[this.state.level - 1];
         }
@@ -1253,12 +1309,17 @@
       }
 
       updateTurboUI() {
+        if (!this.dom.turboLabel || !this.dom.turboIcon) return;
         if (this.state.isTurbo) {
-          this.dom.turboLabel.classList.replace('text-gray-500', 'text-cyberBlue');
-          this.dom.turboIcon.classList.replace('text-gray-500', 'text-cyberBlue');
+          this.dom.turboLabel.classList.add('text-cyberBlue');
+          this.dom.turboLabel.classList.remove('text-gray-500');
+          this.dom.turboIcon.classList.add('text-cyberBlue');
+          this.dom.turboIcon.classList.remove('text-gray-500');
         } else {
-          this.dom.turboLabel.classList.replace('text-cyberBlue', 'text-gray-500');
-          this.dom.turboIcon.classList.replace('text-cyberBlue', 'text-gray-500');
+          this.dom.turboLabel.classList.add('text-gray-500');
+          this.dom.turboLabel.classList.remove('text-cyberBlue');
+          this.dom.turboIcon.classList.add('text-gray-500');
+          this.dom.turboIcon.classList.remove('text-cyberBlue');
         }
       }
 
@@ -1291,7 +1352,6 @@
         container.insertBefore(row, container.firstChild);
       }
 
-      // Przywrócona, kompletna i stabilna metoda dodawania punktów doświadczenia XP
       addXP(amount) {
         this.state.xp += amount;
         if (this.state.xp >= 100) {
@@ -1410,8 +1470,6 @@
           }
 
           const mult = evalResult.win / bet;
-          
-          // Bezpieczne i precyzyjne naliczanie punktów XP na podstawie mnożnika wygranej rundy
           this.addXP(Math.ceil(mult * 4));
 
           if (mult >= 5) {
@@ -1481,13 +1539,11 @@
       }
 
       async endCycle(pendingFS) {
-        // Naliczenie historii logów dla tej sesji
         const currentWin = parseFloat(this.dom.win.innerText) || 0.0;
         this.logRoundToHistory(this.state.bets[this.state.betIndex], currentWin);
 
         this.saveSession();
 
-        // 1. Obsługa paska FERRO Jackpot
         const jpCollected = Object.values(this.state.jackpotLetters).filter(Boolean).length;
         if (jpCollected === 5) {
           try {
@@ -1495,14 +1551,12 @@
           } catch (err) {
             console.error("Critical Jackpot Engine Fault:", err);
           } finally {
-            // Bezpieczne odblokowanie flagi spinu w przypadku błędu Jackpota
             this.isSpinning = false;
             this.dom.spinBtn.disabled = false;
           }
           return;
         }
 
-        // 2. Obsługa darmowych obrotów
         if (pendingFS) {
           this.renderer.triggerBlindingFlash();
           this.audio.playJackpotSiren();
@@ -1513,7 +1567,6 @@
           this.updateUI();
         }
 
-        // 3. Obsługa podsumowania darmowych obrotów (Free Spins)
         if (this.state.fsCount === 0 && this.bonusSession.activeBonus) {
           this.dom.fsTotalWin.innerText = this.bonusSession.accumulatedFSWin.toFixed(2);
           this.dom.fsFinalMult.innerText = `x${this.state.level}`;
@@ -1523,12 +1576,10 @@
           return; 
         }
 
-        // 4. Bezpieczne odblokowanie przycisku Spin
         this.isSpinning = false;
         this.dom.spinBtn.disabled = false;
         this.dom.msg.innerText = "PRZESYŁ GOTOWY";
 
-        // 5. Autoplay oraz darmowe obroty
         if (this.state.fsCount > 0) { 
           setTimeout(() => this.play(), 800); 
         } else if (this.autoplay.enabled) {
