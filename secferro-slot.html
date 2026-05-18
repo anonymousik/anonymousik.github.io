@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#010103">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="Book of SecFerro - Fullscreen Cascading Cyber Slot. Sound by Ferro ART.">
-  <title>SecFerro Division // Avalanche Cyber Slot Pro</title>
+  <meta name="description" content="Book of SecFerro - Professional Cascading Cyber Slot. Sound by Ferro ART.">
+  <title>SecFerro Division // Ultimate Cascading Engine</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
@@ -28,8 +28,8 @@
             cyberBlue: '#00f0ff',
             cyberPurple: '#bc13fe',
             cyberGold: '#ffb300',
-            glassBg: 'rgba(2, 2, 8, 0.85)',
-            glassBorder: 'rgba(0, 240, 255, 0.15)',
+            glassBg: 'rgba(3, 3, 10, 0.88)',
+            glassBorder: 'rgba(0, 240, 255, 0.16)',
           }
         }
       }
@@ -67,7 +67,7 @@
     }
 
     .hud-panel {
-      background: rgba(4, 4, 14, 0.85);
+      background: rgba(3, 3, 8, 0.88);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(0, 240, 255, 0.15);
@@ -122,13 +122,13 @@
   <!-- Główny Kontener Pełnoekranowy -->
   <div class="relative w-full h-full flex flex-col justify-between overflow-hidden p-3 sm:p-5 transform-gpu z-10">
     
-    <!-- Renderery wielkoformatowe -->
+    <!-- Renderery wielkoformatowe (Optymalizacja Single-Pass) -->
     <canvas id="matrixBackground" class="absolute inset-0 w-full h-full opacity-45 pointer-events-none mix-blend-screen z-0"></canvas>
     <canvas id="glitchCanvas" class="absolute inset-0 w-full h-full opacity-35 pointer-events-none mix-blend-screen z-20"></canvas>
     <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-10" aria-label="Główny ekran renderowania gry"></canvas>
 
     <!-- ==========================================
-         WARSTWA 1: PRE-BOOT SCREEN
+         WARSTWA 1: PRE-BOOT SCREEN (INICJALIZACJA)
          ========================================== -->
     <div id="splash-loader" class="absolute inset-0 z-50 bg-[#010103] flex flex-col justify-between p-8 transition-opacity duration-700">
       <div class="flex-1 flex flex-col justify-center items-center gap-8">
@@ -148,7 +148,7 @@
           <div class="font-tech text-2xl font-black tracking-[0.5em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase">
             SECFERRO
           </div>
-          <p class="font-mono text-[9px] text-gray-500 tracking-[0.3em] mt-2 uppercase">CASCADING CASCADE ENGINE v12.0</p>
+          <p class="font-mono text-[9px] text-gray-500 tracking-[0.3em] mt-2 uppercase">CASCADING ENGINE // EXTREME PROGRESSION EDITION</p>
         </div>
         
         <div class="w-full max-w-[220px] bg-black/60 border border-cyberBlue/20 h-2 rounded-full overflow-hidden p-[2px]">
@@ -156,7 +156,7 @@
         </div>
         
         <div id="loader-status" class="font-mono text-[8px] text-cyberBlue/60 tracking-widest text-center uppercase animate-pulse">
-          INICJOWANIE SILNIKA KASKADOWEGO ORAZ PULI CZĄSTECZEK...
+          INICJOWANIE SILNIKA KASKADOWEGO ORAZ SYLWANU FABULARNEGO...
         </div>
       </div>
     </div>
@@ -166,8 +166,8 @@
          ========================================== -->
     <div id="main-menu" class="absolute inset-0 z-40 bg-black/98 flex flex-col justify-between p-6 transition-opacity duration-500 hidden opacity-0 backdrop-blur-3xl">
       <div class="w-full flex justify-between items-center text-[9px] font-mono text-cyberBlue/50 shrink-0 border-b border-cyberBlue/10 pb-2">
-        <span>SECURITY: AVALANCHE_BYPASS_ENABLED</span>
-        <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 bg-cyberGreen rounded-full animate-ping"></div> GRID SYNC ACTIVE</span>
+        <span>SECURITY: EXTREME_AVALANCHE_ACTIVE</span>
+        <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 bg-cyberGreen rounded-full animate-ping"></div> GRID READY</span>
       </div>
 
       <div class="flex-1 flex flex-col justify-center items-center gap-8 select-none text-center">
@@ -181,14 +181,14 @@
         </div>
 
         <div>
-          <span class="font-mono text-[10px] text-gray-500 tracking-widest block mb-1">PROPRIETARY AUDIO CORE</span>
+          <span class="font-mono text-[10px] text-gray-500 tracking-widest block mb-1">PROPRIETARY AUDIO SYSTEM</span>
           <span class="font-tech text-lg text-cyberPurple tracking-wider font-bold">FERRO ART</span>
           <span class="font-mono text-xs text-cyberBlue block mt-1 uppercase tracking-[0.2em]">"WILCZY WYROK"</span>
         </div>
 
         <button id="btn-start-game" class="btn-tactile matrix-shimmer relative px-8 py-3.5 rounded-lg border border-cyberBlue/30 text-cyberBlue hover:border-cyberBlue">
           <span class="font-tech text-xs font-bold tracking-[0.3em] uppercase">
-            ZAINICJUJ INTRUZJĘ
+            ZAINICJUJ PROTOKÓŁ
           </span>
         </button>
       </div>
@@ -196,10 +196,10 @@
 
     <!-- ==========================================
          NAGŁÓWEK HUD (UNOSZĄCY SIĘ NAD GRĄ)
-         ========================================= -->
-    <header class="w-full h-11 flex items-center justify-between px-4 hud-panel rounded-lg z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
+         ========================================== -->
+    <header class="w-full h-12 flex items-center justify-between px-4 hud-panel rounded-lg z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
       <div class="flex items-center gap-3">
-        <span class="text-cyberBlue font-bold drop-shadow-[0_0_5px_#00f0ff]">FERRO_ENGINE_v12.0</span>
+        <span class="text-cyberBlue font-bold drop-shadow-[0_0_5px_#00f0ff]">FERRO_v12.0</span>
         <span class="text-gray-500 font-mono hidden sm:inline">// FPS: <span id="fps-display" class="text-cyberGreen font-bold">60</span></span>
       </div>
       
@@ -211,16 +211,32 @@
       
       <!-- Multiplier HUD -->
       <div class="flex items-center gap-2">
-        <span class="text-gray-500 font-mono">MULTIPLIER:</span>
+        <span class="text-gray-500 font-mono text-[8px] uppercase">MULTIPLIER:</span>
         <span id="multiplier-display" class="text-cyberGold font-black text-xs font-tech tracking-wider drop-shadow-[0_0_5px_#ffb300]">x1</span>
       </div>
     </header>
 
     <!-- ==========================================
-         CENTRALNY SYSTEM STATUSÓW / KOMUNIKATÓW
-         ========================================= -->
+         SYSTEM PROGRESJI (LEVEL & STORY XP BAR)
+         ========================================== -->
+    <div class="w-full px-4 z-20 mt-2">
+      <div class="hud-panel p-2 rounded-lg flex items-center justify-between text-[8px] font-mono select-none">
+        <div class="flex items-center gap-2">
+          <span class="text-cyberPurple font-bold">POZIOM HAKERA:</span>
+          <span id="hacker-level-name" class="text-cyberBlue font-black uppercase">SCRIPT KIDDIE</span>
+        </div>
+        <div class="flex-1 mx-4 bg-black/60 h-2 border border-cyberBlue/10 rounded-full overflow-hidden p-[1px]">
+          <div id="level-xp-bar" class="h-full bg-gradient-to-r from-cyberBlue via-cyberPurple to-cyberGreen progress-bar-fill w-0 rounded-full shadow-[0_0_8px_#00f0ff]"></div>
+        </div>
+        <div class="text-gray-400">
+          XP: <span id="hacker-xp-display" class="text-cyberGreen font-bold">0</span> / 1000
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTRALNY SYSTEM STATUSÓW / KOMUNIKATÓW -->
     <div class="w-full text-center z-20 pointer-events-none select-none mt-4">
-      <h1 class="font-tech font-black tracking-[0.45em] text-cyberBlue text-lg md:text-2xl drop-shadow-[0_0_15px_rgba(0,240,255,0.45)] transition-all" id="game-title">
+      <h1 class="font-tech font-black tracking-[0.45em] text-cyberBlue text-lg md:text-2xl drop-shadow-[0_0_15px_rgba(0,240,255,0.45)] transition-all animate-pulse" id="game-title">
         BOOK OF SECFERRO
       </h1>
       <div id="status-msg" class="text-[9px] text-cyberPurple font-mono tracking-widest mt-0.5 h-3 font-bold uppercase transition-all">
@@ -228,15 +244,12 @@
       </div>
     </div>
 
-    <!-- Puste pole pozwalające wektorowej matrycy wypełnić ekran -->
+    <!-- Puste pole na wektorową matrycę -->
     <div class="flex-1 w-full z-10 pointer-events-none relative">
-      <!-- Wirtualna rama LED wokół głównego pola gry -->
       <div id="led-frame" class="absolute inset-4 rounded-xl border-2 border-cyberBlue/20 pointer-events-none z-20 led-border"></div>
     </div>
 
-    <!-- ==========================================
-         DUŻY WIN OVERLAY (CELEBRACJA WYGRANYCH)
-         ========================================= -->
+    <!-- DUŻY WIN OVERLAY (CELEBRACJA DUŻYCH WYGRANYCH) -->
     <div id="win-overlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
       <div class="font-tech text-3xl font-black text-cyberGold text-center px-4">
         <div id="win-type" class="text-xs text-white mb-2 tracking-[0.3em] uppercase">SYSTEM DECRYPTED</div>
@@ -246,7 +259,7 @@
 
     <!-- ==========================================
          MOBILNY, PŁYWAJĄCY PANEL STEROWANIA (HUD)
-         ========================================= -->
+         ========================================== -->
     <section class="w-full hud-panel z-20 flex flex-col shrink-0 rounded-xl mb-safe mt-auto">
       
       <!-- Panel finansowy -->
@@ -270,14 +283,14 @@
         
         <div class="flex gap-4">
           <button id="btn-settings" class="w-12 h-12 rounded-full hud-panel flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Settings">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4v2m0-6V4"/></svg>
           </button>
           <button id="btn-auto" class="w-12 h-12 rounded-full hud-panel flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Autoplay">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"/></svg>
           </button>
         </div>
 
-        <!-- Przycisk SPIN -->
+        <!-- Wielki Przycisk SPIN / LAUNCH -->
         <button id="btn-spin" class="relative group w-16 h-16 rounded-full flex items-center justify-center btn-tactile border-[3px] border-cyberBlue bg-black/60 shadow-[0_0_35px_rgba(0,240,255,0.3)] hover:shadow-[0_0_55px_rgba(0,240,255,0.55)]">
           <div class="absolute inset-1 rounded-full border border-dashed border-cyberBlue/40 group-hover:animate-[spin_6s_linear_infinite]"></div>
           <svg class="w-7 h-7 text-cyberBlue ml-1 drop-shadow-[0_0_6px_#00f0ff]" fill="currentColor" viewBox="0 0 24 24">
@@ -413,7 +426,7 @@
           this.masterGain.connect(this.ctx.destination);
           
           this.masterGain.gain.value = 0.85;
-          // Zmniejszenie głośności o ponad 60% według wytycznych
+          // Drastyczne obniżenie bazowej głośności podkładu o ponad 60%
           this.musicGain.gain.value = 0.14; 
           this.sfxGain.gain.value = 0.85;
 
@@ -468,7 +481,6 @@
         }, timeSec * 1000);
       }
 
-      // Proporcjonalne przyspieszenie oraz podgłośnienie ścieżki dźwiękowej w zależności od mnożnika kaskady
       rampMusicForCascade(multiplier) {
         if (!this.bgSource || !this.ctx) return;
         const factor = Math.min(multiplier, 15);
@@ -583,7 +595,7 @@
         this.glitchCtx = this.glitchCanvas.getContext('2d');
 
         this.cols = 5; this.rows = 3;
-        this.symbolsCache = {}; // Cache offscreen canvas
+        this.symbolsCache = {}; // Cache buforów offscreen canvas
         
         this.reels = Array.from({length: 5}, () => ({
           pos: 0, startPos: 0, targetPos: 0,
@@ -964,7 +976,10 @@
           isSpinning: false,
           fsCount: 0,
           cascadeMultiplier: 1,
-          matrix: null
+          matrix: null,
+          xp: 0,
+          level: 1,
+          levelNames: ["SCRIPT KIDDIE", "NET BREAKER", "PROXY WIZARD", "DATABASE INJECTOR", "ELITE OVERLORD"]
         };
 
         this.dom = {
@@ -984,7 +999,10 @@
           bgmToggle: document.getElementById('toggle-bgm'),
           fpsDisplay: document.getElementById('fps-display'),
           ledFrame: document.getElementById('led-frame'),
-          multDisplay: document.getElementById('multiplier-display')
+          multDisplay: document.getElementById('multiplier-display'),
+          levelName: document.getElementById('hacker-level-name'),
+          xpBar: document.getElementById('level-xp-bar'),
+          xpDisplay: document.getElementById('hacker-xp-display')
         };
 
         this.autoPlay = {
@@ -1073,6 +1091,29 @@
       updateUI() {
         this.dom.balDisp.innerText = `${Utils.formatCur(this.state.balance)} Ƀ`;
         this.dom.betDisp.innerText = `${Utils.formatCur(this.state.bets[this.state.betIndex])} Ƀ`;
+        
+        // Aktualizacja UI poziomu progresji
+        this.dom.levelName.innerText = this.state.levelNames[this.state.level - 1];
+        this.dom.xpDisplay.innerText = this.state.xp;
+        const xpPercent = Math.min((this.state.xp / 1000) * 100, 100);
+        this.dom.xpBar.style.width = `${xpPercent}%`;
+      }
+
+      addXP(amount) {
+        this.state.xp += amount;
+        if (this.state.xp >= 1000) {
+          this.state.xp = this.state.xp % 1000;
+          if (this.state.level < 5) {
+            this.state.level++;
+            this.audio.playSFX('sine', 1200, 1.0, 0.8);
+            this.dom.statusMsg.innerText = "POZIOM ZWIĘKSZONY!";
+            this.dom.statusMsg.classList.add('glitch-text-active', 'text-cyberGold');
+            setTimeout(() => {
+              this.dom.statusMsg.classList.remove('glitch-text-active', 'text-cyberGold');
+            }, 2000);
+          }
+        }
+        this.updateUI();
       }
 
       async play() {
@@ -1098,7 +1139,7 @@
         this.state.cascadeMultiplier = 1;
         this.dom.multDisplay.innerText = 'x1';
 
-        // LED Flash na starcie
+        // LED Flash na starcie obrotu
         this.dom.ledFrame.classList.add('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
 
         if (isFS) {
@@ -1127,23 +1168,25 @@
         }
       }
 
-      // Samonapędzający się silnik kaskad (Cascading System Loop)
+      // Kaskadowy system reakcji napędzający się samoczynnie
       async handleCascade(bet) {
         this.dom.ledFrame.classList.remove('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
 
-        const evaluation = this.rgs.evaluateGrid(this.state.matrix, bet, this.state.cascadeMultiplier);
+        // Dynamiczne zwiększenie mnożnika na podstawie progresu poziomu fabularnego
+        const effectiveMultiplier = this.state.cascadeMultiplier * this.state.level;
+        const evaluation = this.rgs.evaluateGrid(this.state.matrix, bet, effectiveMultiplier);
 
         if (evaluation.win > 0) {
           this.renderer.showWin(evaluation.winLines);
           const mult = evaluation.win / bet;
 
-          // LED Flash dla kaskadowego uderzenia
+          // Rozbłysk ramy LED dla wygranej kaskadowej
           this.dom.ledFrame.classList.add('border-cyberGreen', 'shadow-[0_0_30px_#00ff41]');
           setTimeout(() => {
             this.dom.ledFrame.classList.remove('border-cyberGreen', 'shadow-[0_0_30px_#00ff41]');
           }, 800);
 
-          // Dostosuj tempo i głośność do mnożnika reakcji
+          // Przyrost głośności i tempa Ferro ART wraz z poziomem kaskady
           this.audio.rampMusicForCascade(this.state.cascadeMultiplier);
 
           if (mult >= 10) {
@@ -1155,7 +1198,10 @@
             this.updateUI();
           }
 
-          // Implozja zwycięskich symboli i przesunięcie grawitacyjne
+          // Przyznaj punkty XP za wygraną kombinację (mechanizm progresywny)
+          this.addXP(Math.ceil(mult * 5));
+
+          // Implozja kaskadowa i spadek nowych symboli (Samonapędzająca się pętla)
           setTimeout(() => {
             this.audio.playImplode();
             this.executeAvalancheCollapse(evaluation.winLines, bet);
@@ -1166,15 +1212,12 @@
         }
       }
 
-      // Wykonaj zniszczenie i opadanie nowych symboli (Avalanche Transition)
       async executeAvalancheCollapse(winLines, bet) {
-        // Generujemy nowe symbole z góry w miejsce zniszczonych komórek
-        // Na potrzeby kaskady, po prostu losujemy nową siatkę i odpalamy spadek
         this.state.matrix = await this.rgs.generateGrid();
         
-        // Zwiększ mnożnik
+        // Zwiększenie mnożnika dla kolejnej kaskady
         this.state.cascadeMultiplier++;
-        this.dom.multDisplay.innerText = `x${this.state.cascadeMultiplier}`;
+        this.dom.multDisplay.innerText = `x${this.state.cascadeMultiplier * this.state.level}`;
 
         this.audio.playCascade();
         this.renderer.startSpin(
@@ -1190,7 +1233,7 @@
         this.state.isSpinning = false;
         this.dom.btnSpin.disabled = false;
 
-        // Autoplay i Free Spins flow
+        // Bezpieczne sprawdzanie zakończenia rund dla Autoplay i Free Spins (Naprawa błędu zapętlenia)
         if (this.state.fsCount > 0) {
           setTimeout(() => {
             this.play();
@@ -1256,6 +1299,7 @@
         this.renderer.glitchActive = true;
         this.audio.playSFX('sawtooth', 180, 1.4, 0.7);
 
+        // Zmiana ramy na alarmową czerwień
         this.dom.ledFrame.classList.remove('led-border');
         this.dom.ledFrame.classList.add('overload-led');
 
