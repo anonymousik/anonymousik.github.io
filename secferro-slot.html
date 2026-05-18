@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#010103">
-  <meta name="description" content="Book of SecFerro - Ultimate Cyber Slot Engine. Audio by Ferro ART.">
-  <title>SecFerro Division // Ultimate Engine</title>
+  <meta name="description" content="Book of SecFerro - Professional Grade Cyber Slot. Sound by Ferro ART.">
+  <title>SecFerro Division // Pro Intrusion Engine</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
@@ -21,13 +21,13 @@
           },
           colors: {
             cyberGreen: '#00ff41',
-            cyberDark: '#010104',
+            cyberDark: '#010103',
             cyberAlert: '#ff003c',
             cyberBlue: '#00f0ff',
             cyberPurple: '#bc13fe',
             cyberGold: '#ffb300',
-            glassBg: 'rgba(5, 5, 12, 0.6)',
-            glassBorder: 'rgba(0, 240, 255, 0.15)',
+            glassBg: 'rgba(3, 3, 8, 0.75)',
+            glassBorder: 'rgba(0, 240, 255, 0.12)',
           }
         }
       }
@@ -35,13 +35,10 @@
   </script>
 
   <style>
-    /* ==========================================
-       GLOBALNE STYLE I OPTYMALIZACJE RENDEROWANIA
-       ========================================== */
     html, body {
       margin: 0; padding: 0;
       height: 100%; width: 100%;
-      background-color: #010104;
+      background-color: #010103;
       color: #00f0ff;
       font-family: 'Fira Code', monospace;
       overflow: hidden;
@@ -50,15 +47,14 @@
       touch-action: none;
     }
 
-    /* Efekt CRT zoptymalizowany (GPU) */
     #crt-layer {
       position: fixed; inset: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
                   linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
       background-size: 100% 4px, 6px 100%;
       pointer-events: none; z-index: 9999;
       mix-blend-mode: overlay;
-      transform: translateZ(0); /* Force GPU */
+      transform: translateZ(0);
     }
 
     .safe-padding {
@@ -68,207 +64,209 @@
       padding-right: max(0.5rem, env(safe-area-inset-right));
     }
 
-    /* Stylizacja Premium Glassmorphism */
     .glass-panel {
-      background: rgba(4, 4, 10, 0.7);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border, rgba(0, 240, 255, 0.15));
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255,255,255,0.05);
+      background: rgba(3, 3, 7, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 240, 255, 0.15);
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
     }
 
     .btn-tactile {
-      transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+      will-change: transform, filter, box-shadow;
     }
     .btn-tactile:active:not(:disabled) {
-      transform: scale(0.92) translateY(2px);
-      filter: brightness(1.3);
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+      transform: scale(0.93) translateY(1px);
+      filter: brightness(1.25);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
     }
     .btn-tactile:disabled {
-      opacity: 0.3; filter: grayscale(1); pointer-events: none;
+      opacity: 0.25; filter: grayscale(1); pointer-events: none;
     }
 
-    /* Wykorzystanie sprzętowej akceleracji dla paska */
-    .progress-bar-fill {
-      transition: width 0.1s ease-out;
-      will-change: width;
+    .matrix-shimmer {
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.15), transparent);
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite linear;
     }
 
-    /* Animacje Big Win */
-    @keyframes big-win-pulse {
-      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6)); }
-      50% { transform: scale(1.05); filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.9)); }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
     }
-    .animate-big-win { animation: big-win-pulse 0.5s ease-in-out infinite; }
   </style>
 </head>
-<body class="w-full h-full flex items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#0a0a1a] via-[#020205] to-black">
+<body class="w-full h-full flex items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#070714] via-[#010103] to-black">
 
   <div id="crt-layer"></div>
 
-  <!-- Główny Kontener Aplikacji (Limitowany dla UX mobile) -->
-  <div class="relative w-full h-full max-w-[500px] max-h-[100svh] flex flex-col justify-between overflow-hidden safe-padding transform-gpu">
+  <!-- Główny Kontener Gry -->
+  <div class="relative w-full h-full max-w-[480px] max-h-[100svh] flex flex-col justify-between overflow-hidden safe-padding transform-gpu">
     
     <!-- ==========================================
-         WARSTWA 1: SPLASH SCREEN (HARDWARE INIT)
+         WARSTWA 1: PRE-BOOT SCREEN (CYBERNETIC INITIALIZATION)
          ========================================== -->
     <div id="splash-loader" class="absolute inset-0 z-50 bg-[#010103] flex flex-col justify-between p-8 transition-opacity duration-700">
       <div class="flex-1 flex flex-col justify-center items-center gap-8">
         
-        <!-- Premium Logo Animation -->
+        <!-- Animowane logo neonowe z maską -->
         <div class="relative w-28 h-28 flex items-center justify-center">
-          <div class="absolute inset-0 rounded-full border border-cyberBlue/30 animate-[spin_4s_linear_infinite]"></div>
-          <div class="absolute inset-2 rounded-full border border-cyberPurple/30 animate-[spin_3s_linear_infinite_reverse]"></div>
-          <svg viewBox="0 0 100 100" class="w-16 h-16 text-cyberBlue drop-shadow-[0_0_15px_rgba(0,240,255,0.8)]" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M20,30 Q50,15 80,30 L80,55 Q80,80 50,92 Q20,80 20,55 Z" />
-            <path d="M35,45 L45,45 M55,45 L65,45" stroke-linecap="round" stroke="#ff003c" stroke-width="3"/>
-            <path d="M30,65 Q50,80 70,65" stroke-linecap="round"/>
+          <div class="absolute inset-0 rounded-full border border-cyberBlue/20 animate-[spin_6s_linear_infinite]"></div>
+          <div class="absolute inset-2 rounded-full border-2 border-dashed border-cyberPurple/25 animate-[spin_4s_linear_infinite_reverse]"></div>
+          
+          <svg viewBox="0 0 100 100" class="w-16 h-16 text-cyberBlue drop-shadow-[0_0_20px_rgba(0,240,255,0.8)] animate-pulse" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M20,30 Q50,15 80,30 L80,55 Q80,80 50,92 Q20,80 20,55 Z" stroke-linejoin="round"/>
+            <path d="M35,45 L45,45 M55,45 L65,45" stroke-linecap="round" stroke="#ff003c" stroke-width="3.5"/>
+            <path d="M30,68 Q50,83 70,68" stroke-linecap="round"/>
           </svg>
         </div>
         
-        <div class="font-tech text-2xl font-black tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue animate-pulse uppercase text-center">
-          SECFERRO
+        <div class="text-center">
+          <div class="font-tech text-2xl font-black tracking-[0.45em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase">
+            SECFERRO
+          </div>
+          <p class="font-mono text-[8px] text-gray-500 tracking-[0.3em] mt-2 uppercase">PRO INTRUSION SYSTEM</p>
         </div>
         
-        <!-- Pasek ładowania wektorowy -->
-        <div class="w-full max-w-[240px] bg-black/50 border border-cyberBlue/20 h-2 rounded-full overflow-hidden">
-          <div id="loader-bar" class="h-full bg-gradient-to-r from-cyberPurple to-cyberBlue progress-bar-fill w-0 shadow-[0_0_10px_#bc13fe]"></div>
+        <!-- Pasek postępu buforowania GPU -->
+        <div class="w-full max-w-[220px] bg-black/60 border border-cyberBlue/20 h-2 rounded-full overflow-hidden p-[2px]">
+          <div id="loader-bar" class="h-full bg-gradient-to-r from-cyberPurple via-cyberBlue to-cyberGreen rounded-full w-0 shadow-[0_0_15px_#bc13fe] transition-all duration-300"></div>
         </div>
         
-        <div id="loader-status" class="font-mono text-[9px] text-cyberBlue/70 tracking-widest text-center uppercase">
-          INICJALIZACJA WEBGL ORAZ AUDIO CONTEXT...
+        <div id="loader-status" class="font-mono text-[8px] text-cyberBlue/60 tracking-widest text-center uppercase animate-pulse">
+          KOMPILACJA WEKTORÓW DO PAMIĘCI PODRĘCZNEJ...
         </div>
       </div>
       
       <div class="font-mono text-[7px] text-gray-600 text-center uppercase tracking-widest">
-        POWERED BY FERRO ART // COMPLIANT RGS CORE v10.0
+        POWERED BY FERRO ART // OPTIMIZED SLOT PIPELINE v11.0
       </div>
     </div>
 
     <!-- ==========================================
-         WARSTWA 2: MENU & AUDIO UNLOCK
+         WARSTWA 2: INTERAKTYWNE MENU
          ========================================== -->
-    <div id="main-menu" class="absolute inset-0 z-40 bg-[#010103]/95 flex flex-col justify-between p-6 transition-opacity duration-500 hidden opacity-0 backdrop-blur-xl">
-      <div class="w-full flex justify-between items-center text-[9px] font-mono text-cyberBlue/60 shrink-0 border-b border-cyberBlue/10 pb-2">
-        <span>SECURITY: ROOT_ACCESS</span>
-        <span class="flex items-center gap-1">NODE: <div class="w-1.5 h-1.5 bg-cyberGreen rounded-full animate-pulse"></div> ONLINE</span>
+    <div id="main-menu" class="absolute inset-0 z-40 bg-[#010103]/98 flex flex-col justify-between p-6 transition-opacity duration-500 hidden opacity-0 backdrop-blur-2xl">
+      <div class="w-full flex justify-between items-center text-[9px] font-mono text-cyberBlue/50 shrink-0 border-b border-cyberBlue/10 pb-2">
+        <span>SECURITY: ROOT_BYPASS</span>
+        <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 bg-cyberGreen rounded-full animate-ping"></div> RGS SYNCED</span>
       </div>
 
       <div class="flex-1 flex flex-col justify-center items-center gap-8 select-none text-center">
-        <!-- Wizualizacja utworu -->
-        <div class="text-center mb-4">
-          <span class="font-mono text-[10px] text-gray-400 tracking-widest block mb-2">SOUNDTRACK BY</span>
-          <span class="font-tech text-xl text-cyberPurple tracking-widest font-bold drop-shadow-[0_0_10px_rgba(188,19,254,0.5)]">FERRO ART</span>
-          <span class="font-mono text-xs text-cyberBlue block mt-1">"WILCZY WYROK"</span>
+        <!-- Wizualizacja cybernetycznej fuzji -->
+        <div class="relative w-32 h-32 flex items-center justify-center">
+          <div class="absolute inset-0 rounded-full bg-cyberPurple/5 animate-ping duration-2000"></div>
+          <svg viewBox="0 0 120 120" class="w-24 h-24 text-cyberBlue drop-shadow-[0_0_15px_rgba(0,240,255,0.4)]" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="60" cy="60" r="45" stroke-dasharray="2,4" />
+            <!-- Maska w neonie -->
+            <path d="M40,50 L50,60 M50,50 L40,60 M70,50 L80,60 M80,50 L70,60" stroke="#ff003c" stroke-width="3" />
+            <path d="M42,75 Q60,90 78,75" stroke="#00ff41" stroke-width="2.5" />
+          </svg>
         </div>
 
-        <button id="btn-start-game" class="btn-tactile relative overflow-hidden px-10 py-4 rounded-lg bg-cyberBlue/10 border border-cyberBlue/40 hover:bg-cyberBlue/20 hover:border-cyberBlue">
-          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-cyberBlue/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
-          <span class="font-tech text-sm font-bold text-cyberBlue tracking-[0.25em] uppercase">
-            AUTORYZUJ I URUCHOM SYSTEM
+        <div>
+          <span class="font-mono text-[10px] text-gray-500 tracking-widest block mb-1">DŹWIĘK GŁÓWNY</span>
+          <span class="font-tech text-lg text-cyberPurple tracking-wider font-bold">FERRO ART</span>
+          <span class="font-mono text-xs text-cyberBlue block mt-1 uppercase tracking-[0.2em]">"WILCZY WYROK"</span>
+        </div>
+
+        <button id="btn-start-game" class="btn-tactile matrix-shimmer relative px-8 py-3.5 rounded-lg border border-cyberBlue/30 text-cyberBlue hover:border-cyberBlue">
+          <span class="font-tech text-xs font-bold tracking-[0.3em] uppercase">
+            AUTORYZUJ I ZAKTYWUJ
           </span>
         </button>
-        <p class="font-mono text-[8px] text-gray-500 max-w-[250px] leading-relaxed">
-          Naciśnięcie przycisku inicjalizuje protokół WebAudio API oraz ładuje pakiety graficzne o wysokiej rozdzielczości. Zalecane użycie słuchawek.
-        </p>
       </div>
     </div>
 
     <!-- ==========================================
-         WARSTWA 3: GŁÓWNY INTERFEJS SLOTU
+         WARSTWA 3: GŁÓWNY INTERFEJS GRY
          ========================================== -->
     
-    <!-- Header -->
+    <!-- Nagłówek statystyk -->
     <header class="w-full h-10 flex items-center justify-between px-4 glass-panel border-x-0 border-t-0 z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
-      <div class="flex items-center gap-3">
-        <span class="text-cyberBlue font-bold drop-shadow-[0_0_5px_#00f0ff]">FERRO_ENGINE</span>
-        <span class="text-gray-500 font-mono hidden sm:inline">SESJA: <span id="rg-session-time" class="text-cyberBlue">00:00</span></span>
-      </div>
       <div class="flex items-center gap-2">
-        <div class="flex items-center gap-1 opacity-70">
-          <div class="w-1 h-3 bg-cyberGreen rounded-sm animate-[pulse_1s_infinite]"></div>
-          <div class="w-1 h-4 bg-cyberGreen rounded-sm animate-[pulse_1.2s_infinite]"></div>
-          <div class="w-1 h-2 bg-cyberGreen rounded-sm animate-[pulse_0.8s_infinite]"></div>
-        </div>
-        <span id="rg-clock" class="text-gray-400 font-mono">00:00 UTC</span>
+        <span class="text-cyberBlue font-bold drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">FERRO_ENGINE_PRO</span>
+        <span class="text-gray-500 font-mono hidden sm:inline">// FPS: <span id="fps-display" class="text-cyberGreen">60</span></span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="rg-clock" class="text-gray-400 font-mono">00:00:00 UTC</span>
       </div>
     </header>
 
-    <!-- Game Viewport (Canvas) -->
+    <!-- Canvas Główny wraz z Tłem Reaktywnym -->
     <main class="relative flex-1 w-full flex flex-col justify-center items-center p-3 overflow-hidden z-10">
       
-      <!-- Audio Visualizer Canvas (Background) -->
-      <canvas id="bgVisualizer" class="absolute inset-0 w-full h-full opacity-30 pointer-events-none mix-blend-screen"></canvas>
+      <!-- Inteligentne tło reagujące na pasmo wysokich tonów (Matrix Code rain) oraz basu -->
+      <canvas id="matrixBackground" class="absolute inset-0 w-full h-full opacity-35 pointer-events-none mix-blend-screen"></canvas>
 
-      <!-- Logo / Title -->
-      <div class="w-full text-center mb-3 z-20 shrink-0 select-none transition-all duration-300" id="game-header-area">
-        <h1 class="font-tech font-black tracking-[0.4em] text-cyberBlue text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(0,240,255,0.4)]" id="game-title">
+      <!-- Status komunikatora hakerskiego -->
+      <div class="w-full text-center mb-2.5 z-20 shrink-0 select-none">
+        <h1 class="font-tech font-black tracking-[0.35em] text-cyberBlue text-lg md:text-xl drop-shadow-[0_0_12px_rgba(0,240,255,0.4)]" id="game-title">
           BOOK OF SECFERRO
         </h1>
-        <div id="status-msg" class="text-[9px] text-cyberPurple font-mono tracking-widest mt-1 h-3 font-bold uppercase transition-colors">
-          AWAITING_PAYLOAD
+        <div id="status-msg" class="text-[8px] text-cyberPurple font-mono tracking-widest mt-0.5 h-3 font-bold uppercase transition-all">
+          AWAITING_INTRUSION_SEED
         </div>
       </div>
 
-      <!-- Reels Container -->
-      <div id="canvas-container" class="relative w-full aspect-[5/3.2] max-w-[480px] rounded-xl glass-panel shadow-[0_0_50px_rgba(0,240,255,0.05)] overflow-hidden z-10">
+      <!-- Ramka bębnów (DPI-Aware Canvas) -->
+      <div id="canvas-container" class="relative w-full aspect-[5/3.2] max-w-[460px] rounded-xl glass-panel shadow-[0_0_60px_rgba(0,240,255,0.06)] overflow-hidden z-10">
         
-        <!-- Banner Darmowych Spinów -->
-        <div id="fs-banner" class="absolute top-0 inset-x-0 h-8 bg-gradient-to-r from-cyberAlert/80 to-transparent border-b border-cyberAlert/50 flex items-center justify-between px-4 text-[10px] font-tech text-white z-20 transform -translate-y-full transition-transform duration-300">
-          <span class="tracking-widest font-bold">SYSTEM OVERLOAD</span>
-          <span class="font-bold bg-black/50 px-2 py-0.5 rounded">SPINS: <span id="fs-count" class="text-cyberWarning">0</span></span>
+        <!-- Overlock Free Run Banner -->
+        <div id="fs-banner" class="absolute top-0 inset-x-0 h-8 bg-gradient-to-r from-cyberAlert/90 to-transparent border-b border-cyberAlert/40 flex items-center justify-between px-4 text-[10px] font-tech text-white z-20 transform -translate-y-full transition-transform duration-300">
+          <span class="tracking-widest font-black animate-pulse">SYSTEM OVERLOAD INTRUSION</span>
+          <span class="font-bold bg-black/60 px-2.5 py-0.5 rounded border border-cyberAlert/20">RUNS: <span id="fs-count" class="text-cyberWarning">0</span></span>
         </div>
         
         <!-- Mega Win Overlay -->
-        <div id="win-overlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
-          <div class="font-tech text-4xl font-black text-cyberGold animate-big-win text-center">
-            <div id="win-type" class="text-xl text-white mb-2 tracking-widest">BIG WIN</div>
-            <span id="win-amount-counter">0.00</span> <span class="text-2xl">Ƀ</span>
+        <div id="win-overlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+          <div class="font-tech text-3xl font-black text-cyberGold text-center px-4">
+            <div id="win-type" class="text-xs text-white mb-2 tracking-[0.3em] uppercase">SYSTEM DECRYPTED</div>
+            <span id="win-amount-counter" class="text-4xl">0.00</span> <span class="text-2xl">Ƀ</span>
           </div>
         </div>
 
-        <canvas id="gameCanvas" class="w-full h-full block" aria-label="Slot Engine Rendering Area"></canvas>
+        <canvas id="gameCanvas" class="w-full h-full block" aria-label="Główny silnik gry"></canvas>
       </div>
 
     </main>
 
-    <!-- Bottom Control Panel (Mobile Ergonomics) -->
+    <!-- Ergonomiczny, mobilny panel dolny -->
     <section class="w-full glass-panel border-x-0 border-b-0 z-20 flex flex-col shrink-0 rounded-t-2xl pb-safe">
       
-      <!-- Balance/Win Info Grid -->
-      <div class="grid grid-cols-3 gap-1 p-2 bg-black/40 text-center font-mono select-none rounded-t-2xl">
+      <!-- Siatka statystyk i stawek -->
+      <div class="grid grid-cols-3 gap-1 p-2 bg-black/60 text-center font-mono select-none rounded-t-2xl">
         <div class="flex flex-col justify-center py-1">
-          <span class="text-[8px] text-gray-500 tracking-widest mb-0.5">BALANCE</span>
+          <span class="text-[8px] text-gray-500 tracking-wider mb-0.5">KAPITAŁ</span>
           <span id="display-balance" class="text-xs font-bold text-white transition-all">1000.00 Ƀ</span>
         </div>
-        <div class="flex flex-col justify-center py-1 bg-cyberBlue/5 rounded cursor-pointer btn-tactile border border-cyberBlue/10" id="bet-selector">
-          <span class="text-[8px] text-cyberBlue tracking-widest mb-0.5">BET AMOUNT ↻</span>
+        <div class="flex flex-col justify-center py-1 bg-cyberBlue/10 rounded cursor-pointer btn-tactile border border-cyberBlue/20" id="bet-selector">
+          <span class="text-[8px] text-cyberBlue tracking-widest mb-0.5">ZAKŁAD ↻</span>
           <span id="display-bet" class="text-xs font-bold text-white">10.00 Ƀ</span>
         </div>
         <div class="flex flex-col justify-center py-1">
-          <span class="text-[8px] text-gray-500 tracking-widest mb-0.5">WINNINGS</span>
+          <span class="text-[8px] text-gray-500 tracking-wider mb-0.5">WYGRANA</span>
           <span id="display-win" class="text-xs font-bold text-cyberGreen">0.00 Ƀ</span>
         </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="w-full flex justify-between items-center px-4 py-3 pb-4">
+      <!-- Panel Akcji kluczowych -->
+      <div class="w-full flex justify-between items-center px-6 py-2 pb-4">
         
-        <div class="flex gap-3">
-          <button id="btn-settings" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue border-gray-800" aria-label="Settings">
+        <div class="flex gap-4">
+          <button id="btn-settings" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Settings">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
           </button>
-          <button id="btn-auto" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue border-gray-800" aria-label="Autoplay">
+          <button id="btn-auto" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Autoplay">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"/></svg>
           </button>
         </div>
 
-        <!-- Massive Spin Button -->
-        <button id="btn-spin" class="relative group w-24 h-24 rounded-full flex items-center justify-center btn-tactile border-[3px] border-cyberBlue bg-black/50 shadow-[0_0_30px_rgba(0,240,255,0.2)] hover:shadow-[0_0_50px_rgba(0,240,255,0.4)]">
-          <!-- Wewnętrzny obracający się pierścień -->
-          <div class="absolute inset-1 rounded-full border-2 border-dashed border-cyberBlue/40 group-hover:animate-[spin_4s_linear_infinite]"></div>
-          <svg class="w-10 h-10 text-cyberBlue ml-1 drop-shadow-[0_0_5px_#00f0ff]" fill="currentColor" viewBox="0 0 24 24">
+        <!-- Przycisk SPIN (Touch Zone Optimized) -->
+        <button id="btn-spin" class="relative group w-20 h-20 rounded-full flex items-center justify-center btn-tactile border-[3px] border-cyberBlue bg-black/60 shadow-[0_0_30px_rgba(0,240,255,0.25)] hover:shadow-[0_0_50px_rgba(0,240,255,0.45)]">
+          <div class="absolute inset-1 rounded-full border border-dashed border-cyberBlue/40 group-hover:animate-[spin_6s_linear_infinite]"></div>
+          <svg class="w-8 h-8 text-cyberBlue ml-1 drop-shadow-[0_0_6px_#00f0ff]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z"/>
           </svg>
         </button>
@@ -276,60 +274,58 @@
       </div>
     </section>
 
-    <!-- ==========================================
-         MODALS (SETTINGS / AUTOPLAY)
-         ========================================== -->
-    <div id="panel-settings" class="absolute inset-0 bg-black/95 backdrop-blur-2xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-sm">
+    <!-- Modale Systemowe -->
+    <div id="panel-settings" class="absolute inset-0 bg-black/95 backdrop-blur-3xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-5 border-b border-cyberBlue/20">
-        <h2 class="font-tech font-bold text-cyberBlue tracking-widest">> SYSTEM_CONFIG</h2>
+        <h2 class="font-tech font-bold text-cyberBlue tracking-widest">> DIAGNOSTYKA_SYSTEMU</h2>
         <button class="close-overlay text-gray-400 hover:text-white p-2 text-xl btn-tactile">✕</button>
       </div>
-      <div class="flex-1 p-5 space-y-6 overflow-y-auto">
+      <div class="flex-1 p-5 space-y-5 overflow-y-auto">
         <div class="glass-panel p-4 rounded-xl flex justify-between items-center">
           <div>
-            <div class="text-white">FERRO ART AUDIO</div>
-            <div class="text-[9px] text-gray-400 mt-1">Główny podkład muzyczny</div>
+            <div class="text-white">MUZYKA FERRO ART</div>
+            <div class="text-[9px] text-gray-500 mt-0.5">"Wilczy Wyrok" jako dynamiczny podkład</div>
           </div>
           <input type="checkbox" id="toggle-bgm" checked class="w-5 h-5 accent-cyberBlue cursor-pointer">
         </div>
         <div class="glass-panel p-4 rounded-xl flex justify-between items-center">
           <div>
-            <div class="text-white">TURBO SPIN</div>
-            <div class="text-[9px] text-gray-400 mt-1">Redukcja czasu animacji o 50%</div>
+            <div class="text-white">PRZETWARZANIE TURBO</div>
+            <div class="text-[9px] text-gray-500 mt-0.5">Szybsza redukcja obrotów bębnów</div>
           </div>
           <input type="checkbox" id="toggle-turbo" class="w-5 h-5 accent-cyberBlue cursor-pointer">
         </div>
         <div class="glass-panel p-4 rounded-xl flex flex-col h-48">
-          <div class="text-[10px] text-cyberBlue mb-2 border-b border-cyberBlue/20 pb-1 flex justify-between">
-            <span>RGS HASH TRAIL</span>
+          <div class="text-[9px] text-cyberBlue mb-2 border-b border-cyberBlue/20 pb-1 flex justify-between">
+            <span>RGS TRANSPARENT AUDIT</span>
             <span id="log-count">0 BLOCKS</span>
           </div>
-          <div id="diagnostic-log" class="flex-1 overflow-y-auto text-[8px] space-y-1.5 text-gray-500"></div>
+          <div id="diagnostic-log" class="flex-1 overflow-y-auto text-[7px] space-y-1.5 text-gray-500"></div>
         </div>
       </div>
     </div>
 
-    <div id="panel-auto" class="absolute inset-0 bg-black/95 backdrop-blur-2xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-sm">
+    <div id="panel-auto" class="absolute inset-0 bg-black/95 backdrop-blur-3xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-5 border-b border-cyberPurple/20">
-        <h2 class="font-tech font-bold text-cyberPurple tracking-widest">> AUTOPLAY_PROTOCOL</h2>
+        <h2 class="font-tech font-bold text-cyberPurple tracking-widest">> AUTOPLAY_INTEGRITY</h2>
         <button class="close-overlay text-gray-400 hover:text-white p-2 text-xl btn-tactile">✕</button>
       </div>
       <div class="flex-1 p-5 flex flex-col gap-5">
         <div class="flex flex-col gap-2">
-          <label class="text-cyberPurple text-[10px] tracking-widest">ILOŚĆ OBROTÓW:</label>
+          <label class="text-cyberPurple text-[10px] tracking-widest">LICZBA PRZEŁAMAŃ:</label>
           <select id="auto-spins" class="glass-panel text-white p-3 rounded-lg outline-none cursor-pointer">
-            <option value="10">10 EXECUTES</option>
-            <option value="25">25 EXECUTES</option>
-            <option value="50">50 EXECUTES</option>
-            <option value="100">100 EXECUTES</option>
+            <option value="10">10 AUTORUNS</option>
+            <option value="25">25 AUTORUNS</option>
+            <option value="50">50 AUTORUNS</option>
+            <option value="100">100 AUTORUNS</option>
           </select>
         </div>
         <div class="flex flex-col gap-2">
           <label class="text-cyberAlert text-[10px] tracking-widest">LIMIT STRAT [Ƀ]:</label>
           <input type="number" id="auto-loss-limit" value="100" class="glass-panel text-cyberAlert p-3 rounded-lg outline-none">
         </div>
-        <button id="start-autoplay" class="mt-auto py-4 glass-panel border-cyberPurple/50 text-cyberPurple font-tech font-bold tracking-[0.2em] rounded-xl btn-tactile hover:bg-cyberPurple/10">
-          INICJUJ PROTOKÓŁ
+        <button id="start-autoplay" class="mt-auto py-4 glass-panel border-cyberPurple/50 text-cyberPurple font-tech font-bold tracking-[0.2em] rounded-xl btn-tactile">
+          ZAINICJUJ PROTOKÓŁ
         </button>
       </div>
     </div>
@@ -338,7 +334,7 @@
 
   <script type="module">
     // ==========================================
-    // 1. KRYPTOGRAFIA (CSPRNG) & NARZĘDZIA
+    // 1. KRYPTOGRAFICZNE NARZĘDZIA (CSPRNG)
     // ==========================================
     class Utils {
       static getRandomInt(min, max) {
@@ -354,19 +350,18 @@
         const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
         return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
       }
-      // Funkcja Easing dla realistycznej fizyki bębnów
       static easeOutBack(x) {
         const c1 = 1.70158;
         const c3 = c1 + 1;
         return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
       }
       static formatCur(val) {
-        return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return val.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }
     }
 
     // ==========================================
-    // 2. SILNIK AUDIO (WEB AUDIO API + ANALYZER)
+    // 2. REAKTYWNY SILNIK AUDIO (WEB AUDIO API)
     // ==========================================
     class CyberAudioEngine {
       constructor() {
@@ -376,12 +371,11 @@
         this.masterGain = null;
         this.musicGain = null;
         this.sfxGain = null;
+        this.analyser = null;
         
         this.bgBuffer = null;
         this.bgSource = null;
-        this.analyser = null;
         this.freqData = null;
-        
         this.musicLoaded = false;
         this.duckingTimeout = null;
       }
@@ -396,7 +390,7 @@
           this.sfxGain = this.ctx.createGain();
           this.analyser = this.ctx.createAnalyser();
 
-          this.analyser.fftSize = 256;
+          this.analyser.fftSize = 128;
           this.freqData = new Uint8Array(this.analyser.frequencyBinCount);
 
           this.musicGain.connect(this.analyser);
@@ -404,8 +398,8 @@
           this.sfxGain.connect(this.masterGain);
           this.masterGain.connect(this.ctx.destination);
           
-          this.masterGain.gain.value = 0.8;
-          this.musicGain.gain.value = 0.5;
+          this.masterGain.gain.value = 0.85;
+          this.musicGain.gain.value = 0.55;
           this.sfxGain.gain.value = 0.8;
 
           this.loadMusic();
@@ -413,16 +407,22 @@
         if (this.ctx.state === 'suspended') this.ctx.resume();
       }
 
+      // Elastyczne i bezbłędne wczytywanie pliku (obsługa spacji i podkreśleń)
       async loadMusic() {
-        try {
-          const response = await fetch('background_bookofsecfeero.mp3');
-          if(!response.ok) throw new Error("Brak pliku audio");
-          const arrayBuffer = await response.arrayBuffer();
-          this.bgBuffer = await this.ctx.decodeAudioData(arrayBuffer);
-          this.musicLoaded = true;
-          if (this.enabled) this.startMusic();
-        } catch (e) {
-          console.warn("Audio load error (skipping visualizer):", e);
+        const filenames = ['background_bookofsecfeero.mp3', 'FERRO ART WILCZY WYROK.mp3'];
+        for (let name of filenames) {
+          try {
+            const response = await fetch(name);
+            if (response.ok) {
+              const arrayBuffer = await response.arrayBuffer();
+              this.bgBuffer = await this.ctx.decodeAudioData(arrayBuffer);
+              this.musicLoaded = true;
+              if (this.enabled) this.startMusic();
+              break;
+            }
+          } catch (e) {
+            console.warn(`Nieudany odczyt ścieżki: ${name}`);
+          }
         }
       }
 
@@ -443,25 +443,34 @@
         }
       }
 
-      // Audio Ducking (Sidechain compression symulowana)
       duckMusic(vol, timeSec) {
-        if(!this.ctx) return;
+        if (!this.ctx) return;
         this.musicGain.gain.cancelScheduledValues(this.ctx.currentTime);
-        this.musicGain.gain.setTargetAtTime(vol, this.ctx.currentTime, 0.1);
+        this.musicGain.gain.setTargetAtTime(vol, this.ctx.currentTime, 0.08);
         
         clearTimeout(this.duckingTimeout);
         this.duckingTimeout = setTimeout(() => {
-          this.musicGain.gain.setTargetAtTime(0.5, this.ctx.currentTime, 0.5);
+          this.musicGain.gain.setTargetAtTime(0.55, this.ctx.currentTime, 0.4);
         }, timeSec * 1000);
       }
 
+      // Pobieranie intensywności basu
       getBassIntensity() {
         if (!this.analyser) return 0;
         this.analyser.getByteFrequencyData(this.freqData);
-        // Średnia z dolnych rejestrów (bas i kick drum)
         let sum = 0;
-        for(let i = 0; i < 5; i++) sum += this.freqData[i];
-        return sum / (5 * 255);
+        for (let i = 0; i < 4; i++) sum += this.freqData[i];
+        return sum / (4 * 255);
+      }
+
+      // Pobieranie intensywności tonów wysokich
+      getTrebleIntensity() {
+        if (!this.analyser) return 0;
+        this.analyser.getByteFrequencyData(this.freqData);
+        let sum = 0;
+        const len = this.freqData.length;
+        for (let i = len - 8; i < len; i++) sum += this.freqData[i];
+        return sum / (8 * 255);
       }
 
       playSFX(type, freq, dur, vol = 1) {
@@ -478,33 +487,33 @@
         osc.stop(this.ctx.currentTime + dur);
       }
 
-      playSpinStart() { this.duckMusic(0.2, 1); this.playSFX('sawtooth', 120, 0.3, 0.5); }
-      playReelStop(idx) { this.playSFX('square', 150 + (idx * 30), 0.1, 0.3); }
-      playWinSmall() { this.duckMusic(0.2, 1.5); this.playSFX('sine', 600, 0.5, 0.6); setTimeout(()=>this.playSFX('sine',800,0.5,0.6), 150); }
+      playSpinStart() { this.duckMusic(0.15, 0.9); this.playSFX('sawtooth', 110, 0.35, 0.45); }
+      playReelStop(idx) { this.playSFX('square', 140 + (idx * 35), 0.08, 0.25); }
+      playWinSmall() { this.duckMusic(0.2, 1.4); this.playSFX('sine', 550, 0.4, 0.5); setTimeout(()=>this.playSFX('sine', 750, 0.4, 0.5), 120); }
       playWinBig() {
-        this.duckMusic(0.1, 3);
-        [400, 500, 600, 800, 1000, 1200].forEach((f, i) => {
-          setTimeout(()=> this.playSFX('sine', f, 0.3, 0.5), i * 100);
+        this.duckMusic(0.08, 3);
+        [350, 450, 550, 700, 900, 1100].forEach((f, i) => {
+          setTimeout(() => this.playSFX('sine', f, 0.25, 0.4), i * 90);
         });
       }
     }
 
     // ==========================================
-    // 3. SYMULATOR RGS (LOGIKA MATEMATYCZNA)
+    // 3. SYMULACJA SYSTEMU RGS (REMOTE GAME SERVER)
     // ==========================================
     class RGS {
       constructor() {
         this.rows = 3; this.cols = 5;
         this.paytable = {
-          5: { 3: 5,  4: 25, 5: 250 }, // Wild/Scatter (X-Mask)
-          4: { 3: 3,  4: 10, 5: 50 },  // Haker Avatar
-          3: { 3: 1.5,4: 5,  5: 20 },  // Server Rack
-          2: { 3: 1,  4: 3,  5: 10 },  // Terminal
-          1: { 3: 0.5,4: 1.5,5: 5 }    // Key
+          5: { 3: 5,  4: 25, 5: 300 }, // Neonowa maska Anonymous [SF]
+          4: { 3: 3.5,4: 12, 5: 60 },  // Avatar z cross-eyes
+          3: { 3: 1.8,4: 6,  5: 25 },  // Server Rack
+          2: { 3: 1,  4: 4,  5: 12 },  // Terminal shell
+          1: { 3: 0.5,4: 2,  5: 6 }    // Pink Cyber Key
         };
       }
       async spin(bet, seed) {
-        await new Promise(r => setTimeout(r, 120)); // Network delay
+        await new Promise(r => setTimeout(r, 100));
         const matrix = [];
         let scatters = 0;
 
@@ -520,7 +529,6 @@
 
         let win = 0;
         let lines = [];
-        // Analiza linii środkowej
         const line = [matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1], matrix[4][1]];
         let match = 1;
         const base = line[0];
@@ -540,42 +548,44 @@
     }
 
     // ==========================================
-    // 4. RENDERER WEKTOROWY (CANVAS + PHYSICS)
+    // 4. EKSPERCKI SILNIK GRAFICZNY (CANVAS)
     // ==========================================
     class VectorRenderer {
       constructor(audioEngine) {
         this.audio = audioEngine;
         this.canvas = document.getElementById('gameCanvas');
-        this.ctx = this.canvas.getContext('2d', { alpha: false });
+        this.ctx = this.canvas.getContext('2d', { alpha: false, desynchronized: true });
         
-        this.bgCanvas = document.getElementById('bgVisualizer');
-        this.bgCtx = this.bgCanvas.getContext('2d');
+        this.matrixCanvas = document.getElementById('matrixBackground');
+        this.matrixCtx = this.matrixCanvas.getContext('2d');
 
         this.cols = 5; this.rows = 3;
+        this.symbolsCache = {}; // Cache buforów offscreen canvas
         
-        // Definicje rysowania (zoptymalizowane)
-        this.symbols = {
-          1: { color: '#bc13fe', draw: this.dKey },      // Key
-          2: { color: '#00f0ff', draw: this.dTerm },     // Terminal
-          3: { color: '#ffea00', draw: this.dServ },     // Server
-          4: { color: '#ffffff', draw: this.dHacker },   // Hacker Avatar
-          5: { color: '#ff003c', draw: this.dXMask }     // X-Mask (Scatter)
-        };
-
         this.reels = Array.from({length: 5}, () => ({
           pos: 0, startPos: 0, targetPos: 0,
           time: 0, duration: 0, state: 'IDLE',
           matrix: [1,2,3]
         }));
 
-        this.particles = [];
+        // Implementacja Particle Pool (Optymalizacja Garbage Collection)
+        this.particlePool = Array.from({ length: 300 }, () => ({
+          x: 0, y: 0, vx: 0, vy: 0, size: 0, color: '', alpha: 0, decay: 0, active: false
+        }));
+
         this.winLines = [];
         this.isBonusTheme = false;
+        this.lastT = performance.now();
+        this.screenShake = 0;
+
+        // Inicjalizacja strumieni kodu Matrix dla tła
+        this.matrixColumns = [];
+        this.initMatrixRain();
 
         this.resize();
         window.addEventListener('resize', () => this.resize());
-        
-        this.lastT = performance.now();
+        this.preRenderSymbols(); // Ekspercki pre-rendering
+
         requestAnimationFrame(this.loop.bind(this));
       }
 
@@ -587,66 +597,146 @@
         this.canvas.height = rect.height * dpr;
         this.ctx.scale(dpr, dpr);
         
-        this.bgCanvas.width = rect.width * dpr;
-        this.bgCanvas.height = rect.height * dpr;
-        this.bgCtx.scale(dpr, dpr);
+        this.matrixCanvas.width = rect.width * dpr;
+        this.matrixCanvas.height = rect.height * dpr;
+        this.matrixCtx.scale(dpr, dpr);
 
         this.w = rect.width; this.h = rect.height;
         this.cW = this.w / this.cols; this.rH = this.h / this.rows;
+
+        // Po zmianie rozmiaru należy wygenerować cache symboli na nowo
+        this.preRenderSymbols();
       }
 
-      // --- Wektoryzacja Symboli ---
-      dKey(ctx, s) {
-        ctx.beginPath(); ctx.arc(-s*.15, 0, s*.15, 0, Math.PI*2);
-        ctx.moveTo(0,0); ctx.lineTo(s*.3, 0); ctx.lineTo(s*.3, s*.15);
-        ctx.moveTo(s*.15, 0); ctx.lineTo(s*.15, s*.1); ctx.stroke();
+      // Kompilacja wektorów do dedykowanych buforów offscreen (Wydajność klasy AAA)
+      preRenderSymbols() {
+        const size = (this.rH || 100) * 0.6;
+        const pad = 24;
+        const dSize = Math.ceil(size + pad * 2);
+
+        const drawingDefs = {
+          1: { color: '#bc13fe', draw: this.vKey },
+          2: { color: '#00f0ff', draw: this.vTerm },
+          3: { color: '#ffea00', draw: this.vServ },
+          4: { color: '#ffffff', draw: this.vHacker },
+          5: { color: '#ff003c', draw: this.vXMask }
+        };
+
+        for (let id in drawingDefs) {
+          const offCanvas = document.createElement('canvas');
+          offCanvas.width = dSize;
+          offCanvas.height = dSize;
+          const offCtx = offCanvas.getContext('2d');
+          
+          offCtx.translate(dSize / 2, dSize / 2);
+          offCtx.strokeStyle = drawingDefs[id].color;
+          offCtx.fillStyle = drawingDefs[id].color;
+          offCtx.lineWidth = 3;
+          offCtx.shadowColor = drawingDefs[id].color;
+          offCtx.shadowBlur = 12;
+
+          drawingDefs[id].draw(offCtx, size);
+          
+          this.symbolsCache[id] = {
+            canvas: offCanvas,
+            size: dSize
+          };
+        }
       }
-      dTerm(ctx, s) {
-        ctx.beginPath(); ctx.moveTo(-s*.3, -s*.2); ctx.lineTo(-s*.05, 0); ctx.lineTo(-s*.3, s*.2); ctx.stroke();
-        ctx.fillRect(s*.05, s*.1, s*.25, 3);
+
+      // Wektorowe definicje ścieżek
+      vKey(ctx, s) {
+        ctx.beginPath(); ctx.arc(-s*.15, 0, s*.16, 0, Math.PI*2);
+        ctx.moveTo(0,0); ctx.lineTo(s*.32, 0); ctx.lineTo(s*.32, s*.15);
+        ctx.moveTo(s*.16, 0); ctx.lineTo(s*.16, s*.12); ctx.stroke();
       }
-      dServ(ctx, s) {
+      vTerm(ctx, s) {
+        ctx.beginPath(); ctx.moveTo(-s*.28, -s*.2); ctx.lineTo(-s*.04, 0); ctx.lineTo(-s*.28, s*.2); ctx.stroke();
+        ctx.fillRect(s*.05, s*.1, s*.25, 4);
+      }
+      vServ(ctx, s) {
         ctx.strokeRect(-s*.25, -s*.25, s*.5, s*.5);
         ctx.beginPath(); ctx.moveTo(-s*.25, -s*.05); ctx.lineTo(s*.25, -s*.05);
         ctx.moveTo(-s*.25, s*.05); ctx.lineTo(s*.25, s*.05); ctx.stroke();
-        ctx.fillStyle='#00ff41'; ctx.fillRect(-s*.15, -s*.2, 4, 3);
+        ctx.fillStyle='#00ff41'; ctx.fillRect(-s*.14, -s*.18, 5, 4);
       }
-      dHacker(ctx, s) {
+      vHacker(ctx, s) {
         ctx.beginPath(); ctx.arc(0, -s*.1, s*.15, Math.PI, 0);
-        ctx.lineTo(s*.15, s*.2); ctx.lineTo(-s*.15, s*.2); ctx.closePath(); ctx.stroke();
-        ctx.fillStyle='#00f0ff'; ctx.fillRect(-s*.08, -s*.05, s*.06, 3); ctx.fillRect(s*.02, -s*.05, s*.06, 3);
+        ctx.lineTo(s*.15, s*.22); ctx.lineTo(-s*.15, s*.22); ctx.closePath(); ctx.stroke();
+        ctx.fillStyle='#00f0ff'; ctx.fillRect(-s*.08, -s*.04, s*.06, 3.5); ctx.fillRect(s*.02, -s*.04, s*.06, 3.5);
       }
-      dXMask(ctx, s) {
+      vXMask(ctx, s) {
         ctx.beginPath(); ctx.arc(0, 0, s*.25, 0, Math.PI*2); ctx.stroke();
-        ctx.beginPath(); // Lewy X
+        ctx.beginPath();
         ctx.moveTo(-s*.12, -s*.08); ctx.lineTo(-s*.04, 0);
         ctx.moveTo(-s*.04, -s*.08); ctx.lineTo(-s*.12, 0);
-        // Prawy X
         ctx.moveTo(s*.04, -s*.08); ctx.lineTo(s*.12, 0);
         ctx.moveTo(s*.12, -s*.08); ctx.lineTo(s*.04, 0);
-        // Uśmiech
         ctx.moveTo(-s*.15, s*.1); ctx.quadraticCurveTo(0, s*.18, s*.15, s*.1); ctx.stroke();
       }
 
-      drawVisualizer() {
-        this.bgCtx.clearRect(0,0,this.w, this.h);
-        const bass = this.audio.getBassIntensity(); // 0.0 - 1.0
-        
-        if (bass > 0.1) {
-          const r = bass * this.h * 0.5;
-          const gradient = this.bgCtx.createRadialGradient(this.w/2, this.h/2, 0, this.w/2, this.h/2, r);
-          gradient.addColorStop(0, this.isBonusTheme ? 'rgba(255,0,60,0.2)' : 'rgba(0,240,255,0.15)');
-          gradient.addColorStop(1, 'transparent');
-          
-          this.bgCtx.fillStyle = gradient;
-          this.bgCtx.fillRect(0,0,this.w, this.h);
+      // Inicjalizacja binarnego kodu Matrix w tle
+      initMatrixRain() {
+        const columnsCount = Math.ceil(480 / 12);
+        for (let i = 0; i < columnsCount; i++) {
+          this.matrixColumns.push({
+            x: i * 14,
+            y: Math.random() * -300,
+            speed: Math.random() * 2 + 1,
+            chars: Array.from({length: 15}, () => Math.random() > 0.5 ? '1' : '0')
+          });
+        }
+      }
 
-          // Rysowanie fal basowych
-          this.bgCtx.strokeStyle = this.isBonusTheme ? `rgba(255,0,60,${bass*0.5})` : `rgba(188,19,254,${bass*0.5})`;
-          this.bgCtx.lineWidth = 2 + (bass * 5);
-          this.bgCtx.beginPath();
-          this.bgCtx.arc(this.w/2, this.h/2, r * 0.8, 0, Math.PI*2);
-          this.bgCtx.stroke();
+      drawMatrixBackground(treble, bass) {
+        this.matrixCtx.fillStyle = 'rgba(2, 2, 5, 0.25)';
+        this.matrixCtx.fillRect(0, 0, this.w, this.h);
+
+        this.matrixCtx.font = '10px "Fira Code", monospace';
+        const color = this.isBonusTheme ? 'rgba(255, 0, 60, ' : 'rgba(0, 240, 255, ';
+
+        this.matrixColumns.forEach(col => {
+          col.y += col.speed * (1 + treble * 4); // Prędkość powiązana z sopranami
+          if (col.y > this.h) {
+            col.y = -150;
+            col.speed = Math.random() * 2 + 1;
+          }
+
+          col.chars.forEach((char, idx) => {
+            const alpha = Math.max(0, 1 - (idx / col.chars.length)) * 0.4;
+            this.matrixCtx.fillStyle = `${color}${alpha})`;
+            this.matrixCtx.fillText(char, col.x, col.y - (idx * 12));
+          });
+        });
+
+        // Reaktywny blask sub-basu
+        if (bass > 0.1) {
+          const radialRadius = bass * this.h * 0.6;
+          const gradient = this.matrixCtx.createRadialGradient(this.w/2, this.h/2, 0, this.w/2, this.h/2, radialRadius);
+          gradient.addColorStop(0, this.isBonusTheme ? 'rgba(255,0,60,0.18)' : 'rgba(0,240,255,0.14)');
+          gradient.addColorStop(1, 'transparent');
+          this.matrixCtx.fillStyle = gradient;
+          this.matrixCtx.fillRect(0,0,this.w, this.h);
+        }
+      }
+
+      spawnExplosion(x, y, color) {
+        let count = 0;
+        for (let i = 0; i < this.particlePool.length; i++) {
+          const p = this.particlePool[i];
+          if (!p.active) {
+            p.active = true;
+            p.x = x;
+            p.y = y;
+            p.vx = (Math.random() - 0.5) * 6;
+            p.vy = (Math.random() - 0.5) * 6;
+            p.size = Math.random() * 3.5 + 1.5;
+            p.color = color;
+            p.alpha = 1;
+            p.decay = Math.random() * 0.02 + 0.015;
+            count++;
+            if (count >= 15) break;
+          }
         }
       }
 
@@ -654,97 +744,135 @@
         const dt = (now - this.lastT) / 1000;
         this.lastT = now;
 
-        this.drawVisualizer();
+        const bass = this.audio.getBassIntensity();
+        const treble = this.audio.getTrebleIntensity();
 
-        this.ctx.fillStyle = '#020205';
-        this.ctx.fillRect(0, 0, this.w, this.h);
+        this.drawMatrixBackground(treble, bass);
 
-        // Siatka
-        this.ctx.strokeStyle = this.isBonusTheme ? 'rgba(255,0,60,0.1)' : 'rgba(0,240,255,0.05)';
-        this.ctx.lineWidth = 1;
-        for(let i=1; i<this.cols; i++) {
-          this.ctx.beginPath(); this.ctx.moveTo(i*this.cW, 0); this.ctx.lineTo(i*this.cW, this.h); this.ctx.stroke();
+        this.ctx.save();
+        
+        // System dynamicznego trzęsienia ekranu (Screen-shake sprzężony z sub-basem)
+        let totalShake = this.screenShake;
+        if (bass > 0.4) {
+          totalShake += bass * 4;
+        }
+        if (totalShake > 0) {
+          this.screenShake -= dt * 25;
+          if (this.screenShake < 0) this.screenShake = 0;
+          this.ctx.translate((Math.random() - 0.5) * totalShake, (Math.random() - 0.5) * totalShake);
         }
 
-        const baseColor = this.isBonusTheme ? '#ff003c' : '#00f0ff';
-        const bassPulse = this.audio.getBassIntensity();
+        // Tło bębnów
+        this.ctx.fillStyle = '#010103';
+        this.ctx.fillRect(0, 0, this.w, this.h);
 
-        // Rysowanie i fizyka bębnów
+        // Linie bębnów
+        this.ctx.strokeStyle = this.isBonusTheme ? 'rgba(255,0,60,0.06)' : 'rgba(0,240,255,0.06)';
+        this.ctx.lineWidth = 1.5;
+        for (let i = 1; i < this.cols; i++) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(i * this.cW, 0);
+          this.ctx.lineTo(i * this.cW, this.h);
+          this.ctx.stroke();
+        }
+
+        // Rysowanie bębnów z pre-renderowanego cache
         this.reels.forEach((r, col) => {
           if (r.state === 'SPINNING') {
             r.time += dt;
             const progress = Math.min(r.time / r.duration, 1);
-            
-            // Logika EaseOutBack dla fizyki stopu
-            const easeP = Utils.easeOutBack(progress);
-            r.pos = r.startPos + (r.targetPos - r.startPos) * easeP;
+            const ease = Utils.easeOutBack(progress);
+            r.pos = r.startPos + (r.targetPos - r.startPos) * ease;
 
             if (progress >= 1) {
               r.state = 'IDLE';
               r.pos = r.targetPos;
-              if(this.onReelStop) this.onReelStop(col);
+              if (this.onReelStop) this.onReelStop(col);
             }
           }
 
-          const x = col * this.cW + (this.cW/2);
-          const sSize = this.rH * 0.6;
+          const x = col * this.cW + (this.cW / 2);
 
           for (let row = -1; row <= this.rows; row++) {
             const logicalY = Math.floor(r.pos / this.rH) + row;
             let symId = (Math.abs(logicalY) % 5) + 1;
-            
+
             if (r.state === 'IDLE') {
               const viewRow = (row + 3) % 3;
               symId = r.matrix[viewRow] || 1;
               this.ctx.globalAlpha = 1;
             } else {
-              // Motion Blur Effect
-              this.ctx.globalAlpha = 0.5;
+              this.ctx.globalAlpha = 0.45; // Symulacja rozmycia w ruchu (motion blur)
             }
 
-            const y = (row * this.rH) + (r.pos % this.rH) + (this.rH/2);
+            const y = (row * this.rH) + (r.pos % this.rH) + (this.rH / 2);
             
             if (y > -this.rH && y < this.h + this.rH) {
-              const def = this.symbols[symId];
-              this.ctx.save();
-              this.ctx.translate(x, y);
-              
-              // Pulsowanie symboli do basu w trybie IDLE
-              if (r.state === 'IDLE' && bassPulse > 0.1) {
-                 this.ctx.scale(1 + (bassPulse*0.05), 1 + (bassPulse*0.05));
-              }
+              const cache = this.symbolsCache[symId];
+              if (cache) {
+                this.ctx.save();
+                this.ctx.translate(x, y);
+                
+                // Pulsowanie skrajnych symboli od uderzenia stopy basowej
+                if (r.state === 'IDLE' && bass > 0.4) {
+                  const scale = 1 + (bass * 0.05);
+                  this.ctx.scale(scale, scale);
+                }
 
-              this.ctx.strokeStyle = def.color;
-              this.ctx.fillStyle = def.color;
-              this.ctx.lineWidth = 2.5;
-              this.ctx.shadowColor = def.color;
-              this.ctx.shadowBlur = (r.state==='IDLE') ? 10 : 0;
-              
-              def.draw(this.ctx, sSize);
-              this.ctx.restore();
+                this.ctx.drawImage(cache.canvas, -cache.size / 2, -cache.size / 2);
+                this.ctx.restore();
+              }
             }
           }
         });
         this.ctx.globalAlpha = 1;
 
-        // Rysowanie Linii Wygranych
+        // Renderowanie cząsteczek z Object Pool
+        this.particlePool.forEach(p => {
+          if (p.active) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= p.decay;
+
+            if (p.alpha <= 0) {
+              p.active = false;
+            } else {
+              this.ctx.save();
+              this.ctx.globalAlpha = p.alpha;
+              this.ctx.fillStyle = p.color;
+              this.ctx.beginPath();
+              this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+              this.ctx.fill();
+              this.ctx.restore();
+            }
+          }
+        });
+
+        // Sygnalizacja Wygranych Linii
         if (this.winLines.length > 0) {
-          this.ctx.strokeStyle = baseColor;
-          this.ctx.lineWidth = 4;
-          this.ctx.shadowColor = baseColor;
-          this.ctx.shadowBlur = 20;
+          const mainCol = this.isBonusTheme ? '#ff003c' : '#00f0ff';
+          this.ctx.strokeStyle = mainCol;
+          this.ctx.lineWidth = 3.5;
+          this.ctx.shadowColor = mainCol;
+          this.ctx.shadowBlur = 15;
 
           this.winLines.forEach(line => {
             this.ctx.beginPath();
             line.forEach((node, i) => {
-              const x = node.col * this.cW + (this.cW/2);
-              const y = node.row * this.rH + (this.rH/2);
-              if (i===0) this.ctx.moveTo(x,y); else this.ctx.lineTo(x,y);
+              const x = node.col * this.cW + (this.cW / 2);
+              const y = node.row * this.rH + (this.rH / 2);
+              if (i === 0) this.ctx.moveTo(x, y); else this.ctx.lineTo(x, y);
+
+              if (Math.random() < 0.2) {
+                this.spawnExplosion(x, y, mainCol);
+              }
             });
             this.ctx.stroke();
           });
           this.ctx.shadowBlur = 0;
         }
+
+        this.ctx.restore();
 
         requestAnimationFrame(this.loop.bind(this));
       }
@@ -752,46 +880,46 @@
       startSpin(matrix, isTurbo, onStop, onComplete) {
         this.winLines = [];
         this.onReelStop = onStop;
-        
-        const baseDur = isTurbo ? 0.8 : 1.5;
-        let activeReels = 5;
+
+        const baseDur = isTurbo ? 0.75 : 1.4;
 
         this.reels.forEach((r, i) => {
           r.state = 'SPINNING';
           r.time = 0;
-          r.duration = baseDur + (i * (isTurbo ? 0.1 : 0.25)); // Stagger stops
+          r.duration = baseDur + (i * (isTurbo ? 0.1 : 0.22));
           r.startPos = r.pos;
           r.matrix = [matrix[i][0], matrix[i][1], matrix[i][2]];
           
-          // Obligatoryjne przeskoki o wysokość rzędu, żeby na końcu trafić idealnie w matrycę
-          const spins = isTurbo ? 2 : 5;
-          r.targetPos = r.pos + (spins * this.rows * this.rH) + (i * this.rH);
+          const rotations = isTurbo ? 2 : 5;
+          r.targetPos = r.pos + (rotations * this.rows * this.rH) + (i * this.rH);
         });
 
-        // Loop checking completion
         const check = setInterval(() => {
           if (this.reels.every(r => r.state === 'IDLE')) {
             clearInterval(check);
             onComplete();
           }
-        }, 50);
+        }, 40);
       }
 
-      showWin(lines) { this.winLines = lines; }
+      showWin(lines) {
+        this.winLines = lines;
+        this.screenShake = 12;
+      }
     }
 
     // ==========================================
-    // 5. KONTROLER APLIKACJI (STATE & UI)
+    // 5. ARCHITEKTURA KONTROLERA GRY
     // ==========================================
     class GameController {
       constructor() {
         this.audio = new CyberAudioEngine();
         this.renderer = new VectorRenderer(this.audio);
         this.rgs = new RGS();
-        
+
         this.state = {
           balance: 1000.0,
-          betIndex: 1, bets: [1, 5, 10, 25, 50, 100],
+          betIndex: 1, bets: [2, 5, 10, 20, 50, 100],
           isSpinning: false,
           fsCount: 0
         };
@@ -810,22 +938,31 @@
           winAmount: document.getElementById('win-amount-counter'),
           winType: document.getElementById('win-type'),
           turboToggle: document.getElementById('toggle-turbo'),
-          bgmToggle: document.getElementById('toggle-bgm')
+          bgmToggle: document.getElementById('toggle-bgm'),
+          fpsDisplay: document.getElementById('fps-display')
         };
 
-        this.initBootSequence();
+        this.autoPlay = {
+          enabled: false,
+          remaining: 0,
+          lossLimit: 0,
+          startBal: 0
+        };
+
+        this.initLoader();
+        this.monitorFPS();
       }
 
-      initBootSequence() {
+      initLoader() {
         const bar = document.getElementById('loader-bar');
-        setTimeout(() => { bar.style.width = '40%'; }, 500);
-        setTimeout(() => { bar.style.width = '80%'; }, 1200);
+        setTimeout(() => { bar.style.width = '35%'; }, 300);
+        setTimeout(() => { bar.style.width = '75%'; }, 800);
         setTimeout(() => {
           bar.style.width = '100%';
           document.getElementById('splash-loader').classList.add('opacity-0', 'pointer-events-none');
           document.getElementById('main-menu').classList.remove('hidden');
           setTimeout(() => document.getElementById('main-menu').classList.remove('opacity-0'), 50);
-        }, 2000);
+        }, 1300);
 
         this.dom.btnStart.addEventListener('click', () => {
           this.audio.init();
@@ -836,11 +973,15 @@
       }
 
       setupEvents() {
-        this.dom.btnSpin.addEventListener('click', () => this.play());
+        this.dom.btnSpin.addEventListener('click', () => {
+          if (this.autoPlay.enabled) this.haltAutoplay("MANUAL_STOP");
+          else this.play();
+        });
+
         this.dom.betSel.addEventListener('click', () => {
           if (this.state.isSpinning || this.state.fsCount > 0) return;
           this.state.betIndex = (this.state.betIndex + 1) % this.state.bets.length;
-          this.audio.playSFX('sine', 800, 0.05, 0.3);
+          this.audio.playSFX('sine', 880, 0.05, 0.25);
           this.updateUI();
         });
 
@@ -861,6 +1002,24 @@
           this.audio.enabled = e.target.checked;
           if (e.target.checked) this.audio.startMusic(); else this.audio.stopMusic();
         });
+
+        document.getElementById('start-autoplay').addEventListener('click', () => this.startAutoplay());
+      }
+
+      monitorFPS() {
+        let frameCount = 0;
+        let lastTime = performance.now();
+        const tick = () => {
+          frameCount++;
+          const now = performance.now();
+          if (now >= lastTime + 1000) {
+            this.dom.fpsDisplay.innerText = frameCount;
+            frameCount = 0;
+            lastTime = now;
+          }
+          requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
       }
 
       updateUI() {
@@ -874,10 +1033,11 @@
         const isFS = this.state.fsCount > 0;
 
         if (!isFS && this.state.balance < bet) {
-          this.audio.playSFX('sawtooth', 100, 0.5, 0.8);
-          this.dom.statusMsg.innerText = "INSUFFICIENT_FUNDS";
+          this.audio.playSFX('sawtooth', 90, 0.5, 0.7);
+          this.dom.statusMsg.innerText = "BRAK SRODKOW";
           this.dom.statusMsg.classList.add('text-cyberAlert');
-          setTimeout(()=> this.dom.statusMsg.classList.remove('text-cyberAlert'), 1000);
+          setTimeout(() => this.dom.statusMsg.classList.remove('text-cyberAlert'), 1000);
+          if (this.autoPlay.enabled) this.haltAutoplay("INSUFFICIENT_FUNDS");
           return;
         }
 
@@ -889,10 +1049,10 @@
         if (isFS) {
           this.state.fsCount--;
           this.dom.fsCount.innerText = this.state.fsCount;
-          this.dom.statusMsg.innerText = "OVERLOAD_EXECUTION...";
+          this.dom.statusMsg.innerText = "SYSTEM INTRUSION...";
         } else {
           this.state.balance -= bet;
-          this.dom.statusMsg.innerText = "DECRYPTING_HASH...";
+          this.dom.statusMsg.innerText = "INJECTING EXPLOIT...";
           this.updateUI();
         }
 
@@ -900,14 +1060,14 @@
           this.audio.playSpinStart();
           const seed = performance.now().toString();
           const res = await this.rgs.spin(bet, seed);
-          
+
           this.renderer.startSpin(
             res.matrix,
             this.dom.turboToggle.checked,
             (idx) => this.audio.playReelStop(idx),
             () => this.handleResult(res, bet)
           );
-        } catch(e) {
+        } catch (e) {
           this.state.isSpinning = false;
           this.dom.btnSpin.disabled = false;
         }
@@ -917,7 +1077,7 @@
         if (res.win > 0) {
           this.renderer.showWin(res.lines);
           const mult = res.win / bet;
-          
+
           if (mult >= 10) {
             await this.presentBigWin(res.win, mult);
           } else {
@@ -927,43 +1087,50 @@
             this.updateUI();
           }
         } else {
-          this.dom.statusMsg.innerText = this.state.fsCount > 0 ? "OVERLOAD_ACTIVE" : "AWAITING_PAYLOAD";
+          this.dom.statusMsg.innerText = this.state.fsCount > 0 ? "SYSTEM OVERLOAD" : "AWAITING_PAYLOAD";
         }
 
         if (res.isBonus && this.state.fsCount === 0) {
           this.triggerFreeSpins();
-          return; // Zatrzymaj przepływ, bonus przejmuje kontrole
+          return;
         }
 
         this.state.isSpinning = false;
         this.dom.btnSpin.disabled = false;
 
-        // Kontynuacja Free Spins
         if (this.state.fsCount > 0) {
           setTimeout(() => this.play(), 1000);
         } else if (this.state.fsCount === 0 && !this.dom.fsBanner.classList.contains('-translate-y-full')) {
           this.endFreeSpins();
+        } else if (this.autoPlay.enabled) {
+          this.autoPlay.remaining--;
+          this.dom.btnSpin.querySelector('span').innerText = `STOP (${this.autoPlay.remaining})`;
+
+          const loss = this.autoPlay.startBal - this.state.balance;
+          if (this.autoPlay.remaining <= 0 || loss >= this.autoPlay.lossLimit) {
+            this.haltAutoplay("CYKLE_UKONCZONE_LUB_LIMIT");
+          } else {
+            setTimeout(() => this.play(), 1000);
+          }
         }
       }
 
-      // Prezentacja dużej wygranej (Count-up animation)
       presentBigWin(winVal, multiplier) {
         return new Promise(resolve => {
           this.audio.playWinBig();
           this.dom.winOverlay.classList.remove('opacity-0', 'pointer-events-none');
           
-          this.dom.winType.innerText = multiplier >= 50 ? "MEGA SECURE WIN" : "BIG WIN";
-          this.dom.winType.className = multiplier >= 50 ? "text-2xl text-cyberAlert mb-2 tracking-widest font-black" : "text-xl text-white mb-2 tracking-widest";
+          this.dom.winType.innerText = multiplier >= 30 ? "MEGA SECURE BREACH" : "BREACH SUCCESSFUL";
+          this.dom.winType.className = multiplier >= 30 ? "text-xl text-cyberGold mb-2 tracking-[0.25em] font-black" : "text-sm text-white mb-2 tracking-widest";
 
           let current = 0;
-          const duration = multiplier >= 50 ? 3000 : 1500;
+          const duration = multiplier >= 30 ? 2500 : 1300;
           const startT = performance.now();
 
           const step = (now) => {
             const p = Math.min((now - startT) / duration, 1);
-            // EaseOut dla licznika
-            const easeP = 1 - Math.pow(1 - p, 3);
-            current = winVal * easeP;
+            const ease = 1 - Math.pow(1 - p, 3);
+            current = winVal * ease;
             
             this.dom.winAmount.innerText = Utils.formatCur(current);
             this.dom.winDisp.innerText = `${Utils.formatCur(current)} Ƀ`;
@@ -976,7 +1143,7 @@
               setTimeout(() => {
                 this.dom.winOverlay.classList.add('opacity-0', 'pointer-events-none');
                 resolve();
-              }, 2000);
+              }, 1800);
             }
           };
           requestAnimationFrame(step);
@@ -986,33 +1153,54 @@
       triggerFreeSpins() {
         this.state.fsCount = 10;
         this.renderer.isBonusTheme = true;
-        this.audio.playSFX('sawtooth', 200, 1.5, 0.8);
-        
+        this.audio.playSFX('sawtooth', 180, 1.4, 0.7);
+
         this.dom.fsBanner.classList.remove('-translate-y-full');
         this.dom.fsCount.innerText = this.state.fsCount;
-        this.dom.statusMsg.innerText = "CRITICAL_BREACH_DETECTED";
-        this.dom.statusMsg.classList.add('text-cyberAlert');
+        this.dom.statusMsg.innerText = "OVERCLOCKING INTRUSION DETECTED";
 
         setTimeout(() => {
           this.state.isSpinning = false;
-          this.play(); // Auto start FS
-        }, 2000);
+          this.play();
+        }, 1800);
       }
 
       endFreeSpins() {
         this.renderer.isBonusTheme = false;
         this.dom.fsBanner.classList.add('-translate-y-full');
-        this.dom.statusMsg.classList.remove('text-cyberAlert');
-        this.dom.statusMsg.innerText = "SYSTEM_RESTORED";
+        this.dom.statusMsg.innerText = "SYSTEM REBOOT COMPLETE";
+      }
+
+      startAutoplay() {
+        const spins = parseInt(document.getElementById('auto-spins').value);
+        const loss = parseFloat(document.getElementById('auto-loss-limit').value);
+
+        document.getElementById('panel-auto').classList.add('opacity-0', 'pointer-events-none');
+
+        this.autoPlay = {
+          enabled: true,
+          remaining: spins,
+          lossLimit: loss,
+          startBal: this.state.balance
+        };
+
+        this.dom.btnSpin.querySelector('span').innerText = `STOP (${spins})`;
+        this.dom.btnSpin.classList.add('border-cyberAlert', 'text-cyberAlert');
+        this.play();
+      }
+
+      haltAutoplay(reason) {
+        this.autoPlay.enabled = false;
+        this.dom.btnSpin.querySelector('span').innerText = `LAUNCH()`;
+        this.dom.btnSpin.classList.remove('border-cyberAlert', 'text-cyberAlert');
       }
     }
 
-    // Inicjalizacja App
+    // Inicjalizacja gry na załadowanie DOM
     document.addEventListener('DOMContentLoaded', () => {
       new GameController();
-      // Aktualizacja Zegara
       setInterval(() => {
-        document.getElementById('rg-clock').innerText = new Date().toISOString().substring(11, 16) + ' UTC';
+        document.getElementById('rg-clock').innerText = new Date().toISOString().substring(11, 19) + ' UTC';
       }, 1000);
     });
   </script>
