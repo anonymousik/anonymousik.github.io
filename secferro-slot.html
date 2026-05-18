@@ -46,7 +46,7 @@
       touch-action: none;
     }
 
-    /* Emulacja kineskopu CRT SecFerro Division */
+    /* Efekt retro monitora kineskopowego CRT */
     #crt-layer {
       position: fixed; inset: 0;
       background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
@@ -56,7 +56,7 @@
       mix-blend-mode: overlay;
     }
 
-    /* Bezpieczne marginesy dla smartfonów (iPhone Notch / Dynamic Island) */
+    /* Bezpieczne marginesy dla smartfonów (Notch/Dynamic Island) */
     .safe-padding {
       padding-top: max(0.5rem, env(safe-area-inset-top));
       padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
@@ -161,7 +161,7 @@
     <header class="w-full h-12 flex items-center justify-between px-3 border-b border-cyberGreen/10 bg-black/80 z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
       <div class="flex flex-col">
         <span class="text-cyberBlue font-bold">NODE: SECFERRO_TACTICAL_v9.5</span>
-        <span class="text-gray-500">CZAS_POŁĄCZENIA: <span id="rg-session-time" class="text-cyberGreen font-mono">00:00:00</span></span>
+        <span class="text-gray-500 font-mono">CZAS_POŁĄCZENIA: <span id="rg-session-time" class="text-cyberGreen">00:00:00</span></span>
       </div>
       <div class="flex flex-col items-end">
         <span id="rg-clock" class="text-cyberWarning font-mono">00:00:00 UTC</span>
@@ -197,7 +197,7 @@
           <span id="game-status" class="text-cyberGreen truncate max-w-[220px]">AWAITING_PAYLOAD_EXECUTION</span>
         </div>
         <div class="flex items-center gap-1.5">
-          <div id="rgs-indicator" class="w-1 h-1 rounded-full bg-cyberGreen animate-pulse"></div>
+          <div id="rgs-indicator" class="w-1.5 h-1.5 rounded-full bg-cyberGreen animate-pulse"></div>
           <span class="text-[8px] text-gray-600">LINK_SECURE</span>
         </div>
       </div>
@@ -246,12 +246,12 @@
     <!-- ========================================== -->
 
     <!-- RESPONSIBLE GAMING / AUTOPLAY MODAL -->
-    <div id="panel-auto" class="absolute inset-0 bg-black/98 backdrop-blur-md z-50 flex flex-col p-5 opacity-0 pointer-events-none transition-opacity duration-250 select-none">
+    <div id="panel-auto" class="absolute inset-0 bg-black/98 backdrop-blur-md z-50 flex flex-col p-5 opacity-0 pointer-events-none transition-opacity duration-250 select-none font-mono">
       <div class="flex justify-between items-center border-b border-cyberGreen/20 pb-2">
         <h2 class="font-tech text-base font-bold text-cyberGreen tracking-widest">> AUTOPLAY_CONTROLLER</h2>
         <button class="close-overlay text-cyberAlert font-mono text-lg p-1 btn-active">✕</button>
       </div>
-      <div class="flex-1 flex flex-col gap-4 py-4 text-xs font-mono text-gray-300">
+      <div class="flex-1 flex flex-col gap-4 py-4 text-xs text-gray-300">
         
         <div class="flex flex-col gap-1">
           <label class="text-cyberBlue text-[10px]">CYKLE AUTOPLAY:</label>
@@ -279,13 +279,13 @@
       </div>
     </div>
 
-    <!-- CONFIGURATION / AUDIT DIALOG -->
-    <div id="panel-settings" class="absolute inset-0 bg-black/98 backdrop-blur-md z-50 flex flex-col p-5 opacity-0 pointer-events-none transition-opacity duration-250 select-none">
+    <!-- CONFIGURATION / DIALOG DIAGNOSTYCZNY -->
+    <div id="panel-settings" class="absolute inset-0 bg-black/98 backdrop-blur-md z-50 flex flex-col p-5 opacity-0 pointer-events-none transition-opacity duration-250 select-none font-mono">
       <div class="flex justify-between items-center border-b border-cyberGreen/20 pb-2">
         <h2 class="font-tech text-base font-bold text-cyberGreen tracking-widest">> SYS_DIAGNOSTICS</h2>
         <button class="close-overlay text-cyberAlert font-mono text-lg p-1 btn-active">✕</button>
       </div>
-      <div class="flex-1 flex flex-col gap-3 py-3 text-xs font-mono text-gray-300 overflow-hidden">
+      <div class="flex-1 flex flex-col gap-3 py-3 text-xs text-gray-300 overflow-hidden">
         
         <div class="flex justify-between items-center bg-black/40 p-2 border border-cyberGreen/10">
           <span>DŹWIĘKI PAYLOAD_SFX</span>
@@ -297,14 +297,14 @@
           <input type="checkbox" id="toggle-turbo" class="accent-cyberGreen w-4 h-4 cursor-pointer">
         </div>
 
-        <!-- Dziennik audytu -->
+        <!-- Dziennik audytu - wymagany przez MGA/UKGC -->
         <div class="flex-1 border border-cyberBlue/20 bg-[#020205] rounded p-3 flex flex-col overflow-hidden">
           <div class="text-[8px] text-cyberBlue mb-1.5 border-b border-cyberBlue/20 pb-1 flex justify-between shrink-0">
             <span>SECURE_AUDIT_TRAIL (RGS)</span>
             <span class="text-cyberGreen font-bold" id="log-count">0 REKORDÓW</span>
           </div>
           <div id="diagnostic-log" class="overflow-y-auto text-[7px] space-y-1 flex-1 font-mono text-gray-500">
-            <!-- Dynamiczne wpisy systemowe -->
+            <!-- Dynamicznie wstrzykiwane wpisy -->
           </div>
         </div>
       </div>
@@ -318,7 +318,6 @@
     // ==========================================
     class SecureRNG {
       static getRandomInt(min, max) {
-        // Zabezpieczenie przed nieprawidłowym przedziałem
         const range = max - min;
         if (range <= 0) return min;
         const max_uint32 = 4294967295;
@@ -372,7 +371,7 @@
 
         this.paytable = {
           5: { 3: 5,  4: 15, 5: 100 },  // [B:SF] (Wild / Scatter)
-          4: { 3: 2.5,4: 8,  5: 50 },   // Firewall
+          4: { 3: 2.5,4: 8,  5: 50 },   // Firewall (Shield)
           3: { 3: 1.5,4: 5,  5: 25 },   // Bug
           2: { 3: 1,  4: 3,  5: 15 },   // Crypto-key
           1: { 3: 0.5,4: 1.5,5: 8 }     // Terminal shell
@@ -440,8 +439,9 @@
       }
 
       playTone(type, freq, duration, gainValue = 0.08) {
-        if (!this.enabled || !this.ctx) return;
+        if (!this.enabled) return;
         this.init();
+        if (!this.ctx) return;
 
         const osc = this.ctx.createOscillator();
         const gainNode = this.ctx.createGain();
@@ -465,10 +465,10 @@
       }
 
       playBootTune() {
-        if (!this.enabled || !this.ctx) return;
+        if (!this.enabled) return;
         this.init();
+        if (!this.ctx) return;
         
-        // Kompozycja arpeggio przy starcie systemu SecFerro Division
         const notes = [220, 277.18, 329.63, 440];
         notes.forEach((freq, index) => {
           setTimeout(() => {
@@ -478,8 +478,9 @@
       }
 
       playSpin() {
-        if (!this.enabled || !this.ctx) return;
+        if (!this.enabled) return;
         this.init();
+        if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sawtooth';
@@ -553,7 +554,7 @@
         this.symH = this.height / this.rowsCount;
       }
 
-      // --- SYMBOLE WEKTOROWE ---
+      // --- WYKRESY WEKTOROWE SYMBOLI ---
       drawShell(ctx, x, y, size) {
         ctx.strokeStyle = '#00f0ff';
         ctx.lineWidth = 2.5;
@@ -801,6 +802,8 @@
         this.renderer = new VectorRenderer('gameCanvas');
         this.rgs = new RGSServer();
 
+        // SCENARIUSZ 3: Ochrona przed Reload Deadlock.
+        // Nawet jeśli w localStorage zapisano 'isActive: true', wymuszamy 'false' przy inicjalizacji.
         this.state = this.recoverSessionState() || {
           balance: 1000.0,
           betIndex: 1,
@@ -809,7 +812,7 @@
           logs: []
         };
 
-        // Gwarancja braku zablokowania przycisku SPIN podczas restartu sesji
+        // Bezwzględne wymuszenie stanu nieaktywnego podczas bootowania systemu
         this.state.isActive = false;
 
         this.autoPlay = {
@@ -842,7 +845,7 @@
         this.runProceduralBootLoader();
       }
 
-      // --- PROCEDURALNY EKRAN ŁADOWANIA ---
+      // --- SCENARIUSZ 2: PROCEDURALNY BOOT-LOADER BEZ WYCIEKÓW PAMIĘCI ---
       runProceduralBootLoader() {
         const steps = [
           { p: 15, t: "ŁADOWANIE REJESTRÓW SYSTEMU... 15%" },
@@ -856,23 +859,29 @@
         const executeStep = () => {
           if (stepIndex < steps.length) {
             const current = steps[stepIndex];
-            this.ui.loaderBar.style.width = `${current.p}%`;
-            this.ui.loaderStatus.innerText = current.t;
-            
+            if (this.ui.loaderBar) {
+              this.ui.loaderBar.style.width = `${current.p}%`;
+            }
+            if (this.ui.loaderStatus) {
+              this.ui.loaderStatus.innerText = current.t;
+            }
             stepIndex++;
-            setTimeout(executeStep, SecureRNG.getRandomInt(200, 500));
+            // Bezpieczne wywołanie rekurencyjne bez tworzenia interwałów wiszących w pamięci
+            setTimeout(executeStep, SecureRNG.getRandomInt(150, 300));
           } else {
-            // Zakończono ładowanie - wejście do Menu Głównego
+            // Zakończenie fazy bootowania i przejście do menu głównego
             setTimeout(() => {
-              this.ui.splash.classList.add('opacity-0', 'pointer-events-none');
-              this.ui.menu.classList.remove('hidden');
+              if (this.ui.splash) this.ui.splash.classList.add('opacity-0', 'pointer-events-none');
+              if (this.ui.menu) this.ui.menu.classList.remove('hidden');
               setTimeout(() => {
-                this.ui.menu.classList.add('opacity-100');
-                this.ui.menu.classList.remove('pointer-events-none');
+                if (this.ui.menu) {
+                  this.ui.menu.classList.add('opacity-100');
+                  this.ui.menu.classList.remove('pointer-events-none');
+                }
               }, 50);
               
               SecureRNG.sha256(Date.now().toString()).then(hash => {
-                this.ui.menuSid.innerText = hash.substring(0, 12).toUpperCase();
+                if (this.ui.menuSid) this.ui.menuSid.innerText = hash.substring(0, 12).toUpperCase();
               });
             }, 400);
           }
@@ -957,20 +966,22 @@
         this.ui.btnAutoStart.addEventListener('click', () => this.startAutoplaySession());
       }
 
-      // --- MENU GŁÓWNE ---
+      // --- SCENARIUSZ 1: INICJALIZACJA GRY I ODBLOKOWANIE AUDIO ---
       activateGameMode() {
         this.audio.init();
         this.audio.playBootTune();
         
-        this.ui.menu.classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => {
-          this.ui.menu.classList.add('hidden');
-        }, 500);
+        if (this.ui.menu) {
+          this.ui.menu.classList.add('opacity-0', 'pointer-events-none');
+          setTimeout(() => {
+            this.ui.menu.classList.add('hidden');
+          }, 500);
+        }
 
         this.registerTouchInputs();
         this.updateDisplays();
         this.renderHistoryLogs();
-        this.auditLog('SYS_INIT', 'Inicjalizacja pomyślna. Wczytano moduły SecFerro Division.');
+        this.auditLog('SYS_INIT', 'Autoryzacja pomyślna. Uruchomiono protokół SecFerro Division.');
       }
 
       startAutoplaySession() {
@@ -988,7 +999,7 @@
           startBal: this.state.balance
         };
 
-        this.auditLog('AUTO_START', `Zgoda na autogrę: ${spins} cykli. Limit strat: ${loss} Ƀ`);
+        this.auditLog('AUTO_START', `Uruchomiono cykl: ${spins} obrotów. Próg stopu strat: ${loss} Ƀ`);
         this.ui.btnSpin.querySelector('span').innerText = `STOP (${spins})`;
         this.ui.btnSpin.classList.add('border-cyberAlert', 'text-cyberAlert');
 
@@ -999,7 +1010,7 @@
         this.autoPlay.enabled = false;
         this.ui.btnSpin.querySelector('span').innerText = `EXECUTE()`;
         this.ui.btnSpin.classList.remove('border-cyberAlert', 'text-cyberAlert');
-        this.auditLog('AUTO_HALT', `Przerwanie autogry. Powód: ${reason}`);
+        this.auditLog('AUTO_HALT', `Przerwanie automatycznego payloadu. Powód: ${reason}`);
       }
 
       async launchIntrusion() {
@@ -1009,7 +1020,7 @@
         if (this.state.balance < currentBet) {
           this.audio.playTone('sawtooth', 120, 0.35, 0.1);
           this.ui.statusMsg.innerText = "BŁĄD: BRAK_ŚRODKÓW";
-          this.auditLog('ERR_SEC', `Odmowa żądania obrotu. Saldo: ${this.state.balance}, Bet: ${currentBet}`);
+          this.auditLog('ERR_SEC', `Odrzucenie żądania. Saldo: ${this.state.balance}, Bet: ${currentBet}`);
           if (this.autoPlay.enabled) this.haltAutoplay("INSUFFICIENT_FUNDS");
           return;
         }
@@ -1017,7 +1028,7 @@
         this.state.isActive = true;
         this.ui.btnSpin.disabled = true;
         this.ui.winBox.innerText = "0.00 Ƀ";
-        this.ui.statusMsg.innerText = "WYKONYWANIE_PAYLOADU...";
+        this.ui.statusMsg.innerText = "DESZYFROWANIE_PAKIETÓW...";
 
         this.state.balance -= currentBet;
         this.updateDisplays();
@@ -1029,7 +1040,7 @@
           const response = await this.rgs.calculateSpin(currentBet, clientEntropy);
 
           this.ui.hashMsg.innerText = `BLOCK: ${response.txHash.substring(0, 32).toUpperCase()}`;
-          this.auditLog('PAYLOAD_SENT', `Wysłano pakiet: ${currentBet}. ID_BLOKU: ${response.txHash.substring(0, 8)}`);
+          this.auditLog('PAYLOAD_SENT', `Pakiet: ${currentBet}. HASH: ${response.txHash.substring(0, 8)}`);
 
           const isTurbo = document.getElementById('toggle-turbo').checked;
           this.audio.playSpin();
@@ -1042,8 +1053,8 @@
           );
 
         } catch (err) {
-          this.ui.statusMsg.innerText = "BŁĄD_ZASOBÓW_RGS";
-          this.auditLog('ERR_SEC', 'Brak odpowiedzi kryptograficznej od serwera.');
+          this.ui.statusMsg.innerText = "BŁĄD_POŁĄCZENIA_RGS";
+          this.auditLog('ERR_SEC', 'Brak autoryzacji transakcji ze strony RGS.');
           this.state.isActive = false;
           this.ui.btnSpin.disabled = false;
         }
@@ -1054,8 +1065,8 @@
           this.state.balance += res.winAmount;
           this.renderer.setWinner(res.winLines);
           this.audio.playWin();
-          this.ui.statusMsg.innerText = `PRZEŁAMANIE_UDANE // +${res.winAmount.toFixed(2)} Ƀ`;
-          this.auditLog('DECRYPT_SUCCESS', `Ekstrakcja danych: +${res.winAmount.toFixed(2)} Ƀ`);
+          this.ui.statusMsg.innerText = `PRZEŁAMANIE_ZAKOŃCZONE // +${res.winAmount.toFixed(2)} Ƀ`;
+          this.auditLog('DECRYPT_SUCCESS', `Wydobyto zasoby: +${res.winAmount.toFixed(2)} Ƀ`);
         } else {
           this.ui.statusMsg.innerText = "SYSTEM_GOTOWY_DO_PRACY";
         }
