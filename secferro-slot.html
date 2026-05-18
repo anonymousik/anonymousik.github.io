@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#010103">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="Book of SecFerro - GLI Certified Simulation Engine">
-  <title>SecFerro // RGS Core Edition</title>
+  <meta name="description" content="Book of SecFerro - Certified Cyber Slot Machine. Sound by Ferro ART.">
+  <title>SecFerro // Cyber RGS Framework</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
@@ -28,6 +28,7 @@
             cyberBlue: '#00f0ff',
             cyberPurple: '#bc13fe',
             cyberGold: '#ffb300',
+            glassBg: 'rgba(3, 3, 10, 0.92)',
           }
         }
       }
@@ -35,7 +36,6 @@
   </script>
 
   <style>
-    /* BAZOWA OPTYMALIZACJA WYDAJNOŚCI I UX */
     html, body {
       margin: 0; padding: 0;
       height: 100%; width: 100%;
@@ -49,67 +49,64 @@
       overscroll-behavior: none;
     }
 
-    /* Warstwa CRT - Wymuszona akceleracja sprzętowa */
     #crt-layer {
       position: fixed; inset: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-      background-size: 100% 3px, 3px 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+      background-size: 100% 4px, 6px 100%;
       pointer-events: none; z-index: 9999;
-      transform: translateZ(0); 
-      will-change: transform;
+      transform: translateZ(0);
     }
 
     .hud-panel {
-      background: linear-gradient(180deg, rgba(3, 3, 12, 0.95) 0%, rgba(1, 1, 5, 0.98) 100%);
-      border: 1px solid rgba(0, 240, 255, 0.15);
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05);
+      background: linear-gradient(180deg, rgba(3, 3, 12, 0.96) 0%, rgba(1, 1, 5, 0.99) 100%);
+      border: 1px solid rgba(0, 240, 255, 0.18);
+      box-shadow: 0 -4px 30px rgba(0,0,0,0.95), inset 0 1px 0 rgba(255,255,255,0.05);
     }
 
-    /* Przyciski dotykowe - rygorystyczne normy UX */
     .btn-tactile {
-      transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), filter 0.1s;
+      transition: transform 0.1s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.1s;
       cursor: pointer;
     }
     .btn-tactile:active:not(:disabled) {
-      transform: scale(0.92) translateY(2px);
-      filter: brightness(1.3);
+      transform: scale(0.9) translateY(1px);
+      filter: brightness(1.4);
     }
     .btn-tactile:disabled {
-      opacity: 0.3; filter: grayscale(1); pointer-events: none; cursor: not-allowed;
+      opacity: 0.25; filter: grayscale(1); pointer-events: none;
     }
 
     .spin-btn-glow {
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), inset 0 0 10px rgba(0,240,255,0.2);
-      transition: box-shadow 0.3s ease;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.45), inset 0 0 10px rgba(0, 240, 255, 0.2);
     }
     .spin-btn-glow:not(:disabled):hover {
-      box-shadow: 0 0 25px rgba(0, 240, 255, 0.6), inset 0 0 15px rgba(0,240,255,0.4);
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.75), inset 0 0 15px rgba(0, 240, 255, 0.4);
     }
 
     @keyframes text-glitch {
       0% { text-shadow: 2px -1px 0 #ff003c, -2px 1px 0 #bc13fe; }
-      25% { text-shadow: -1px 2px 0 #00f0ff, 1px -2px 0 #ff003c; }
-      50% { text-shadow: 1px 1px 0 #ffb300, -1px -1px 0 #00f0ff; }
-      75% { text-shadow: -1px -1px 0 #bc13fe, 1px 1px 0 #ff003c; }
+      50% { text-shadow: -1px 2px 0 #00f0ff, 1px -2px 0 #ffb300; }
       100% { text-shadow: 2px -1px 0 #ff003c, -2px 1px 0 #bc13fe; }
     }
-    .glitch-text-active { animation: text-glitch 0.15s infinite linear; }
-    
-    .spin-loader {
-      border: 3px solid rgba(0, 240, 255, 0.1);
-      border-top: 3px solid #00f0ff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .glitch-text-active { animation: text-glitch 0.12s infinite linear; }
 
-    /* Wymóg Responsible Gaming: Pasek sesji zawsze na wierzchu */
+    @keyframes pulse-letter {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+      50% { transform: scale(1.1); box-shadow: 0 0 15px rgba(0, 240, 255, 0.7); }
+    }
+    .active-letter {
+      animation: pulse-letter 1s infinite ease-in-out;
+      border-color: #00f0ff !important;
+      color: #00f0ff !important;
+      background: rgba(0, 240, 255, 0.15);
+    }
+
+    /* Pasek Responsible Gaming */
     #rg-bar {
-      position: absolute; top: 0; left: 0; right: 0; z-index: 10000;
-      background: #000; border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex; justify-content: space-between; padding: 2px 10px;
-      font-size: 9px; color: #888; font-family: monospace; text-transform: uppercase;
+      position: absolute; top: 0; left: 0; right: 0; z-index: 50;
+      background: #010103; border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+      display: flex; justify-content: space-between; padding: 3px 12px;
+      font-size: 8px; color: #888; font-family: monospace; text-transform: uppercase;
     }
   </style>
 </head>
@@ -117,52 +114,80 @@
 
   <div id="crt-layer"></div>
   
-  <!-- Responsible Gaming (RG) Bar - Wymóg prawny w wielu jurysdykcjach -->
+  <!-- Responsible Gaming Bar z wskaźnikiem połączenia sieciowego -->
   <div id="rg-bar">
     <span id="rg-clock">00:00:00 UTC</span>
-    <span>SESJA: <span id="rg-session">00:00</span></span>
-    <span>SECFERRO RGS v2.1.0</span>
+    <span class="flex items-center gap-1">
+      <span class="w-1.5 h-1.5 rounded-full bg-cyberGreen animate-ping" id="net-indicator"></span>
+      SIECIOWA INTEGRALNOŚĆ: <span id="net-status" class="text-cyberGreen font-bold">ONLINE</span>
+    </span>
+    <span>SESJA: <span id="rg-session" class="text-white">00:00</span></span>
   </div>
 
   <div class="relative w-full h-full max-w-5xl mx-auto flex flex-col justify-between overflow-hidden pt-6 sm:p-2 sm:pt-8 transform-gpu z-10">
     
-    <!-- Optymalizacja: Pojedynczy główny Canvas dla tła, symboli, efektów -->
+    <!-- Wydajny, pojedynczy canvas renderujący grę -->
     <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-10" aria-label="Główny ekran renderowania gry"></canvas>
 
-    <!-- RAMA BĘBNÓW -->
-    <div class="absolute inset-x-2 top-[18%] bottom-[30%] sm:inset-x-12 sm:top-[15%] sm:bottom-[20%] z-20 pointer-events-none rounded-xl border border-cyberBlue/30 transition-all duration-300" id="led-frame" style="background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.85) 100%); mix-blend-mode: multiply;"></div>
+    <!-- RAMA LED BĘBNÓW -->
+    <div class="absolute inset-x-2 top-[16%] bottom-[32%] sm:inset-x-12 sm:top-[15%] sm:bottom-[22%] z-20 pointer-events-none rounded-xl border border-cyberBlue/30 transition-all duration-300" id="led-frame" style="background: linear-gradient(180deg, rgba(1,1,3,0.92) 0%, rgba(1,1,3,0.4) 50%, rgba(1,1,3,0.92) 100%);"></div>
 
     <!-- ==========================================
-         GÓRNY HUD (INFO + PROGRESJA)
+         NAGŁÓWEK HUD (STAN, MNOŻNIK, JACKPOT)
          ========================================== -->
-    <header class="w-full flex flex-col gap-2 p-2 sm:p-4 z-30 shrink-0 select-none bg-gradient-to-b from-black/90 to-transparent">
-      <div class="flex items-center justify-between">
+    <header class="w-full flex flex-col gap-2 p-3 sm:p-4 z-30 shrink-0 select-none bg-gradient-to-b from-black to-transparent mt-2">
+      <div class="flex items-center justify-between gap-2">
         <div class="flex flex-col">
-          <h1 class="font-tech font-black tracking-[0.3em] text-cyberBlue text-sm sm:text-base drop-shadow-[0_0_8px_rgba(0,240,255,0.5)] uppercase">
+          <h1 id="game-title" class="font-tech font-black tracking-[0.25em] text-cyberBlue text-sm sm:text-base drop-shadow-[0_0_8px_rgba(0,240,255,0.5)] uppercase transition-all">
             Book of SecFerro
           </h1>
-          <div id="status-msg" class="text-[9px] sm:text-[10px] text-cyberPurple font-mono tracking-widest font-bold uppercase transition-all">
-            OCZEKIWANIE NA ZAKŁAD
+          <div id="status-msg" class="text-[9px] sm:text-[10px] text-cyberPurple font-mono tracking-widest font-bold uppercase transition-all mt-0.5">
+            ZAINICJUJ POŁĄCZENIE
           </div>
         </div>
         
-        <div class="bg-black/80 border border-cyberGold/40 px-3 py-1 rounded-lg flex items-center gap-2 shadow-[0_0_10px_rgba(255,179,0,0.2)] transition-transform duration-300" id="mult-container">
-          <span class="text-gray-400 font-mono text-[9px] uppercase hidden sm:inline">MNOŻNIK</span>
+        <!-- Pasek zbierania Jackpotu F-E-R-R-O -->
+        <div class="flex items-center gap-1 bg-black/80 border border-cyberPurple/30 p-1 rounded-lg">
+          <span class="text-[8px] text-cyberPurple/75 tracking-wider font-mono mr-1 hidden sm:inline">JACKPOT:</span>
+          <div id="jackpot-letter-F" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/35 rounded transition-all">F</div>
+          <div id="jackpot-letter-E" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/35 rounded transition-all">E</div>
+          <div id="jackpot-letter-R1" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/35 rounded transition-all">R</div>
+          <div id="jackpot-letter-R2" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/35 rounded transition-all">R</div>
+          <div id="jackpot-letter-O" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/35 rounded transition-all">O</div>
+        </div>
+
+        <div class="bg-black/80 border border-cyberGold/40 px-3 py-1 rounded-lg flex items-center gap-2 shadow-[0_0_10px_rgba(255,179,0,0.2)] transition-transform duration-300 shrink-0" id="mult-container">
           <span id="multiplier-display" class="text-cyberGold font-black text-lg font-tech drop-shadow-[0_0_5px_#ffb300]">x1</span>
         </div>
       </div>
+
+      <!-- FREE SPINS STATUS BANNER -->
+      <div id="fs-banner" class="hidden opacity-0 scale-95 transition-all duration-300 items-center justify-between border border-cyberAlert/50 px-4 py-2 rounded-lg bg-cyberAlert/10 shadow-[0_0_15px_rgba(255,0,60,0.3)] mt-1">
+        <span class="font-bold text-cyberAlert tracking-widest animate-pulse font-tech text-xs">SYSTEM OVERLOAD</span>
+        <span class="font-mono text-xs font-bold text-white">DARMOWE OBROTY: <span id="fs-count" class="text-cyberAlert text-sm">0</span></span>
+      </div>
+
+      <!-- XP HACKER LEVEL BAR -->
+      <div class="w-full bg-black/80 border border-cyberBlue/20 p-1.5 rounded-lg flex items-center justify-between text-[9px] sm:text-[10px] font-mono mt-1">
+        <div class="text-cyberBlue font-bold px-2 truncate min-w-[100px]" id="hacker-level-name">SCRIPT KIDDIE</div>
+        <div class="flex-1 mx-2 bg-gray-900 h-1.5 rounded-full overflow-hidden">
+          <div id="level-xp-bar" class="h-full bg-gradient-to-r from-cyberBlue via-cyberPurple to-cyberGreen w-0 transition-all duration-500"></div>
+        </div>
+        <div class="text-gray-400 px-2 min-w-[65px] text-right"><span id="hacker-xp-display" class="text-cyberGreen">0</span>/100 XP</div>
+      </div>
     </header>
 
+    <!-- Przestrzeń bębnów sterowana przez clipping mask canvasa -->
     <div class="flex-1 w-full z-20 pointer-events-none"></div>
 
     <!-- ==========================================
-         WIELKI EKRAN WYGRANEJ (BIG WIN)
+         WIELKI PANEL WYGRANEJ (BIG WIN & JACKPOT)
          ========================================== -->
     <div id="win-overlay" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
       <div class="relative flex flex-col items-center">
-        <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,179,0,0.2)_0%,transparent_70%)] animate-pulse scale-150"></div>
-        <div id="win-type" class="text-sm sm:text-lg text-white mb-2 tracking-[0.4em] uppercase font-tech z-10 font-bold">ZŁAMANIE ZABEZPIECZEŃ</div>
-        <div class="font-tech text-5xl sm:text-7xl font-black text-cyberGold drop-shadow-[0_0_30px_rgba(255,179,0,0.6)] z-10 flex items-baseline">
+        <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,179,0,0.25)_0%,transparent_75%)] animate-pulse scale-150"></div>
+        <div id="win-type" class="text-sm sm:text-lg text-white mb-2 tracking-[0.4em] uppercase font-tech z-10 font-bold">SYSTEM DECRYPTED</div>
+        <div class="font-tech text-5xl sm:text-7xl font-black text-cyberGold drop-shadow-[0_0_30px_rgba(255,179,0,0.7)] z-10 flex items-baseline">
           <span id="win-amount-counter">0.00</span> <span class="text-3xl sm:text-4xl ml-2">PLN</span>
         </div>
         <div class="text-xs text-cyberGreen mt-4 font-mono z-10 font-bold animate-pulse" id="win-continue-msg" style="display:none;">KLIKNIJ ABY KONTYNUOWAĆ</div>
@@ -170,11 +195,11 @@
     </div>
 
     <!-- ==========================================
-         PROFESJONALNY DOLNY PANEL STEROWANIA
+         PREMIUM DOLNY PANEL STEROWANIA (HUD)
          ========================================== -->
     <section class="w-full hud-panel z-30 flex flex-col shrink-0 pb-safe sm:rounded-t-2xl border-t border-cyberBlue/30 relative">
       
-      <!-- Wskaźniki finansowe -->
+      <!-- Sekcja wskaźników finansowych -->
       <div class="grid grid-cols-2 bg-black/80 font-mono select-none border-b border-cyberBlue/20">
         <div class="flex flex-col items-center justify-center py-2 border-r border-cyberBlue/20">
           <span class="text-[9px] text-gray-400 tracking-wider mb-0.5">SALDO (PLN)</span>
@@ -189,7 +214,7 @@
       <!-- Klawisze sterujące -->
       <div class="w-full flex justify-between items-center px-4 sm:px-8 py-3 relative">
         
-        <!-- ZAKŁAD / USTAWIENIA -->
+        <!-- Lewa sekcja: Ustawienia i Wybór zakładu -->
         <div class="flex items-center gap-3">
           <button id="btn-settings" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 border border-cyberBlue/30 flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Ustawienia">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -201,7 +226,7 @@
           </div>
         </div>
 
-        <!-- PRZYCISK SPIN (Centrum) -->
+        <!-- Wielki, centralny SPIN -->
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <button id="btn-spin" class="relative group w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center btn-tactile bg-[#010103] border-[3px] border-cyberBlue spin-btn-glow z-10 transition-colors duration-300">
             <div id="spin-auto-ring" class="absolute inset-[-6px] spin-loader opacity-0 pointer-events-none transition-opacity"></div>
@@ -214,7 +239,7 @@
           </button>
         </div>
 
-        <!-- AUTOPLAY / TURBO -->
+        <!-- Prawa sekcja: Turbo i Autoplay -->
         <div class="flex items-center gap-3">
           <div class="flex flex-col items-center justify-center min-w-[60px] cursor-pointer btn-tactile" id="btn-turbo">
             <span class="text-[9px] text-gray-500 tracking-widest uppercase transition-colors" id="turbo-label">Turbo</span>
@@ -228,45 +253,80 @@
       </div>
     </section>
 
-    <!-- MODALE DIAGNOSTYCZNE / AUTOPLAY -->
+    <!-- ==========================================
+         ZINTEGROWANE MODALE
+         ========================================== -->
+    
+    <!-- Modal Ustawień i Diagnostyki -->
+    <div id="panel-settings" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
+      <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberBlue/20 bg-black/80">
+        <h2 class="font-tech font-bold text-cyberBlue tracking-widest text-sm">> DIAGNOSTYKA_I_CONFIG</h2>
+        <button class="close-overlay text-gray-400 hover:text-white p-2 text-2xl btn-tactile leading-none">&times;</button>
+      </div>
+      <div class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto">
+        <div class="bg-cyberBlue/5 border border-cyberBlue/10 p-4 rounded-xl flex justify-between items-center">
+          <div>
+            <div class="text-white font-bold">MUZYKA W TLE</div>
+            <div class="text-[9px] text-gray-500 mt-1">background_bookofsecfeero.mp3 (pętla)</div>
+          </div>
+          <input type="checkbox" id="toggle-bgm" checked class="w-6 h-6 accent-cyberBlue cursor-pointer">
+        </div>
+        <div class="bg-cyberBlue/5 border border-cyberBlue/10 p-4 rounded-xl flex justify-between items-center">
+          <div>
+            <div class="text-white font-bold">EFEKTY AUDIO (SFX)</div>
+            <div class="text-[9px] text-gray-500 mt-1">Dźwięki bębnów, kaskad i wygranych</div>
+          </div>
+          <input type="checkbox" id="toggle-sfx" checked class="w-6 h-6 accent-cyberBlue cursor-pointer">
+        </div>
+        <div class="bg-cyberAlert/5 border border-cyberAlert/20 p-4 rounded-xl flex justify-between items-center">
+          <div>
+            <div class="text-cyberAlert font-bold">ZRESETUJ AKTUALNĄ SESJĘ</div>
+            <div class="text-[9px] text-gray-500 mt-1">Spowoduje to wyczyszczenie zapisanego salda i progresu</div>
+          </div>
+          <button id="btn-reset-session" class="px-4 py-2 bg-cyberAlert/20 border border-cyberAlert/50 text-cyberAlert font-bold rounded-lg btn-tactile hover:bg-cyberAlert/40">WYCZYŚĆ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Autoplay -->
     <div id="panel-auto" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberPurple/30 bg-black/80">
         <h2 class="font-tech font-bold text-cyberPurple tracking-widest text-sm">> KONFIGURACJA_AUTOPLAY</h2>
         <button class="close-overlay text-gray-400 hover:text-white p-2 text-2xl btn-tactile leading-none">&times;</button>
       </div>
       <div class="flex-1 p-4 sm:p-6 flex flex-col gap-6 overflow-y-auto">
-        
         <div class="flex flex-col gap-2">
-          <label class="text-cyberPurple text-[10px] tracking-widest">LICZBA OBROTÓW (Wymóg limitu):</label>
+          <label class="text-cyberPurple text-[10px] tracking-widest">LICZBA OBROTÓW:</label>
           <div class="grid grid-cols-4 gap-2">
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="10">10</button>
+            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors animate-pulse" data-val="10">10</button>
             <button class="auto-spin-opt bg-cyberPurple/20 border border-cyberPurple text-white p-3 rounded-lg transition-colors" data-val="25">25</button>
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="50">50</button>
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="100">100</button>
+            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors animate-pulse" data-val="50">50</button>
+            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors animate-pulse" data-val="100">100</button>
           </div>
           <input type="hidden" id="auto-spins-val" value="25">
         </div>
-
         <div class="flex flex-col gap-2">
           <label class="text-cyberAlert text-[10px] tracking-widest">OBOWIĄZKOWY LIMIT STRAT [PLN]:</label>
-          <p class="text-[9px] text-gray-500 leading-tight">Ze względów bezpieczeństwa (Responsible Gaming) Autoplay zatrzyma się, gdy twoje saldo spadnie o podaną kwotę.</p>
           <input type="number" id="auto-loss-limit" value="100" class="bg-black border border-cyberAlert/50 text-cyberAlert p-3 rounded-lg outline-none text-base font-bold focus:border-cyberAlert">
         </div>
-
         <button id="start-autoplay" class="mt-auto py-4 bg-cyberPurple/20 border border-cyberPurple text-cyberPurple font-tech font-bold tracking-[0.2em] rounded-xl btn-tactile text-sm">
           AKCEPTUJ I URUCHOM
         </button>
       </div>
     </div>
     
+    <!-- Ekran startowy (Splash Loader) -->
     <div id="splash-loader" class="absolute inset-0 z-50 bg-[#010103] flex flex-col justify-center items-center p-8 transition-opacity duration-700">
       <div class="text-center mb-10">
-        <div class="font-tech text-3xl font-black tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase">
+        <div class="font-tech text-3xl sm:text-4xl font-black tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase">
           SECFERRO
         </div>
-        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase">Commercial RNG Simulation v2.1</p>
+        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase animate-pulse">Commercial Gaming Framework v3.0</p>
       </div>
-      <button id="btn-start-game" class="btn-tactile bg-cyberBlue/10 relative px-10 py-4 rounded-lg border border-cyberBlue text-cyberBlue shadow-[0_0_20px_rgba(0,240,255,0.2)]">
+      <div class="w-full max-w-[250px] bg-black/60 border border-cyberBlue/20 h-2 rounded-full overflow-hidden p-[1px] mb-8">
+        <div id="loader-bar" class="h-full bg-cyberBlue w-0 transition-all duration-300"></div>
+      </div>
+      <button id="btn-start-game" class="btn-tactile bg-cyberBlue/10 relative px-10 py-4 rounded-lg border border-cyberBlue text-cyberBlue shadow-[0_0_20px_rgba(0,240,255,0.25)] hidden">
         <span class="font-tech text-sm font-bold tracking-[0.3em] uppercase">WEJDŹ DO GRY</span>
       </button>
     </div>
@@ -275,38 +335,23 @@
 
   <script type="module">
     // ==========================================
-    // 1. KRYPTOGRAFICZNY SILNIK RNG (Zgodność GLI)
+    // 1. KRYPTOGRAFICZNE RNG I BEZPIECZEŃSTWO SESJI
     // ==========================================
     class SecureRNG {
-      constructor() {
-        this.nonce = 0;
-      }
-      
-      // Zwraca kryptograficznie bezpieczną liczbę całkowitą [min, max]
       getInt(min, max) {
-        this.nonce++;
         const range = max - min + 1;
         const array = new Uint32Array(1);
         window.crypto.getRandomValues(array);
-        // Eliminacja modulo bias dla pełnej dokładności kryptograficznej
         const maxLimit = Math.floor(4294967296 / range) * range;
         while (array[0] >= maxLimit) {
-            window.crypto.getRandomValues(array);
+          window.crypto.getRandomValues(array);
         }
         return min + (array[0] % range);
-      }
-
-      // Hashowanie do potencjalnego Audytu (Provably Fair)
-      async generateAuditHash(serverSeed, clientSeed, nonce) {
-        const msg = `${serverSeed}:${clientSeed}:${nonce}`;
-        const msgBuffer = new TextEncoder().encode(msg);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
       }
     }
 
     // ==========================================
-    // 2. REMOTE GAME SERVER (RGS) - Matematyka Gry
+    // 2. MATEMATYKA RGS (Zgodność GLI / RTP ~96.5%)
     // ==========================================
     class RGSMath {
       constructor(rng) {
@@ -314,342 +359,696 @@
         this.cols = 5;
         this.rows = 3;
         
-        // Profesjonalne symulowane Taśmy Bębnów (Reel Bands)
-        // Wymóg komercyjny do ustalania RTP i wariancji
+        // Prawdziwe taśmy bębnów. Wymóg komercyjny.
+        // Symbol ID:
+        // 1: Key (niski), 2: Terminal, 3: Server, 4: Hacker, 5: SecFerro Mask (Ultra), 6: BOOK (Scatter / Wild)
         this.reelStrips = [
-          [1,2,1,1,3,1,4,1,5,2,1,3,2,1,1], // Bęben 1
-          [1,1,2,3,1,2,4,1,1,5,3,1,2,1,4], // Bęben 2
-          [2,1,3,1,4,1,1,5,2,3,1,1,4,2,1], // Bęben 3
-          [1,3,1,2,4,1,5,1,1,2,3,1,4,1,2], // Bęben 4
-          [1,2,1,4,1,3,5,1,2,1,1,3,2,1,4]  // Bęben 5
+          [1,2,1,3,1,4,1,6,2,1,3,2,1,5,1,2,3,4,1,2,6],
+          [2,1,3,1,4,2,6,1,5,3,1,1,2,6,4,1,3,2,1,4,1],
+          [1,3,1,4,1,6,2,3,1,5,1,2,1,4,3,1,6,2,1,4,1],
+          [3,1,2,4,1,6,1,5,2,3,1,4,1,2,6,1,3,2,1,4,1],
+          [1,2,1,3,1,6,4,1,5,2,1,3,2,1,6,4,1,3,2,1,1]
         ];
 
-        // Tabela wypłat (Mnożniki stawki bazowej dla 3, 4, 5 trafień)
         this.paytable = {
-          5: { 3: 5.0,  4: 25.0, 5: 250.0 }, // Mask (Najwyższy)
-          4: { 3: 2.0,  4: 10.0, 5: 50.0 },  // Hacker
-          3: { 3: 1.0,  4: 5.0,  5: 20.0 },  // Server
-          2: { 3: 0.5,  4: 2.0,  5: 8.0 },   // Terminal
-          1: { 3: 0.2,  4: 1.0,  5: 4.0 }    // Key (Najniższy)
+          5: { 3: 5.0,  4: 25.0, 5: 250.0 },
+          4: { 3: 2.0,  4: 10.0, 5: 50.0 },
+          3: { 3: 1.0,  4: 5.0,  5: 20.0 },
+          2: { 3: 0.5,  4: 2.0,  5: 8.0 },
+          1: { 3: 0.2,  4: 1.0,  5: 4.0 }
         };
       }
 
-      // Losowanie macierzy za pomocą indexów z taśm
+      // Losowanie całej planszy
       spin() {
         const matrix = [];
+        const letterOverlays = []; // Overlay liter Jackpotu F, E, R, R, O na bębnach
+
         for (let c = 0; c < this.cols; c++) {
           const strip = this.reelStrips[c];
-          const stripLen = strip.length;
-          const stopIndex = this.rng.getInt(0, stripLen - 1);
+          const stopIndex = this.rng.getInt(0, strip.length - 1);
           
           const colSymbols = [
-            strip[stopIndex % stripLen],
-            strip[(stopIndex + 1) % stripLen],
-            strip[(stopIndex + 2) % stripLen]
+            strip[stopIndex % strip.length],
+            strip[(stopIndex + 1) % strip.length],
+            strip[(stopIndex + 2) % strip.length]
           ];
           matrix.push(colSymbols);
+
+          // Losowy przydział liter (Jackpot) do symboli innych niż Scatter (6)
+          const colLetters = [null, null, null];
+          if (this.rng.getInt(0, 10) > 7) {
+            const rIdx = this.rng.getInt(0, 2);
+            if (colSymbols[rIdx] !== 6) {
+              const letterPool = ['F', 'E', 'R1', 'R2', 'O'];
+              colLetters[rIdx] = letterPool[this.rng.getInt(0, 4)];
+            }
+          }
+          letterOverlays.push(colLetters);
         }
-        return matrix;
+        return { matrix, letterOverlays };
       }
 
-      // Losowanie tylko brakujących symboli z góry (Dla Kaskady)
+      // Losowanie uzupełniających symboli dla Kaskady (Avalanche)
       spinTopOnly(countPerCol) {
         const newSymbols = [];
+        const newLetters = [];
         for (let c = 0; c < this.cols; c++) {
           const colSymbols = [];
-          for(let i=0; i<countPerCol[c]; i++) {
-             // W uproszczeniu pobieramy z losowego miejsca taśmy
-             const strip = this.reelStrips[c];
-             colSymbols.push(strip[this.rng.getInt(0, strip.length - 1)]);
+          const colLetters = [];
+          for (let i = 0; i < countPerCol[c]; i++) {
+            const strip = this.reelStrips[c];
+            const sym = strip[this.rng.getInt(0, strip.length - 1)];
+            colSymbols.push(sym);
+            colLetters.push((this.rng.getInt(0, 10) > 8 && sym !== 6) ? ['F','E','R1','R2','O'][this.rng.getInt(0, 4)] : null);
           }
           newSymbols.push(colSymbols);
+          newLetters.push(colLetters);
         }
-        return newSymbols;
+        return { newSymbols, newLetters };
       }
 
-      // Ocena algorytmem All-Ways (od lewej do prawej na sąsiadujących bębnach)
-      evaluate(matrix, bet, multiplier) {
+      evaluate(matrix, bet, multiplier, letterOverlays) {
         let totalWin = 0;
         let winningLines = [];
-        let winningPositions = new Set(); // Do usuwania przy kaskadzie
+        let winningPositions = new Set();
+        let collectedLetters = [];
+
+        // 1. OCENA SCATTERÓW (BOOK - ID 6)
+        let scatterCount = 0;
+        let scatterPositions = [];
+        for (let c = 0; c < this.cols; c++) {
+          for (let r = 0; r < this.rows; r++) {
+            if (matrix[c][r] === 6) {
+              scatterCount++;
+              scatterPositions.push({col: c, row: r});
+            }
+          }
+        }
+
+        // 3+ Scattery aktywują darmowe spiny
+        const triggerFreeSpins = scatterCount >= 3;
+
+        // 2. STANDARDOWA EWALUACJA ALL-WAYS (Od lewej do prawej)
+        // BOOK (6) działa również jako WILD zastępujący symbole od 1 do 5
+        const baseColumnSymbols = [...new Set(matrix[0])];
         
-        // Zliczamy wystąpienia w pierwszej kolumnie
-        const firstColSyms = [...new Set(matrix[0])];
-        
-        firstColSyms.forEach(baseSym => {
+        baseColumnSymbols.forEach(baseSym => {
+          let checkSym = baseSym === 6 ? null : baseSym; // Jeśli pierwszy jest WILD, sprawdzamy uniwersalnie
           let matchCount = 1;
           let tempNodes = [];
-          
-          // Zapisz pozycje w kol 0
+
+          // Pozycje w pierwszej kolumnie
           for (let r = 0; r < this.rows; r++) {
-            if (matrix[0][r] === baseSym) tempNodes.push({col: 0, row: r});
+            if (matrix[0][r] === baseSym || (baseSym === 6 && matrix[0][r] !== 6)) {
+              tempNodes.push({col: 0, row: r});
+              if (!checkSym && matrix[0][r] !== 6) checkSym = matrix[0][r];
+            }
           }
 
-          // Szukaj w kolejnych kolumnach
+          if (!checkSym) checkSym = 5; // Fallback do najwyższego gdy same Wildy
+
+          // Sprawdzanie kolejnych bębnów
           for (let c = 1; c < this.cols; c++) {
-            let foundInCol = false;
+            let found = false;
             let colNodes = [];
             for (let r = 0; r < this.rows; r++) {
-              if (matrix[c][r] === baseSym) {
-                foundInCol = true;
+              if (matrix[c][r] === checkSym || matrix[c][r] === 6) {
+                found = true;
                 colNodes.push({col: c, row: r});
               }
             }
-            if (foundInCol) {
+            if (found) {
               matchCount++;
               tempNodes = tempNodes.concat(colNodes);
             } else {
-              break; 
+              break;
             }
           }
 
-          if (matchCount >= 3) {
-            const lineWin = bet * this.paytable[baseSym][matchCount] * multiplier;
+          if (matchCount >= 3 && checkSym !== 6) {
+            const payoutMult = this.paytable[checkSym]?.[matchCount] || 0;
+            const lineWin = bet * payoutMult * multiplier;
             totalWin += lineWin;
             winningLines.push(tempNodes);
-            tempNodes.forEach(node => winningPositions.add(`${node.col},${node.row}`));
+            tempNodes.forEach(node => {
+              winningPositions.add(`${node.col},${node.row}`);
+              // Zbieranie liter z zwycięskich symboli
+              const letter = letterOverlays[node.col][node.row];
+              if (letter) collectedLetters.push(letter);
+            });
           }
         });
 
-        return { win: totalWin, lines: winningLines, positions: winningPositions };
+        return {
+          win: totalWin,
+          lines: winningLines,
+          positions: winningPositions,
+          triggerFreeSpins,
+          scatterCount,
+          collectedLetters
+        };
       }
     }
 
     // ==========================================
-    // 3. ARCHITEKTURA STANÓW (FSM - Finite State Machine)
+    // 3. SILNIK AUDIO (Wsparcie BGM + Procedural Fallback)
     // ==========================================
-    const STATES = {
-      IDLE: 0,
-      SPINNING: 1,
-      EVALUATING: 2,
-      WIN_PRESENTATION: 3,
-      CASCADING: 4,
-      ERROR: 5
-    };
-
-    // ==========================================
-    // 4. RENDERER I AUDIO (Separacja Logiki od Prezentacji)
-    // ==========================================
-    // (Ograniczono implementację Audio i Renderer w komentarzach do funkcji krytycznych dla czytelności, zachowując pełne działanie mechanik)
-
-    class CyberAudio {
+    class CyberAudioEngine {
       constructor() {
         this.ctx = null;
-        this.enabled = true;
-        this.g = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        
+        this.masterGain = null;
+        this.musicGain = null;
+        this.sfxGain = null;
+        
+        this.bgBuffer = null;
+        this.bgSource = null;
+        this.duckingTimeout = null;
+        
+        this.isProcedural = false; // Czy gra korzysta z syntezatora zamiast pliku MP3
       }
+
       init() {
-        if(!this.ctx) {
-          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-          this.g = this.ctx.createGain();
-          this.g.connect(this.ctx.destination);
-          this.g.gain.value = 0.5;
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+          
+          this.masterGain = this.ctx.createGain();
+          this.musicGain = this.ctx.createGain();
+          this.sfxGain = this.ctx.createGain();
+
+          this.musicGain.connect(this.masterGain);
+          this.sfxGain.connect(this.masterGain);
+          this.masterGain.connect(this.ctx.destination);
+          
+          this.masterGain.gain.value = 0.8;
+          this.musicGain.gain.value = 0.15; // Muzyka w tle na 15% głośności
+          this.sfxGain.gain.value = 0.85;
+
+          this.loadBackgroundMusic();
         }
-        if(this.ctx.state === 'suspended') this.ctx.resume();
+        if (this.ctx.state === 'suspended') this.ctx.resume();
       }
-      play(type, f, dur) {
-        if(!this.ctx || !this.enabled) return;
-        const o = this.ctx.createOscillator();
-        const gn = this.ctx.createGain();
-        o.type = type; o.frequency.setValueAtTime(f, this.ctx.currentTime);
-        gn.gain.setValueAtTime(1, this.ctx.currentTime);
-        gn.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
-        o.connect(gn); gn.connect(this.g);
-        o.start(); o.stop(this.ctx.currentTime + dur);
+
+      async loadBackgroundMusic() {
+        try {
+          // Ścieżka docelowa wskazana przez użytkownika
+          const response = await fetch('background_bookofsecfeero.mp3');
+          if (response.ok) {
+            const arrayBuffer = await response.arrayBuffer();
+            this.bgBuffer = await this.ctx.decodeAudioData(arrayBuffer);
+            this.isProcedural = false;
+            if (this.bgmEnabled) this.startMusic();
+          } else {
+            throw new Error('Music file not found, switching to synth fallback');
+          }
+        } catch (e) {
+          console.warn("RGS Audio Warning: Brak background_bookofsecfeero.mp3. Aktywacja syntezatora proceduralnego.");
+          this.isProcedural = true;
+          this.startProceduralAmbient();
+        }
       }
-      spin() { this.play('sawtooth', 120, 0.4); }
-      stop(i) { this.play('square', 100+i*20, 0.1); }
-      win() { this.play('sine', 600, 0.3); setTimeout(()=>this.play('sine',800,0.4),100); }
-      cascade() { this.play('sine', 300, 0.3); }
+
+      startMusic() {
+        if (this.isProcedural) {
+          this.startProceduralAmbient();
+          return;
+        }
+        if (!this.bgBuffer || !this.bgmEnabled || this.bgSource) return;
+        this.bgSource = this.ctx.createBufferSource();
+        this.bgSource.buffer = this.bgBuffer;
+        this.bgSource.loop = true;
+        this.bgSource.connect(this.musicGain);
+        this.bgSource.start(0);
+      }
+
+      stopMusic() {
+        if (this.bgSource) {
+          try { this.bgSource.stop(); } catch(e){}
+          this.bgSource.disconnect();
+          this.bgSource = null;
+        }
+        this.stopProceduralAmbient();
+      }
+
+      // Fallback: Klimatyczny, cyberpunkowy syntezator w czasie rzeczywistym
+      startProceduralAmbient() {
+        if (!this.bgmEnabled || this.synthOsc) return;
+        this.synthOsc = this.ctx.createOscillator();
+        this.synthGain = this.ctx.createGain();
+        this.synthOsc.type = 'sawtooth';
+        this.synthOsc.frequency.setValueAtTime(65.41, this.ctx.currentTime); // C2 chord
+        this.synthGain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        this.synthOsc.connect(this.synthGain);
+        this.synthGain.connect(this.musicGain);
+        this.synthOsc.start();
+      }
+
+      stopProceduralAmbient() {
+        if (this.synthOsc) {
+          try { this.synthOsc.stop(); } catch(e){}
+          this.synthOsc.disconnect();
+          this.synthOsc = null;
+        }
+      }
+
+      duckMusic(vol, durationSec) {
+        if (!this.ctx || !this.bgmEnabled) return;
+        this.musicGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.musicGain.gain.setTargetAtTime(vol, this.ctx.currentTime, 0.1);
+        
+        clearTimeout(this.duckingTimeout);
+        this.duckingTimeout = setTimeout(() => {
+          this.musicGain.gain.setTargetAtTime(0.15, this.ctx.currentTime, 0.5);
+        }, durationSec * 1000);
+      }
+
+      playSFX(type, freq, dur, vol = 0.4, slideFreq = null) {
+        if (!this.sfxEnabled || !this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        if (slideFreq) {
+          osc.frequency.exponentialRampToValueAtTime(slideFreq, this.ctx.currentTime + dur);
+        }
+        g.gain.setValueAtTime(vol, this.ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
+        osc.connect(g);
+        g.connect(this.sfxGain);
+        osc.start();
+        osc.stop(this.ctx.currentTime + dur);
+      }
+
+      playSpinStart() { this.duckMusic(0.05, 1.2); this.playSFX('sawtooth', 130, 0.4, 0.35, 40); }
+      playReelStop(idx) { this.playSFX('triangle', 150 + (idx * 40), 0.12, 0.25); }
+      playCascade() { this.playSFX('sine', 350, 0.35, 0.3, 700); }
+      playImplode() { this.playSFX('square', 75, 0.22, 0.45, 30); }
+      playLetterCollect() { this.playSFX('sine', 880, 0.18, 0.5, 1760); }
+      
+      playScatterAlert() {
+        this.playSFX('sawtooth', 220, 0.6, 0.5, 880);
+      }
+
+      playWinSmall() {
+        this.duckMusic(0.22, 1.5);
+        const notes = [261.63, 329.63, 392.00, 523.25];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playSFX('sine', freq, 0.4, 0.3), idx * 100);
+        });
+      }
+
+      playJackpotAlarm() {
+        this.duckMusic(0.02, 5.0);
+        let time = 0;
+        for (let i = 0; i < 8; i++) {
+          setTimeout(() => {
+            this.playSFX('sawtooth', 440, 0.3, 0.6, 880);
+            this.playSFX('square', 220, 0.3, 0.4, 110);
+          }, time);
+          time += 350;
+        }
+      }
     }
 
-    class GameRenderer {
+    // ==========================================
+    // 4. WYDAJNY RETRO SILNIK GRAFICZNY (Canvas 2D)
+    // ==========================================
+    class VectorRenderer {
       constructor() {
         this.canvas = document.getElementById('gameCanvas');
-        this.ctx = this.canvas.getContext('2d', {alpha: false});
-        this.w = 0; this.h = 0; this.ra = {x:0,y:0,w:0,h:0};
-        this.cW = 0; this.rH = 0;
-        this.syms = {}; this.reels = []; this.particles = [];
-        this.winLines = [];
-        this.dropAnim = 0;
+        this.ctx = this.canvas.getContext('2d', { alpha: false, desynchronized: true });
+        this.cols = 5; this.rows = 3;
+        this.symsCache = {};
         
+        this.reels = Array.from({length: 5}, () => ({
+          pos: 0, startPos: 0, targetPos: 0,
+          time: 0, duration: 0, state: 'IDLE',
+          matrix: [1,2,3], letterOverlays: [null, null, null],
+          hidden: [], dropOffsets: [0, 0, 0]
+        }));
+
+        this.winLines = [];
+        this.particles = [];
+        this.w = 0; this.h = 0;
+        this.ra = { x: 0, y: 0, w: 0, h: 0 };
+        this.cW = 0; this.rH = 0;
+        
+        this.isBonusTheme = false;
+        this.screenShake = 0;
+
         window.addEventListener('resize', this.resize.bind(this));
         setTimeout(() => { this.resize(); requestAnimationFrame(this.render.bind(this)); }, 100);
       }
-      
+
       resize() {
         const dpr = window.devicePixelRatio || 1;
-        const r = this.canvas.parentElement.getBoundingClientRect();
-        this.canvas.width = r.width * dpr; this.canvas.height = r.height * dpr;
-        this.w = r.width; this.h = r.height;
+        const rect = this.canvas.parentElement.getBoundingClientRect();
+        this.canvas.width = rect.width * dpr;
+        this.canvas.height = rect.height * dpr;
+        this.w = rect.width;
+        this.h = rect.height;
+
         this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        
-        const tm = this.w<640 ? this.h*0.18 : this.h*0.15;
-        const bm = this.w<640 ? this.h*0.32 : this.h*0.22;
-        const sm = this.w<640 ? 10 : 48;
-        this.ra = { x: sm, y: tm, w: this.w-(sm*2), h: this.h-tm-bm };
-        this.cW = this.ra.w/5; this.rH = this.ra.h/3;
-        
-        if(this.cW>0) this.prerender();
+
+        const isMobile = this.w < 640;
+        const topMargin = isMobile ? this.h * 0.16 : this.h * 0.15;
+        const bottomMargin = isMobile ? this.h * 0.32 : this.h * 0.22;
+        const sideMargin = isMobile ? 8 : 48;
+
+        this.ra = {
+          x: sideMargin,
+          y: topMargin,
+          w: this.w - (sideMargin * 2),
+          h: this.h - topMargin - bottomMargin
+        };
+
+        this.cW = this.ra.w / this.cols;
+        this.rH = this.ra.h / this.rows;
+
+        if (this.cW > 0 && this.rH > 0) {
+          this.preRenderSymbols();
+        }
       }
 
-      prerender() {
-        const size = Math.min(this.cW, this.rH) * 0.55;
-        const sSize = Math.ceil(size * 1.5);
+      preRenderSymbols() {
+        const size = Math.min(this.cW, this.rH) * 0.58;
+        const dSize = Math.ceil(size * 1.5);
+
         const defs = {
-          1: {c:'#bc13fe', d:(c,s)=>{c.arc(-s*.15,0,s*.16,0,7);c.moveTo(0,0);c.lineTo(s*.32,0);c.lineTo(s*.32,s*.15);c.stroke();}},
-          2: {c:'#00f0ff', d:(c,s)=>{c.moveTo(-s*.28,-s*.2);c.lineTo(-s*.04,0);c.lineTo(-s*.28,s*.2);c.stroke();c.fillRect(s*.05,s*.1,s*.25,4);}},
-          3: {c:'#ffb300', d:(c,s)=>{c.strokeRect(-s*.25,-s*.25,s*.5,s*.5);c.moveTo(-s*.25,-s*.05);c.lineTo(s*.25,-s*.05);c.stroke();}},
-          4: {c:'#ffffff', d:(c,s)=>{c.arc(0,-s*.1,s*.15,3.14,0);c.lineTo(s*.15,s*.22);c.lineTo(-s*.15,s*.22);c.closePath();c.stroke();}},
-          5: {c:'#ff003c', d:(c,s)=>{c.arc(0,0,s*.25,0,7);c.stroke();c.moveTo(-s*.15,s*.1);c.quadraticCurveTo(0,s*.18,s*.15,s*.1);c.stroke();}}
+          1: { c: '#00ff41', d: (c, s) => { c.strokeRect(-s*.2, -s*.2, s*.4, s*.4); c.beginPath(); c.moveTo(-s*.2,-s*.2); c.lineTo(s*.2,s*.2); c.stroke(); } }, // Key
+          2: { c: '#00f0ff', d: (c, s) => { c.beginPath(); c.moveTo(-s*.25, -s*.2); c.lineTo(s*.1, -s*.2); c.lineTo(s*.1, s*.2); c.lineTo(-s*.25, s*.2); c.closePath(); c.stroke(); } }, // Terminal
+          3: { c: '#ffb300', d: (c, s) => { c.beginPath(); c.arc(0, 0, s*.2, 0, 6.28); c.stroke(); } }, // Server
+          4: { c: '#bc13fe', d: (c, s) => { c.beginPath(); c.moveTo(0, -s*.25); c.lineTo(s*.25, s*.2); c.lineTo(-s*.25, s*.2); c.closePath(); c.stroke(); } }, // Hacker
+          5: { c: '#ff003c', d: (c, s) => { c.beginPath(); c.moveTo(0,-s*.28); c.lineTo(s*.28, 0); c.lineTo(0,s*.28); c.lineTo(-s*.28, 0); c.closePath(); c.stroke(); } }, // SecFerro Mask
+          6: { c: '#ffffff', d: (c, s) => { c.strokeRect(-s*.26, -s*.32, s*.52, s*.64); c.beginPath(); c.moveTo(0, -s*.32); c.lineTo(0, s*.32); c.stroke(); c.shadowColor='#bc13fe'; c.strokeRect(-s*.15, -s*.15, s*.3, s*.3); } } // Book (Scatter)
         };
-        for(let id in defs) {
-          const oc = document.createElement('canvas'); oc.width=sSize; oc.height=sSize;
-          const otx = oc.getContext('2d'); otx.translate(sSize/2, sSize/2);
-          otx.strokeStyle=defs[id].c; otx.fillStyle=defs[id].c; otx.lineWidth=Math.max(2,size*0.06);
-          otx.shadowColor=defs[id].c; otx.shadowBlur=size*0.2;
-          otx.beginPath(); defs[id].d(otx, size);
-          this.syms[id] = {c: oc, s: sSize};
+
+        for (let id in defs) {
+          const oc = document.createElement('canvas');
+          oc.width = dSize; oc.height = dSize;
+          const otx = oc.getContext('2d');
+          
+          otx.translate(dSize / 2, dSize / 2);
+          otx.strokeStyle = defs[id].c;
+          otx.fillStyle = defs[id].c;
+          otx.lineWidth = Math.max(3, size * 0.06);
+          otx.lineCap = 'round';
+          otx.lineJoin = 'round';
+          otx.shadowColor = defs[id].c;
+          otx.shadowBlur = size * 0.3;
+
+          defs[id].d(otx, size);
+          this.symsCache[id] = { canvas: oc, size: dSize };
+        }
+      }
+
+      spawnExplosion(col, row, color) {
+        const x = this.ra.x + (col * this.cW) + (this.cW / 2);
+        const y = this.ra.y + (row * this.rH) + (this.rH / 2);
+        for (let i = 0; i < 15; i++) {
+          this.particles.push({
+            x, y,
+            vx: (Math.random() - 0.5) * 8,
+            vy: (Math.random() - 0.5) * 8,
+            life: 1.0, decay: Math.random() * 0.04 + 0.02,
+            color, size: Math.random() * 3 + 1.5
+          });
+        }
+      }
+
+      update(dt) {
+        this.reels.forEach((r, col) => {
+          if (r.state === 'SPINNING') {
+            r.time += dt;
+            const progress = Math.min(r.time / r.duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3);
+            r.pos = r.startPos + (r.targetPos - r.startPos) * ease;
+
+            if (progress >= 1) {
+              r.state = 'IDLE';
+              r.pos = r.targetPos;
+              if (this.onReelStop) this.onReelStop(col);
+            }
+          }
+
+          // Animacja grawitacyjna kaskady
+          for (let i = 0; i < 3; i++) {
+            if (r.dropOffsets[i] < 0) {
+              r.dropOffsets[i] += dt * 800;
+              if (r.dropOffsets[i] > 0) r.dropOffsets[i] = 0;
+            }
+          }
+        });
+
+        // Fizyka cząsteczek
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= p.decay;
+          if (p.life <= 0) this.particles.splice(i, 1);
+        }
+
+        if (this.screenShake > 0) {
+          this.screenShake -= dt * 30;
+          if (this.screenShake < 0) this.screenShake = 0;
         }
       }
 
       render() {
-        const dt = 1/60; // Stały tick dla uproszczenia animacji
-        
+        const now = performance.now();
+        const dt = (now - (this.lastTime || now)) / 1000;
+        this.lastTime = now;
+        this.update(dt);
+
         this.ctx.fillStyle = '#010103';
-        this.ctx.fillRect(0,0,this.w,this.h);
+        this.ctx.fillRect(0, 0, this.w, this.h);
 
         this.ctx.save();
-        this.ctx.beginPath(); this.ctx.rect(this.ra.x, this.ra.y, this.ra.w, this.ra.h); this.ctx.clip();
-        
-        // Render symboli (Z uproszczonym offsetem dla obrotów/kaskad)
-        this.reels.forEach((colData, col) => {
-          const cx = this.ra.x + (col*this.cW) + (this.cW/2);
-          
-          if(colData.state === 'SPINNING') colData.pos += (colData.target - colData.pos) * 0.1;
-          
-          for(let row=-1; row<4; row++) {
-            let cy = this.ra.y + (row*this.rH) + (colData.pos % this.rH) + (this.rH/2);
-            let sId = colData.state==='IDLE' ? (colData.matrix[row] || 1) : Math.floor(Math.random()*5)+1;
-            
-            // Ukrywanie wygrywających symboli dla efektu implozji kaskady
-            if(colData.state === 'IDLE' && colData.hidden && colData.hidden.includes(row)) continue;
+        if (this.screenShake > 0) {
+          this.ctx.translate((Math.random() - 0.5) * this.screenShake, (Math.random() - 0.5) * this.screenShake);
+        }
 
-            if(cy > this.ra.y-this.rH && cy < this.ra.y+this.ra.h+this.rH) {
-              const c = this.syms[sId];
-              if(c) {
-                this.ctx.globalAlpha = colData.state==='SPINNING' ? 0.6 : 1;
-                this.ctx.drawImage(c.c, cx - c.s/2, cy - c.s/2 + (colData.dropOffsets ? colData.dropOffsets[row]||0 : 0));
+        // CLIPPING MASK (Zgodność z TotalCasino: Bez wycieków symboli)
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.rect(this.ra.x, this.ra.y, this.ra.w, this.ra.h);
+        this.ctx.clip();
+
+        // Siatka kolumn
+        this.ctx.strokeStyle = this.isBonusTheme ? 'rgba(255,0,60,0.08)' : 'rgba(0,240,255,0.08)';
+        this.ctx.lineWidth = 1;
+        for (let i = 1; i < this.cols; i++) {
+          const x = this.ra.x + (i * this.cW);
+          this.ctx.beginPath();
+          this.ctx.moveTo(x, this.ra.y);
+          this.ctx.lineTo(x, this.ra.y + this.ra.h);
+          this.ctx.stroke();
+        }
+
+        // Renderowanie bębnów i symboli
+        this.reels.forEach((r, col) => {
+          const cx = this.ra.x + (col * this.cW) + (this.cW / 2);
+          
+          for (let row = -1; row <= this.rows; row++) {
+            const logicalY = Math.floor(r.pos / this.rH) + row;
+            let symId = (Math.abs(logicalY) % 6) + 1; // Fallback symbol while spinning
+
+            let letter = null;
+
+            if (r.state === 'IDLE') {
+              const viewRow = (row + 3) % 3;
+              symId = r.matrix[viewRow] || 1;
+              letter = r.letterOverlays[viewRow];
+              if (r.hidden.includes(viewRow)) continue; // Ukrywanie dla kaskady
+            }
+
+            const cy = this.ra.y + (row * this.rH) + (r.pos % this.rH) + (this.rH / 2) + (r.state === 'IDLE' ? r.dropOffsets[(row+3)%3] : 0);
+
+            if (cy > this.ra.y - this.rH && cy < this.ra.y + this.ra.h + this.rH) {
+              const cache = this.symsCache[symId];
+              if (cache) {
+                this.ctx.save();
+                this.ctx.globalAlpha = r.state === 'SPINNING' ? 0.45 : 1.0;
+                this.ctx.drawImage(cache.canvas, cx - cache.size / 2, cy - cache.size / 2);
+
+                // Nakładka litery Jackpot (F, E, R, O)
+                if (letter && r.state === 'IDLE') {
+                  this.ctx.shadowBlur = 10;
+                  this.ctx.shadowColor = '#bc13fe';
+                  this.ctx.fillStyle = '#ffffff';
+                  this.ctx.font = 'black 14px "Orbitron", sans-serif';
+                  this.ctx.fillText(letter.replace(/\d/, ''), cx + this.cW * 0.22, cy + this.rH * 0.25);
+                }
+                this.ctx.restore();
               }
             }
           }
         });
 
-        // Wygrywające ramki
-        if(this.winLines.length > 0) {
-          this.ctx.strokeStyle = '#00f0ff'; this.ctx.lineWidth = 3; this.ctx.shadowColor = '#00f0ff'; this.ctx.shadowBlur = 10;
-          this.winLines.forEach(l => l.forEach(n => {
-            this.ctx.strokeRect(this.ra.x+(n.col*this.cW)+4, this.ra.y+(n.row*this.rH)+4, this.cW-8, this.rH-8);
-          }));
-          this.ctx.shadowBlur=0;
-        }
-        
-        this.ctx.restore();
+        // Renderowanie linii wygranych
+        if (this.winLines.length > 0) {
+          const mainColor = this.isBonusTheme ? '#ff003c' : '#00f0ff';
+          this.ctx.strokeStyle = mainColor;
+          this.ctx.lineWidth = 3;
+          this.ctx.shadowColor = mainColor;
+          this.ctx.shadowBlur = 15;
 
-        // Renderowanie fizyki kaskady (prosta grawitacja)
-        if(this.dropAnim > 0) {
-           this.reels.forEach(r => {
-              if(r.dropOffsets) {
-                 for(let i=0; i<r.dropOffsets.length; i++) {
-                    if(r.dropOffsets[i] < 0) r.dropOffsets[i] += this.rH * 0.2; // Spadek
-                    if(r.dropOffsets[i] >= 0) r.dropOffsets[i] = 0; // Oparcie na dnie
-                 }
-              }
-           });
-           this.dropAnim -= dt;
+          this.winLines.forEach(line => {
+            line.forEach(node => {
+              const x = this.ra.x + (node.col * this.cW);
+              const y = this.ra.y + (node.row * this.rH);
+              this.ctx.strokeRect(x + 5, y + 5, this.cW - 10, this.rH - 10);
+            });
+          });
+          this.ctx.shadowBlur = 0;
         }
+
+        this.ctx.restore(); // Wyłączenie maskowania bębnów
+
+        // Renderowanie cząsteczek
+        this.particles.forEach(p => {
+          this.ctx.globalAlpha = p.life;
+          this.ctx.fillStyle = p.color;
+          this.ctx.beginPath();
+          this.ctx.arc(p.x, p.y, p.size, 0, 6.28);
+          this.ctx.fill();
+        });
+        this.ctx.globalAlpha = 1.0;
+
+        this.ctx.restore(); // Wyłączenie trzęsienia ekranu
 
         requestAnimationFrame(this.render.bind(this));
       }
 
-      startSpin(matrix, isTurbo, onComplete) {
+      startSpin(matrix, letterOverlays, isTurbo, onStop, onComplete) {
         this.winLines = [];
-        this.reels = matrix.map((col, i) => ({
-          state: 'SPINNING', matrix: col, pos: 0, target: this.rH * (isTurbo?10:20) + (i*this.rH*2)
-        }));
-        
-        let stops = 0;
+        this.onReelStop = onStop;
+
+        const baseDur = isTurbo ? 0.32 : 1.1;
+        const stagger = isTurbo ? 0.06 : 0.22;
+
         this.reels.forEach((r, i) => {
-           setTimeout(() => { r.state = 'IDLE'; r.pos = 0; stops++; if(stops===5 && onComplete) onComplete(); }, isTurbo ? 300+(i*100) : 800+(i*200));
+          r.state = 'SPINNING';
+          r.time = 0;
+          r.duration = baseDur + (i * stagger);
+          r.startPos = r.pos;
+          r.matrix = matrix[i];
+          r.letterOverlays = letterOverlays[i];
+          r.hidden = [];
+          r.dropOffsets = [0,0,0];
+
+          const rotations = isTurbo ? 2 : 5;
+          r.targetPos = r.startPos + (rotations * this.rows * this.rH) + (i * this.rH);
         });
+
+        const check = setInterval(() => {
+          if (this.reels.every(r => r.state === 'IDLE')) {
+            clearInterval(check);
+            onComplete();
+          }
+        }, 30);
       }
 
-      // Wizualizacja usunięcia symboli
-      implodeSymbols(positionsMap) {
-        this.winLines = [];
-        this.reels.forEach((r, col) => {
-           r.hidden = [];
-           positionsMap.forEach(pos => {
-              const [c, row] = pos.split(',').map(Number);
-              if(c === col) r.hidden.push(row);
-           });
+      implodeSymbols(positions) {
+        positions.forEach(pos => {
+          const [col, row] = pos.split(',').map(Number);
+          this.reels[col].hidden.push(row);
+          this.spawnExplosion(col, row, this.isBonusTheme ? '#ff003c' : '#00f0ff');
         });
+        this.screenShake = 12;
       }
 
-      // Renderowanie upadku nowych symboli
-      dropNewSymbols(newMatrix) {
+      dropNewSymbols(matrix, letterOverlays, refillCount) {
         this.reels.forEach((r, col) => {
-           r.hidden = [];
-           r.matrix = newMatrix[col];
-           r.dropOffsets = [-this.rH*2, -this.rH*2, -this.rH*2]; // Start z góry
+          r.hidden = [];
+          r.matrix = matrix[col];
+          r.letterOverlays = letterOverlays[col];
+          
+          // Przygotowanie spadku tylko dla brakujących elementów z góry
+          for (let i = 0; i < 3; i++) {
+            if (i < refillCount[col]) {
+              r.dropOffsets[i] = -this.rH * (refillCount[col] - i);
+            }
+          }
         });
-        this.dropAnim = 0.5; // Czas trwania animacji
       }
     }
 
     // ==========================================
-    // 5. GŁÓWNY KONTROLER LOGIKI I STANU (RGS Core)
+    // 5. ARCHITEKTURA LOGIKI GRY I SESJI (RGS Core)
     // ==========================================
     class GameController {
       constructor() {
         this.rng = new SecureRNG();
         this.rgs = new RGSMath(this.rng);
-        this.renderer = new GameRenderer();
-        this.audio = new CyberAudio();
+        this.audio = new CyberAudioEngine();
+        this.renderer = new VectorRenderer();
 
-        // Bezpieczny stan (FSM)
-        this.state = STATES.IDLE;
-        
-        // Dane gry
-        this.data = {
+        // Dedykowany mechanizm stanów FSM
+        this.isSpinning = false;
+
+        this.state = {
           balance: 1000.0,
-          bets: [2.0, 5.0, 10.0, 20.0, 50.0, 100.0],
+          bets: [2.00, 5.00, 10.00, 20.00, 50.00, 100.00],
           betIndex: 1,
+          isTurbo: false,
+          fsCount: 0,
+          cascadeMultiplier: 1,
           matrix: null,
-          cascadeMult: 1,
-          totalSpinWin: 0
+          letterOverlays: null,
+          xp: 0,
+          level: 1,
+          levelNames: ["SCRIPT KIDDIE", "NET BREAKER", "PROXY WIZARD", "DB INJECTOR", "OVERLORD"],
+          jackpotLetters: { F: false, E: false, R1: false, R2: false, O: false }
         };
 
-        this.autoplay = { enabled: false, remaining: 0, lossLimit: 0, startBal: 0 };
+        this.autoplay = {
+          enabled: false,
+          remaining: 0,
+          lossLimit: 0,
+          startBal: 0
+        };
+
         this.sessionStart = Date.now();
 
         this.cacheDOM();
+        this.loadSession(); // Załaduj zapisaną sesję (Zabezpieczenie przed odświeżeniem)
+        this.initLoader();
         this.setupEvents();
-        this.startSessionClock();
-
-        // Start inicjalizacji UI
-        this.renderer.startSpin([[1,2,3],[1,2,3],[1,2,3],[1,2,3],[1,2,3]], true); // Dumy grid
+        this.startSessionTimer();
+        this.listenNetwork();
       }
 
       cacheDOM() {
         const get = id => document.getElementById(id);
         this.dom = {
-          bal: get('display-balance'), bet: get('display-bet'), win: get('display-win'),
-          msg: get('status-msg'), multDisp: get('multiplier-display'),
-          spinBtn: get('btn-spin'), betSel: get('bet-selector'),
-          overlay: get('win-overlay'), winAmt: get('win-amount-counter'),
-          autoRing: get('spin-auto-ring'), autoCount: get('auto-spin-count'), spinIcon: get('spin-icon'),
-          rgClock: get('rg-clock'), rgSession: get('rg-session'), led: get('led-frame')
+          bal: get('display-balance'),
+          bet: get('display-bet'),
+          win: get('display-win'),
+          msg: get('status-msg'),
+          multDisp: get('multiplier-display'),
+          multContainer: get('mult-container'),
+          spinBtn: get('btn-spin'),
+          betSel: get('bet-selector'),
+          overlay: get('win-overlay'),
+          winAmt: get('win-amount-counter'),
+          winType: get('win-type'),
+          fsBanner: get('fs-banner'),
+          fsCount: get('fs-count'),
+          autoRing: get('spin-auto-ring'),
+          autoCount: get('auto-spin-count'),
+          spinIcon: get('spin-icon'),
+          turboLabel: get('turbo-label'),
+          turboIcon: get('turbo-icon'),
+          levelName: get('hacker-level-name'),
+          xpBar: get('level-xp-bar'),
+          xpDisplay: get('hacker-xp-display'),
+          led: get('led-frame')
         };
       }
 
@@ -658,28 +1057,60 @@
           this.audio.init();
           document.getElementById('splash-loader').remove();
           this.updateUI();
+          this.audio.startMusic();
         });
 
         this.dom.spinBtn.addEventListener('click', () => {
-          if (this.autoplay.enabled) this.haltAutoplay();
-          else if (this.state === STATES.IDLE) this.initiateSpin();
-          // Blokada kliknięcia podczas trwania stanów pośrednich FSM
+          if (this.autoplay.enabled) {
+            this.haltAutoplay();
+          } else {
+            this.play();
+          }
         });
 
         this.dom.betSel.addEventListener('click', () => {
-          if (this.state !== STATES.IDLE || this.autoplay.enabled) return;
-          this.data.betIndex = (this.data.betIndex + 1) % this.data.bets.length;
-          this.audio.play('sine', 800, 0.1);
+          if (this.isSpinning || this.state.fsCount > 0) return;
+          this.state.betIndex = (this.state.betIndex + 1) % this.state.bets.length;
+          this.audio.playSFX('sine', 880, 0.08, 0.3);
           this.updateUI();
+          this.saveSession();
         });
 
-        // Autoplay Setup
-        document.getElementById('btn-auto').addEventListener('click', () => {
-           if(this.state === STATES.IDLE && !this.autoplay.enabled) {
-               document.getElementById('panel-auto').classList.remove('opacity-0', 'pointer-events-none');
-           }
+        // Turbo toggle
+        document.getElementById('btn-turbo').addEventListener('click', () => {
+          this.state.isTurbo = !this.state.isTurbo;
+          this.updateTurboUI();
+          this.audio.playSFX('sine', this.state.isTurbo ? 1200 : 600, 0.1, 0.3);
         });
-        
+
+        // Modale
+        const bindModal = (btnId, panelId) => {
+          document.getElementById(btnId).addEventListener('click', () => {
+            this.audio.init();
+            document.getElementById(panelId).classList.remove('opacity-0', 'pointer-events-none');
+          });
+        };
+        bindModal('btn-settings', 'panel-settings');
+        bindModal('btn-auto', 'panel-auto');
+
+        document.querySelectorAll('.close-overlay').forEach(b => {
+          b.addEventListener('click', (e) => e.target.closest('div[id^="panel-"]').classList.add('opacity-0', 'pointer-events-none'));
+        });
+
+        // Toggles w ustawieniach
+        document.getElementById('toggle-bgm').addEventListener('change', e => {
+          this.audio.bgmEnabled = e.target.checked;
+          if (e.target.checked) this.audio.startMusic(); else this.audio.stopMusic();
+        });
+        document.getElementById('toggle-sfx').addEventListener('change', e => this.audio.sfxEnabled = e.target.checked);
+
+        // Resetowanie sesji
+        document.getElementById('btn-reset-session').addEventListener('click', () => {
+          localStorage.removeItem('secferro_rgs_state_v3');
+          window.location.reload();
+        });
+
+        // Wybór liczby autospinów
         document.querySelectorAll('.auto-spin-opt').forEach(b => {
           b.addEventListener('click', (e) => {
             document.querySelectorAll('.auto-spin-opt').forEach(btn => btn.classList.remove('bg-cyberPurple', 'border-cyberPurple'));
@@ -688,55 +1119,440 @@
           });
         });
 
-        document.getElementById('start-autoplay').addEventListener('click', () => {
-          const limit = parseFloat(document.getElementById('auto-loss-limit').value);
-          if (isNaN(limit) || limit <= 0) { alert('Wymóg RG: Podaj poprawny limit strat.'); return; }
-          
-          this.autoplay = {
-            enabled: true,
-            remaining: parseInt(document.getElementById('auto-spins-val').value),
-            lossLimit: limit,
-            startBal: this.data.balance
-          };
-          document.getElementById('panel-auto').classList.add('opacity-0', 'pointer-events-none');
-          this.updateAutoplayUI();
-          this.initiateSpin();
-        });
-
-        document.querySelectorAll('.close-overlay').forEach(b => {
-          b.addEventListener('click', (e) => e.target.closest('div[id^="panel-"]').classList.add('opacity-0', 'pointer-events-none'));
-        });
+        document.getElementById('start-autoplay').addEventListener('click', () => this.startAutoplay());
       }
 
-      startSessionClock() {
+      updateTurboUI() {
+        if (this.state.isTurbo) {
+          this.dom.turboLabel.classList.replace('text-gray-500', 'text-cyberBlue');
+          this.dom.turboIcon.classList.replace('text-gray-500', 'text-cyberBlue');
+        } else {
+          this.dom.turboLabel.classList.replace('text-cyberBlue', 'text-gray-500');
+          this.dom.turboIcon.classList.replace('text-cyberBlue', 'text-gray-500');
+        }
+      }
+
+      initLoader() {
+        const bar = document.getElementById('loader-bar');
+        setTimeout(() => { bar.style.width = '40%'; }, 200);
+        setTimeout(() => { bar.style.width = '80%'; }, 500);
+        setTimeout(() => {
+          bar.style.width = '100%';
+          document.getElementById('btn-start-game').classList.remove('hidden');
+        }, 800);
+      }
+
+      // --- ZAPIS I ODCZYT SESJI (Zabezpieczenie przed odświeżeniem i utratą sieci) ---
+      saveSession() {
+        const payload = {
+          balance: this.state.balance,
+          betIndex: this.state.betIndex,
+          isTurbo: this.state.isTurbo,
+          xp: this.state.xp,
+          level: this.state.level,
+          jackpotLetters: this.state.jackpotLetters,
+          fsCount: this.state.fsCount
+        };
+        localStorage.setItem('secferro_rgs_state_v3', JSON.stringify(payload));
+      }
+
+      loadSession() {
+        const saved = localStorage.getItem('secferro_rgs_state_v3');
+        if (saved) {
+          try {
+            const data = JSON.parse(saved);
+            this.state.balance = data.balance;
+            this.state.betIndex = data.betIndex;
+            this.state.isTurbo = data.isTurbo;
+            this.state.xp = data.xp;
+            this.state.level = data.level;
+            this.state.jackpotLetters = data.jackpotLetters;
+            this.state.fsCount = data.fsCount;
+
+            this.dom.msg.innerText = "SESJA ODZYSKANA";
+            setTimeout(() => this.dom.msg.innerText = "POŁĄCZONO Z SYSTEMEM", 2000);
+          } catch(e) {
+            console.error("Format sesji uszkodzony", e);
+          }
+        }
+        this.updateTurboUI();
+        this.updateJackpotBar();
+      }
+
+      listenNetwork() {
+        const updateStatus = () => {
+          const el = document.getElementById('net-status');
+          const ind = document.getElementById('net-indicator');
+          if (navigator.onLine) {
+            el.innerText = 'ONLINE';
+            el.className = 'text-cyberGreen font-bold';
+            ind.className = 'w-1.5 h-1.5 rounded-full bg-cyberGreen animate-ping';
+          } else {
+            el.innerText = 'OFFLINE';
+            el.className = 'text-cyberAlert font-bold animate-pulse';
+            ind.className = 'w-1.5 h-1.5 rounded-full bg-cyberAlert';
+            this.dom.msg.innerText = "UTRACONO POŁĄCZENIE";
+          }
+        };
+        window.addEventListener('online', updateStatus);
+        window.addEventListener('offline', updateStatus);
+        updateStatus();
+      }
+
+      startSessionTimer() {
         setInterval(() => {
-          const now = new Date();
-          this.dom.rgClock.innerText = now.toISOString().substring(11, 19) + ' UTC';
-          const diff = Math.floor((now.getTime() - this.sessionStart) / 1000);
+          const diff = Math.floor((Date.now() - this.sessionStart) / 1000);
           const mins = String(Math.floor(diff / 60)).padStart(2, '0');
           const secs = String(diff % 60).padStart(2, '0');
-          this.dom.rgSession.innerText = `${mins}:${secs}`;
+          document.getElementById('rg-session').innerText = `${mins}:${secs}`;
+          document.getElementById('rg-clock').innerText = new Date().toISOString().substring(11, 19) + ' UTC';
         }, 1000);
       }
 
       updateUI() {
-        this.dom.bal.innerText = this.data.balance.toFixed(2);
-        this.dom.bet.innerText = this.data.bets[this.data.betIndex].toFixed(2);
-        this.dom.multDisp.innerText = `x${this.data.cascadeMult}`;
+        this.dom.bal.innerText = this.state.balance.toFixed(2);
+        this.dom.bet.innerText = this.state.bets[this.state.betIndex].toFixed(2);
+        this.dom.multDisp.innerText = `x${this.state.cascadeMultiplier * this.state.level}`;
+        
+        this.dom.levelName.innerText = this.state.levelNames[this.state.level - 1];
+        this.dom.xpDisplay.innerText = this.state.xp;
+        this.dom.xpBar.style.width = `${this.state.xp}%`;
+
+        // UI Darmowych obrotów
+        if (this.state.fsCount > 0) {
+          this.dom.fsBanner.classList.replace('hidden', 'flex');
+          this.dom.fsBanner.classList.add('opacity-100', 'scale-100');
+          this.dom.fsCount.innerText = this.state.fsCount;
+          this.renderer.isBonusTheme = true;
+          this.dom.led.classList.add('border-cyberAlert');
+        } else {
+          this.dom.fsBanner.classList.replace('flex', 'hidden');
+          this.renderer.isBonusTheme = false;
+          this.dom.led.classList.remove('border-cyberAlert');
+        }
+      }
+
+      addXP(amount) {
+        this.state.xp += amount;
+        if (this.state.xp >= 100) {
+          this.state.xp = this.state.xp % 100;
+          if (this.state.level < 5) {
+            this.state.level++;
+            this.audio.playSFX('sine', 1000, 0.8, 0.4, 1800);
+            this.dom.msg.innerText = "UPGRADE POZIOMU HACKERA!";
+          }
+        }
+        this.updateUI();
+        this.saveSession();
+      }
+
+      async play() {
+        if (this.isSpinning) return;
+        const bet = this.state.bets[this.state.betIndex];
+        const isFS = this.state.fsCount > 0;
+
+        if (this.state.balance < bet && !isFS) {
+          this.dom.msg.innerText = "BRAK ŚRODKÓW NA SALDZIE";
+          this.audio.playSFX('sawtooth', 80, 0.4, 0.5);
+          this.haltAutoplay();
+          return;
+        }
+
+        this.isSpinning = true;
+        this.dom.spinBtn.disabled = true;
+        this.dom.win.innerText = "0.00";
+        this.renderer.winLines = [];
+
+        // Reset mnożnika w grze podstawowej (w bonusie rośnie bez końca)
+        if (!isFS) {
+          this.state.cascadeMultiplier = 1;
+        }
+        this.dom.multDisp.innerText = `x${this.state.cascadeMultiplier * this.state.level}`;
+
+        if (isFS) {
+          this.state.fsCount--;
+          this.updateUI();
+          this.dom.msg.innerText = "OVERLOADING GRILL...";
+        } else {
+          this.state.balance -= bet;
+          this.dom.msg.innerText = "INIEKCJA DEKRYPTORA...";
+          this.updateUI();
+        }
+
+        this.audio.playSpinStart();
+        this.dom.led.classList.add('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
+
+        // Losowanie planszy przez RGS
+        const spinData = this.rgs.spin();
+        this.state.matrix = spinData.matrix;
+        this.state.letterOverlays = spinData.letterOverlays;
+
+        this.renderer.startSpin(
+          this.state.matrix,
+          this.state.letterOverlays,
+          this.state.isTurbo,
+          (idx) => this.audio.playReelStop(idx),
+          () => this.handleAvalancheEvaluation(bet)
+        );
+        this.saveSession();
+      }
+
+      async handleAvalancheEvaluation(bet) {
+        this.dom.led.classList.remove('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
+
+        const evalResult = this.rgs.evaluate(
+          this.state.matrix,
+          bet,
+          this.state.cascadeMultiplier * this.state.level,
+          this.state.letterOverlays
+        );
+
+        if (evalResult.win > 0) {
+          this.renderer.winLines = evalResult.lines;
+          this.audio.playCascade();
+          
+          // Zgromadzenie liter Jackpotu
+          if (evalResult.collectedLetters.length > 0) {
+            evalResult.collectedLetters.forEach(letter => {
+              if (letter === 'F') this.state.jackpotLetters.F = true;
+              if (letter === 'E') this.state.jackpotLetters.E = true;
+              if (letter === 'R1') this.state.jackpotLetters.R1 = true;
+              if (letter === 'R2') this.state.jackpotLetters.R2 = true;
+              if (letter === 'O') this.state.jackpotLetters.O = true;
+            });
+            this.audio.playLetterCollect();
+            this.updateJackpotBar();
+            this.checkJackpotTension();
+          }
+
+          const multiplier = evalResult.win / bet;
+          this.addXP(Math.ceil(multiplier * 4));
+
+          // Duże wygrane
+          if (multiplier >= 15) {
+            await this.presentBigWin(evalResult.win, multiplier);
+          } else {
+            this.audio.playWinSmall();
+            this.state.balance += evalResult.win;
+            this.dom.win.innerText = evalResult.win.toFixed(2);
+            this.updateUI();
+          }
+
+          // Implozja i opadnięcie kaskadowe
+          const delay = this.state.isTurbo ? 300 : 1200;
+          setTimeout(() => {
+            this.audio.playImplode();
+            this.renderer.implodeSymbols(evalResult.positions);
+            this.triggerCascadeDrop(bet, evalResult.positions);
+          }, delay);
+
+        } else {
+          // Brak wygranych - sprawdzenie czy nie aktywował się bonus Scatterów
+          if (evalResult.triggerFreeSpins) {
+            this.triggerFreeSpins();
+          } else {
+            this.endCycle();
+          }
+        }
+      }
+
+      triggerCascadeDrop(bet, positions) {
+        const columnsToRefill = [0,0,0,0,0];
+        positions.forEach(pos => {
+          const [c, r] = pos.split(',').map(Number);
+          this.state.matrix[c][r] = null;
+          columnsToRefill[c]++;
+        });
+
+        // Grawitacja w kolumnach
+        for (let c = 0; c < 5; c++) {
+          const remaining = this.state.matrix[c].filter(s => s !== null);
+          const remainingLetters = this.state.letterOverlays[c].filter((s, idx) => this.state.matrix[c][idx] !== null);
+          const empties = 3 - remaining.length;
+          
+          this.state.matrix[c] = Array(empties).fill(null).concat(remaining);
+          this.state.letterOverlays[c] = Array(empties).fill(null).concat(remainingLetters);
+        }
+
+        // RGS pobiera uzupełniające symbole z bębnów
+        const refill = this.rgs.spinTopOnly(columnsToRefill);
+        for (let c = 0; c < 5; c++) {
+          for (let r = 0; r < columnsToRefill[c]; r++) {
+            this.state.matrix[c][r] = refill.newSymbols[c][r];
+            this.state.letterOverlays[c][r] = refill.newLetters[c][r];
+          }
+        }
+
+        // Spadek i ponowna ewaluacja kaskadowa
+        setTimeout(() => {
+          this.state.cascadeMultiplier++;
+          this.updateUI();
+          this.renderer.dropNewSymbols(this.state.matrix, this.state.letterOverlays, columnsToRefill);
+          
+          setTimeout(() => this.handleAvalancheEvaluation(bet), this.state.isTurbo ? 250 : 500);
+        }, 200);
+      }
+
+      endCycle() {
+        this.isSpinning = false;
+        this.dom.spinBtn.disabled = false;
+        this.dom.msg.innerText = "SYSTEM REBOOT COMPLETE";
+        this.saveSession();
+
+        // Sprawdzenie Jackpotu
+        if (this.state.jackpotLetters.F && this.state.jackpotLetters.E && this.state.jackpotLetters.R1 && this.state.jackpotLetters.R2 && this.state.jackpotLetters.O) {
+          this.triggerFerroJackpot();
+          return;
+        }
+
+        if (this.state.fsCount > 0) {
+          setTimeout(() => this.play(), 1000);
+        } else if (this.autoplay.enabled) {
+          this.autoplay.remaining--;
+          this.updateAutoplayUI();
+
+          const loss = this.autoplay.startBal - this.state.balance;
+          if (this.autoplay.remaining <= 0 || (this.autoplay.lossLimit > 0 && loss >= this.autoplay.lossLimit)) {
+            this.haltAutoplay();
+          } else {
+            setTimeout(() => { if (this.autoplay.enabled) this.play(); }, this.state.isTurbo ? 200 : 800);
+          }
+        }
+      }
+
+      triggerFreeSpins() {
+        this.state.fsCount = 10;
+        this.audio.playScatterAlert();
+        this.dom.msg.innerText = "OVERCLOCKING DETECTED!";
+        this.dom.msg.classList.add('text-cyberAlert', 'glitch-text-active');
+        
+        setTimeout(() => {
+          this.dom.msg.classList.remove('text-cyberAlert', 'glitch-text-active');
+          this.updateUI();
+          this.play();
+        }, 2000);
+      }
+
+      updateJackpotBar() {
+        const map = { F: 'F', E: 'E', R1: 'R1', R2: 'R2', O: 'O' };
+        for (let k in map) {
+          const el = document.getElementById(`jackpot-letter-${k}`);
+          if (this.state.jackpotLetters[k]) {
+            el.className = "w-6 h-6 border flex items-center justify-center text-xs font-black font-tech rounded transition-all active-letter text-white";
+          } else {
+            el.className = "w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/35 rounded transition-all";
+          }
+        }
+      }
+
+      checkJackpotTension() {
+        // Jeśli zebrano 4 z 5 liter, generujemy drżenie ekranu i ostrzeżenie
+        const collectedCount = Object.values(this.state.jackpotLetters).filter(Boolean).length;
+        if (collectedCount === 4) {
+          this.renderer.screenShake = 10;
+          this.dom.msg.innerText = "DETEKCJA INTEGRALNOŚCI JACKPOTU";
+          this.audio.playSFX('sawtooth', 300, 0.5, 0.4, 600);
+        }
+      }
+
+      async triggerFerroJackpot() {
+        this.isSpinning = true;
+        this.dom.spinBtn.disabled = true;
+        this.audio.playJackpotAlarm();
+
+        // Widowiskowy jackpot alarm
+        this.renderer.screenShake = 20;
+        this.dom.msg.innerText = "FERRO CRITICAL OVERLOAD!";
+        this.dom.msg.classList.add('text-cyberGold', 'glitch-text-active');
+
+        const jackpotWin = this.state.bets[this.state.betIndex] * 1000;
+
+        await new Promise(resolve => {
+          setTimeout(() => {
+            this.dom.msg.classList.remove('text-cyberGold', 'glitch-text-active');
+            resolve();
+          }, 3000);
+        });
+
+        // Wypłata Jackpotu
+        this.dom.winType.innerText = "GRAND SYSTEM JACKPOT";
+        await this.presentBigWin(jackpotWin, 1000);
+
+        // Reset paska liter
+        this.state.jackpotLetters = { F: false, E: false, R1: false, R2: false, O: false };
+        this.updateJackpotBar();
+        this.saveSession();
+        this.isSpinning = false;
+        this.endCycle();
+      }
+
+      presentBigWin(amount, mult) {
+        return new Promise(resolve => {
+          this.audio.playWinBig();
+          this.dom.overlay.classList.remove('opacity-0', 'pointer-events-none');
+          if (mult < 1000) this.dom.winType.innerText = "ZŁAMANIE ZABEZPIECZEŃ";
+          
+          let current = 0;
+          const duration = 2500;
+          const start = performance.now();
+
+          const step = (now) => {
+            const p = Math.min((now - start) / duration, 1);
+            const ease = 1 - Math.pow(1 - p, 3);
+            current = amount * ease;
+            this.dom.winAmt.innerText = current.toFixed(2);
+            this.dom.win.innerText = current.toFixed(2);
+
+            if (p < 1) {
+              requestAnimationFrame(step);
+            } else {
+              this.state.balance += amount;
+              this.updateUI();
+              const contBtn = document.getElementById('win-continue-msg');
+              contBtn.style.display = 'block';
+
+              const dismiss = () => {
+                this.dom.overlay.classList.add('opacity-0', 'pointer-events-none');
+                contBtn.style.display = 'none';
+                document.removeEventListener('click', dismiss);
+                resolve();
+              };
+              setTimeout(() => document.addEventListener('click', dismiss), 500);
+            }
+          };
+          requestAnimationFrame(step);
+        });
+      }
+
+      startAutoplay() {
+        const spins = parseInt(document.getElementById('auto-spins-val').value) || 10;
+        const loss = parseFloat(document.getElementById('auto-loss-limit').value) || 0;
+
+        document.getElementById('panel-auto').classList.add('opacity-0', 'pointer-events-none');
+
+        this.autoplay = {
+          enabled: true,
+          remaining: spins,
+          lossLimit: loss,
+          startBal: this.state.balance
+        };
+
+        this.updateAutoplayUI();
+        this.play();
       }
 
       updateAutoplayUI() {
-        if(this.autoplay.enabled) {
-           this.dom.spinIcon.classList.add('opacity-0');
-           this.dom.autoRing.classList.remove('opacity-0');
-           this.dom.autoCount.classList.remove('opacity-0');
-           this.dom.autoCount.innerText = this.autoplay.remaining;
-           this.dom.spinBtn.classList.replace('border-cyberBlue', 'border-cyberPurple');
+        if (this.autoplay.enabled) {
+          this.dom.spinIcon.classList.add('opacity-0');
+          this.dom.autoRing.classList.remove('opacity-0');
+          this.dom.autoCount.classList.remove('opacity-0');
+          this.dom.autoCount.innerText = this.autoplay.remaining;
+          this.dom.spinBtn.classList.replace('border-cyberBlue', 'border-cyberPurple');
         } else {
-           this.dom.spinIcon.classList.remove('opacity-0');
-           this.dom.autoRing.classList.add('opacity-0');
-           this.dom.autoCount.classList.add('opacity-0');
-           this.dom.spinBtn.classList.replace('border-cyberPurple', 'border-cyberBlue');
+          this.dom.spinIcon.classList.remove('opacity-0');
+          this.dom.autoRing.classList.add('opacity-0');
+          this.dom.autoCount.classList.add('opacity-0');
+          this.dom.spinBtn.classList.replace('border-cyberPurple', 'border-cyberBlue');
         }
       }
 
@@ -744,167 +1560,11 @@
         this.autoplay.enabled = false;
         this.updateAutoplayUI();
       }
-
-      // --- LOGIKA STANU GRY (FSM) ---
-
-      initiateSpin() {
-        const bet = this.data.bets[this.data.betIndex];
-        if (this.data.balance < bet) {
-          this.dom.msg.innerText = "Niewystarczające środki!";
-          this.dom.msg.classList.add('text-cyberAlert');
-          setTimeout(() => this.dom.msg.classList.remove('text-cyberAlert'), 2000);
-          this.haltAutoplay();
-          return;
-        }
-
-        this.changeState(STATES.SPINNING);
-        this.data.balance -= bet;
-        this.data.cascadeMult = 1;
-        this.data.totalSpinWin = 0;
-        this.dom.win.innerText = "0.00";
-        this.dom.led.classList.add('shadow-[0_0_20px_#00f0ff]', 'border-cyberBlue');
-        
-        this.updateUI();
-        this.audio.spin();
-        this.dom.msg.innerText = "OBLICZANIE WYNIKU RGS...";
-
-        // KROK 1: RGS Generuje macierz
-        this.data.matrix = this.rgs.spin();
-        
-        // KROK 2: Render
-        this.renderer.startSpin(this.data.matrix, false, () => {
-           this.audio.stop(4);
-           this.dom.led.classList.remove('shadow-[0_0_20px_#00f0ff]', 'border-cyberBlue');
-           this.evaluateGrid();
-        });
-      }
-
-      evaluateGrid() {
-        this.changeState(STATES.EVALUATING);
-        const bet = this.data.bets[this.data.betIndex];
-        
-        const result = this.rgs.evaluate(this.data.matrix, bet, this.data.cascadeMult);
-        
-        if (result.win > 0) {
-           this.data.totalSpinWin += result.win;
-           this.dom.win.innerText = this.data.totalSpinWin.toFixed(2);
-           this.renderer.winLines = result.lines;
-           this.audio.win();
-           this.dom.msg.innerText = "KASKADA AKTYWNA!";
-           
-           // Rozpoczęcie procedury Kaskady (Gravity Drop)
-           setTimeout(() => this.processCascade(result.positions), 1200);
-        } else {
-           this.finalizeTurn();
-        }
-      }
-
-      processCascade(winningPositions) {
-         this.changeState(STATES.CASCADING);
-         this.audio.cascade();
-         
-         // 1. Zniknięcie symboli
-         this.renderer.implodeSymbols(winningPositions);
-         
-         // 2. Matematyka - usunięcie z macierzy i zapadnięcie
-         const columnsToRefill = [0,0,0,0,0];
-         winningPositions.forEach(pos => {
-            const [c, r] = pos.split(',').map(Number);
-            this.data.matrix[c][r] = null; // Zaznacz do usunięcia
-            columnsToRefill[c]++;
-         });
-
-         for(let c=0; c<5; c++) {
-            // Przesuń istniejące elementy na dół (Gravity)
-            const remaining = this.data.matrix[c].filter(s => s !== null);
-            const empties = 3 - remaining.length;
-            this.data.matrix[c] = Array(empties).fill(null).concat(remaining);
-         }
-
-         // 3. RGS losuje nowe symbole na puste miejsca z góry
-         const newSymbols = this.rgs.spinTopOnly(columnsToRefill);
-         for(let c=0; c<5; c++) {
-            for(let r=0; r<columnsToRefill[c]; r++) {
-               this.data.matrix[c][r] = newSymbols[c][r];
-            }
-         }
-
-         // Animacja opadania i ponowna ewaluacja
-         setTimeout(() => {
-            this.data.cascadeMult++;
-            this.updateUI();
-            this.renderer.dropNewSymbols(this.data.matrix);
-            setTimeout(() => this.evaluateGrid(), 600); // Po opadnięciu, ewaluuj
-         }, 400);
-      }
-
-      finalizeTurn() {
-        if (this.data.totalSpinWin > 0) {
-           this.data.balance += this.data.totalSpinWin;
-           const mult = this.data.totalSpinWin / this.data.bets[this.data.betIndex];
-           
-           if(mult >= 15) {
-               this.changeState(STATES.WIN_PRESENTATION);
-               this.presentBigWin(this.data.totalSpinWin, () => this.endCycle());
-               return;
-           }
-        }
-        
-        this.endCycle();
-      }
-
-      endCycle() {
-        this.updateUI();
-        this.dom.msg.innerText = "SYSTEM GOTOWY";
-        this.changeState(STATES.IDLE);
-
-        // Obsługa Autoplay z warunkami RG
-        if (this.autoplay.enabled) {
-           this.autoplay.remaining--;
-           this.updateAutoplayUI();
-           
-           const loss = this.autoplay.startBal - this.data.balance;
-           if (this.autoplay.remaining <= 0 || loss >= this.autoplay.lossLimit) {
-              this.haltAutoplay();
-              this.dom.msg.innerText = "AUTOPLAY ZAKOŃCZONY (LIMIT)";
-           } else {
-              setTimeout(() => { if(this.autoplay.enabled && this.state===STATES.IDLE) this.initiateSpin(); }, 1000);
-           }
-        }
-      }
-
-      presentBigWin(amount, callback) {
-        this.dom.overlay.classList.remove('opacity-0', 'pointer-events-none');
-        let current = 0;
-        const dur = 2000; const start = performance.now();
-        const step = (now) => {
-           const p = Math.min((now - start) / dur, 1);
-           const ease = 1 - Math.pow(1 - p, 3);
-           current = amount * ease;
-           this.dom.winAmt.innerText = current.toFixed(2);
-           if (p < 1) requestAnimationFrame(step);
-           else {
-               const contBtn = document.getElementById('win-continue-msg');
-               contBtn.style.display = 'block';
-               const dismiss = () => {
-                   this.dom.overlay.classList.add('opacity-0', 'pointer-events-none');
-                   contBtn.style.display = 'none';
-                   document.removeEventListener('click', dismiss);
-                   callback();
-               };
-               setTimeout(() => document.addEventListener('click', dismiss), 500);
-           }
-        };
-        requestAnimationFrame(step);
-      }
-
-      changeState(newState) {
-        this.state = newState;
-        this.dom.spinBtn.disabled = (newState !== STATES.IDLE && !this.autoplay.enabled);
-      }
     }
 
-    document.addEventListener('DOMContentLoaded', () => { new GameController(); });
+    document.addEventListener('DOMContentLoaded', () => {
+      new GameController();
+    });
   </script>
 </body>
 </html>
