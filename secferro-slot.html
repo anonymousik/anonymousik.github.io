@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="description" content="Book of SecFerro - Certified Premium Cascading Cyber Slot.">
-  <title>Book-OF-SecFerro🎰Slot(BETA)</title>
+  <title>SecFerro // Tier-1 Cyber RGS Engine</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
@@ -58,7 +58,6 @@
       transform: translateZ(0);
     }
 
-    /* Efekt kinowego napięcia (Heartbeat Vignette) */
     #tension-vignette {
       position: fixed; inset: 0;
       background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.85) 90%, rgba(255,0,60,0.15) 100%);
@@ -76,7 +75,6 @@
       100% { transform: scale(1); }
     }
 
-    /* Oślepiający rozbłysk świetlny */
     #blinding-flash {
       position: fixed; inset: 0;
       background: #ffffff;
@@ -206,29 +204,54 @@
     <div class="flex-1 w-full z-20 pointer-events-none"></div>
 
     <!-- WIDGET PODSUMOWANIA DARMOWYCH SPINÓW -->
-    <div id="fs-summary-overlay" class="absolute inset-0 z-45 flex flex-col items-center justify-center bg-black/98 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-500">
-      <div class="relative flex flex-col items-center p-8 border border-cyberAlert/30 rounded-2xl bg-black/80 max-w-md w-full text-center">
-        <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,0,60,0.2)_0%,transparent_70%)] animate-pulse"></div>
-        <h3 class="font-tech text-cyberAlert text-lg tracking-[0.3em] uppercase mb-4 z-10">PODSUMOWANIE OPERACJI</h3>
-        <p class="font-mono text-[11px] text-gray-400 mb-6 z-10">UZYSKANO DOSTĘP DO UKRYTEGO ARCHIWUM</p>
-        <div class="font-tech text-4xl font-black text-white drop-shadow-[0_0_15px_rgba(0,240,255,0.4)] z-10 mb-2">
-          <span id="fs-total-win">0.00</span> PLN
+    <div id="fs-summary-overlay" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+      <div class="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(188,19,254,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(188,19,254,0.1)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
+      
+      <div class="relative flex flex-col items-center max-w-md w-full px-6 py-10 border border-cyberPurple/40 rounded-2xl bg-black/90 shadow-[0_0_50px_rgba(188,19,254,0.2)] text-center">
+        <!-- Neon Corner Brackets -->
+        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyberPurple"></div>
+        <div class="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyberPurple"></div>
+        <div class="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-cyberPurple"></div>
+        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyberPurple"></div>
+
+        <h3 class="font-tech text-cyberPurple text-lg tracking-[0.3em] uppercase mb-2 z-10">TERMINAL DECRYPTED</h3>
+        <p class="font-mono text-[10px] text-gray-500 mb-6 z-10">PODSUMOWANIE PAKIETU DANYCH BONUSOWYCH</p>
+        
+        <div class="font-tech text-5xl sm:text-6xl font-black text-white drop-shadow-[0_0_20px_rgba(0,240,255,0.5)] z-10 mb-4 flex items-baseline justify-center">
+          <span id="fs-total-win">0.00</span> <span class="text-2xl ml-2 text-cyberBlue">PLN</span>
         </div>
-        <p class="font-mono text-[10px] text-cyberGreen mb-8 z-10">ZASTOSOWANY MNOŻNIK SERII: <span id="fs-final-mult" class="font-bold">x1</span></p>
-        <button id="btn-close-fs-summary" class="w-full py-3 bg-cyberAlert/20 border border-cyberAlert text-cyberAlert hover:bg-cyberAlert/40 transition-all font-tech font-bold tracking-[0.2em] rounded-xl btn-tactile text-xs z-10">
+        
+        <p class="font-mono text-[10px] text-cyberGreen mb-8 z-10">MNOŻNIK KOŃCOWY POZIOMU: <span id="fs-final-mult" class="font-bold">x1</span></p>
+        
+        <button id="btn-close-fs-summary" class="w-full py-4 bg-cyberPurple/20 border-2 border-cyberPurple text-cyberPurple font-tech font-bold tracking-[0.25em] rounded-xl btn-tactile text-sm z-20 shadow-[0_0_15px_rgba(188,19,254,0.3)] hover:bg-cyberPurple/40 transition-all">
           POWRÓT DO KONSOLI
         </button>
       </div>
     </div>
 
-    <div id="win-overlay" class="absolute inset-0 z-45 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
-      <div class="relative flex flex-col items-center animate-bounce">
-        <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,179,0,0.4)_0%,transparent_70%)] animate-pulse scale-[2.0]"></div>
-        <div id="win-type" class="text-sm sm:text-xl text-white mb-2 tracking-[0.5em] uppercase font-tech z-10 font-bold drop-shadow-[0_0_10px_#fff]">SYSTEM DECRYPTED</div>
-        <div class="font-tech text-6xl sm:text-8xl font-black text-cyberGold drop-shadow-[0_0_50px_rgba(255,179,0,1)] z-10 flex items-baseline">
-          <span id="win-amount-counter">0.00</span> <span class="text-3xl sm:text-4xl ml-2 text-cyberGold/80">PLN</span>
+    <!-- WIELKI KINOWY BANER ZWYCIĘSTWA -->
+    <div id="win-overlay" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+      <!-- Digital Rain / Cyber Grid Background -->
+      <div class="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(0,240,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
+      
+      <div class="relative flex flex-col items-center max-w-md w-full px-6 py-10 border border-cyberGold/40 rounded-2xl bg-black/90 shadow-[0_0_50px_rgba(255,179,0,0.2)] text-center">
+        <!-- Neon Corner brackets -->
+        <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyberGold"></div>
+        <div class="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyberGold"></div>
+        <div class="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-cyberGold"></div>
+        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyberGold"></div>
+
+        <div id="win-type" class="text-xs sm:text-base text-white tracking-[0.4em] uppercase font-tech z-10 font-bold drop-shadow-[0_0_8px_#fff] mb-2">SYSTEM DECRYPTED</div>
+        <div id="win-tier-text" class="text-[10px] text-cyberGold font-mono uppercase tracking-[0.3em] mb-6">MEGA WIN</div>
+        
+        <div class="font-tech text-5xl sm:text-6xl font-black text-cyberGold drop-shadow-[0_0_30px_rgba(255,179,0,0.8)] z-10 flex items-baseline justify-center mb-8">
+          <span id="win-amount-counter">0.00</span> <span class="text-2xl ml-2 text-cyberGold/80">PLN</span>
         </div>
-        <div class="text-xs text-cyberGreen mt-8 font-mono z-10 font-bold animate-pulse border border-cyberGreen/30 bg-cyberGreen/10 px-4 py-2 rounded-lg" id="win-continue-msg" style="display:none;">KLIKNIJ ABY POMINĄĆ / KONTYNUOWAĆ</div>
+
+        <button id="btn-claim-win" class="w-full py-4 bg-cyberGold/20 border-2 border-cyberGold text-cyberGold font-tech font-bold tracking-[0.25em] rounded-xl btn-tactile text-sm z-20 shadow-[0_0_15px_rgba(255,179,0,0.3)] hover:bg-cyberGold/40 transition-all">
+          ODBIERZ TRANSFER
+        </button>
+        <p id="win-continue-msg" class="text-[9px] text-gray-500 mt-3 font-mono tracking-widest uppercase">Kliknij aby przyśpieszyć naliczanie</p>
       </div>
     </div>
 
@@ -758,27 +781,40 @@
         setTimeout(() => { flash.style.transition = ''; }, 1600);
       }
 
-      spawnMegaExplosion(col, row, isGodRay = false) {
+      spawnMegaExplosion(col, row, type = 'blue') {
         const x = this.ra.x + (col * this.cW) + (this.cW / 2);
         const y = this.ra.y + (row * this.rH) + (this.rH / 2);
         
+        let baseHue = 190; 
+        if (type === 'gold') baseHue = 45;
+        else if (type === 'purple') baseHue = 280;
+        else if (type === 'green') baseHue = 120;
+        else if (type === 'red') baseHue = 0;
+
         let spawned = 0;
         for (let i = 0; i < this.particles.length; i++) {
           const p = this.particles[i];
           if (!p.active) {
             p.active = true; p.x = x; p.y = y;
             const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 25 + 5;
+            const speed = Math.random() * 20 + 3;
             p.vx = Math.cos(angle) * speed; p.vy = Math.sin(angle) * speed;
-            p.life = 1.0; p.decay = Math.random() * 0.02 + 0.01;
-            p.hue = isGodRay ? 50 : (Math.random() * 60 + 180); 
-            p.size = Math.random() * 6.0 + 3.0;
+            p.life = 1.0; p.decay = Math.random() * 0.015 + 0.008;
+            p.hue = baseHue + (Math.random() * 30 - 15); 
+            p.size = Math.random() * 5.0 + 2.0;
             spawned++;
-            if (spawned >= (isGodRay ? 80 : 40)) break;
+            if (spawned >= 60) break;
           }
         }
         
-        this.blastRings.push({ x, y, radius: 10, maxRadius: this.cW * 3.5, color: `hsla(${isGodRay?50:180}, 100%, 60%, 1.0)`, life: 1.0, decay: 1.5 });
+        this.blastRings.push({ 
+          x, y, 
+          radius: 5, 
+          maxRadius: this.cW * 2.5, 
+          color: `hsla(${baseHue}, 100%, 60%, 1.0)`, 
+          life: 1.0, 
+          decay: 1.2 
+        });
       }
 
       update(rawDt) {
@@ -828,9 +864,7 @@
         this.ctx.fillRect(0, 0, this.w, this.h);
 
         this.ctx.save();
-        if (this.screenShake > 0) {
-          this.ctx.translate((Math.random() - 0.5) * this.screenShake, (Math.random() - 0.5) * this.screenShake);
-        }
+        if (this.screenShake > 0) this.ctx.translate((Math.random() - 0.5) * this.screenShake, (Math.random() - 0.5) * this.screenShake);
 
         this.blastRings.forEach(b => {
           this.ctx.save(); this.ctx.globalCompositeOperation = 'screen';
@@ -1027,6 +1061,7 @@
           this.audio.startMusic();
         });
         
+        // Touch + Mouse binding dla SPIN
         this.dom.spinBtn.addEventListener('mousedown', () => { if(!this.isSpinning) this.play(); });
         this.dom.spinBtn.addEventListener('touchstart', (e) => { e.preventDefault(); if(!this.isSpinning) this.play(); }, {passive:false});
 
@@ -1108,8 +1143,9 @@
           this.startAutoplay();
         });
 
-        // Obsługa zamknięcia podsumowania Free Spins
+        // Zamknięcie podsumowania darmowych spinów
         this.dom.btnCloseFSSummary.addEventListener('click', () => {
+          this.dom.fsSummaryOverlay.classList.remove('opacity-100', 'pointer-events-auto');
           this.dom.fsSummaryOverlay.classList.add('opacity-0', 'pointer-events-none');
           this.bonusSession.activeBonus = false;
           this.bonusSession.accumulatedFSWin = 0.0;
@@ -1231,7 +1267,7 @@
             let hasColScatter = false;
             for(let r=0; r<3; r++) {
               if (this.state.matrix[colIdx][r] === 6) {
-                this.renderer.spawnMegaExplosion(colIdx, r, true);
+                this.renderer.spawnMegaExplosion(colIdx, r, 'purple');
                 hasColScatter = true;
               }
             }
@@ -1268,7 +1304,7 @@
           }
 
           const mult = evalResult.win / bet;
-          if (mult >= 10) {
+          if (mult >= 5) {
             this.renderer.triggerBlindingFlash();
             await this.presentBigWin(evalResult.win, mult);
           } else {
@@ -1290,7 +1326,7 @@
             this.audio.playSFX('square', 80, 0.3, 0.5);
             evalResult.positions.forEach(pos => {
               const [c, r] = pos.split(',').map(Number);
-              this.renderer.spawnMegaExplosion(c, r, false);
+              this.renderer.spawnMegaExplosion(c, r, 'green');
             });
             this.renderer.screenShake = 15;
             this.triggerCascadeDrop(bet, evalResult.positions, evalResult.triggerFreeSpins);
@@ -1338,22 +1374,18 @@
       async endCycle(pendingFS) {
         this.saveSession();
 
-        // 1. Sprawdzenie i rozegranie pełnego paska FERRO Jackpot
+        // 1. Obsługa paska FERRO Jackpot
         const jpCollected = Object.values(this.state.jackpotLetters).filter(Boolean).length;
         if (jpCollected === 5) {
           try {
             await this.triggerFerroJackpot();
           } catch (err) {
             console.error("Critical Jackpot Engine Fault:", err);
-          } finally {
-            // Bezpieczne wznowienie pętli gry w bloku finally zapobiega zacięciu w nieskończoność
-            this.isSpinning = false;
-            this.dom.spinBtn.disabled = false;
           }
-          return;
+          // Kontynuujemy bieg gry bez przerywania pętli!
         }
 
-        // 2. Obsługa aktywacji / ponownej aktywacji Free Spins (Scattery)
+        // 2. Obsługa aktywacji / ponownej aktywacji darmowych obrotów
         if (pendingFS) {
           this.renderer.triggerBlindingFlash();
           this.audio.playJackpotSiren();
@@ -1364,20 +1396,22 @@
           this.updateUI();
         }
 
-        // 3. Obsługa zakończenia bonusowych spinów (Summary Banner)
+        // 3. Obsługa podsumowania darmowych obrotów (Free Spins)
         if (this.state.fsCount === 0 && this.bonusSession.activeBonus) {
           this.dom.fsTotalWin.innerText = this.bonusSession.accumulatedFSWin.toFixed(2);
           this.dom.fsFinalMult.innerText = `x${this.state.level}`;
+          
           this.dom.fsSummaryOverlay.classList.remove('opacity-0', 'pointer-events-none');
-          return; // Wyjście z cyklu do momentu, aż gracz kliknie "Powrót do konsoli"
+          this.dom.fsSummaryOverlay.classList.add('opacity-100', 'pointer-events-auto');
+          return; // Czekamy na zatwierdzenie przez użytkownika
         }
 
-        // 4. Uwolnienie blokady interfejsu (Spin Button)
+        // 4. Bezpieczne odblokowanie przycisku Spin
         this.isSpinning = false;
         this.dom.spinBtn.disabled = false;
         this.dom.msg.innerText = "PRZESYŁ GOTOWY";
 
-        // 5. Autoplay oraz kontynuacja Free Spins
+        // 5. Autoplay oraz darmowe obroty
         if (this.state.fsCount > 0) { 
           setTimeout(() => this.play(), 800); 
         } else if (this.autoplay.enabled) {
@@ -1405,7 +1439,6 @@
         
         await this.presentBigWin(jackpotWin, 1000); 
         
-        // Bezpieczne czyszczenie paska po wypłaceniu i odczekaniu na kliknięcie gracza
         this.state.jackpotLetters = { F: false, E: false, R1: false, R2: false, O: false };
         this.updateJackpotBar();
         this.dom.jackpotBg.classList.replace('opacity-100', 'opacity-0');
@@ -1415,40 +1448,86 @@
       presentBigWin(amount, mult) {
         return new Promise(resolve => {
           this.audio.playBigWinChord();
-          this.dom.overlay.classList.remove('opacity-0', 'pointer-events-none');
-          if (mult < 1000) this.dom.winType.innerText = "ZŁAMANIE ZABEZPIECZEŃ";
           
+          const tierText = document.getElementById('win-tier-text');
+          if (mult >= 1000) {
+            tierText.innerText = "CRITICAL SYSTEM JACKPOT";
+            tierText.className = "text-[11px] text-cyberGold font-mono uppercase tracking-[0.4em] mb-6 font-black animate-pulse";
+          } else if (mult >= 100) {
+            tierText.innerText = "MEGA CYBER DECRYPTION";
+            tierText.className = "text-[11px] text-cyberPurple font-mono uppercase tracking-[0.3em] mb-6 font-bold";
+          } else if (mult >= 50) {
+            tierText.innerText = "SUPER VIRAL BREACH";
+            tierText.className = "text-[11px] text-cyberBlue font-mono uppercase tracking-[0.3em] mb-6";
+          } else {
+            tierText.innerText = "SECURE PROTOCOL BYPASS";
+            tierText.className = "text-[11px] text-cyberGreen font-mono uppercase tracking-[0.3em] mb-6";
+          }
+
+          this.dom.overlay.classList.remove('opacity-0', 'pointer-events-none');
+          this.dom.overlay.classList.add('opacity-100', 'pointer-events-auto');
+
           let current = 0; const duration = 2500; const start = performance.now();
           let isCounting = true; let resolved = false;
 
-          const skipAction = () => {
+          const claimBtn = document.getElementById('btn-claim-win');
+          claimBtn.innerText = "PRZESYŁANIE...";
+
+          const handleAction = () => {
             if (isCounting) {
               isCounting = false; current = amount;
               this.dom.winAmt.innerText = current.toFixed(2);
-              document.getElementById('win-continue-msg').style.display = 'block';
+              claimBtn.innerText = "ODBIERZ TRANSFER";
               this.audio.playDeepImpact();
+              // Świętujemy cząsteczkami
+              for (let i = 0; i < 5; i++) {
+                this.renderer.spawnMegaExplosion(this.rng.getInt(0, 4), this.rng.getInt(0, 2), 'gold');
+              }
             } else if (!resolved) {
               resolved = true;
+              this.dom.overlay.classList.remove('opacity-100', 'pointer-events-auto');
               this.dom.overlay.classList.add('opacity-0', 'pointer-events-none');
-              document.getElementById('win-continue-msg').style.display = 'none';
-              this.dom.overlay.removeEventListener('click', skipAction);
               
+              this.dom.overlay.removeEventListener('click', handleAction);
+              claimBtn.removeEventListener('click', handleAction);
+              this.dom.overlay.removeEventListener('touchstart', handleAction);
+
               this.state.balance += amount;
               this.dom.win.innerText = amount.toFixed(2);
               this.updateUI();
+              
+              const winFlashBg = document.getElementById('win-flash-bg');
+              if (winFlashBg) {
+                winFlashBg.classList.replace('opacity-0', 'opacity-100');
+                setTimeout(() => winFlashBg.classList.replace('opacity-100', 'opacity-0'), 1000);
+              }
+
               resolve(); 
             }
           };
 
-          this.dom.overlay.addEventListener('click', skipAction);
+          this.dom.overlay.addEventListener('click', handleAction);
+          claimBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleAction();
+          });
+          this.dom.overlay.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleAction();
+          }, { passive: false });
 
           const step = (now) => {
             if (!isCounting || resolved) return; 
             const p = Math.min((now - start) / duration, 1);
             current = amount * (1 - Math.pow(1 - p, 4));
             this.dom.winAmt.innerText = current.toFixed(2);
+            
+            if (Math.random() < 0.15) {
+              this.renderer.spawnMegaExplosion(this.rng.getInt(0, 4), this.rng.getInt(0, 2), mult >= 100 ? 'gold' : 'purple');
+            }
+
             if (p < 1) requestAnimationFrame(step);
-            else { isCounting = false; document.getElementById('win-continue-msg').style.display = 'block'; }
+            else { isCounting = false; claimBtn.innerText = "ODBIERZ TRANSFER"; }
           };
           requestAnimationFrame(step);
         });
