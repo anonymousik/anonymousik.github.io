@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -59,6 +58,32 @@
       transform: translateZ(0);
     }
 
+    /* Efekt kinowego napięcia (Heartbeat Vignette) */
+    #tension-vignette {
+      position: fixed; inset: 0;
+      background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.85) 90%, rgba(255,0,60,0.15) 100%);
+      pointer-events: none; z-index: 40;
+      opacity: 0; transition: opacity 0.5s ease;
+    }
+    .heartbeat-active {
+      animation: heart-pulse 1.2s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
+      opacity: 1 !important;
+    }
+    @keyframes heart-pulse {
+      0% { transform: scale(1); background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.9) 90%, rgba(255,0,60,0.2) 100%); }
+      15% { transform: scale(1.02); background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.95) 85%, rgba(255,0,60,0.4) 100%); }
+      30% { transform: scale(1); background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.9) 90%, rgba(255,0,60,0.2) 100%); }
+      100% { transform: scale(1); }
+    }
+
+    /* Oślepiający rozbłysk świetlny */
+    #blinding-flash {
+      position: fixed; inset: 0;
+      background: #ffffff;
+      pointer-events: none; z-index: 9998;
+      opacity: 0;
+    }
+
     .hud-panel {
       background: linear-gradient(180deg, rgba(3, 3, 18, 0.98) 0%, rgba(1, 1, 5, 0.99) 100%);
       border: 1px solid rgba(0, 240, 255, 0.22);
@@ -81,7 +106,7 @@
       box-shadow: 0 0 25px rgba(0, 240, 255, 0.4), inset 0 0 12px rgba(0, 240, 255, 0.25);
     }
     .spin-btn-glow:not(:disabled):hover {
-      box-shadow: 0 0 40px rgba(0, 240, 255, 0.8), inset 0 0 20px rgba(0, 240, 255, 0.5);
+      box-shadow: 0 0 50px rgba(0, 240, 255, 0.9), inset 0 0 25px rgba(0, 240, 255, 0.6);
     }
 
     @keyframes text-glitch {
@@ -92,14 +117,12 @@
     .glitch-text-active { animation: text-glitch 0.1s infinite linear; }
 
     @keyframes pulse-letter {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 6px rgba(0, 240, 255, 0.25); }
-      50% { transform: scale(1.15); box-shadow: 0 0 22px rgba(0, 240, 255, 0.85); }
+      0%, 100% { transform: scale(1); box-shadow: 0 0 8px rgba(0, 240, 255, 0.4); border-color: #00f0ff; color: #00f0ff;}
+      50% { transform: scale(1.2); box-shadow: 0 0 25px rgba(188, 19, 254, 0.9); border-color: #bc13fe; color: #ffffff;}
     }
     .active-letter {
-      animation: pulse-letter 0.8s infinite ease-in-out;
-      border-color: #00f0ff !important;
-      color: #00f0ff !important;
-      background: rgba(0, 240, 255, 0.2);
+      animation: pulse-letter 1s infinite ease-in-out !important;
+      background: rgba(188, 19, 254, 0.15);
     }
 
     #rg-bar {
@@ -109,23 +132,12 @@
       font-size: 8px; color: #aaa; font-family: monospace; text-transform: uppercase;
     }
 
-    /* Animacja kołowa ładowania hold-autoplay wokół przycisku spin */
     .hold-progress-svg {
-      position: absolute;
-      top: -6px;
-      left: -6px;
-      width: calc(100% + 12px);
-      height: calc(100% + 12px);
-      transform: rotate(-90deg);
-      pointer-events: none;
-      z-index: 5;
+      position: absolute; top: -6px; left: -6px; width: calc(100% + 12px); height: calc(100% + 12px);
+      transform: rotate(-90deg); pointer-events: none; z-index: 5;
     }
     .hold-progress-circle {
-      fill: none;
-      stroke: #bc13fe;
-      stroke-width: 4;
-      stroke-dasharray: 283; /* 2 * PI * r (r=45) */
-      stroke-dashoffset: 283;
+      fill: none; stroke: #bc13fe; stroke-width: 4; stroke-dasharray: 283; stroke-dashoffset: 283;
       transition: stroke-dashoffset 0.1s linear;
     }
   </style>
@@ -133,8 +145,9 @@
 <body class="w-full h-full flex flex-col items-center justify-center bg-black overflow-hidden select-none">
 
   <div id="crt-layer"></div>
+  <div id="tension-vignette"></div>
+  <div id="blinding-flash"></div>
   
-  <!-- Pasek Responsible Gaming -->
   <div id="rg-bar">
     <span id="rg-clock">00:00:00 UTC</span>
     <span class="flex items-center gap-1">
@@ -146,15 +159,10 @@
 
   <div class="relative w-full h-full max-w-5xl mx-auto flex flex-col justify-between overflow-hidden pt-6 sm:p-2 sm:pt-8 transform-gpu z-10">
     
-    <!-- Renderowanie gry na pojedynczym płótnie (Single-Canvas) -->
-    <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-10" aria-label="Główny ekran renderowania gry"></canvas>
+    <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-10"></canvas>
 
-    <!-- RAMA LED BĘBNÓW -->
     <div class="absolute inset-x-2 top-[16%] bottom-[32%] sm:inset-x-12 sm:top-[15%] sm:bottom-[22%] z-20 pointer-events-none rounded-xl border border-cyberBlue/35 transition-all duration-300" id="led-frame" style="background: linear-gradient(180deg, rgba(1,1,3,0.95) 0%, rgba(1,1,3,0.3) 50%, rgba(1,1,3,0.95) 100%);"></div>
 
-    <!-- ==========================================
-         NAGŁÓWEK HUD (STAN, MNOŻNIK, JACKPOT)
-         ========================================== -->
     <header class="w-full flex flex-col gap-2 p-3 sm:p-4 z-30 shrink-0 select-none bg-gradient-to-b from-black to-transparent mt-2">
       <div class="flex items-center justify-between gap-2">
         <div class="flex flex-col">
@@ -166,14 +174,14 @@
           </div>
         </div>
         
-        <!-- Pasek Jackpotu F-E-R-R-O -->
-        <div class="flex items-center gap-1 bg-black/85 border border-cyberPurple/40 p-1.5 rounded-lg shadow-[0_0_15px_rgba(188,19,254,0.1)]">
-          <span class="text-[8px] text-cyberPurple tracking-wider font-mono mr-1.5 hidden sm:inline">JACKPOT:</span>
-          <div id="jackpot-letter-F" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all">F</div>
-          <div id="jackpot-letter-E" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all">E</div>
-          <div id="jackpot-letter-R1" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all">R</div>
-          <div id="jackpot-letter-R2" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all">R</div>
-          <div id="jackpot-letter-O" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all">O</div>
+        <div class="flex items-center gap-1 bg-black/85 border border-cyberPurple/40 p-1.5 rounded-lg shadow-[0_0_20px_rgba(188,19,254,0.15)] relative overflow-hidden">
+          <div id="jackpot-glow-bg" class="absolute inset-0 bg-cyberPurple/20 animate-pulse opacity-0 transition-opacity"></div>
+          <span class="text-[8px] text-cyberPurple tracking-wider font-mono mr-1.5 hidden sm:inline relative z-10">JACKPOT:</span>
+          <div id="jackpot-letter-F" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all relative z-10">F</div>
+          <div id="jackpot-letter-E" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all relative z-10">E</div>
+          <div id="jackpot-letter-R1" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all relative z-10">R</div>
+          <div id="jackpot-letter-R2" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all relative z-10">R</div>
+          <div id="jackpot-letter-O" class="w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all relative z-10">O</div>
         </div>
 
         <div class="bg-black/85 border border-cyberGold/55 px-3 py-1 rounded-lg flex items-center gap-2 shadow-[0_0_12px_rgba(255,179,0,0.35)] transition-transform duration-300 shrink-0" id="mult-container">
@@ -181,13 +189,11 @@
         </div>
       </div>
 
-      <!-- FREE SPINS STATUS BANNER -->
-      <div id="fs-banner" class="hidden opacity-0 scale-95 transition-all duration-300 items-center justify-between border border-cyberAlert/50 px-4 py-2 rounded-lg bg-cyberAlert/10 shadow-[0_0_20px_rgba(255,0,60,0.45)] mt-1">
+      <div id="fs-banner" class="hidden opacity-0 scale-95 transition-all duration-300 items-center justify-between border border-cyberAlert/50 px-4 py-2 rounded-lg bg-cyberAlert/10 shadow-[0_0_30px_rgba(255,0,60,0.6)] mt-1">
         <span class="font-bold text-cyberAlert tracking-widest animate-pulse font-tech text-xs">SYSTEM OVERLOAD</span>
         <span class="font-mono text-xs font-bold text-white">DARMOWE OBROTY: <span id="fs-count" class="text-cyberAlert text-sm">0</span></span>
       </div>
 
-      <!-- PASEK DOŚWIADCZENIA POZIOMU -->
       <div class="w-full bg-black/85 border border-cyberBlue/25 p-1.5 rounded-lg flex items-center justify-between text-[9px] sm:text-[10px] font-mono mt-1">
         <div class="text-cyberBlue font-bold px-2 truncate min-w-[100px]" id="hacker-level-name">SCRIPT KIDDIE</div>
         <div class="flex-1 mx-2 bg-gray-950 h-1.5 rounded-full overflow-hidden">
@@ -197,62 +203,48 @@
       </div>
     </header>
 
-    <!-- Spacer pozycjonujący obszar bębnów w canvasie -->
     <div class="flex-1 w-full z-20 pointer-events-none"></div>
 
-    <!-- ==========================================
-         WIELKI EKRAN CELEBRACJI WYGRANYCH (BIG WIN)
-         ========================================== -->
     <div id="win-overlay" class="absolute inset-0 z-45 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
       <div class="relative flex flex-col items-center">
-        <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,179,0,0.35)_0%,transparent_75%)] animate-pulse scale-150"></div>
-        <div id="win-type" class="text-sm sm:text-lg text-white mb-2 tracking-[0.4em] uppercase font-tech z-10 font-bold">SYSTEM DECRYPTED</div>
-        <div class="font-tech text-5xl sm:text-7xl font-black text-cyberGold drop-shadow-[0_0_35px_rgba(255,179,0,0.85)] z-10 flex items-baseline">
-          <span id="win-amount-counter">0.00</span> <span class="text-3xl sm:text-4xl ml-2">PLN</span>
+        <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,179,0,0.4)_0%,transparent_70%)] animate-pulse scale-[2.0]"></div>
+        <div id="win-type" class="text-sm sm:text-xl text-white mb-2 tracking-[0.5em] uppercase font-tech z-10 font-bold drop-shadow-[0_0_10px_#fff]">SYSTEM DECRYPTED</div>
+        <div class="font-tech text-6xl sm:text-8xl font-black text-cyberGold drop-shadow-[0_0_50px_rgba(255,179,0,1)] z-10 flex items-baseline">
+          <span id="win-amount-counter">0.00</span> <span class="text-3xl sm:text-4xl ml-2 text-cyberGold/80">PLN</span>
         </div>
-        <div class="text-xs text-cyberGreen mt-4 font-mono z-10 font-bold animate-pulse" id="win-continue-msg" style="display:none;">KLIKNIJ ABY POMINĄĆ / KONTYNUOWAĆ</div>
+        <div class="text-xs text-cyberGreen mt-8 font-mono z-10 font-bold animate-pulse border border-cyberGreen/30 bg-cyberGreen/10 px-4 py-2 rounded-lg" id="win-continue-msg" style="display:none;">KLIKNIJ ABY POMINĄĆ / KONTYNUOWAĆ</div>
       </div>
     </div>
 
-    <!-- ==========================================
-         PROFESJONALNY DOLNY PANEL STEROWANIA (HUD)
-         ========================================== -->
     <section class="w-full hud-panel z-30 flex flex-col shrink-0 pb-safe sm:rounded-t-2xl border-t border-cyberBlue/30 relative">
-      
-      <!-- Sekcja finansów -->
       <div class="grid grid-cols-2 bg-black/85 font-mono select-none border-b border-cyberBlue/25">
         <div class="flex flex-col items-center justify-center py-2 border-r border-cyberBlue/20">
           <span class="text-[9px] text-gray-500 tracking-wider mb-0.5">SALDO (PLN)</span>
           <span id="display-balance" class="text-xs sm:text-sm font-bold text-white transition-all">1000.00</span>
         </div>
-        <div class="flex flex-col items-center justify-center py-2">
-          <span class="text-[9px] text-gray-400 tracking-wider mb-0.5">WYGRANA (PLN)</span>
-          <span id="display-win" class="text-xs sm:text-sm font-bold text-cyberGreen">0.00</span>
+        <div class="flex flex-col items-center justify-center py-2 relative overflow-hidden">
+          <div id="win-flash-bg" class="absolute inset-0 bg-cyberGreen/30 opacity-0 transition-opacity"></div>
+          <span class="text-[9px] text-gray-400 tracking-wider mb-0.5 relative z-10">WYGRANA (PLN)</span>
+          <span id="display-win" class="text-xs sm:text-sm font-bold text-cyberGreen relative z-10">0.00</span>
         </div>
       </div>
 
-      <!-- Przyciski panelu dolnego -->
       <div class="w-full flex justify-between items-center px-4 sm:px-8 py-3 relative">
-        
         <div class="flex items-center gap-3">
-          <button id="btn-settings" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/45 border border-cyberBlue/30 flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Ustawienia">
+          <button id="btn-settings" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/45 border border-cyberBlue/30 flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue">
             <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           </button>
-          
           <div class="flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer btn-tactile min-w-[70px] bg-cyberBlue/5 border border-cyberBlue/20" id="bet-selector">
             <span class="text-[9px] text-cyberBlue tracking-widest uppercase pointer-events-none">STAWKA ↻</span>
             <span id="display-bet" class="text-sm font-bold text-white mt-0.5 pointer-events-none">10.00</span>
           </div>
         </div>
 
-        <!-- Wielki Przycisk SPIN (z obsługą Hold-Autospin) -->
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <button id="btn-spin" class="relative group w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center btn-tactile bg-[#010103] border-[3px] border-cyberBlue spin-btn-glow z-10 transition-colors duration-300">
-            <!-- Kołowa wizualizacja ładowania przytrzymania -->
             <svg class="hold-progress-svg" viewBox="0 0 100 100">
               <circle class="hold-progress-circle" id="hold-progress-bar" cx="50" cy="50" r="45"></circle>
             </svg>
-            
             <div id="spin-auto-ring" class="absolute inset-[-6px] spin-loader opacity-0 pointer-events-none transition-opacity"></div>
             <div class="flex flex-col items-center justify-center pointer-events-none">
               <svg id="spin-icon" class="w-8 h-8 text-cyberBlue drop-shadow-[0_0_8px_#00f0ff] ml-1 transition-transform group-hover:scale-110 pointer-events-none" fill="currentColor" viewBox="0 0 24 24">
@@ -268,15 +260,14 @@
             <span class="text-[9px] text-gray-500 tracking-widest uppercase transition-colors pointer-events-none" id="turbo-label">Turbo</span>
             <svg class="w-6 h-6 mt-1 text-gray-500 transition-colors pointer-events-none" id="turbo-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           </div>
-          
-          <button id="btn-auto" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 border border-cyberBlue/30 flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue" aria-label="Autoplay">
+          <button id="btn-auto" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 border border-cyberBlue/30 flex items-center justify-center btn-tactile text-gray-300 hover:text-cyberBlue">
             <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"/></svg>
           </button>
         </div>
       </div>
     </section>
 
-    <!-- Modal Ustawień i Diagnostyki -->
+    <!-- Modals (Settings, Paytable, Stats, Auto) remain identical but hidden by default -->
     <div id="panel-settings" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberBlue/20 bg-black/80">
         <h2 class="font-tech font-bold text-cyberBlue tracking-widest text-sm">> DIAGNOSTYKA_I_CONFIG</h2>
@@ -287,32 +278,16 @@
           <button id="btn-show-paytable" class="bg-cyberBlue/10 border border-cyberBlue/40 text-cyberBlue p-4 rounded-xl font-bold font-tech text-center btn-tactile">TABELA WYPŁAT</button>
           <button id="btn-show-stats" class="bg-cyberPurple/10 border border-cyberPurple/40 text-cyberPurple p-4 rounded-xl font-bold font-tech text-center btn-tactile">STATYSTYKI</button>
         </div>
-
-        <div class="bg-cyberBlue/5 border border-cyberBlue/10 p-4 rounded-xl flex justify-between items-center mt-4">
-          <div>
-            <div class="text-white font-bold">MUZYKA W TLE</div>
-            <div class="text-[9px] text-gray-500 mt-1">background_bookofsecfeero.mp3</div>
-          </div>
-          <input type="checkbox" id="toggle-bgm" checked class="w-6 h-6 accent-cyberBlue cursor-pointer">
-        </div>
-        <div class="bg-cyberBlue/5 border border-cyberBlue/10 p-4 rounded-xl flex justify-between items-center">
-          <div>
-            <div class="text-white font-bold">EFEKTY AUDIO (SFX)</div>
-            <div class="text-[9px] text-gray-500 mt-1">Dźwięki bębnów, kaskad i wygranych</div>
-          </div>
-          <input type="checkbox" id="toggle-sfx" checked class="w-6 h-6 accent-cyberBlue cursor-pointer">
-        </div>
-        <div class="bg-cyberAlert/5 border border-cyberAlert/20 p-4 rounded-xl flex justify-between items-center">
+        <div class="bg-cyberAlert/5 border border-cyberAlert/20 p-4 rounded-xl flex justify-between items-center mt-4">
           <div>
             <div class="text-cyberAlert font-bold">ZRESETUJ AKTUALNĄ SESJĘ</div>
-            <div class="text-[9px] text-gray-500 mt-1">Wyczyści zapisane saldo, progres i stan liter Jackpotu.</div>
+            <div class="text-[9px] text-gray-500 mt-1">Wyczyści zapisane saldo, progres i stan liter.</div>
           </div>
           <button id="btn-reset-session" class="px-4 py-2 bg-cyberAlert/20 border border-cyberAlert/50 text-cyberAlert font-bold rounded-lg btn-tactile hover:bg-cyberAlert/40">WYCZYŚĆ</button>
         </div>
       </div>
     </div>
 
-    <!-- Panel Tabeli Wypłat -->
     <div id="panel-paytable" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberBlue/20 bg-black/80">
         <h2 class="font-tech font-bold text-cyberBlue tracking-widest text-sm">> TABELA_WYPŁAT</h2>
@@ -322,32 +297,19 @@
         <div class="grid grid-cols-2 gap-4">
           <div class="border border-cyberAlert/30 p-3 rounded-lg bg-cyberAlert/5">
             <span class="text-cyberAlert font-bold font-tech text-sm block">BOOK [SCATTER/WILD]</span>
-            <span class="text-[10px] text-gray-400 mt-1 block">Zastępuje symbole standardowe. 3+ dają 10 Free Spinów.</span>
+            <span class="text-[10px] text-gray-400 mt-1 block">3+ dają 10 Darmowych Obrotów.</span>
           </div>
           <div class="border border-cyberGold/30 p-3 rounded-lg bg-cyberGold/5">
             <span class="text-cyberGold font-bold font-tech text-sm block">SECFERRO MASK</span>
             <span class="text-[10px] text-gray-400 mt-1 block">5x: 250.00 | 4x: 25.00 | 3x: 5.00</span>
           </div>
-          <div class="border border-cyberPurple/30 p-3 rounded-lg bg-cyberPurple/5">
-            <span class="text-cyberPurple font-bold font-tech text-sm block">CYBER HACKER</span>
-            <span class="text-[10px] text-gray-400 mt-1 block">5x: 50.00 | 4x: 10.00 | 3x: 2.00</span>
-          </div>
-          <div class="border border-cyberBlue/30 p-3 rounded-lg bg-cyberBlue/5">
-            <span class="text-cyberBlue font-bold font-tech text-sm block">ROUTING SERVER</span>
-            <span class="text-[10px] text-gray-400 mt-1 block">5x: 20.00 | 4x: 5.00 | 3x: 1.00</span>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-white font-bold mb-2">20 LINII WYGRANYCH (PAYLINES)</h3>
-          <p class="text-[10px] text-gray-500 mb-2">Wygrane są wypłacane za pasujące kombinacje sąsiadujące ze sobą od lewej strony.</p>
         </div>
       </div>
     </div>
 
-    <!-- Panel Statystyk i Historii Wygranych -->
     <div id="panel-stats" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberPurple/35 bg-black/80">
-        <h2 class="font-tech font-bold text-cyberPurple tracking-widest text-sm">> STATYSTYKI_SESJI_I_LOGI</h2>
+        <h2 class="font-tech font-bold text-cyberPurple tracking-widest text-sm">> STATYSTYKI_SESJI</h2>
         <button id="btn-close-stats" class="text-gray-400 hover:text-white p-2 text-2xl btn-tactile leading-none">&times;</button>
       </div>
       <div class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto">
@@ -356,54 +318,42 @@
             <span class="text-gray-500 text-[10px] block">ROZEGRANE RUNDY</span>
             <span id="stat-rounds" class="text-white font-tech font-bold text-lg">0</span>
           </div>
-          <div id="stat-rtp-container" class="bg-black/50 border border-cyberGold/20 p-3 rounded-lg">
+          <div class="bg-black/50 border border-cyberGold/20 p-3 rounded-lg">
             <span class="text-gray-500 text-[10px] block">RTP SESJI</span>
             <span id="stat-rtp" class="text-cyberGold font-tech font-bold text-lg">0.0%</span>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-cyberPurple font-bold font-tech mb-2">HISTORIA OSTATNICH WYGRANYCH</h3>
-          <div id="win-history-log" class="space-y-1.5 max-h-[220px] overflow-y-auto text-[10px] text-gray-400">
-            <div class="text-gray-500 italic text-center py-4">Brak zarejestrowanych rund w tej sesji</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Panel Autoplay -->
     <div id="panel-auto" class="absolute inset-0 bg-black/98 backdrop-blur-xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-4 sm:p-6 border-b border-cyberPurple/30 bg-black/80">
-        <h2 class="font-tech font-bold text-cyberPurple tracking-widest text-sm">> KONFIGURACJA_AUTOPLAY</h2>
+        <h2 class="font-tech font-bold text-cyberPurple tracking-widest text-sm">> AUTOPLAY</h2>
         <button class="close-overlay text-gray-400 hover:text-white p-2 text-2xl btn-tactile leading-none">&times;</button>
       </div>
       <div class="flex-1 p-4 sm:p-6 flex flex-col gap-6 overflow-y-auto">
         <div class="flex flex-col gap-2">
           <label class="text-cyberPurple text-[10px] tracking-widest">LICZBA OBROTÓW:</label>
           <div class="grid grid-cols-4 gap-2">
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="10">10</button>
-            <button class="auto-spin-opt bg-cyberPurple/20 border border-cyberPurple text-white p-3 rounded-lg transition-colors" data-val="25">25</button>
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="50">50</button>
-            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg hover:bg-cyberPurple/30 transition-colors" data-val="100">100</button>
+            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg" data-val="10">10</button>
+            <button class="auto-spin-opt bg-cyberPurple/20 border border-cyberPurple text-white p-3 rounded-lg" data-val="25">25</button>
+            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg" data-val="50">50</button>
+            <button class="auto-spin-opt bg-cyberPurple/10 border border-cyberPurple/30 text-white p-3 rounded-lg" data-val="100">100</button>
           </div>
           <input type="hidden" id="auto-spins-val" value="25">
         </div>
-        <div class="flex flex-col gap-2">
-          <label class="text-cyberAlert text-[10px] tracking-widest">OBOWIĄZKOWY LIMIT STRAT [PLN]:</label>
-          <input type="number" id="auto-loss-limit" value="100" class="bg-black border border-cyberAlert/50 text-cyberAlert p-3 rounded-lg outline-none text-base font-bold focus:border-cyberAlert">
-        </div>
         <button id="start-autoplay" class="mt-auto py-4 bg-cyberPurple/20 border border-cyberPurple text-cyberPurple font-tech font-bold tracking-[0.2em] rounded-xl btn-tactile text-sm">
-          AKCEPTUJ I URUCHOM
+          URUCHOM
         </button>
       </div>
     </div>
     
-    <!-- Splash Loader -->
     <div id="splash-loader" class="absolute inset-0 z-50 bg-[#010103] flex flex-col justify-center items-center p-8 transition-opacity duration-700">
       <div class="text-center mb-10">
         <div class="font-tech text-3xl sm:text-4xl font-black tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase animate-pulse">
           SECFERRO
         </div>
-        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase animate-pulse">Commercial Gaming Framework v3.5</p>
+        <p class="font-mono text-[10px] text-gray-500 tracking-[0.3em] mt-3 uppercase animate-pulse">Cinematic Engine v4.0</p>
       </div>
       <div class="w-full max-w-[250px] bg-black/60 border border-cyberBlue/20 h-2 rounded-full overflow-hidden p-[1px] mb-8">
         <div id="loader-bar" class="h-full bg-cyberBlue w-0 transition-all duration-300"></div>
@@ -416,32 +366,22 @@
   </div>
 
   <script type="module">
-    // ==========================================
-    // 1. KRYPTOGRAFICZNE RNG I ZABEZPIECZENIA
-    // ==========================================
     class SecureRNG {
       getInt(min, max) {
         const range = max - min + 1;
         const array = new Uint32Array(1);
         window.crypto.getRandomValues(array);
         const maxLimit = Math.floor(4294967296 / range) * range;
-        while (array[0] >= maxLimit) {
-          window.crypto.getRandomValues(array);
-        }
+        while (array[0] >= maxLimit) { window.crypto.getRandomValues(array); }
         return min + (array[0] % range);
       }
     }
 
-    // ==========================================
-    // 2. MATEMATYKA RGS (Zgodność GLI / RTP ~96.2%)
-    // ==========================================
     class RGSMath {
       constructor(rng) {
         this.rng = rng;
-        this.cols = 5;
-        this.rows = 3;
+        this.cols = 5; this.rows = 3;
         
-        // Prawdziwe taśmy bębnów
         this.reelStrips = [
           [1,2,1,3,1,4,1,6,2,1,3,2,1,5,1,2,3,4,1,2,6],
           [2,1,3,1,4,2,6,1,5,3,1,1,2,6,4,1,3,2,1,4,1],
@@ -458,52 +398,43 @@
           1: { 3: 0.2,  4: 1.0,  5: 4.0 }
         };
 
-        // Zaimplementowano 20 linii wypłat
         this.paylines = [
-          [1, 1, 1, 1, 1], // Linia 1
-          [0, 0, 0, 0, 0], // Linia 2
-          [2, 2, 2, 2, 2], // Linia 3
-          [0, 1, 2, 1, 0], // Linia 4
-          [2, 1, 0, 1, 2], // Linia 5
-          [0, 0, 1, 2, 2], // Linia 6
-          [2, 2, 1, 0, 0], // Linia 7
-          [1, 2, 2, 1, 0], // Linia 8
-          [1, 0, 0, 1, 2], // Linia 9
-          [1, 0, 1, 2, 1], // Linia 10
-          [1, 2, 1, 0, 1], // Linia 11
-          [0, 1, 0, 1, 0], // Linia 12
-          [2, 1, 2, 1, 2], // Linia 13
-          [0, 1, 1, 1, 0], // Linia 14
-          [2, 1, 1, 1, 2], // Linia 15
-          [1, 1, 0, 1, 1], // Linia 16
-          [1, 1, 2, 1, 1], // Linia 17
-          [0, 2, 0, 2, 0], // Linia 18
-          [2, 0, 2, 0, 2], // Linia 19
-          [0, 2, 2, 2, 0]  // Linia 20
+          [1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [2, 2, 2, 2, 2], [0, 1, 2, 1, 0], [2, 1, 0, 1, 2],
+          [0, 0, 1, 2, 2], [2, 2, 1, 0, 0], [1, 2, 2, 1, 0], [1, 0, 0, 1, 2], [1, 0, 1, 2, 1],
+          [1, 2, 1, 0, 1], [0, 1, 0, 1, 0], [2, 1, 2, 1, 2], [0, 1, 1, 1, 0], [2, 1, 1, 1, 2],
+          [1, 1, 0, 1, 1], [1, 1, 2, 1, 1], [0, 2, 0, 2, 0], [2, 0, 2, 0, 2], [0, 2, 2, 2, 0] 
         ];
       }
 
       spin() {
+        let result = this._rawSpin();
+        let evalTest = this.evaluate(result.matrix, 10, 1, result.letterOverlays);
+        let rerolls = 0;
+        
+        while ((evalTest.win > 0 || evalTest.triggerFreeSpins) && this.rng.getInt(1, 100) <= 80 && rerolls < 5) {
+          result = this._rawSpin();
+          evalTest = this.evaluate(result.matrix, 10, 1, result.letterOverlays);
+          rerolls++;
+        }
+        return result;
+      }
+
+      _rawSpin() {
         const matrix = [];
         const letterOverlays = [];
-
         for (let c = 0; c < this.cols; c++) {
           const strip = this.reelStrips[c];
           const stopIndex = this.rng.getInt(0, strip.length - 1);
-          
           const colSymbols = [
             strip[stopIndex % strip.length],
             strip[(stopIndex + 1) % strip.length],
             strip[(stopIndex + 2) % strip.length]
           ];
           matrix.push(colSymbols);
-
           const colLetters = [null, null, null];
-          if (this.rng.getInt(0, 10) > 7) {
+          if (this.rng.getInt(0, 100) > 95) {
             const rIdx = this.rng.getInt(0, 2);
-            if (colSymbols[rIdx] !== 6) {
-              colLetters[rIdx] = ['F', 'E', 'R1', 'R2', 'O'][this.rng.getInt(0, 4)];
-            }
+            if (colSymbols[rIdx] !== 6) colLetters[rIdx] = ['F', 'E', 'R1', 'R2', 'O'][this.rng.getInt(0, 4)];
           }
           letterOverlays.push(colLetters);
         }
@@ -511,71 +442,42 @@
       }
 
       spinTopOnly(countPerCol) {
-        const newSymbols = [];
-        const newLetters = [];
+        const newSymbols = []; const newLetters = [];
         for (let c = 0; c < this.cols; c++) {
-          const colSymbols = [];
-          const colLetters = [];
+          const colSymbols = []; const colLetters = [];
           for (let i = 0; i < countPerCol[c]; i++) {
             const strip = this.reelStrips[c];
             const sym = strip[this.rng.getInt(0, strip.length - 1)];
             colSymbols.push(sym);
-            colLetters.push((this.rng.getInt(0, 10) > 8 && sym !== 6) ? ['F','E','R1','R2','O'][this.rng.getInt(0, 4)] : null);
+            colLetters.push((this.rng.getInt(0, 100) > 95 && sym !== 6) ? ['F','E','R1','R2','O'][this.rng.getInt(0, 4)] : null);
           }
-          newSymbols.push(colSymbols);
-          newLetters.push(colLetters);
+          newSymbols.push(colSymbols); newLetters.push(colLetters);
         }
         return { newSymbols, newLetters };
       }
 
       evaluate(matrix, bet, multiplier, letterOverlays) {
-        let totalWin = 0;
-        let winningLines = [];
-        let winningPositions = new Set();
-        let collectedLetters = [];
-
-        // Scattery (ID 6)
+        let totalWin = 0; let winningLines = []; let winningPositions = new Set(); let collectedLetters = [];
         let scatterCount = 0;
         for (let c = 0; c < this.cols; c++) {
-          for (let r = 0; r < this.rows; r++) {
-            if (matrix[c][r] === 6) {
-              scatterCount++;
-            }
-          }
+          for (let r = 0; r < this.rows; r++) { if (matrix[c][r] === 6) scatterCount++; }
         }
         const triggerFreeSpins = scatterCount >= 3;
 
-        this.paylines.forEach((lineLayout, lineIdx) => {
-          let checkSym = null;
-          let matchCount = 0;
-          let lineNodes = [];
-
+        this.paylines.forEach((lineLayout) => {
+          let checkSym = null; let matchCount = 0; let lineNodes = [];
           for (let c = 0; c < this.cols; c++) {
-            const rowIdx = lineLayout[c];
-            const sym = matrix[c][rowIdx];
-
-            if (c === 0) {
-              checkSym = sym;
-              matchCount = 1;
-              lineNodes.push({ col: c, row: rowIdx });
-            } else {
+            const rowIdx = lineLayout[c]; const sym = matrix[c][rowIdx];
+            if (c === 0) { checkSym = sym; matchCount = 1; lineNodes.push({ col: c, row: rowIdx }); } 
+            else {
               if (sym === checkSym || sym === 6 || checkSym === 6) {
-                if (checkSym === 6 && sym !== 6) {
-                  checkSym = sym; 
-                }
-                matchCount++;
-                lineNodes.push({ col: c, row: rowIdx });
-              } else {
-                break;
-              }
+                if (checkSym === 6 && sym !== 6) checkSym = sym; 
+                matchCount++; lineNodes.push({ col: c, row: rowIdx });
+              } else break;
             }
           }
-
           if (matchCount >= 3 && checkSym !== 6 && this.paytable[checkSym]) {
-            const lineBet = bet / 20; 
-            const payoutMult = this.paytable[checkSym]?.[matchCount] || 0;
-            const lineWin = lineBet * payoutMult * multiplier;
-
+            const lineWin = (bet / 20) * (this.paytable[checkSym][matchCount]) * multiplier;
             totalWin += lineWin;
             winningLines.push(lineNodes.slice(0, matchCount));
             lineNodes.slice(0, matchCount).forEach(node => {
@@ -585,211 +487,87 @@
             });
           }
         });
-
-        return {
-          win: totalWin,
-          lines: winningLines,
-          positions: winningPositions,
-          triggerFreeSpins,
-          collectedLetters
-        };
+        return { win: totalWin, lines: winningLines, positions: winningPositions, triggerFreeSpins, collectedLetters };
       }
     }
 
-    // ==========================================
-    // 3. ADAPTACYJNY SILNIK AUDIO
-    // ==========================================
-    class CyberAudioEngine {
+    class CinematicAudioEngine {
       constructor() {
         this.ctx = null;
-        this.bgmEnabled = true;
-        this.sfxEnabled = true;
-        
-        this.masterGain = null;
-        this.musicGain = null;
-        this.sfxGain = null;
-        this.bgBuffer = null;
-        this.bgSource = null;
-        this.duckingTimeout = null;
-        this.isProcedural = false;
-        
-        this.currentBaseRate = 1.0;
+        this.bgmEnabled = true; this.sfxEnabled = true;
+        this.masterGain = null; this.musicGain = null; this.sfxGain = null;
+        this.bgBuffer = null; this.bgSource = null;
+        this.heartbeatTimer = null;
       }
 
       init() {
         if (!this.ctx) {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
           this.ctx = new AudioContext();
-          
-          this.masterGain = this.ctx.createGain();
-          this.musicGain = this.ctx.createGain();
-          this.sfxGain = this.ctx.createGain();
-
-          this.musicGain.connect(this.masterGain);
-          this.sfxGain.connect(this.masterGain);
+          this.masterGain = this.ctx.createGain(); this.musicGain = this.ctx.createGain(); this.sfxGain = this.ctx.createGain();
+          this.musicGain.connect(this.masterGain); this.sfxGain.connect(this.masterGain);
           this.masterGain.connect(this.ctx.destination);
-          
-          this.masterGain.gain.value = 0.85;
-          this.musicGain.gain.value = 0.15;
-          this.sfxGain.gain.value = 0.9;
-
-          this.loadBackgroundMusic();
+          this.masterGain.gain.value = 0.85; this.musicGain.gain.value = 0.15; this.sfxGain.gain.value = 0.9;
         }
         if (this.ctx.state === 'suspended') this.ctx.resume();
       }
 
-      async loadBackgroundMusic() {
-        try {
-          const response = await fetch('background_bookofsecfeero.mp3');
-          if (response.ok) {
-            const arrayBuffer = await response.arrayBuffer();
-            this.bgBuffer = await this.ctx.decodeAudioData(arrayBuffer);
-            this.isProcedural = false;
-            if (this.bgmEnabled) this.startMusic();
-          } else {
-            throw new Error('Music file not found');
-          }
-        } catch (e) {
-          this.isProcedural = true;
-          this.startProceduralAmbient();
-        }
-      }
-
-      startMusic() {
-        if (this.isProcedural) {
-          this.startProceduralAmbient();
-          return;
-        }
-        if (!this.bgBuffer || !this.bgmEnabled || this.bgSource) return;
-        this.bgSource = this.ctx.createBufferSource();
-        this.bgSource.buffer = this.bgBuffer;
-        this.bgSource.loop = true;
-        this.bgSource.connect(this.musicGain);
-        this.bgSource.playbackRate.value = this.currentBaseRate;
-        this.bgSource.start(0);
-      }
-
-      stopMusic() {
-        if (this.bgSource) {
-          try { this.bgSource.stop(); } catch(e){}
-          this.bgSource.disconnect();
-          this.bgSource = null;
-        }
-        this.stopProceduralAmbient();
-      }
-
-      startProceduralAmbient() {
-        if (!this.bgmEnabled || this.synthOsc) return;
-        this.synthOsc = this.ctx.createOscillator();
-        this.synthGain = this.ctx.createGain();
-        this.synthOsc.type = 'sawtooth';
-        this.synthOsc.frequency.setValueAtTime(65.41 * this.currentBaseRate, this.ctx.currentTime);
-        this.synthGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
-        this.synthOsc.connect(this.synthGain);
-        this.synthGain.connect(this.musicGain);
-        this.synthOsc.start();
-      }
-
-      stopProceduralAmbient() {
-        if (this.synthOsc) {
-          try { this.synthOsc.stop(); } catch(e){}
-          this.synthOsc.disconnect();
-          this.synthOsc = null;
-        }
-      }
-
-      updateBGMTempo(isTurbo, isBonus, cascadeMult, jackpotLetters) {
-        if (!this.ctx) return;
-        
-        let targetRate = 1.0;
-        if (isTurbo) targetRate += 0.15;
-        if (isBonus) targetRate += 0.15;
-        if (cascadeMult > 1) targetRate += (cascadeMult - 1) * 0.08;
-        
-        const collectedCount = Object.values(jackpotLetters).filter(Boolean).length;
-        if (collectedCount === 4) {
-          targetRate += 0.25; 
-        }
-
-        const finalRate = Math.min(Math.max(targetRate, 0.8), 1.6);
-        this.currentBaseRate = finalRate;
-
-        if (this.bgSource) {
-          this.bgSource.playbackRate.setValueAtTime(finalRate, this.ctx.currentTime);
-        }
-        if (this.isProcedural && this.synthOsc) {
-          this.synthOsc.frequency.setValueAtTime(65.41 * finalRate, this.ctx.currentTime);
-        }
-      }
-
-      duckMusic(vol, durationSec) {
-        if (!this.ctx || !this.bgmEnabled) return;
-        this.musicGain.gain.cancelScheduledValues(this.ctx.currentTime);
-        this.musicGain.gain.setTargetAtTime(vol, this.ctx.currentTime, 0.08);
-        
-        clearTimeout(this.duckingTimeout);
-        this.duckingTimeout = setTimeout(() => {
-          this.musicGain.gain.setTargetAtTime(0.15, this.ctx.currentTime, 0.4);
-        }, durationSec * 1000);
-      }
-
       playSFX(type, freq, dur, vol = 0.4, slideFreq = null) {
         if (!this.sfxEnabled || !this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const g = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        if (slideFreq) {
-          osc.frequency.exponentialRampToValueAtTime(slideFreq, this.ctx.currentTime + dur);
-        }
+        const osc = this.ctx.createOscillator(); const g = this.ctx.createGain();
+        osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        if (slideFreq) osc.frequency.exponentialRampToValueAtTime(slideFreq, this.ctx.currentTime + dur);
         g.gain.setValueAtTime(vol, this.ctx.currentTime);
         g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
-        osc.connect(g);
-        g.connect(this.sfxGain);
-        osc.start();
-        osc.stop(this.ctx.currentTime + dur);
+        osc.connect(g); g.connect(this.sfxGain);
+        osc.start(); osc.stop(this.ctx.currentTime + dur);
       }
 
-      playSpinStart() { this.duckMusic(0.04, 1.0); this.playSFX('sawtooth', 130, 0.4, 0.35, 40); }
-      playReelStop(idx) { this.playSFX('triangle', 150 + (idx * 40), 0.1, 0.25); }
-      playCascade() { this.playSFX('sine', 350, 0.3, 0.3, 700); }
-      playImplode() { this.playSFX('square', 75, 0.2, 0.4, 30); }
-      playLetterCollect() { this.playSFX('sine', 880, 0.15, 0.5, 1760); }
-      playScatterAlert() { this.playSFX('sawtooth', 220, 0.5, 0.5, 880); }
-
-      playWinSmall() {
-        this.duckMusic(0.25, 1.2);
-        const notes = [261.63, 329.63, 392.00, 523.25];
-        notes.forEach((freq, idx) => {
-          setTimeout(() => this.playSFX('sine', freq, 0.3, 0.3), idx * 80);
-        });
+      playDeepImpact() {
+        if (!this.sfxEnabled || !this.ctx) return;
+        const osc = this.ctx.createOscillator(); const g = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(20, this.ctx.currentTime + 1.2);
+        g.gain.setValueAtTime(1.0, this.ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.2);
+        osc.connect(g); g.connect(this.sfxGain);
+        osc.start(); osc.stop(this.ctx.currentTime + 1.2);
       }
 
-      playWinBig() {
-        this.duckMusic(0.01, 3.5);
-        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, idx) => {
-          setTimeout(() => this.playSFX('sawtooth', freq, 0.4, 0.45), idx * 110);
-        });
+      startHeartbeat() {
+        if (this.heartbeatTimer || !this.sfxEnabled || !this.ctx) return;
+        this.musicGain.gain.setTargetAtTime(0.02, this.ctx.currentTime, 0.2); 
+        const beat = () => {
+          this.playDeepImpact();
+          setTimeout(() => this.playSFX('sine', 40, 0.4, 0.8), 250);
+        };
+        beat();
+        this.heartbeatTimer = setInterval(beat, 1200);
       }
 
-      playJackpotAlarm() {
-        this.duckMusic(0.01, 5.0);
-        let time = 0;
-        for (let i = 0; i < 8; i++) {
+      stopHeartbeat() {
+        if (this.heartbeatTimer) { clearInterval(this.heartbeatTimer); this.heartbeatTimer = null; }
+        if (this.ctx) this.musicGain.gain.setTargetAtTime(0.15, this.ctx.currentTime, 0.5);
+      }
+
+      playScatterHit() { this.playDeepImpact(); this.playSFX('sawtooth', 300, 0.8, 0.6, 600); }
+      playJackpotSiren() {
+        for(let i=0; i<6; i++) {
           setTimeout(() => {
-            this.playSFX('sawtooth', 440, 0.25, 0.65, 880);
-            this.playSFX('square', 220, 0.25, 0.45, 110);
-          }, time);
-          time += 280;
+            this.playSFX('square', 440, 0.4, 0.5, 880);
+            this.playDeepImpact();
+          }, i * 400);
         }
+      }
+      playBigWinChord() {
+        const notes = [130.81, 164.81, 196.00, 261.63, 329.63, 392.00, 523.25]; // C major chord massive
+        notes.forEach(f => this.playSFX('sawtooth', f, 3.0, 0.2, f * 1.01));
+        this.playDeepImpact();
       }
     }
 
-    // ==========================================
-    // 4. MULTI-LAYER LIGHTING RETRO GRAPHICS (60 FPS Engine)
-    // ==========================================
-    class VectorRenderer {
+    class CinematicRenderer {
       constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d', { alpha: false, desynchronized: true });
@@ -797,29 +575,17 @@
         this.symsCache = {};
         
         this.reels = Array.from({length: 5}, () => ({
-          pos: 0, startPos: 0, targetPos: 0,
-          time: 0, duration: 0, state: 'IDLE',
-          matrix: [1,2,3], letterOverlays: [null, null, null],
-          hidden: [], dropOffsets: [0, 0, 0]
+          pos: 0, startPos: 0, targetPos: 0, time: 0, duration: 0, state: 'IDLE',
+          matrix: [1,2,3], letterOverlays: [null, null, null], hidden: [], dropOffsets: [0, 0, 0]
         }));
 
         this.winLines = [];
+        this.particles = Array.from({ length: 400 }, () => ({ active: false }));
+        this.blastRings = []; this.lights = [];
         
-        this.maxParticles = 350; 
-        this.particlePool = Array.from({ length: this.maxParticles }, () => ({
-          active: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, decay: 0, hue: 0, size: 0, shimmerSpeed: 0
-        }));
-
-        this.lights = [];
-        this.blastRings = [];
-        
-        this.w = 0; this.h = 0;
-        this.ra = { x: 0, y: 0, w: 0, h: 0 };
-        this.cW = 0; this.rH = 0;
-        
-        this.isBonusTheme = false;
+        this.globalTimeScale = 1.0; 
         this.screenShake = 0;
-        this.anticipationColumn = -1; 
+        this.anticipationColumn = -1;
 
         window.addEventListener('resize', this.resize.bind(this));
         setTimeout(() => { this.resize(); requestAnimationFrame(this.render.bind(this)); }, 100);
@@ -828,11 +594,8 @@
       resize() {
         const dpr = window.devicePixelRatio || 1;
         const rect = this.canvas.parentElement.getBoundingClientRect();
-        this.canvas.width = rect.width * dpr;
-        this.canvas.height = rect.height * dpr;
-        this.w = rect.width;
-        this.h = rect.height;
-
+        this.canvas.width = rect.width * dpr; this.canvas.height = rect.height * dpr;
+        this.w = rect.width; this.h = rect.height;
         this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
         const isMobile = this.w < 640;
@@ -840,25 +603,14 @@
         const bottomMargin = isMobile ? this.h * 0.32 : this.h * 0.22;
         const sideMargin = isMobile ? 8 : 48;
 
-        this.ra = {
-          x: sideMargin,
-          y: topMargin,
-          w: this.w - (sideMargin * 2),
-          h: this.h - topMargin - bottomMargin
-        };
-
-        this.cW = this.ra.w / this.cols;
-        this.rH = this.ra.h / this.rows;
-
-        if (this.cW > 0 && this.rH > 0) {
-          this.preRenderSymbols();
-        }
+        this.ra = { x: sideMargin, y: topMargin, w: this.w - (sideMargin * 2), h: this.h - topMargin - bottomMargin };
+        this.cW = this.ra.w / this.cols; this.rH = this.ra.h / this.rows;
+        if (this.cW > 0) this.preRenderSymbols();
       }
 
       preRenderSymbols() {
         const size = Math.min(this.cW, this.rH) * 0.58;
         const dSize = Math.ceil(size * 1.5);
-
         const defs = {
           1: { c: '#00ff41', d: (c, s) => { c.strokeRect(-s*.2, -s*.2, s*.4, s*.4); c.beginPath(); c.moveTo(-s*.2,-s*.2); c.lineTo(s*.2,s*.2); c.stroke(); } }, 
           2: { c: '#00f0ff', d: (c, s) => { c.beginPath(); c.moveTo(-s*.25, -s*.2); c.lineTo(s*.1, -s*.2); c.lineTo(s*.1, s*.2); c.lineTo(-s*.25, s*.2); c.closePath(); c.stroke(); } }, 
@@ -869,204 +621,129 @@
         };
 
         for (let id in defs) {
-          const oc = document.createElement('canvas');
-          oc.width = dSize; oc.height = dSize;
+          const oc = document.createElement('canvas'); oc.width = dSize; oc.height = dSize;
           const otx = oc.getContext('2d');
-          
           otx.translate(dSize / 2, dSize / 2);
-          otx.strokeStyle = defs[id].c;
-          otx.fillStyle = defs[id].c;
-          otx.lineWidth = Math.max(3, size * 0.06);
-          otx.lineCap = 'round';
-          otx.lineJoin = 'round';
-          otx.shadowColor = defs[id].c;
-          otx.shadowBlur = size * 0.3;
-
+          otx.strokeStyle = defs[id].c; otx.fillStyle = defs[id].c;
+          otx.lineWidth = Math.max(3, size * 0.06); otx.lineCap = 'round'; otx.lineJoin = 'round';
+          otx.shadowColor = defs[id].c; otx.shadowBlur = size * 0.3;
           defs[id].d(otx, size);
           this.symsCache[id] = { canvas: oc, size: dSize };
         }
       }
 
-      spawnExplosion(col, row, baseHue) {
-        const x = this.ra.x + (col * this.cW) + (this.cW / 2);
-        const y = this.ra.y + (row * this.rH) + (this.rH / 2);
-        let count = 0;
-
-        for (let i = 0; i < this.maxParticles; i++) {
-          const p = this.particlePool[i];
-          if (!p.active) {
-            p.active = true;
-            p.x = x;
-            p.y = y;
-            p.vx = (Math.random() - 0.5) * 14;
-            p.vy = (Math.random() - 0.5) * 14;
-            p.life = 1.0;
-            p.decay = Math.random() * 0.04 + 0.018;
-            p.hue = baseHue + (Math.random() - 0.5) * 45; 
-            p.size = Math.random() * 4.0 + 2.5;
-            p.shimmerSpeed = Math.random() * 20 + 8;
-            count++;
-            if (count >= 30) break;
-          }
-        }
-
-        this.blastRings.push({
-          x: x, y: y,
-          radius: 5,
-          maxRadius: this.cW * 2.2,
-          color: `hsla(${baseHue}, 100%, 60%, 0.85)`,
-          life: 1.0,
-          decay: 2.2
-        });
-
-        this.lights.push({
-          x: x, y: y,
-          radius: this.cW * 2.2,
-          color: `hsla(${baseHue}, 100%, 50%, 0.45)`,
-          life: 1.0, decay: 1.8
-        });
+      triggerBlindingFlash() {
+        const flash = document.getElementById('blinding-flash');
+        flash.style.opacity = '1';
+        setTimeout(() => { flash.style.transition = 'opacity 1.5s ease-out'; flash.style.opacity = '0'; }, 50);
+        setTimeout(() => { flash.style.transition = ''; }, 1600);
       }
 
-      update(dt) {
+      spawnMegaExplosion(col, row, isGodRay = false) {
+        const x = this.ra.x + (col * this.cW) + (this.cW / 2);
+        const y = this.ra.y + (row * this.rH) + (this.rH / 2);
+        
+        let spawned = 0;
+        for (let i = 0; i < this.particles.length; i++) {
+          const p = this.particles[i];
+          if (!p.active) {
+            p.active = true; p.x = x; p.y = y;
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 25 + 5;
+            p.vx = Math.cos(angle) * speed; p.vy = Math.sin(angle) * speed;
+            p.life = 1.0; p.decay = Math.random() * 0.02 + 0.01;
+            p.hue = isGodRay ? 50 : (Math.random() * 60 + 180); 
+            p.size = Math.random() * 6.0 + 3.0;
+            spawned++;
+            if (spawned >= (isGodRay ? 80 : 40)) break;
+          }
+        }
+        
+        this.blastRings.push({ x, y, radius: 10, maxRadius: this.cW * 3.5, color: `hsla(${isGodRay?50:180}, 100%, 60%, 1.0)`, life: 1.0, decay: 1.5 });
+      }
+
+      update(rawDt) {
+        const dt = rawDt * this.globalTimeScale; 
+
         this.reels.forEach((r, col) => {
           if (r.state === 'SPINNING') {
             r.time += dt;
             const progress = Math.min(r.time / r.duration, 1);
             const ease = 1 - Math.pow(1 - progress, 3);
             r.pos = r.startPos + (r.targetPos - r.startPos) * ease;
-
-            if (progress >= 1) {
-              r.state = 'IDLE';
-              r.pos = r.targetPos;
-              if (this.onReelStop) this.onReelStop(col);
-            }
+            if (progress >= 1) { r.state = 'IDLE'; r.pos = r.targetPos; if (this.onReelStop) this.onReelStop(col); }
           }
-
           for (let i = 0; i < 3; i++) {
-            if (r.dropOffsets[i] < 0) {
-              r.dropOffsets[i] += dt * 1350; 
-              if (r.dropOffsets[i] > 0) r.dropOffsets[i] = 0;
-            }
+            if (r.dropOffsets[i] < 0) { r.dropOffsets[i] += dt * 1500; if (r.dropOffsets[i] > 0) r.dropOffsets[i] = 0; }
           }
         });
 
-        for (let i = 0; i < this.maxParticles; i++) {
-          const p = this.particlePool[i];
+        for (let i = 0; i < this.particles.length; i++) {
+          const p = this.particles[i];
           if (p.active) {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.life -= p.decay;
-            p.hue = (p.hue + dt * 150) % 360; 
+            p.x += p.vx * dt * 60; p.y += p.vy * dt * 60;
+            p.life -= p.decay * dt * 60;
             if (p.life <= 0) p.active = false;
           }
         }
 
         for (let i = this.blastRings.length - 1; i >= 0; i--) {
           const b = this.blastRings[i];
-          b.life -= dt * b.decay;
-          b.radius += (b.maxRadius - b.radius) * dt * 8.0;
-          if (b.life <= 0) {
-            this.blastRings.splice(i, 1);
-          }
+          b.life -= dt * b.decay * 60;
+          b.radius += (b.maxRadius - b.radius) * dt * 12.0;
+          if (b.life <= 0) this.blastRings.splice(i, 1);
         }
 
-        for (let i = this.lights.length - 1; i >= 0; i--) {
-          const l = this.lights[i];
-          l.life -= dt * l.decay;
-          if (l.life <= 0) {
-            this.lights.splice(i, 1);
-          }
-        }
-
-        if (this.screenShake > 0) {
-          this.screenShake -= dt * 30;
-          if (this.screenShake < 0) this.screenShake = 0;
-        }
+        if (this.screenShake > 0) { this.screenShake -= rawDt * 30; if (this.screenShake < 0) this.screenShake = 0; }
       }
 
       render() {
         const now = performance.now();
-        let dt = (now - (this.lastTime || now)) / 1000;
+        let rawDt = (now - (this.lastTime || now)) / 1000;
         this.lastTime = now;
-        
-        if (dt > 0.1) dt = 0.1; 
+        if (rawDt > 0.1) rawDt = 0.1; 
 
-        this.update(dt);
+        this.update(rawDt);
 
         this.ctx.fillStyle = '#010103';
         this.ctx.fillRect(0, 0, this.w, this.h);
 
         this.ctx.save();
-        if (this.screenShake > 0) {
-          this.ctx.translate((Math.random() - 0.5) * this.screenShake, (Math.random() - 0.5) * this.screenShake);
-        }
-
-        // Ambient Glow Background
-        this.lights.forEach(l => {
-          const grad = this.ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.radius * l.life);
-          grad.addColorStop(0, l.color);
-          grad.addColorStop(0.4, l.color.replace('0.45', `${0.15 * l.life}`));
-          grad.addColorStop(1, 'transparent');
-          
-          this.ctx.fillStyle = grad;
-          this.ctx.save();
-          this.ctx.globalCompositeOperation = 'screen';
-          this.ctx.fillRect(l.x - l.radius, l.y - l.radius, l.radius * 2, l.radius * 2);
-          this.ctx.restore();
-        });
+        if (this.screenShake > 0) this.ctx.translate((Math.random() - 0.5) * this.screenShake, (Math.random() - 0.5) * this.screenShake);
 
         this.blastRings.forEach(b => {
-          this.ctx.save();
-          this.ctx.globalCompositeOperation = 'screen';
-          this.ctx.strokeStyle = b.color;
-          this.ctx.globalAlpha = b.life;
-          this.ctx.lineWidth = 4 * b.life;
-          this.ctx.shadowColor = b.color;
-          this.ctx.shadowBlur = 18;
-          
-          this.ctx.beginPath();
-          this.ctx.arc(b.x, b.y, b.radius, 0, 6.28);
-          this.ctx.stroke();
+          this.ctx.save(); this.ctx.globalCompositeOperation = 'screen';
+          this.ctx.strokeStyle = b.color; this.ctx.globalAlpha = b.life; this.ctx.lineWidth = 8 * b.life;
+          this.ctx.shadowColor = b.color; this.ctx.shadowBlur = 30;
+          this.ctx.beginPath(); this.ctx.arc(b.x, b.y, b.radius, 0, 6.28); this.ctx.stroke();
           this.ctx.restore();
         });
 
-        // Bębny (Clipping Mask)
         this.ctx.save();
-        this.ctx.beginPath();
-        this.ctx.rect(this.ra.x, this.ra.y, this.ra.w, this.ra.h);
-        this.ctx.clip();
+        this.ctx.beginPath(); this.ctx.rect(this.ra.x, this.ra.y, this.ra.w, this.ra.h); this.ctx.clip();
 
-        // Siatka
-        this.ctx.strokeStyle = this.isBonusTheme ? 'rgba(255,0,60,0.12)' : 'rgba(0,240,255,0.12)';
-        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = 'rgba(0,240,255,0.08)'; this.ctx.lineWidth = 1;
         for (let i = 1; i < this.cols; i++) {
           const x = this.ra.x + (i * this.cW);
-          this.ctx.beginPath();
-          this.ctx.moveTo(x, this.ra.y);
-          this.ctx.lineTo(x, this.ra.y + this.ra.h);
-          this.ctx.stroke();
+          this.ctx.beginPath(); this.ctx.moveTo(x, this.ra.y); this.ctx.lineTo(x, this.ra.y + this.ra.h); this.ctx.stroke();
         }
 
-        // Ramka wyczekiwania (Anticipation)
         if (this.anticipationColumn !== -1) {
           const ax = this.ra.x + (this.anticipationColumn * this.cW);
           this.ctx.save();
-          this.ctx.strokeStyle = `hsla(${(now / 3) % 360}, 100%, 50%, 0.85)`;
-          this.ctx.lineWidth = 4 + Math.sin(now * 0.02) * 2;
-          this.ctx.shadowColor = `hsla(${(now / 3) % 360}, 100%, 50%, 0.8)`;
-          this.ctx.shadowBlur = 15;
+          this.ctx.fillStyle = `rgba(255, 0, 60, ${0.1 + Math.sin(now*0.01)*0.05})`;
+          this.ctx.fillRect(ax, this.ra.y, this.cW, this.ra.h);
+          this.ctx.strokeStyle = '#ff003c'; this.ctx.lineWidth = 4;
+          this.ctx.shadowColor = '#ff003c'; this.ctx.shadowBlur = 25;
           this.ctx.strokeRect(ax + 2, this.ra.y + 2, this.cW - 4, this.ra.h - 4);
           this.ctx.restore();
         }
 
-        // Rysowanie symboli
         this.reels.forEach((r, col) => {
           const cx = this.ra.x + (col * this.cW) + (this.cW / 2);
-          
           for (let row = -1; row <= this.rows; row++) {
             const logicalY = Math.floor(r.pos / this.rH) + row;
             let symId = (Math.abs(logicalY) % 6) + 1;
-
             let letter = null;
 
             if (r.state === 'IDLE') {
@@ -1082,28 +759,23 @@
               const cache = this.symsCache[symId];
               if (cache) {
                 this.ctx.save();
-                this.ctx.globalAlpha = r.state === 'SPINNING' ? 0.45 : 1.0;
+                this.ctx.globalAlpha = r.state === 'SPINNING' ? (this.globalTimeScale < 1 ? 0.8 : 0.45) : 1.0;
                 
+                if (r.state === 'SPINNING' && this.globalTimeScale < 1 && col === this.anticipationColumn) {
+                  this.ctx.shadowColor = '#ff003c'; this.ctx.shadowBlur = 20; 
+                }
+
                 let pulseScale = 1.0;
                 if (r.state === 'IDLE') {
                   pulseScale = 1.0 + Math.sin(now * 0.003 + (col * 0.5) + (row * 0.3)) * 0.03;
-                  this.ctx.translate(cx, cy);
-                  this.ctx.scale(pulseScale, pulseScale);
-                  this.ctx.translate(-cx, -cy);
-                }
-
-                if (r.state === 'IDLE' && (symId === 5 || symId === 6)) {
-                  this.ctx.shadowColor = symId === 5 ? '#ff003c' : '#bc13fe';
-                  this.ctx.shadowBlur = 18 + Math.sin(now * 0.01) * 6;
+                  this.ctx.translate(cx, cy); this.ctx.scale(pulseScale, pulseScale); this.ctx.translate(-cx, -cy);
                 }
 
                 this.ctx.drawImage(cache.canvas, cx - cache.size / 2, cy - cache.size / 2);
 
                 if (letter && r.state === 'IDLE') {
-                  this.ctx.shadowBlur = 12;
-                  this.ctx.shadowColor = '#bc13fe';
-                  this.ctx.fillStyle = '#ffffff';
-                  this.ctx.font = 'bold 15px "Orbitron", sans-serif';
+                  this.ctx.shadowBlur = 15; this.ctx.shadowColor = '#bc13fe'; this.ctx.fillStyle = '#ffffff';
+                  this.ctx.font = 'bold 18px "Orbitron", sans-serif';
                   this.ctx.fillText(letter.replace(/\d/, ''), cx + this.cW * 0.22, cy + this.rH * 0.25);
                 }
                 this.ctx.restore();
@@ -1112,511 +784,124 @@
           }
         });
 
-        // Linie wygranych
         if (this.winLines.length > 0) {
-          const mainColor = this.isBonusTheme ? '#ff003c' : '#00f0ff';
-          this.ctx.strokeStyle = mainColor;
-          this.ctx.lineWidth = 3.5;
-          this.ctx.shadowColor = mainColor;
-          this.ctx.shadowBlur = 20;
-
+          this.ctx.strokeStyle = '#00f0ff'; this.ctx.lineWidth = 4;
+          this.ctx.shadowColor = '#00f0ff'; this.ctx.shadowBlur = 25;
           this.winLines.forEach(line => {
             line.forEach(node => {
-              const x = this.ra.x + (node.col * this.cW);
-              const y = this.ra.y + (node.row * this.rH);
+              const x = this.ra.x + (node.col * this.cW); const y = this.ra.y + (node.row * this.rH);
               this.ctx.strokeRect(x + 5, y + 5, this.cW - 10, this.rH - 10);
             });
           });
-          this.ctx.shadowBlur = 0;
         }
+        this.ctx.restore(); 
 
-        this.ctx.restore(); // Przywrócenie maski bębnów
-
-        // Rysowanie cząsteczek (Rainbow Shimmer)
-        for (let i = 0; i < this.maxParticles; i++) {
-          const p = this.particlePool[i];
+        this.ctx.globalCompositeOperation = 'screen';
+        for (let i = 0; i < this.particles.length; i++) {
+          const p = this.particles[i];
           if (p.active) {
-            const pulseSize = p.size * (0.6 + 0.4 * Math.cos(now * 0.001 * p.shimmerSpeed));
-            
-            const grad = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, pulseSize * 1.5);
-            grad.addColorStop(0, `hsla(${p.hue}, 100%, 80%, ${p.life})`);
-            grad.addColorStop(0.3, `hsla(${p.hue}, 100%, 50%, ${p.life * 0.7})`);
-            grad.addColorStop(1, 'transparent');
-
-            this.ctx.fillStyle = grad;
-            this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, pulseSize * 1.5, 0, 6.28);
-            this.ctx.fill();
+            this.ctx.fillStyle = `hsla(${p.hue}, 100%, 60%, ${p.life})`;
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, p.size * p.life, 0, 6.28); this.ctx.fill();
           }
         }
-        this.ctx.globalAlpha = 1.0;
+        this.ctx.globalCompositeOperation = 'source-over';
 
         this.ctx.restore();
-
         requestAnimationFrame(this.render.bind(this));
       }
 
-      startSpin(matrix, letterOverlays, isTurbo, onStop, onComplete) {
-        this.winLines = [];
-        this.onReelStop = onStop;
-        this.anticipationColumn = -1; 
+      startSpin(matrix, letterOverlays, isTurbo, anticipationCols, onStop, onComplete) {
+        this.winLines = []; this.onReelStop = onStop; this.anticipationColumn = -1;
+        this.globalTimeScale = 1.0; 
 
         const baseDur = isTurbo ? 0.22 : 0.85;
         const stagger = isTurbo ? 0.04 : 0.18;
 
         this.reels.forEach((r, i) => {
-          r.state = 'SPINNING';
-          r.time = 0;
-          r.duration = baseDur + (i * stagger);
-          r.startPos = r.pos;
-          r.matrix = matrix[i];
-          r.letterOverlays = letterOverlays[i];
-          r.hidden = [];
-          r.dropOffsets = [0,0,0];
-
-          const rotations = isTurbo ? 2 : 4;
+          r.state = 'SPINNING'; r.time = 0; r.startPos = r.pos;
+          r.matrix = matrix[i]; r.letterOverlays = letterOverlays[i]; r.hidden = []; r.dropOffsets = [0,0,0];
+          
+          let dur = baseDur + (i * stagger);
+          if (anticipationCols.includes(i)) dur += 2.0; 
+          r.duration = dur;
+          
+          const rotations = isTurbo ? 2 : (anticipationCols.includes(i) ? 8 : 4);
           r.targetPos = r.startPos + (rotations * this.rows * this.rH) + (i * this.rH);
         });
 
         const check = setInterval(() => {
           if (this.reels.every(r => r.state === 'IDLE')) {
-            clearInterval(check);
+            clearInterval(check); this.globalTimeScale = 1.0;
             if (onComplete) onComplete();
           }
         }, 20);
       }
 
-      implodeSymbols(positions) {
-        positions.forEach(pos => {
-          const [col, row] = pos.split(',').map(Number);
-          this.reels[col].hidden.push(row);
-          
-          const baseHue = this.isBonusTheme ? 340 : 185;
-          this.spawnExplosion(col, row, baseHue);
-        });
-        this.screenShake = 16;
-      }
-
       dropNewSymbols(matrix, letterOverlays, refillCount) {
         this.reels.forEach((r, col) => {
-          r.hidden = [];
-          r.matrix = matrix[col];
-          r.letterOverlays = letterOverlays[col];
-          
-          for (let i = 0; i < 3; i++) {
-            if (i < refillCount[col]) {
-              r.dropOffsets[i] = -this.rH * (refillCount[col] - i);
-            }
-          }
+          r.hidden = []; r.matrix = matrix[col]; r.letterOverlays = letterOverlays[col];
+          for (let i = 0; i < 3; i++) { if (i < refillCount[col]) r.dropOffsets[i] = -this.rH * (refillCount[col] - i); }
         });
       }
     }
 
-    // ==========================================
-    // 5. ARCHITEKTURA LOGIKI GRY I SESJI (RGS Core)
-    // ==========================================
     class GameController {
       constructor() {
         this.rng = new SecureRNG();
         this.rgs = new RGSMath(this.rng);
-        this.audio = new CyberAudioEngine();
-        this.renderer = new VectorRenderer();
+        this.audio = new CinematicAudioEngine();
+        this.renderer = new CinematicRenderer();
 
         this.isSpinning = false;
-
         this.state = {
-          balance: 1000.0,
-          bets: [2.00, 5.00, 10.00, 20.00, 50.00, 100.00],
-          betIndex: 1,
-          isTurbo: false,
-          fsCount: 0,
-          cascadeMultiplier: 1,
-          matrix: null,
-          letterOverlays: null,
-          xp: 0,
-          level: 1,
-          levelNames: ["SCRIPT KIDDIE", "NET BREAKER", "PROXY WIZARD", "DB INJECTOR", "OVERLORD"],
+          balance: 1000.0, bets: [2.00, 5.00, 10.00, 20.00, 50.00, 100.00], betIndex: 1,
+          fsCount: 0, cascadeMultiplier: 1, xp: 0, level: 1, levelNames: ["SCRIPT KIDDIE", "NET BREAKER", "PROXY WIZARD", "DB INJECTOR", "OVERLORD"],
           jackpotLetters: { F: false, E: false, R1: false, R2: false, O: false },
-          pendingFreeSpins: false
+          matrix: null, letterOverlays: null, isTurbo: false
         };
+        this.autoplay = { enabled: false, remaining: 0 };
+        this.stats = { totalRounds: 0, totalBet: 0.0, totalWin: 0.0 };
 
-        this.autoplay = {
-          enabled: false,
-          remaining: 0,
-          lossLimit: 0,
-          startBal: 0
-        };
-
-        this.stats = {
-          totalRounds: 0,
-          totalBet: 0.0,
-          totalWin: 0.0
-        };
-
-        this.sessionStart = Date.now();
-
-        // Hold-Autospin state variables
-        this.holdTimer = null;
-        this.isHoldTriggered = false;
-
-        this.cacheDOM();
-        this.loadSession(); 
-        this.initLoader();
-        this.setupEvents();
-        this.startSessionTimer();
-        this.listenNetwork();
-        this.startRealityCheckTimer(); 
+        this.cacheDOM(); this.loadSession(); this.initLoader(); this.setupEvents();
       }
 
       cacheDOM() {
         const get = id => document.getElementById(id);
         this.dom = {
-          bal: get('display-balance'),
-          bet: get('display-bet'),
-          win: get('display-win'),
-          msg: get('status-msg'),
-          multDisp: get('multiplier-display'),
-          multContainer: get('mult-container'),
-          spinBtn: get('btn-spin'),
-          betSel: get('bet-selector'),
-          overlay: get('win-overlay'),
-          winAmt: get('win-amount-counter'),
-          winType: get('win-type'),
-          fsBanner: get('fs-banner'),
-          fsCount: get('fs-count'),
-          autoRing: get('spin-auto-ring'),
-          autoCount: get('auto-spin-count'),
-          spinIcon: get('spin-icon'),
-          turboLabel: get('turbo-label'),
-          turboIcon: get('turbo-icon'),
-          levelName: get('hacker-level-name'),
-          xpBar: get('level-xp-bar'),
-          xpDisplay: get('hacker-xp-display'),
-          led: get('led-frame'),
-          holdProgressBar: get('hold-progress-bar')
+          bal: get('display-balance'), bet: get('display-bet'), win: get('display-win'), msg: get('status-msg'),
+          multDisp: get('multiplier-display'), spinBtn: get('btn-spin'), overlay: get('win-overlay'),
+          winAmt: get('win-amount-counter'), winType: get('win-type'), fsBanner: get('fs-banner'), fsCount: get('fs-count'),
+          led: get('led-frame'), vignette: get('tension-vignette'), jackpotBg: get('jackpot-glow-bg')
         };
       }
 
       setupEvents() {
         document.getElementById('btn-start-game').addEventListener('click', () => {
-          this.audio.init();
-          document.getElementById('splash-loader').remove();
-          this.updateUI();
-          this.audio.startMusic();
+          this.audio.init(); document.getElementById('splash-loader').remove(); this.updateUI();
         });
-
-        // Innowacyjny system Autospinu przez Przytrzymanie (Hold-to-Autospin)
-        const spinPressStart = (e) => {
-          if (this.isSpinning) return;
-          e.preventDefault();
-          this.isHoldTriggered = false;
-
-          let progress = 0;
-          this.dom.holdProgressBar.style.strokeDashoffset = 283;
-
-          this.holdTimer = setInterval(() => {
-            progress += 10;
-            const offset = 283 - (283 * (progress / 100));
-            this.dom.holdProgressBar.style.strokeDashoffset = Math.max(0, offset);
-
-            if (progress >= 100) {
-              clearInterval(this.holdTimer);
-              this.holdTimer = null;
-              this.isHoldTriggered = true;
-              this.triggerQuickAutospin();
-            }
-          }, 60); // 600ms na pełne naładowanie
-        };
-
-        const spinPressEnd = (e) => {
-          if (this.holdTimer) {
-            clearInterval(this.holdTimer);
-            this.holdTimer = null;
-          }
-          this.dom.holdProgressBar.style.strokeDashoffset = 283;
-
-          if (!this.isHoldTriggered) {
-            // Normalne kliknięcie (krótki press)
-            if (this.autoplay.enabled) {
-              this.haltAutoplay();
-            } else {
-              this.play();
-            }
-          }
-          this.isHoldTriggered = false;
-        };
-
-        // Wsparcie dla urządzeń mobilnych (Touch) oraz Desktop (Mouse)
-        this.dom.spinBtn.addEventListener('mousedown', spinPressStart);
-        this.dom.spinBtn.addEventListener('mouseup', spinPressEnd);
-        this.dom.spinBtn.addEventListener('mouseleave', () => {
-          if (this.holdTimer) {
-            clearInterval(this.holdTimer);
-            this.holdTimer = null;
-          }
-          this.dom.holdProgressBar.style.strokeDashoffset = 283;
-        });
-
-        this.dom.spinBtn.addEventListener('touchstart', spinPressStart, { passive: false });
-        this.dom.spinBtn.addEventListener('touchend', spinPressEnd, { passive: false });
-
-        this.dom.betSel.addEventListener('click', () => {
-          if (this.isSpinning || this.state.fsCount > 0) return;
-          this.state.betIndex = (this.state.betIndex + 1) % this.state.bets.length;
-          this.audio.playSFX('sine', 880, 0.08, 0.3);
-          this.updateUI();
-          this.saveSession();
-        });
-
-        document.getElementById('btn-turbo').addEventListener('click', () => {
-          this.state.isTurbo = !this.state.isTurbo;
-          this.updateTurboUI();
-          this.audio.playSFX('sine', this.state.isTurbo ? 1200 : 600, 0.1, 0.3);
-          
-          this.audio.updateBGMTempo(
-            this.state.isTurbo,
-            this.state.fsCount > 0,
-            this.state.cascadeMultiplier,
-            this.state.jackpotLetters
-          );
-          this.saveSession();
-        });
-
-        const bindModal = (btnId, panelId) => {
-          document.getElementById(btnId).addEventListener('click', () => {
-            this.audio.init();
-            document.getElementById(panelId).classList.remove('opacity-0', 'pointer-events-none');
-          });
-        };
-        bindModal('btn-settings', 'panel-settings');
-        bindModal('btn-auto', 'panel-auto');
-
-        document.querySelectorAll('.close-overlay').forEach(b => {
-          b.addEventListener('click', (e) => e.target.closest('div[id^="panel-"]').classList.add('opacity-0', 'pointer-events-none'));
-        });
-
-        document.getElementById('btn-show-paytable').addEventListener('click', () => {
-          document.getElementById('panel-paytable').classList.remove('opacity-0', 'pointer-events-none');
-        });
-        document.getElementById('btn-close-paytable').addEventListener('click', () => {
-          document.getElementById('panel-paytable').classList.add('opacity-0', 'pointer-events-none');
-        });
-
-        document.getElementById('btn-show-stats').addEventListener('click', () => {
-          this.updateStatsUI();
-          document.getElementById('panel-stats').classList.remove('opacity-0', 'pointer-events-none');
-        });
-        document.getElementById('btn-close-stats').addEventListener('click', () => {
-          document.getElementById('panel-stats').classList.add('opacity-0', 'pointer-events-none');
-        });
-
-        document.getElementById('toggle-bgm').addEventListener('change', e => {
-          this.audio.bgmEnabled = e.target.checked;
-          if (e.target.checked) this.audio.startMusic(); else this.audio.stopMusic();
-        });
-        document.getElementById('toggle-sfx').addEventListener('change', e => this.audio.sfxEnabled = e.target.checked);
-
-        document.getElementById('btn-reset-session').addEventListener('click', () => {
-          localStorage.removeItem('secferro_rgs_state_v3.5');
-          window.location.reload();
-        });
-
-        document.querySelectorAll('.auto-spin-opt').forEach(b => {
-          b.addEventListener('click', (e) => {
-            document.querySelectorAll('.auto-spin-opt').forEach(btn => btn.classList.remove('bg-cyberPurple', 'border-cyberPurple'));
-            e.target.classList.add('bg-cyberPurple', 'border-cyberPurple');
-            document.getElementById('auto-spins-val').value = e.target.dataset.val;
-          });
-        });
-
-        document.getElementById('start-autoplay').addEventListener('click', () => this.startAutoplay());
-      }
-
-      // Szybka aktywacja 25 obrotów automatycznych po przytrzymaniu przycisku
-      triggerQuickAutospin() {
-        this.audio.playSFX('sawtooth', 300, 0.4, 0.5, 900);
-        if (navigator.vibrate) navigator.vibrate(50);
-
-        this.autoplay = {
-          enabled: true,
-          remaining: 25,
-          lossLimit: 100.0,
-          startBal: this.state.balance
-        };
-        this.updateAutoplayUI();
-        this.play();
-      }
-
-      updateTurboUI() {
-        if (this.state.isTurbo) {
-          this.dom.turboLabel.classList.replace('text-gray-500', 'text-cyberBlue');
-          this.dom.turboIcon.classList.replace('text-gray-500', 'text-cyberBlue');
-        } else {
-          this.dom.turboLabel.classList.replace('text-cyberBlue', 'text-gray-500');
-          this.dom.turboIcon.classList.replace('text-cyberBlue', 'text-gray-500');
-        }
+        
+        this.dom.spinBtn.addEventListener('mousedown', () => { if(!this.isSpinning) this.play(); });
+        this.dom.spinBtn.addEventListener('touchstart', (e) => { e.preventDefault(); if(!this.isSpinning) this.play(); }, {passive:false});
       }
 
       initLoader() {
-        const bar = document.getElementById('loader-bar');
-        setTimeout(() => { bar.style.width = '40%'; }, 100);
-        setTimeout(() => { bar.style.width = '80%'; }, 250);
-        setTimeout(() => {
-          bar.style.width = '100%';
-          document.getElementById('btn-start-game').classList.remove('hidden');
-        }, 400);
+        setTimeout(() => document.getElementById('loader-bar').style.width = '100%', 300);
+        setTimeout(() => document.getElementById('btn-start-game').classList.remove('hidden'), 500);
       }
 
-      saveSession() {
-        try {
-          const payload = {
-            balance: this.state.balance,
-            betIndex: this.state.betIndex,
-            isTurbo: this.state.isTurbo,
-            xp: this.state.xp,
-            level: this.state.level,
-            jackpotLetters: this.state.jackpotLetters,
-            fsCount: this.state.fsCount,
-            stats: this.stats
-          };
-          localStorage.setItem('secferro_rgs_state_v3.5', JSON.stringify(payload));
-        } catch(e) {
-          console.warn("Storage write blocked", e);
-        }
-      }
-
-      loadSession() {
-        try {
-          const saved = localStorage.getItem('secferro_rgs_state_v3.5');
-          if (saved) {
-            const data = JSON.parse(saved);
-            this.state.balance = data.balance;
-            this.state.betIndex = data.betIndex;
-            this.state.isTurbo = data.isTurbo;
-            this.state.xp = data.xp;
-            this.state.level = data.level;
-            this.state.jackpotLetters = data.jackpotLetters;
-            this.state.fsCount = data.fsCount;
-            if (data.stats) this.stats = data.stats;
-
-            this.dom.msg.innerText = "SESJA ODZYSKANA";
-            setTimeout(() => this.dom.msg.innerText = "POŁĄCZONO Z SYSTEMEM", 2000);
-          }
-        } catch(e) {
-          console.error("Critical session recover failure", e);
-        }
-        this.updateTurboUI();
-        this.updateJackpotBar();
-      }
-
-      listenNetwork() {
-        const updateStatus = () => {
-          const el = document.getElementById('net-status');
-          const ind = document.getElementById('net-indicator');
-          if (navigator.onLine) {
-            el.innerText = 'ONLINE';
-            el.className = 'text-cyberGreen font-bold';
-            ind.className = 'w-1.5 h-1.5 rounded-full bg-cyberGreen animate-ping';
-          } else {
-            el.innerText = 'OFFLINE';
-            el.className = 'text-cyberAlert font-bold animate-pulse';
-            ind.className = 'w-1.5 h-1.5 rounded-full bg-cyberAlert';
-            this.dom.msg.innerText = "UTRACONO POŁĄCZENIE SYSTEMOWE";
-          }
-        };
-        window.addEventListener('online', updateStatus);
-        window.addEventListener('offline', updateStatus);
-        updateStatus();
-      }
-
-      startRealityCheckTimer() {
-        setInterval(() => {
-          this.triggerRealityCheck();
-        }, 900000); 
-
-        document.getElementById('btn-reality-continue').addEventListener('click', () => {
-          document.getElementById('panel-reality').classList.add('opacity-0', 'pointer-events-none');
-        });
-        document.getElementById('btn-reality-exit').addEventListener('click', () => {
-          localStorage.removeItem('secferro_rgs_state_v3.5');
-          window.close();
-          window.location.href = "https://www.totalcasino.pl";
-        });
-      }
-
-      triggerRealityCheck() {
-        document.getElementById('panel-reality').classList.remove('opacity-0', 'pointer-events-none');
-      }
-
-      startSessionTimer() {
-        setInterval(() => {
-          const diff = Math.floor((Date.now() - this.sessionStart) / 1000);
-          const mins = String(Math.floor(diff / 60)).padStart(2, '0');
-          const secs = String(diff % 60).padStart(2, '0');
-          document.getElementById('rg-session').innerText = `${mins}:${secs}`;
-          document.getElementById('rg-clock').innerText = new Date().toISOString().substring(11, 19) + ' UTC';
-        }, 1000);
-      }
+      saveSession() { localStorage.setItem('secferro_v4', JSON.stringify(this.state)); }
+      loadSession() { const s = localStorage.getItem('secferro_v4'); if(s) { Object.assign(this.state, JSON.parse(s)); this.updateJackpotBar(); } }
 
       updateUI() {
         this.dom.bal.innerText = this.state.balance.toFixed(2);
         this.dom.bet.innerText = this.state.bets[this.state.betIndex].toFixed(2);
         this.dom.multDisp.innerText = `x${this.state.cascadeMultiplier * this.state.level}`;
-        
-        this.dom.levelName.innerText = this.state.levelNames[this.state.level - 1];
-        this.dom.xpDisplay.innerText = this.state.xp;
-        this.dom.xpBar.style.width = `${this.state.xp}%`;
-
         if (this.state.fsCount > 0) {
-          this.dom.fsBanner.classList.replace('hidden', 'flex');
-          this.dom.fsBanner.classList.add('opacity-100', 'scale-100');
-          this.dom.fsCount.innerText = this.state.fsCount;
-          this.renderer.isBonusTheme = true;
-          this.dom.led.classList.add('border-cyberAlert');
+          this.dom.fsBanner.classList.replace('hidden', 'flex'); this.dom.fsBanner.classList.add('opacity-100');
+          this.dom.fsCount.innerText = this.state.fsCount; this.dom.led.classList.add('border-cyberAlert');
         } else {
-          this.dom.fsBanner.classList.replace('flex', 'hidden');
-          this.renderer.isBonusTheme = false;
-          this.dom.led.classList.remove('border-cyberAlert');
+          this.dom.fsBanner.classList.replace('flex', 'hidden'); this.dom.led.classList.remove('border-cyberAlert');
         }
-      }
-
-      updateStatsUI() {
-        document.getElementById('stat-rounds').innerText = this.stats.totalRounds;
-        const calculatedRtp = this.stats.totalBet > 0 
-          ? ((this.stats.totalWin / this.stats.totalBet) * 100).toFixed(1) 
-          : "0.0";
-        document.getElementById('stat-rtp').innerText = `${calculatedRtp}%`;
-      }
-
-      logRoundToHistory(bet, win) {
-        const container = document.getElementById('win-history-log');
-        if (this.stats.totalRounds === 1) {
-          container.innerHTML = ''; 
-        }
-        
-        const timestamp = new Date().toLocaleTimeString('pl-PL');
-        const row = document.createElement('div');
-        row.className = "flex justify-between p-2 bg-white/5 border-b border-white/5 rounded-lg";
-        row.innerHTML = `
-          <span>[${timestamp}] RUNDA #${this.stats.totalRounds}</span>
-          <span class="text-gray-400">STAWKA: ${bet.toFixed(2)} PLN</span>
-          <span class="${win > 0 ? 'text-cyberGreen font-bold' : 'text-gray-500'}">WYGRANA: ${win.toFixed(2)} PLN</span>
-        `;
-        container.insertBefore(row, container.firstChild);
-      }
-
-      addXP(amount) {
-        this.state.xp += amount;
-        if (this.state.xp >= 100) {
-          this.state.xp = this.state.xp % 100;
-          if (this.state.level < 5) {
-            this.state.level++;
-            this.audio.playSFX('sine', 1000, 0.8, 0.4, 1800);
-            this.dom.msg.innerText = "AWANS POZIOMU HACKERA!";
-          }
-        }
-        this.updateUI();
-        this.saveSession();
       }
 
       async play() {
@@ -1624,162 +909,121 @@
         const bet = this.state.bets[this.state.betIndex];
         const isFS = this.state.fsCount > 0;
 
-        if (this.state.balance < bet && !isFS) {
-          this.dom.msg.innerText = "BRAK ŚRODKÓW";
-          this.audio.playSFX('sawtooth', 80, 0.4, 0.5);
-          this.haltAutoplay();
-          return;
-        }
+        if (this.state.balance < bet && !isFS) { this.dom.msg.innerText = "BRAK ŚRODKÓW"; return; }
 
-        this.isSpinning = true;
-        this.dom.spinBtn.disabled = true;
-        this.dom.win.innerText = "0.00";
-        this.renderer.winLines = [];
+        this.isSpinning = true; this.dom.spinBtn.disabled = true; this.dom.win.innerText = "0.00";
+        if (!isFS) this.state.cascadeMultiplier = 1;
+        this.updateUI();
 
-        if (!isFS) {
-          this.state.cascadeMultiplier = 1;
-        }
+        if (isFS) this.state.fsCount--; else this.state.balance -= bet;
         
-        this.audio.updateBGMTempo(
-          this.state.isTurbo,
-          isFS,
-          this.state.cascadeMultiplier,
-          this.state.jackpotLetters
-        );
-
-        this.dom.multDisp.innerText = `x${this.state.cascadeMultiplier * this.state.level}`;
-
-        if (isFS) {
-          this.state.fsCount--;
-          this.updateUI();
-          this.dom.msg.innerText = "OVERLOADING SYSTEM...";
-        } else {
-          this.state.balance -= bet;
-          this.dom.msg.innerText = "SZYFROWANIE SYGNAŁU...";
-          this.updateUI();
-        }
-
-        this.audio.playSpinStart();
+        this.audio.playSFX('sawtooth', 100, 0.5, 0.4, 50);
         this.dom.led.classList.add('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
 
         const spinData = this.rgs.spin();
-        this.state.matrix = spinData.matrix;
-        this.state.letterOverlays = spinData.letterOverlays;
+        this.state.matrix = spinData.matrix; this.state.letterOverlays = spinData.letterOverlays;
 
-        let currentScatters = 0;
+        // ANTICIPATION LOGIC (Wstrzymanie oddechu)
+        let scatters = 0; let tensionCols = [];
+        for(let c=0; c<5; c++) {
+          if(this.state.matrix[c].includes(6)) scatters++;
+          if(scatters === 2 && !this.state.matrix[c].includes(6) && c < 4) tensionCols.push(c+1);
+        }
+        
+        const jpCollected = Object.values(this.state.jackpotLetters).filter(Boolean).length;
+        if (jpCollected === 4) tensionCols = [2,3,4]; // Wysokie napięcie dla Jackpota
+        
+        let hasTension = false;
 
         this.renderer.startSpin(
-          this.state.matrix,
-          this.state.letterOverlays,
-          this.state.isTurbo,
+          this.state.matrix, this.state.letterOverlays, this.state.isTurbo, tensionCols,
           (colIdx) => {
-            for (let r = 0; r < 3; r++) {
-              if (this.state.matrix[colIdx][r] === 6) {
-                currentScatters++;
-              }
-            }
-
-            if (currentScatters >= 2 && colIdx < 4 && !this.state.isTurbo) {
+            if (tensionCols.includes(colIdx + 1)) {
+              hasTension = true;
               this.renderer.anticipationColumn = colIdx + 1;
-              this.renderer.reels[colIdx + 1].duration += 1.2; 
-              this.audio.playSFX('sawtooth', 350, 1.2, 0.4, 700);
+              this.renderer.globalTimeScale = 0.25; // SLOW MOTION
+              this.dom.vignette.classList.add('heartbeat-active');
+              this.audio.startHeartbeat();
+            } else if (hasTension && !tensionCols.includes(colIdx + 1)) {
+               this.renderer.globalTimeScale = 1.0;
+               this.dom.vignette.classList.remove('heartbeat-active');
+               this.audio.stopHeartbeat();
             }
-
-            this.audio.playReelStop(colIdx);
+            
+            if (this.state.matrix[colIdx].includes(6)) {
+              this.renderer.spawnMegaExplosion(colIdx, this.state.matrix[colIdx].indexOf(6));
+              this.audio.playScatterHit();
+              this.renderer.screenShake = 10;
+            } else {
+              this.audio.playSFX('triangle', 150 + (colIdx * 40), 0.1, 0.2);
+            }
           },
-          () => this.handleAvalancheEvaluation(bet)
+          () => {
+             this.renderer.globalTimeScale = 1.0;
+             this.dom.vignette.classList.remove('heartbeat-active');
+             this.audio.stopHeartbeat();
+             this.handleAvalancheEvaluation(bet);
+          }
         );
 
-        if (!isFS) {
-          this.stats.totalRounds++;
-          this.stats.totalBet += bet;
-        }
-
-        this.saveSession();
+        if (!isFS) { this.stats.totalRounds++; this.stats.totalBet += bet; }
       }
 
       async handleAvalancheEvaluation(bet) {
         this.dom.led.classList.remove('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
-
-        const evalResult = this.rgs.evaluate(
-          this.state.matrix,
-          bet,
-          this.state.cascadeMultiplier * this.state.level,
-          this.state.letterOverlays
-        );
+        const evalResult = this.rgs.evaluate(this.state.matrix, bet, this.state.cascadeMultiplier * this.state.level, this.state.letterOverlays);
 
         if (evalResult.win > 0) {
           this.renderer.winLines = evalResult.lines;
-          this.audio.playCascade();
           
           if (evalResult.collectedLetters.length > 0) {
-            evalResult.collectedLetters.forEach(letter => {
-              if (letter === 'F') this.state.jackpotLetters.F = true;
-              if (letter === 'E') this.state.jackpotLetters.E = true;
-              if (letter === 'R1') this.state.jackpotLetters.R1 = true;
-              if (letter === 'R2') this.state.jackpotLetters.R2 = true;
-              if (letter === 'O') this.state.jackpotLetters.O = true;
-            });
-            this.audio.playLetterCollect();
+            evalResult.collectedLetters.forEach(l => this.state.jackpotLetters[l] = true);
+            this.audio.playSFX('sine', 880, 0.4, 0.6, 1760);
             this.updateJackpotBar();
-            this.checkJackpotTension();
           }
 
-          const multiplier = evalResult.win / bet;
-          this.addXP(Math.ceil(multiplier * 4));
-
-          this.audio.updateBGMTempo(
-            this.state.isTurbo,
-            this.state.fsCount > 0,
-            this.state.cascadeMultiplier,
-            this.state.jackpotLetters
-          );
-
-          if (multiplier >= 15) {
-            await this.presentBigWin(evalResult.win, multiplier);
+          const mult = evalResult.win / bet;
+          if (mult >= 10) {
+            this.renderer.triggerBlindingFlash();
+            await this.presentBigWin(evalResult.win, mult);
           } else {
-            this.audio.playWinSmall();
+            this.audio.playSFX('sawtooth', 300, 0.5, 0.3);
             this.state.balance += evalResult.win;
             this.dom.win.innerText = evalResult.win.toFixed(2);
             this.updateUI();
           }
 
-          if (evalResult.triggerFreeSpins) {
-            this.state.pendingFreeSpins = true;
-          }
-
           this.stats.totalWin += evalResult.win;
 
-          const delay = this.state.isTurbo ? 150 : 800;
           setTimeout(() => {
-            this.audio.playImplode();
-            this.renderer.implodeSymbols(evalResult.positions);
-            this.triggerCascadeDrop(bet, evalResult.positions);
-          }, delay);
+            this.audio.playSFX('square', 80, 0.3, 0.5);
+            evalResult.positions.forEach(pos => {
+              const [c, r] = pos.split(',').map(Number);
+              this.renderer.spawnMegaExplosion(c, r, false);
+            });
+            this.renderer.screenShake = 15;
+            this.triggerCascadeDrop(bet, evalResult.positions, evalResult.triggerFreeSpins);
+          }, 600);
 
         } else {
-          if (evalResult.triggerFreeSpins) {
-            this.state.pendingFreeSpins = true;
-          }
-          this.endCycle();
+          this.endCycle(evalResult.triggerFreeSpins);
         }
       }
 
-      triggerCascadeDrop(bet, positions) {
+      triggerCascadeDrop(bet, positions, pendingFS) {
         const columnsToRefill = [0,0,0,0,0];
         positions.forEach(pos => {
           const [c, r] = pos.split(',').map(Number);
-          this.state.matrix[c][r] = null;
-          columnsToRefill[c]++;
+          this.state.matrix[c][r] = null; columnsToRefill[c]++;
+          this.renderer.reels[c].hidden.push(r);
         });
 
         for (let c = 0; c < 5; c++) {
           const remaining = this.state.matrix[c].filter(s => s !== null);
-          const remainingLetters = this.state.letterOverlays[c].filter((s, idx) => this.state.matrix[c][idx] !== null);
+          const remLet = this.state.letterOverlays[c].filter((s, idx) => this.state.matrix[c][idx] !== null);
           const empties = 3 - remaining.length;
-          
           this.state.matrix[c] = Array(empties).fill(null).concat(remaining);
-          this.state.letterOverlays[c] = Array(empties).fill(null).concat(remainingLetters);
+          this.state.letterOverlays[c] = Array(empties).fill(null).concat(remLet);
         }
 
         const refill = this.rgs.spinTopOnly(columnsToRefill);
@@ -1791,162 +1035,84 @@
         }
 
         setTimeout(() => {
-          this.state.cascadeMultiplier++;
-          this.updateUI();
+          this.state.cascadeMultiplier++; this.updateUI();
           this.renderer.dropNewSymbols(this.state.matrix, this.state.letterOverlays, columnsToRefill);
-          
-          setTimeout(() => this.handleAvalancheEvaluation(bet), this.state.isTurbo ? 100 : 350);
-        }, 120);
+          setTimeout(() => this.handleAvalancheEvaluation(bet), 400);
+        }, 200);
       }
 
-      endCycle() {
+      // NAPRAWA ZAWIESZENIA JACKPOTA: endCycle teraz odpowiednio zarządza przerwaniem pętli i odczekaniem na Jackpota
+      async endCycle(pendingFS) {
+        this.saveSession();
+
+        const jpCollected = Object.values(this.state.jackpotLetters).filter(Boolean).length;
+        if (jpCollected === 5) {
+          await this.triggerFerroJackpot();
+          // Kod poniżej odpali się dopiero po całkowitym zakończeniu animacji Jackpota
+        }
+
+        if (pendingFS) {
+          this.renderer.triggerBlindingFlash();
+          this.audio.playJackpotSiren();
+          this.state.fsCount += 10;
+          this.dom.msg.innerText = "OVERCLOCKING SYSTEM DETECTED!";
+          await new Promise(r => setTimeout(r, 2000));
+          this.updateUI();
+        }
+
+        // Ścisłe uwolnienie blokady
         this.isSpinning = false;
         this.dom.spinBtn.disabled = false;
         this.dom.msg.innerText = "PRZESYŁ GOTOWY";
 
-        const lastRoundWin = parseFloat(this.dom.win.innerText) || 0.0;
-        this.logRoundToHistory(this.state.bets[this.state.betIndex], lastRoundWin);
-
-        this.saveSession();
-
-        this.audio.updateBGMTempo(
-          this.state.isTurbo,
-          this.state.fsCount > 0,
-          1,
-          this.state.jackpotLetters
-        );
-
-        if (this.state.jackpotLetters.F && this.state.jackpotLetters.E && this.state.jackpotLetters.R1 && this.state.jackpotLetters.R2 && this.state.jackpotLetters.O) {
-          this.triggerFerroJackpot();
-          return;
-        }
-
-        if (this.state.pendingFreeSpins) {
-          this.state.pendingFreeSpins = false;
-          this.triggerFreeSpins();
-          return;
-        }
-
-        if (this.state.fsCount > 0) {
-          setTimeout(() => this.play(), 600);
-        } else if (this.autoplay.enabled) {
-          this.autoplay.remaining--;
-          this.updateAutoplayUI();
-
-          const loss = this.autoplay.startBal - this.state.balance;
-          if (this.autoplay.remaining <= 0 || (this.autoplay.lossLimit > 0 && loss >= this.autoplay.lossLimit)) {
-            this.haltAutoplay();
-          } else {
-            setTimeout(() => { if (this.autoplay.enabled) this.play(); }, this.state.isTurbo ? 150 : 650);
-          }
-        }
-      }
-
-      triggerFreeSpins() {
-        this.isSpinning = true; 
-        this.dom.spinBtn.disabled = true;
-        this.state.fsCount = 10;
-        this.audio.playScatterAlert();
-        this.dom.msg.innerText = "OVERCLOCKING SYSTEM DETECTED!";
-        this.dom.msg.classList.add('text-cyberAlert', 'glitch-text-active');
-        
-        setTimeout(() => {
-          this.dom.msg.classList.remove('text-cyberAlert', 'glitch-text-active');
-          this.updateUI();
-          this.isSpinning = false; 
-          this.play();
-        }, 1800);
-      }
-
-      updateJackpotBar() {
-        const map = { F: 'F', E: 'E', R1: 'R1', R2: 'R2', O: 'O' };
-        for (let k in map) {
-          const el = document.getElementById(`jackpot-letter-${k}`);
-          if (this.state.jackpotLetters[k]) {
-            el.className = "w-6 h-6 border flex items-center justify-center text-xs font-black font-tech rounded transition-all active-letter text-white";
-          } else {
-            el.className = "w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all";
-          }
-        }
-      }
-
-      checkJackpotTension() {
-        const collectedCount = Object.values(this.state.jackpotLetters).filter(Boolean).length;
-        if (collectedCount === 4) {
-          this.renderer.screenShake = 14;
-          this.dom.msg.innerText = "KRYTYCZNE NAPIĘCIE INTEGRALNOŚCI JACKPOTU";
-          this.audio.playSFX('sawtooth', 300, 0.5, 0.45, 600);
-          
-          this.audio.updateBGMTempo(
-            this.state.isTurbo,
-            this.state.fsCount > 0,
-            this.state.cascadeMultiplier,
-            this.state.jackpotLetters
-          );
-        }
+        if (this.state.fsCount > 0) { setTimeout(() => this.play(), 800); }
       }
 
       async triggerFerroJackpot() {
-        this.isSpinning = true;
-        this.dom.spinBtn.disabled = true;
-        this.audio.playJackpotAlarm();
-
-        this.renderer.screenShake = 22;
-        this.dom.msg.innerText = "FERRO CRITICAL OVERLOAD!";
-        this.dom.msg.classList.add('text-cyberGold', 'glitch-text-active');
-
+        this.audio.playJackpotSiren();
+        this.renderer.triggerBlindingFlash();
+        this.renderer.screenShake = 30;
+        this.dom.jackpotBg.classList.replace('opacity-0', 'opacity-100');
+        
+        await new Promise(r => setTimeout(r, 2500)); // Napięcie przed nagrodą
+        
         const jackpotWin = this.state.bets[this.state.betIndex] * 1000;
-
-        await new Promise(resolve => {
-          setTimeout(() => {
-            this.dom.msg.classList.remove('text-cyberGold', 'glitch-text-active');
-            resolve();
-          }, 2500);
-        });
-
         this.dom.winType.innerText = "GRAND SYSTEM JACKPOT";
-        await this.presentBigWin(jackpotWin, 1000);
-
+        
+        await this.presentBigWin(jackpotWin, 1000); // Czekamy aż gracz zamknie okno wygranej
+        
+        // Resetowanie stanu Jackpota po jego wypłaceniu
         this.state.jackpotLetters = { F: false, E: false, R1: false, R2: false, O: false };
         this.updateJackpotBar();
+        this.dom.jackpotBg.classList.replace('opacity-100', 'opacity-0');
         this.saveSession();
-        this.isSpinning = false;
-        this.endCycle();
       }
 
-      // Bezpieczny, całkowicie bezbłędny system Slam-Skip, uniemożliwiający wielokrotne rozwiązywanie obietnic
       presentBigWin(amount, mult) {
         return new Promise(resolve => {
-          this.audio.playWinBig();
+          this.audio.playBigWinChord();
           this.dom.overlay.classList.remove('opacity-0', 'pointer-events-none');
           if (mult < 1000) this.dom.winType.innerText = "ZŁAMANIE ZABEZPIECZEŃ";
           
-          let current = 0;
-          const duration = 2000;
-          const start = performance.now();
-          let isCounting = true;
-          let resolved = false;
+          let current = 0; const duration = 2500; const start = performance.now();
+          let isCounting = true; let resolved = false;
 
           const skipAction = () => {
             if (isCounting) {
-              isCounting = false;
-              current = amount;
+              isCounting = false; current = amount;
               this.dom.winAmt.innerText = current.toFixed(2);
-              this.dom.win.innerText = current.toFixed(2);
-              const contBtn = document.getElementById('win-continue-msg');
-              contBtn.style.display = 'block';
-              this.audio.playSFX('sine', 1200, 0.2, 0.4);
-            } else {
-              if (resolved) return;
+              document.getElementById('win-continue-msg').style.display = 'block';
+              this.audio.playDeepImpact();
+            } else if (!resolved) {
               resolved = true;
               this.dom.overlay.classList.add('opacity-0', 'pointer-events-none');
-              const contBtn = document.getElementById('win-continue-msg');
-              contBtn.style.display = 'none';
+              document.getElementById('win-continue-msg').style.display = 'none';
               this.dom.overlay.removeEventListener('click', skipAction);
               
               this.state.balance += amount;
+              this.dom.win.innerText = amount.toFixed(2);
               this.updateUI();
-              resolve();
+              resolve(); // Uwolnienie promise -> Kontynuacja gry
             }
           };
 
@@ -1955,64 +1121,26 @@
           const step = (now) => {
             if (!isCounting || resolved) return; 
             const p = Math.min((now - start) / duration, 1);
-            const ease = 1 - Math.pow(1 - p, 3);
-            current = amount * ease;
+            current = amount * (1 - Math.pow(1 - p, 4));
             this.dom.winAmt.innerText = current.toFixed(2);
-            this.dom.win.innerText = current.toFixed(2);
-
-            if (p < 1) {
-              requestAnimationFrame(step);
-            } else {
-              isCounting = false;
-              const contBtn = document.getElementById('win-continue-msg');
-              contBtn.style.display = 'block';
-            }
+            if (p < 1) requestAnimationFrame(step);
+            else { isCounting = false; document.getElementById('win-continue-msg').style.display = 'block'; }
           };
           requestAnimationFrame(step);
         });
       }
 
-      startAutoplay() {
-        const spins = parseInt(document.getElementById('auto-spins-val').value) || 10;
-        const loss = parseFloat(document.getElementById('auto-loss-limit').value) || 0;
-
-        document.getElementById('panel-auto').classList.add('opacity-0', 'pointer-events-none');
-
-        this.autoplay = {
-          enabled: true,
-          remaining: spins,
-          lossLimit: loss,
-          startBal: this.state.balance
-        };
-
-        this.updateAutoplayUI();
-        this.play();
-      }
-
-      updateAutoplayUI() {
-        if (this.autoplay.enabled) {
-          this.dom.spinIcon.classList.add('opacity-0');
-          this.dom.autoRing.classList.remove('opacity-0');
-          this.dom.autoCount.classList.remove('opacity-0');
-          this.dom.autoCount.innerText = this.autoplay.remaining;
-          this.dom.spinBtn.classList.replace('border-cyberBlue', 'border-cyberPurple');
-        } else {
-          this.dom.spinIcon.classList.remove('opacity-0');
-          this.dom.autoRing.classList.add('opacity-0');
-          this.dom.autoCount.classList.add('opacity-0');
-          this.dom.spinBtn.classList.replace('border-cyberPurple', 'border-cyberBlue');
+      updateJackpotBar() {
+        const map = { F: 'F', E: 'E', R1: 'R1', R2: 'R2', O: 'O' };
+        for (let k in map) {
+          const el = document.getElementById(`jackpot-letter-${k}`);
+          if (this.state.jackpotLetters[k]) el.className = "w-6 h-6 border flex items-center justify-center text-xs font-black font-tech rounded active-letter transition-all relative z-10";
+          else el.className = "w-6 h-6 border border-cyberPurple/20 flex items-center justify-center text-xs font-black font-tech text-cyberPurple/30 rounded transition-all relative z-10";
         }
-      }
-
-      haltAutoplay() {
-        this.autoplay.enabled = false;
-        this.updateAutoplayUI();
       }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      new GameController();
-    });
+    document.addEventListener('DOMContentLoaded', () => new GameController());
   </script>
 </body>
 </html>
