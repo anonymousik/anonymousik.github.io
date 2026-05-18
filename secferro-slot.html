@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#010103">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="Book of SecFerro - Immersive Fullscreen Cyber Slot. Sound by Ferro ART.">
-  <title>SecFerro Division // Fullscreen Intrusion Pro</title>
+  <meta name="description" content="Book of SecFerro - Cyber Intrusion Masterpiece. Dynamic Audio by Ferro ART.">
+  <title>SecFerro Division // Hacker Core Pro</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
@@ -28,8 +28,8 @@
             cyberBlue: '#00f0ff',
             cyberPurple: '#bc13fe',
             cyberGold: '#ffb300',
-            glassBg: 'rgba(2, 2, 6, 0.75)',
-            glassBorder: 'rgba(0, 240, 255, 0.12)',
+            glassBg: 'rgba(2, 2, 8, 0.82)',
+            glassBorder: 'rgba(0, 240, 255, 0.15)',
           }
         }
       }
@@ -51,53 +51,64 @@
 
     #crt-layer {
       position: fixed; inset: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
-                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
       background-size: 100% 4px, 6px 100%;
       pointer-events: none; z-index: 9999;
       mix-blend-mode: overlay;
       transform: translateZ(0);
     }
 
-    /* Bezpieczne strefy na brzegach ekranów bezramkowych */
-    .safe-padding {
-      padding-top: max(0.5rem, env(safe-area-inset-top));
-      padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-      padding-left: max(0.75rem, env(safe-area-inset-left));
-      padding-right: max(0.75rem, env(safe-area-inset-right));
-    }
-
     /* Pływające Panele HUD (Glassmorphism) */
     .hud-panel {
-      background: rgba(4, 4, 10, 0.75);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(0, 240, 255, 0.12);
-      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+      background: rgba(4, 4, 12, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 240, 255, 0.15);
+      box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.85), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
     }
 
     .btn-tactile {
-      transition: all 0.12s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: all 0.1s cubic-bezier(0.1, 0.9, 0.1, 1);
       will-change: transform, filter, box-shadow;
     }
     .btn-tactile:active:not(:disabled) {
-      transform: scale(0.92) translateY(1px);
-      filter: brightness(1.3);
-      box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+      transform: scale(0.9) translateY(2px);
+      filter: brightness(1.4);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.7);
     }
     .btn-tactile:disabled {
-      opacity: 0.2; filter: grayscale(1); pointer-events: none;
+      opacity: 0.15; filter: grayscale(1); pointer-events: none;
     }
 
-    .matrix-shimmer {
-      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.18), transparent);
-      background-size: 200% 100%;
-      animation: shimmer 2s infinite linear;
+    /* Efekt LED Strobe */
+    @keyframes led-flash {
+      0%, 100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2), inset 0 0 5px rgba(0, 240, 255, 0.2); }
+      50% { box-shadow: 0 0 25px rgba(0, 240, 255, 0.8), inset 0 0 15px rgba(0, 240, 255, 0.6); }
+    }
+    .led-border {
+      animation: led-flash 1.5s infinite ease-in-out;
     }
 
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
+    /* Wygląd ekranu bębnów w trybie Overload */
+    .overload-led {
+      animation: overload-flash 0.8s infinite ease-in-out;
+    }
+    @keyframes overload-flash {
+      0%, 100% { box-shadow: 0 0 8px rgba(255, 0, 60, 0.3), inset 0 0 8px rgba(255, 0, 60, 0.3); }
+      50% { box-shadow: 0 0 35px rgba(255, 0, 60, 0.9), inset 0 0 25px rgba(255, 0, 60, 0.7); border-color: #ff003c; }
+    }
+
+    /* Efekty Glitch CSS */
+    @keyframes text-glitch {
+      0% { text-shadow: 2px -1px 0 #ff003c, -2px 1px 0 #bc13fe; }
+      25% { text-shadow: -1px 2px 0 #00f0ff, 2px -2px 0 #ff003c; }
+      50% { text-shadow: 2px 2px 0 #ffb300, -1px -1px 0 #00f0ff; }
+      75% { text-shadow: -2px -2px 0 #bc13fe, 1px 2px 0 #ff003c; }
+      100% { text-shadow: 2px -1px 0 #ff003c, -2px 1px 0 #bc13fe; }
+    }
+    .glitch-text-active {
+      animation: text-glitch 0.15s infinite linear;
     }
   </style>
 </head>
@@ -106,14 +117,16 @@
   <div id="crt-layer"></div>
 
   <!-- Główny Kontener Pełnoekranowy -->
-  <div class="relative w-full h-full flex flex-col justify-between overflow-hidden safe-padding transform-gpu">
+  <div class="relative w-full h-full flex flex-col justify-between overflow-hidden p-3 sm:p-5 transform-gpu z-10">
     
-    <!-- Tła i silniki graficzne (Zajmują 100% przestrzeni urządzenia) -->
-    <canvas id="matrixBackground" class="absolute inset-0 w-full h-full opacity-40 pointer-events-none mix-blend-screen z-0"></canvas>
-    <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-10" aria-label="Główny wielkoformatowy ekran gry"></canvas>
+    <!-- Tła interaktywne na 100% szerokości i wysokości urządzenia -->
+    <canvas id="matrixBackground" class="absolute inset-0 w-full h-full opacity-45 pointer-events-none mix-blend-screen z-0"></canvas>
+    <!-- Glitch Overlay Canvas -->
+    <canvas id="glitchCanvas" class="absolute inset-0 w-full h-full opacity-35 pointer-events-none mix-blend-screen z-20"></canvas>
+    <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-10" aria-label="Główny ekran renderowania gry"></canvas>
 
     <!-- ==========================================
-         WARSTWA 1: PRE-BOOT SCREEN (INITIALIZATION)
+         WARSTWA 1: PRE-BOOT SCREEN (CYBERNETIC INITIALIZATION)
          ========================================== -->
     <div id="splash-loader" class="absolute inset-0 z-50 bg-[#010103] flex flex-col justify-between p-8 transition-opacity duration-700">
       <div class="flex-1 flex flex-col justify-center items-center gap-8">
@@ -122,7 +135,7 @@
           <div class="absolute inset-0 rounded-full border border-cyberBlue/20 animate-[spin_6s_linear_infinite]"></div>
           <div class="absolute inset-2 rounded-full border border-cyberPurple/25 animate-[spin_4s_linear_infinite_reverse]"></div>
           
-          <svg viewBox="0 0 100 100" class="w-16 h-16 text-cyberBlue drop-shadow-[0_0_20px_rgba(0,240,255,0.8)]" fill="none" stroke="currentColor" stroke-width="2.5">
+          <svg viewBox="0 0 100 100" class="w-16 h-16 text-cyberBlue drop-shadow-[0_0_20px_#00f0ff]" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M20,30 Q50,15 80,30 L80,55 Q80,80 50,92 Q20,80 20,55 Z" stroke-linejoin="round"/>
             <path d="M35,45 L45,45 M55,45 L65,45" stroke-linecap="round" stroke="#ff003c" stroke-width="3.5"/>
             <path d="M30,68 Q50,83 70,68" stroke-linecap="round"/>
@@ -130,10 +143,10 @@
         </div>
         
         <div class="text-center">
-          <div class="font-tech text-3xl font-black tracking-[0.5em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase">
+          <div class="font-tech text-2xl font-black tracking-[0.5em] text-transparent bg-clip-text bg-gradient-to-r from-cyberBlue via-white to-cyberBlue uppercase">
             SECFERRO
           </div>
-          <p class="font-mono text-[9px] text-gray-500 tracking-[0.3em] mt-2 uppercase">IMMERSIVE FULLSCREEN SYSTEM</p>
+          <p class="font-mono text-[9px] text-gray-500 tracking-[0.3em] mt-2 uppercase">CYBER INTRUSION CORE ENGINE</p>
         </div>
         
         <div class="w-full max-w-[220px] bg-black/60 border border-cyberBlue/20 h-2 rounded-full overflow-hidden p-[2px]">
@@ -141,18 +154,18 @@
         </div>
         
         <div id="loader-status" class="font-mono text-[8px] text-cyberBlue/60 tracking-widest text-center uppercase animate-pulse">
-          DOSTOSOWYWANIE ROZDZIELCZOŚCI WYŚWIETLACZA...
+          INICJOWANIE REJESTRÓW LED I FILTRÓW GLITCH...
         </div>
       </div>
     </div>
 
     <!-- ==========================================
-         WARSTWA 2: INTERAKTYWNE MENU
+         WARSTWA 2: INTERAKTYWNE MENU GŁÓWNE
          ========================================== -->
-    <div id="main-menu" class="absolute inset-0 z-40 bg-black/95 flex flex-col justify-between p-6 transition-opacity duration-500 hidden opacity-0 backdrop-blur-3xl">
+    <div id="main-menu" class="absolute inset-0 z-40 bg-black/98 flex flex-col justify-between p-6 transition-opacity duration-500 hidden opacity-0 backdrop-blur-3xl">
       <div class="w-full flex justify-between items-center text-[9px] font-mono text-cyberBlue/50 shrink-0 border-b border-cyberBlue/10 pb-2">
-        <span>SECURITY: FULLSCREEN_INTEGRITY</span>
-        <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 bg-cyberGreen rounded-full animate-ping"></div> GRID READY</span>
+        <span>SECURITY: ROOT_BYPASS_ENABLED</span>
+        <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 bg-cyberGreen rounded-full animate-ping"></div> SYSTEM SYNCHRONIZED</span>
       </div>
 
       <div class="flex-1 flex flex-col justify-center items-center gap-8 select-none text-center">
@@ -166,7 +179,7 @@
         </div>
 
         <div>
-          <span class="font-mono text-[10px] text-gray-500 tracking-widest block mb-1">AUDIOWIZUALNE TŁO REAKTYWNE</span>
+          <span class="font-mono text-[10px] text-gray-500 tracking-widest block mb-1">PROPRIETARY AUDIO CORE</span>
           <span class="font-tech text-lg text-cyberPurple tracking-wider font-bold">FERRO ART</span>
           <span class="font-mono text-xs text-cyberBlue block mt-1 uppercase tracking-[0.2em]">"WILCZY WYROK"</span>
         </div>
@@ -184,12 +197,12 @@
          ========================================== -->
     <header class="w-full h-11 flex items-center justify-between px-4 hud-panel rounded-lg z-20 font-tech text-[9px] tracking-wider shrink-0 select-none">
       <div class="flex items-center gap-3">
-        <span class="text-cyberBlue font-bold drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">FERRO_ULTIMATE</span>
-        <span class="text-gray-500 font-mono hidden sm:inline">// FPS: <span id="fps-display" class="text-cyberGreen">60</span></span>
+        <span class="text-cyberBlue font-bold drop-shadow-[0_0_5px_#00f0ff]">FERRO_ULTIMATE_v11.0</span>
+        <span class="text-gray-500 font-mono hidden sm:inline">// FPS: <span id="fps-display" class="text-cyberGreen font-bold">60</span></span>
       </div>
       <!-- Panel informacyjny o darmowych spinach wbudowany bezpośrednio w nagłówek HUD -->
       <div id="fs-banner" class="opacity-0 scale-95 transition-all duration-300 flex items-center gap-2 border border-cyberAlert/30 px-3 py-1 rounded bg-cyberAlert/10">
-        <span class="font-bold text-cyberAlert tracking-widest">SYSTEM OVERLOAD</span>
+        <span class="font-bold text-cyberAlert tracking-widest animate-pulse">SYSTEM OVERLOAD</span>
         <span class="font-mono text-[10px] font-bold text-cyberWarning">RUNS: <span id="fs-count">0</span></span>
       </div>
       <div class="flex items-center gap-3">
@@ -201,7 +214,7 @@
          CENTRALNY SYSTEM STATUSÓW / KOMUNIKATÓW
          ========================================== -->
     <div class="w-full text-center z-20 pointer-events-none select-none mt-4">
-      <h1 class="font-tech font-black tracking-[0.45em] text-cyberBlue text-lg md:text-2xl drop-shadow-[0_0_15px_rgba(0,240,255,0.45)]" id="game-title">
+      <h1 class="font-tech font-black tracking-[0.45em] text-cyberBlue text-lg md:text-2xl drop-shadow-[0_0_15px_rgba(0,240,255,0.45)] transition-all" id="game-title">
         BOOK OF SECFERRO
       </h1>
       <div id="status-msg" class="text-[9px] text-cyberPurple font-mono tracking-widest mt-0.5 h-3 font-bold uppercase transition-all">
@@ -209,16 +222,19 @@
       </div>
     </div>
 
-    <!-- Puste pole na środku pozwala wektorowej matrycy wypełnić cały wolny ekran -->
-    <div class="flex-1 w-full z-10 pointer-events-none"></div>
+    <!-- Puste pole pozwala wektorowej matrycy wypełnić pełną wysokość i szerokość ekranu -->
+    <div class="flex-1 w-full z-10 pointer-events-none relative">
+      <!-- Wirtualna ramka LED wokół głównego pola gry -->
+      <div id="led-frame" class="absolute inset-4 rounded-xl border-2 border-cyberBlue/20 pointer-events-none z-20 led-border"></div>
+    </div>
 
     <!-- ==========================================
-         ZINTEGROWANY, DUŻY WIN OVERLAY (DUŻE WYGRANE)
+         ZINTEGROWANY, DUŻY WIN OVERLAY (CELEBRACJA WYGRANYCH)
          ========================================== -->
-    <div id="win-overlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+    <div id="win-overlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
       <div class="font-tech text-3xl font-black text-cyberGold text-center px-4">
         <div id="win-type" class="text-xs text-white mb-2 tracking-[0.3em] uppercase">SYSTEM DECRYPTED</div>
-        <span id="win-amount-counter" class="text-5xl">0.00</span> <span class="text-3xl">Ƀ</span>
+        <span id="win-amount-counter" class="text-5xl drop-shadow-[0_0_20px_#ffb300]">0.00</span> <span class="text-3xl">Ƀ</span>
       </div>
     </div>
 
@@ -228,7 +244,7 @@
     <section class="w-full hud-panel z-20 flex flex-col shrink-0 rounded-xl mb-safe mt-auto">
       
       <!-- Panel finansowy -->
-      <div class="grid grid-cols-3 gap-1 p-2 bg-black/40 text-center font-mono select-none rounded-t-xl border-b border-cyberBlue/5">
+      <div class="grid grid-cols-3 gap-1 p-2 bg-black/50 text-center font-mono select-none rounded-t-xl border-b border-cyberBlue/5">
         <div class="flex flex-col justify-center py-1">
           <span class="text-[8px] text-gray-500 tracking-wider mb-0.5">SALDO</span>
           <span id="display-balance" class="text-xs font-bold text-white transition-all">1000.00 Ƀ</span>
@@ -256,7 +272,7 @@
         </div>
 
         <!-- Wielki Przycisk SPIN -->
-        <button id="btn-spin" class="relative group w-16 h-16 rounded-full flex items-center justify-center btn-tactile border-[3px] border-cyberBlue bg-black/60 shadow-[0_0_30px_rgba(0,240,255,0.25)] hover:shadow-[0_0_50px_rgba(0,240,255,0.45)]">
+        <button id="btn-spin" class="relative group w-16 h-16 rounded-full flex items-center justify-center btn-tactile border-[3px] border-cyberBlue bg-black/60 shadow-[0_0_35px_rgba(0,240,255,0.3)] hover:shadow-[0_0_55px_rgba(0,240,255,0.55)]">
           <div class="absolute inset-1 rounded-full border border-dashed border-cyberBlue/40 group-hover:animate-[spin_6s_linear_infinite]"></div>
           <svg class="w-7 h-7 text-cyberBlue ml-1 drop-shadow-[0_0_6px_#00f0ff]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z"/>
@@ -266,10 +282,8 @@
       </div>
     </section>
 
-    <!-- ==========================================
-         MODALE KONFIGURACYJNE
-         ========================================== -->
-    <div id="panel-settings" class="absolute inset-0 bg-black/95 backdrop-blur-3xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
+    <!-- Modale diagnostyczne -->
+    <div id="panel-settings" class="absolute inset-0 bg-black/98 backdrop-blur-3xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-5 border-b border-cyberBlue/20">
         <h2 class="font-tech font-bold text-cyberBlue tracking-widest">> DIAGNOSTYKA_SYSTEMU</h2>
         <button class="close-overlay text-gray-400 hover:text-white p-2 text-xl btn-tactile">✕</button>
@@ -299,7 +313,7 @@
       </div>
     </div>
 
-    <div id="panel-auto" class="absolute inset-0 bg-black/95 backdrop-blur-3xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
+    <div id="panel-auto" class="absolute inset-0 bg-black/98 backdrop-blur-3xl z-50 flex flex-col opacity-0 pointer-events-none transition-opacity duration-300 font-mono text-xs">
       <div class="flex justify-between items-center p-5 border-b border-cyberPurple/20">
         <h2 class="font-tech font-bold text-cyberPurple tracking-widest">> AUTOPLAY_INTEGRITY</h2>
         <button class="close-overlay text-gray-400 hover:text-white p-2 text-xl btn-tactile">✕</button>
@@ -393,8 +407,9 @@
           this.masterGain.connect(this.ctx.destination);
           
           this.masterGain.gain.value = 0.85;
-          this.musicGain.gain.value = 0.55;
-          this.sfxGain.gain.value = 0.8;
+          // Zmniejszenie głośności podkładu o 65% z zachowaniem dynamiki
+          this.musicGain.gain.value = 0.18; 
+          this.sfxGain.gain.value = 0.85;
 
           this.loadMusic();
         }
@@ -443,8 +458,29 @@
         
         clearTimeout(this.duckingTimeout);
         this.duckingTimeout = setTimeout(() => {
-          this.musicGain.gain.setTargetAtTime(0.55, this.ctx.currentTime, 0.4);
+          this.musicGain.gain.setTargetAtTime(0.18, this.ctx.currentTime, 0.4);
         }, timeSec * 1000);
+      }
+
+      // Proporcjonalne przyspieszenie oraz podgłośnienie ścieżki dźwiękowej w zależności od wygranej
+      rampMusicForWin(multiplier) {
+        if (!this.bgSource || !this.ctx) return;
+        const maxMult = Math.min(multiplier, 50);
+        // Prędkość do 1.45x
+        const targetRate = 1.0 + (maxMult * 0.009);
+        // Głośność do 0.45 (wzrost z 0.18)
+        const targetVol = 0.18 + (maxMult * 0.005);
+
+        this.bgSource.playbackRate.setValueAtTime(targetRate, this.ctx.currentTime);
+        this.musicGain.gain.setValueAtTime(targetVol, this.ctx.currentTime);
+
+        // Powrót do normy po czasie celebracji
+        setTimeout(() => {
+          if (this.bgSource && this.ctx) {
+            this.bgSource.playbackRate.setTargetAtTime(1.0, this.ctx.currentTime, 0.5);
+            this.musicGain.gain.setTargetAtTime(0.18, this.ctx.currentTime, 0.5);
+          }
+        }, 2200);
       }
 
       getBassIntensity() {
@@ -478,11 +514,11 @@
         osc.stop(this.ctx.currentTime + dur);
       }
 
-      playSpinStart() { this.duckMusic(0.15, 0.9); this.playSFX('sawtooth', 110, 0.35, 0.45); }
+      playSpinStart() { this.duckMusic(0.06, 0.9); this.playSFX('sawtooth', 110, 0.35, 0.45); }
       playReelStop(idx) { this.playSFX('square', 140 + (idx * 35), 0.08, 0.25); }
       playWinSmall() { this.duckMusic(0.2, 1.4); this.playSFX('sine', 550, 0.4, 0.5); setTimeout(()=>this.playSFX('sine', 750, 0.4, 0.5), 120); }
       playWinBig() {
-        this.duckMusic(0.08, 3);
+        this.duckMusic(0.05, 3);
         [350, 450, 550, 700, 900, 1100].forEach((f, i) => {
           setTimeout(() => this.playSFX('sine', f, 0.25, 0.4), i * 90);
         });
@@ -549,6 +585,8 @@
         
         this.matrixCanvas = document.getElementById('matrixBackground');
         this.matrixCtx = this.matrixCanvas.getContext('2d');
+        this.glitchCanvas = document.getElementById('glitchCanvas');
+        this.glitchCtx = this.glitchCanvas.getContext('2d');
 
         this.cols = 5; this.rows = 3;
         this.symbolsCache = {}; // Cache buforów offscreen canvas
@@ -559,7 +597,6 @@
           matrix: [1,2,3]
         }));
 
-        // Implementacja Particle Pool (Optymalizacja Garbage Collection)
         this.particlePool = Array.from({ length: 300 }, () => ({
           x: 0, y: 0, vx: 0, vy: 0, size: 0, color: '', alpha: 0, decay: 0, active: false
         }));
@@ -568,8 +605,8 @@
         this.isBonusTheme = false;
         this.lastT = performance.now();
         this.screenShake = 0;
+        this.glitchActive = false;
 
-        // Inicjalizacja strumieni kodu Matrix dla tła
         this.matrixColumns = [];
         this.initMatrixRain();
 
@@ -591,19 +628,19 @@
         this.matrixCanvas.height = rect.height * dpr;
         this.matrixCtx.scale(dpr, dpr);
 
+        this.glitchCanvas.width = rect.width * dpr;
+        this.glitchCanvas.height = rect.height * dpr;
+        this.glitchCtx.scale(dpr, dpr);
+
         this.w = rect.width; this.h = rect.height;
         this.cW = this.w / this.cols; this.rH = this.h / this.rows;
 
-        // Przeregulowanie wielkości deszczu kodu Matrix na pełnym ekranie
         this.initMatrixRain();
-
-        // Po zmianie rozmiaru należy wygenerować cache symboli na nowo
         this.preRenderSymbols();
       }
 
-      // Kompilacja wektorów do dedykowanych buforów offscreen (Wydajność klasy AAA)
       preRenderSymbols() {
-        const size = (this.rH || 100) * 0.5;
+        const size = (this.rH || 100) * 0.45;
         const pad = 24;
         const dSize = Math.ceil(size + pad * 2);
 
@@ -637,7 +674,6 @@
         }
       }
 
-      // Wektorowe definicje ścieżek
       vKey(ctx, s) {
         ctx.beginPath(); ctx.arc(-s*.15, 0, s*.16, 0, Math.PI*2);
         ctx.moveTo(0,0); ctx.lineTo(s*.32, 0); ctx.lineTo(s*.32, s*.15);
@@ -668,7 +704,6 @@
         ctx.moveTo(-s*.15, s*.1); ctx.quadraticCurveTo(0, s*.18, s*.15, s*.1); ctx.stroke();
       }
 
-      // Inicjalizacja binarnego kodu Matrix w tle
       initMatrixRain() {
         this.matrixColumns = [];
         const columnsCount = Math.ceil(this.w / 14) || 35;
@@ -690,7 +725,7 @@
         const color = this.isBonusTheme ? 'rgba(255, 0, 60, ' : 'rgba(0, 240, 255, ';
 
         this.matrixColumns.forEach(col => {
-          col.y += col.speed * (1 + treble * 4); // Prędkość powiązana z sopranami
+          col.y += col.speed * (1 + treble * 4);
           if (col.y > this.h) {
             col.y = -150;
             col.speed = Math.random() * 2 + 1;
@@ -703,7 +738,6 @@
           });
         });
 
-        // Reaktywny blask sub-basu
         if (bass > 0.1) {
           const radialRadius = bass * this.h * 0.6;
           const gradient = this.matrixCtx.createRadialGradient(this.w/2, this.h/2, 0, this.w/2, this.h/2, radialRadius);
@@ -711,6 +745,33 @@
           gradient.addColorStop(1, 'transparent');
           this.matrixCtx.fillStyle = gradient;
           this.matrixCtx.fillRect(0,0,this.w, this.h);
+        }
+      }
+
+      // Agresywny visualizer glitch (losowe przesunięcia poziome i rozmycia kolorów)
+      drawGlitchOverlay(bass) {
+        this.glitchCtx.clearRect(0, 0, this.w, this.h);
+        if (!this.glitchActive && (bass < 0.72 || Math.random() > 0.08)) return;
+
+        const sliceCount = Utils.getRandomInt(3, 12);
+        for (let i = 0; i < sliceCount; i++) {
+          const sy = Utils.getRandomInt(0, this.h);
+          const sh = Utils.getRandomInt(10, 60);
+          const disp = (Math.random() - 0.5) * (this.isBonusTheme ? 30 : 18);
+
+          // RGB Split (Chromatyczna Aberracja) w glitchach
+          this.glitchCtx.save();
+          this.glitchCtx.globalAlpha = 0.6;
+          this.glitchCtx.drawImage(this.canvas, 0, sy, this.w, sh, disp, sy, this.w, sh);
+          this.glitchCtx.fillStyle = 'rgba(255, 0, 60, 0.15)';
+          this.glitchCtx.fillRect(0, sy, this.w, sh);
+          this.glitchCtx.restore();
+        }
+
+        // Linie cyfrowego zakłócenia szumów
+        if (Math.random() > 0.4) {
+          this.glitchCtx.fillStyle = 'rgba(0, 240, 255, 0.08)';
+          this.glitchCtx.fillRect(0, Utils.getRandomInt(0, this.h), this.w, Utils.getRandomInt(1, 4));
         }
       }
 
@@ -722,14 +783,14 @@
             p.active = true;
             p.x = x;
             p.y = y;
-            p.vx = (Math.random() - 0.5) * 6;
-            p.vy = (Math.random() - 0.5) * 6;
-            p.size = Math.random() * 3.5 + 1.5;
+            p.vx = (Math.random() - 0.5) * 8;
+            p.vy = (Math.random() - 0.5) * 8;
+            p.size = Math.random() * 4 + 1.5;
             p.color = color;
             p.alpha = 1;
-            p.decay = Math.random() * 0.02 + 0.015;
+            p.decay = Math.random() * 0.02 + 0.012;
             count++;
-            if (count >= 15) break;
+            if (count >= 20) break;
           }
         }
       }
@@ -745,10 +806,10 @@
 
         this.ctx.save();
         
-        // System dynamicznego trzęsienia ekranu (Screen-shake sprzężony z sub-basem)
+        // Dynamiczne, trzęsące się klatki na bazie bitu
         let totalShake = this.screenShake;
-        if (bass > 0.4) {
-          totalShake += bass * 4;
+        if (bass > 0.42) {
+          totalShake += bass * 6;
         }
         if (totalShake > 0) {
           this.screenShake -= dt * 25;
@@ -796,7 +857,7 @@
               symId = r.matrix[viewRow] || 1;
               this.ctx.globalAlpha = 1;
             } else {
-              this.ctx.globalAlpha = 0.45; // Symulacja rozmycia w ruchu (motion blur)
+              this.ctx.globalAlpha = 0.45; // Symulacja rozmycia w ruchu
             }
 
             const y = (row * this.rH) + (r.pos % this.rH) + (this.rH / 2);
@@ -807,7 +868,6 @@
                 this.ctx.save();
                 this.ctx.translate(x, y);
                 
-                // Pulsowanie skrajnych symboli od uderzenia stopy basowej
                 if (r.state === 'IDLE' && bass > 0.4) {
                   const scale = 1 + (bass * 0.05);
                   this.ctx.scale(scale, scale);
@@ -846,7 +906,7 @@
         if (this.winLines.length > 0) {
           const mainCol = this.isBonusTheme ? '#ff003c' : '#00f0ff';
           this.ctx.strokeStyle = mainCol;
-          this.ctx.lineWidth = 3.5;
+          this.ctx.lineWidth = 4;
           this.ctx.shadowColor = mainCol;
           this.ctx.shadowBlur = 15;
 
@@ -857,7 +917,7 @@
               const y = node.row * this.rH + (this.rH / 2);
               if (i === 0) this.ctx.moveTo(x, y); else this.ctx.lineTo(x, y);
 
-              if (Math.random() < 0.2) {
+              if (Math.random() < 0.25) {
                 this.spawnExplosion(x, y, mainCol);
               }
             });
@@ -867,6 +927,9 @@
         }
 
         this.ctx.restore();
+
+        // Rysowanie efektów glitch na oddzielnej warstwie
+        this.drawGlitchOverlay(bass);
 
         requestAnimationFrame(this.loop.bind(this));
       }
@@ -898,7 +961,7 @@
 
       showWin(lines) {
         this.winLines = lines;
-        this.screenShake = 12;
+        this.screenShake = 15;
       }
     }
 
@@ -933,7 +996,8 @@
           winType: document.getElementById('win-type'),
           turboToggle: document.getElementById('toggle-turbo'),
           bgmToggle: document.getElementById('toggle-bgm'),
-          fpsDisplay: document.getElementById('fps-display')
+          fpsDisplay: document.getElementById('fps-display'),
+          ledFrame: document.getElementById('led-frame')
         };
 
         this.autoPlay = {
@@ -968,8 +1032,11 @@
 
       setupEvents() {
         this.dom.btnSpin.addEventListener('click', () => {
-          if (this.autoPlay.enabled) this.haltAutoplay("MANUAL_STOP");
-          else this.play();
+          if (this.autoPlay.enabled) {
+            this.haltAutoplay("MANUAL_STOP");
+          } else {
+            this.play();
+          }
         });
 
         this.dom.betSel.addEventListener('click', () => {
@@ -1029,8 +1096,10 @@
         if (!isFS && this.state.balance < bet) {
           this.audio.playSFX('sawtooth', 90, 0.5, 0.7);
           this.dom.statusMsg.innerText = "BRAK SRODKOW";
-          this.dom.statusMsg.classList.add('text-cyberAlert');
-          setTimeout(() => this.dom.statusMsg.classList.remove('text-cyberAlert'), 1000);
+          this.dom.statusMsg.classList.add('text-cyberAlert', 'glitch-text-active');
+          setTimeout(() => {
+            this.dom.statusMsg.classList.remove('text-cyberAlert', 'glitch-text-active');
+          }, 1000);
           if (this.autoPlay.enabled) this.haltAutoplay("INSUFFICIENT_FUNDS");
           return;
         }
@@ -1039,6 +1108,9 @@
         this.dom.btnSpin.disabled = true;
         this.dom.winDisp.innerText = "0.00 Ƀ";
         this.renderer.winLines = [];
+
+        // LED Flash podczas startu
+        this.dom.ledFrame.classList.add('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
 
         if (isFS) {
           this.state.fsCount--;
@@ -1068,9 +1140,17 @@
       }
 
       async handleResult(res, bet) {
+        this.dom.ledFrame.classList.remove('border-cyberBlue', 'shadow-[0_0_20px_#00f0ff]');
+
         if (res.win > 0) {
           this.renderer.showWin(res.lines);
           const mult = res.win / bet;
+
+          // Aktywacja LED Strobe na ramie dla wygranych
+          this.dom.ledFrame.classList.add('border-cyberGreen', 'shadow-[0_0_30px_#00ff41]');
+          setTimeout(() => {
+            this.dom.ledFrame.classList.remove('border-cyberGreen', 'shadow-[0_0_30px_#00ff41]');
+          }, 1500);
 
           if (mult >= 10) {
             await this.presentBigWin(res.win, mult);
@@ -1092,8 +1172,11 @@
         this.state.isSpinning = false;
         this.dom.btnSpin.disabled = false;
 
+        // Bezpieczna pętla Autoplay oraz Free Spins (Wykluczenie deadlocku)
         if (this.state.fsCount > 0) {
-          setTimeout(() => this.play(), 1000);
+          setTimeout(() => {
+            this.play();
+          }, 1100);
         } else if (this.state.fsCount === 0 && this.dom.fsBanner.classList.contains('opacity-100')) {
           this.endFreeSpins();
         } else if (this.autoPlay.enabled) {
@@ -1102,9 +1185,11 @@
 
           const loss = this.autoPlay.startBal - this.state.balance;
           if (this.autoPlay.remaining <= 0 || loss >= this.autoPlay.lossLimit) {
-            this.haltAutoplay("CYKLE_UKONCZONE_LUB_LIMIT");
+            this.haltAutoplay("CYKLE_UKONCZONE");
           } else {
-            setTimeout(() => this.play(), 1000);
+            setTimeout(() => {
+              if (this.autoPlay.enabled) this.play();
+            }, 1100);
           }
         }
       }
@@ -1112,10 +1197,15 @@
       presentBigWin(winVal, multiplier) {
         return new Promise(resolve => {
           this.audio.playWinBig();
+          
+          // Podbicie muzyki (playbackRate i głośność) proporcjonalnie do wygranej
+          this.audio.rampMusicForWin(multiplier);
+          
           this.dom.winOverlay.classList.remove('opacity-0', 'pointer-events-none');
+          this.renderer.glitchActive = true;
           
           this.dom.winType.innerText = multiplier >= 30 ? "MEGA SECURE BREACH" : "BREACH SUCCESSFUL";
-          this.dom.winType.className = multiplier >= 30 ? "text-xl text-cyberGold mb-2 tracking-[0.25em] font-black" : "text-sm text-white mb-2 tracking-widest";
+          this.dom.winType.className = multiplier >= 30 ? "text-xl text-cyberGold mb-2 tracking-[0.25em] font-black glitch-text-active" : "text-sm text-white mb-2 tracking-widest";
 
           let current = 0;
           const duration = multiplier >= 30 ? 2500 : 1300;
@@ -1136,6 +1226,8 @@
               this.updateUI();
               setTimeout(() => {
                 this.dom.winOverlay.classList.add('opacity-0', 'pointer-events-none');
+                this.renderer.glitchActive = false;
+                this.dom.winType.classList.remove('glitch-text-active');
                 resolve();
               }, 1800);
             }
@@ -1147,14 +1239,22 @@
       triggerFreeSpins() {
         this.state.fsCount = 10;
         this.renderer.isBonusTheme = true;
+        this.renderer.glitchActive = true;
         this.audio.playSFX('sawtooth', 180, 1.4, 0.7);
+
+        // Zmiana ramy na alarmową czerwień
+        this.dom.ledFrame.classList.remove('led-border');
+        this.dom.ledFrame.classList.add('overload-led');
 
         this.dom.fsBanner.classList.remove('opacity-0', 'scale-95');
         this.dom.fsBanner.classList.add('opacity-100', 'scale-100');
         this.dom.fsCount.innerText = this.state.fsCount;
         this.dom.statusMsg.innerText = "OVERCLOCKING INTRUSION DETECTED";
+        this.dom.statusMsg.classList.add('glitch-text-active', 'text-cyberAlert');
 
         setTimeout(() => {
+          this.renderer.glitchActive = false;
+          this.dom.statusMsg.classList.remove('glitch-text-active');
           this.state.isSpinning = false;
           this.play();
         }, 1800);
@@ -1162,8 +1262,12 @@
 
       endFreeSpins() {
         this.renderer.isBonusTheme = false;
+        this.dom.ledFrame.classList.remove('overload-led');
+        this.dom.ledFrame.classList.add('led-border');
+        
         this.dom.fsBanner.classList.remove('opacity-100', 'scale-100');
         this.dom.fsBanner.classList.add('opacity-0', 'scale-95');
+        this.dom.statusMsg.classList.remove('text-cyberAlert');
         this.dom.statusMsg.innerText = "SYSTEM REBOOT COMPLETE";
       }
 
