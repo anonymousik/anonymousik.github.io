@@ -12,7 +12,7 @@ echo "    ROZPOCZYNAM AUTOMATYCZNE WDROŻENIE WARZONE HQ         "
 echo "=========================================================="
 
 # 1. Pobieranie danych uwierzytelniających
-read -p "Podaj swoją nazwę użytkownika na GitHub: " GH_USER
+read -p "Podaj swoją nazwę użytkownika na GitHub: " Anonymousik
 if [ -z "$GH_USER" ]; then
     echo "Błąd: Nazwa użytkownika nie może być pusta!"
     exit 1
@@ -982,7 +982,7 @@ echo "=========================================================="
 echo "             PROCES ZAKOŃCZONY SUKCESEM!                 "
 echo "=========================================================="
 echo "Twoja aplikacja w ciągu kilku minut będzie dostępna pod:"
-echo "👉 https://${GH_USER}.github.io/scripts/warz/"
+echo "👉 https://${GH_USER}.github.io/scripts/warzone-helper"
 echo ""
 echo "Aby podpiąć to pod Twoją domenę anonymousik.is-a.dev:"
 echo "W ustawieniach repozytorium '${REPO_NAME}' -> Pages -> Custom Domain"
