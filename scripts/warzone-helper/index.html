@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warzone Helper(v5.0beta) | Anonymousik.is-a.dev</title>
-    <meta name="description" content="Adaptacyjny konfigurator ustawień dla Warzone zoptymalizowany pod PS4 Pro i nowoczesne standardy celowania.">
-    <meta name="author" content="Anonymousik (FerroART)">    
-<script src="https://cdn.tailwindcss.com"></script>
+    <title>Warzone Helper(v5.1.0)  | Anonymousik.is-a.dev</title>
+    <meta name="description" content="Adaptacyjny konfigurator ustawień dla Warzone zoptymalizowany pod PS4 Pro i nowoczesne standardy celowania. Specjalna edycja v5.1.0.">
+    <meta name="author" content="Anonymousik (FerroART)">
+    
+    <!-- Tailwind CSS (CDN dla Single-File Architecture) -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -102,14 +104,14 @@
         <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
                 <div class="p-2 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-lg text-zinc-950 font-black flex items-center justify-center shadow-lg">
-                    <i data-lucide="target" class="w-7 h-7"></i>
+                    <i data-lucide="target" class="w-7 h-7">UPDATED TO V5.1.0!(import/export profile fixed!)</i>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <h1 class="text-xl md:text-2xl font-black text-white tracking-widest uppercase">WARZONE <span class="text-amber-500">HELPER</span></h1>
-                        <span class="bg-zinc-800 text-[9px] px-1.5 py-0.5 rounded text-amber-400 border border-zinc-700 font-mono font-bold uppercase">v5.0beta ACTIVE!(beczy!)</span>
+                        <h1 class="text-xl md:text-2xl font-black text-white tracking-widest uppercase">WARZONE <span class="text-amber-500">HQ</span></h1>
+                        <span class="bg-zinc-800 text-[9px] px-1.5 py-0.5 rounded text-amber-400 border border-zinc-700 font-mono font-bold uppercase">v5.1.0 ACTIVE</span>
                     </div>
-                    <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">Taktyczny pomocnik konfiguracji ustawień gry Warzone!</p>
+                    <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">Tactical Gameplay Configuration & Optimization Hub</p>
                 </div>
             </div>
             <div class="flex flex-wrap items-center justify-center gap-3">
@@ -286,9 +288,13 @@
             <div>
                 <h3 class="text-white font-bold mb-2 uppercase tracking-widest text-sm flex items-center justify-center md:justify-start gap-2">
                     <div class="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center font-black text-zinc-950 text-[10px]">A</div>
-                    Taktyczny pomocnik konfiguracji "COD.BO7:Warzone" od graczy, dla graczy! (ps. pozdro dla ŻBIKA[ProEloPlayer]
+                    Anonymousik
                 </h3>
                 <p class="text-zinc-600 text-xs max-w-sm font-medium">Optymalizacja wydajności gier, architektura Low-Level i nowoczesne interfejsy dla graczy.</p>
+                <!-- DEDYKOWANE POZDROWIENIA DLA ŻBIKA -->
+                <p class="text-amber-500 text-[10px] font-bold mt-3 uppercase tracking-widest flex items-center justify-center md:justify-start gap-1.5">
+                    <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> Pozdrowienia dla Żbika - Pro Playera Warzone!
+                </p>
             </div>
             <div class="flex gap-6">
                 <a href="https://github.com/Anonymousik" target="_blank" rel="noopener noreferrer" class="text-zinc-500 hover:text-amber-500 transition-colors"><i data-lucide="github" class="w-5 h-5"></i></a>
@@ -321,7 +327,6 @@
                 overrides: { vib: false, trig: false, sens: 2.2, dz_l_min: 3, dz_l_max: 30, dz_trig: 0, ads_low: 0.85, ads_high: 1.00, curve: 'Dynamiczny', assist: true, sprint: 'Auto. Sprint Taktyczny', slide: 'Hybrydowe', fov: 120, ads_fov: 'Zależne (Affected)' } }
         };
 
-        // Skrócone metadane dla czytelności z zachowaniem logiki (Pełne dane przeniesione z React)
         const METADATA = {
             controller: { title: 'Kontroler & Ruch', icon: 'gamepad-2', warning: "Aby zredukować Input Lag na konsoli do minimum, zawsze łącz kontroler kablem USB.", items: [
                 { id: 'layout', name: 'Układ przycisków', type: 'select', options: ['Domyślny', 'Taktyczny', 'Weteran taktyczny'], paths: { PS4: 'Kontroler -> Układ przycisków', PC: 'Controller -> Button Layout' }, beg: 'Standardowy układ.', adv: 'Układ Taktyczny przenosi wślizg i kucanie pod prawy analog (R3).' },
@@ -329,7 +334,7 @@
                 { id: 'trig', name: 'Efekt triggerów (L2/R2)', type: 'toggle', paths: { PS5: 'Akcesoria -> Kontrolery -> Efekt Triggerów', PC: 'Controller -> Trigger Effect' }, beg: 'Usuwa fizyczny opór spustów.', adv: 'Skraca czas reakcji do zera.' },
                 { id: 'sens', name: 'Czułość (Pion/Poziom)', type: 'slider', min: 0.5, max: 4.0, step: 0.1, paths: { PS4: 'Kontroler -> Czułość drążków' }, beg: '1.6 to stabilne i precyzyjne tempo obrotu.', adv: 'Kompromis między flick a trackingiem.' },
                 { id: 'dz_l_min', name: 'Min. strefa martwa lewej gałki', type: 'slider', min: 0, max: 20, step: 1, paths: { PS4: 'Kontroler -> Strefy Martwe -> Min. Lewa' }, beg: 'Ustaw jak najniżej bez driftu.', adv: 'Przyspiesza inicjację strafe\'owania pod Rotational AA.' },
-                { id: 'dz_l_max', name: 'Max. strefa martwa lewej gałki', type: 'slider', min: 10, max: 100, step: 5, paths: { PS4: 'Kontroler -> Strefy Martwe -> Max Lewa' }, beg: 'Głębokość wychylenia do pełnego sprintu.', adv: 'Wartość 50 przyspiesza inicjację ucieczki.' },
+                { id: 'dz_l_max', name: 'Max. strefa martwa lewej gałki', type: 'slider', min: 10, max: 100, step: 5, paths: { PS4: 'Kontroler -> Strefy Martwe -> Max Lewa' }, beg: 'Głębokość wychylenia do pełnego sprintu.', adv: 'Wartość 50-60 przyspiesza inicjację ucieczki.' },
                 { id: 'dz_r_max', name: 'Max. strefa martwa prawej gałki', type: 'slider', min: 50, max: 100, step: 1, paths: { PS4: 'Kontroler -> Strefy Martwe -> Max Prawa' }, beg: 'Osiągnięcie prędkości obrotu przy krawędzi.', adv: 'Gwarantuje brak blokady maksymalnego wektora prędkości kamery.' },
                 { id: 'dz_trig', name: 'Strefa martwa L2 / R2', type: 'slider', min: 0, max: 10, step: 1, paths: { PS4: 'Kontroler -> Strefy Martwe -> Spusty' }, beg: 'Próg wciśnięcia do strzału.', adv: 'Wartość 0 aktywuje akcję przy najmniejszym kontakcie.' }
             ]},
@@ -337,7 +342,7 @@
                 { id: 'ads_low', name: 'Mnożnik ADS (Niskie powiększenie)', type: 'slider', min: 0.50, max: 1.50, step: 0.05, paths: { PS4: 'Celowanie -> Mnożnik ADS (Niski)' }, beg: 'Czułość przy celowaniu z kolimatorów.', adv: '0.80 pozwala na łatwiejsze korygowanie na dystansie.' },
                 { id: 'ads_high', name: 'Mnożnik ADS (Wysoki Zoom)', type: 'slider', min: 0.50, max: 1.50, step: 0.05, paths: { PS4: 'Celowanie -> Mnożnik ADS (Wysoki)' }, beg: 'Szybkość ruchu celownika snajperskiego.', adv: '1.00 zachowuje spójność przy quick scoping.' },
                 { id: 'trans', name: 'Czas przejścia czułości', type: 'select', options: ['Natychmiastowy', 'Po przybliżeniu', 'Stopniowy'], paths: { PS4: 'Celowanie -> Czas przejścia' }, beg: 'Moment zmniejszenia czułości.', adv: 'Natychmiastowy eliminuje nieliniowe zmiany.' },
-                { id: 'curve', name: 'Krzywa reakcji', type: 'select', options: ['Standardowa', 'Liniowa', 'Dynamiczna'], paths: { PS4: 'Celowanie -> Typ krzywej' }, beg: 'Jak gra przelicza gałkę.', adv: 'Dynamiczna krzywa to ekstremalna precyzja i błyskawiczne przyspieszenie na brzegach.' },
+                { id: 'curve', name: 'Krzywa reakcji', type: 'select', options: ['Standardowa', 'Liniowa', 'Dynamiczna'], paths: { PS4: 'Celowanie -> Typ krzywej' }, beg: 'Jak gra przelicza gałkę.', adv: 'Dynamiczna krzywa to ekstremalna precyzja i przyspieszenie.' },
                 { id: 'assist', name: 'Asysta celowania', type: 'toggle', paths: { PS4: 'Celowanie -> Asysta' }, beg: 'Nigdy jej nie wyłączaj.', adv: 'Aktywuje Rotational Aim Assist.' }
             ]},
             movement: { title: 'Mechanika Ruchu', icon: 'activity', items: [
@@ -400,13 +405,17 @@
         // 3. SILNIK RENDERUJĄCY (VANILLA JS MVP)
         // ----------------------------------------------------
 
+        // BUG FIX: Toast Overlap Protection (Debouncing)
+        let toastTimeoutId = null;
         function showToast(msg, type = 'success') {
             DOM.toast.msg.textContent = msg;
             DOM.toast.cont.className = `fixed top-20 right-6 z-50 p-4 rounded-xl shadow-2xl flex items-center gap-3 border animate-fadeIn transition-all max-w-sm ${type === 'success' ? 'bg-zinc-900/95 border-emerald-500 text-emerald-300' : 'bg-zinc-900/95 border-red-500 text-red-300'}`;
             DOM.toast.icon.setAttribute('data-lucide', type === 'success' ? 'check-circle-2' : 'alert-circle');
             DOM.toast.cont.classList.remove('hidden');
             lucide.createIcons();
-            setTimeout(() => DOM.toast.cont.classList.add('hidden'), 4000);
+            
+            if (toastTimeoutId) clearTimeout(toastTimeoutId);
+            toastTimeoutId = setTimeout(() => DOM.toast.cont.classList.add('hidden'), 4000);
         }
 
         // --- Visualizers (Controller SVG & FOV) ---
@@ -509,6 +518,7 @@
             
             const badge = document.getElementById('custom-badge');
             appState.activePreset === 'custom' ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+            lucide.createIcons();
         }
 
         function renderCategories() {
@@ -604,25 +614,23 @@
             }).join('');
             
             lucide.createIcons();
-            renderVisualizer(); // Re-render visualizer on tab change
+            renderVisualizer(); 
         }
 
-        // --- Targeted Logic for Performance (O(1) DOM Manipulations) ---
+        // --- O(1) DOM Operations for Input Range ---
         window.updateSliderTargeted = (key, value) => {
             const parsed = parseFloat(value);
             appState.config[key] = parsed;
             appState.activePreset = 'custom';
             
-            // 1. Update Badge
             const badge = document.getElementById(`badge-${key}`);
             if(badge) badge.textContent = parsed;
             
-            // 2. Update Telemetry & Visualizer immediately without full grid re-render
             renderTelemetry();
             renderVisualizer();
         };
         
-        window.forceSaveCustom = () => { renderPresets(); }; // Only called onchange (mouse up)
+        window.forceSaveCustom = () => { renderPresets(); };
 
         window.updateSetting = (key, val) => {
             appState.config[key] = isNaN(val) ? val : parseFloat(val);
@@ -643,7 +651,7 @@
         window.setPlatform = (plat) => { appState.activePlatform = plat; renderSettings(); showToast(`Zmieniono widok ścieżek dostępu dla: ${plat}`); };
         window.toggleFinder = (id) => { appState.expandedOptions[id] = !appState.expandedOptions[id]; renderSettings(); };
 
-        // --- Survey Logic ---
+        // --- Survey Engine ---
         function renderSurvey() {
             const q = SURVEY_QUESTIONS[appState.surveyStep];
             document.getElementById('survey-step-counter').textContent = `ZAPYTANIE ${appState.surveyStep + 1} z ${SURVEY_QUESTIONS.length}`;
@@ -682,7 +690,7 @@
         function applyAdaptiveProfile() {
             const ans = appState.surveyAnswers;
             appState.activePlatform = ans.platform;
-            appState.config = { ...INITIAL_VALUES }; // Reset base
+            appState.config = { ...INITIAL_VALUES };
             
             if (ans.platform === 'PS4') { appState.config.fov = 105; appState.config.cas = 80; }
             else if (ans.platform === 'PS4 Pro') { appState.config.fov = 110; appState.config.cas = 90; }
@@ -702,11 +710,32 @@
             showToast('✓ Profil wygenerowany automatycznie!');
         }
 
-        // --- ZSSP, Export & Search Logic ---
+        // --- BUG FIX: Unicode-Safe Base64 (ZSSP Engine) ---
+        const utf8_to_b64 = str => window.btoa(unescape(encodeURIComponent(str)));
+        const b64_to_utf8 = str => decodeURIComponent(escape(window.atob(str)));
+
+        // --- BUG FIX: iFrame Safe Clipboard API ---
         document.getElementById('btn-share').addEventListener('click', () => {
-            const b64 = btoa(JSON.stringify(appState.config));
-            const url = `https://anonymousik.is-a.dev/scripts/warz?config=${b64}`;
-            navigator.clipboard.writeText(url).then(() => showToast('Skopiowano dedykowany link do schowka!'));
+            try {
+                const b64 = utf8_to_b64(JSON.stringify(appState.config));
+                const url = `https://anonymousik.is-a.dev/scripts/warz?config=${b64}`;
+                
+                const textArea = document.createElement("textarea");
+                textArea.value = url;
+                textArea.style.position = "fixed";
+                textArea.style.opacity = "0";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                const success = document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                if (success) showToast('Skopiowano dedykowany link do schowka!');
+                else throw new Error("Fallback failed");
+            } catch(e) {
+                showToast('Błąd przeglądarki podczas kopiowania.', 'error');
+            }
         });
 
         document.getElementById('btn-import').addEventListener('click', () => {
@@ -714,7 +743,7 @@
             if(!val) return;
             try {
                 if (val.includes('?config=')) val = val.split('?config=')[1];
-                const parsed = JSON.parse(atob(val));
+                const parsed = JSON.parse(b64_to_utf8(val));
                 Object.keys(INITIAL_VALUES).forEach(k => { if(parsed[k] !== undefined) appState.config[k] = parsed[k]; });
                 appState.activePreset = 'custom';
                 document.getElementById('import-input').value = '';
@@ -763,7 +792,6 @@
             resCont.classList.remove('hidden');
         });
 
-        // Toggle trybów zaawansowanych
         document.getElementById('btn-mode-adv').addEventListener('click', () => { appState.isAdvanced = true; document.getElementById('btn-mode-adv').className='px-4 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 flex items-center gap-1 bg-amber-500/10 text-amber-500 border border-amber-500/30'; document.getElementById('btn-mode-beg').className='px-4 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 text-zinc-500 hover:text-zinc-300'; renderSettings(); });
         document.getElementById('btn-mode-beg').addEventListener('click', () => { appState.isAdvanced = false; document.getElementById('btn-mode-beg').className='px-4 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 bg-zinc-800 text-white shadow-md'; document.getElementById('btn-mode-adv').className='px-4 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 flex items-center gap-1 text-zinc-500 hover:text-zinc-300'; renderSettings(); });
 
@@ -776,7 +804,7 @@
             const cfg = urlParams.get('config');
             if(cfg) {
                 try {
-                    const parsed = JSON.parse(atob(cfg));
+                    const parsed = JSON.parse(b64_to_utf8(cfg));
                     Object.keys(INITIAL_VALUES).forEach(k => { if(parsed[k] !== undefined) appState.config[k] = parsed[k]; });
                     appState.activePreset = 'custom';
                     closeSurvey();
