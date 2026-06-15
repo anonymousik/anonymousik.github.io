@@ -12,7 +12,7 @@ echo "    ROZPOCZYNAM AUTOMATYCZNE WDROŻENIE WARZONE HQ         "
 echo "=========================================================="
 
 # 1. Pobieranie danych uwierzytelniających
-read -p "Podaj swoją nazwę użytkownika na GitHub: " Anonymousik
+read -p "Podaj swoją nazwę użytkownika na GitHub: " GH_USER=Anonymousik
 if [ -z "$GH_USER" ]; then
     echo "Błąd: Nazwa użytkownika nie może być pusta!"
     exit 1
