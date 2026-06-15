@@ -1,1 +1,633 @@
-#
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warzone Tactical Configurator | Anonymousik.is-a.dev</title>
+    <meta name="description" content="Adaptacyjny konfigurator ustawień dla Warzone zoptymalizowany pod PS4 Pro i nowoczesne standardy celowania.">
+    
+    <!-- Tailwind CSS (CDN for Single-File constraint) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        zinc: { 800: '#27272a', 900: '#18181b', 950: '#09090b' },
+                        amber: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* CSS Reset & Custom Scrollbar */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        body { background-color: #09090b; color: #d4d4d8; }
+        
+        /* Custom Range Input Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #f59e0b;
+            cursor: pointer;
+            margin-top: -6px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #27272a;
+            border-radius: 2px;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-amber-500/30">
+
+    <!-- HEADER: Ekosystem is-a.dev -->
+    <header class="border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <a href="https://anonymousik.is-a.dev" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center font-black text-zinc-950">A</div>
+                <div>
+                    <span class="font-bold text-white uppercase tracking-tighter block leading-tight">Anonymousik.is-a.dev</span>
+                    <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">/scripts/WarzoneCo</span>
+                </div>
+            </a>
+            
+            <div class="flex items-center gap-2">
+                <button id="btn-reset-survey" class="px-3 py-1.5 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all text-zinc-400 hover:text-white">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Ankieta Adaptacyjna
+                </button>
+                <div class="flex items-center bg-zinc-950/80 p-1 rounded-lg border border-zinc-800">
+                    <button id="btn-mode-beg" class="mode-toggle px-3 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 bg-zinc-800 text-white shadow-sm" data-mode="beginner">Początkujący</button>
+                    <button id="btn-mode-adv" class="mode-toggle px-3 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 flex items-center gap-1 text-zinc-500 hover:text-zinc-300" data-mode="advanced">
+                        <i data-lucide="zap" class="w-3 h-3"></i> Zaawansowany
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- KREATOR ADAPTACYJNY (ANKIETA) -->
+    <div id="survey-overlay" class="fixed inset-0 z-40 bg-zinc-950/90 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-3xl shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-zinc-800">
+                <div id="survey-progress" class="h-full bg-amber-500 transition-all duration-300" style="width: 25%"></div>
+            </div>
+            <div class="p-6 md:p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>
+                        <span class="text-xs uppercase font-mono tracking-widest text-amber-500 font-bold">Kreator Adaptacyjny</span>
+                    </div>
+                    <span id="survey-step-counter" class="text-xs font-mono text-zinc-500">Krok 1 z 4</span>
+                </div>
+                
+                <h2 id="survey-question" class="text-xl md:text-2xl font-black text-white mb-6 uppercase tracking-tight">Pytanie</h2>
+                
+                <div id="survey-options" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <!-- Opcje wstrzykiwane przez JS -->
+                </div>
+
+                <div class="flex justify-between items-center border-t border-zinc-800/80 pt-6">
+                    <button id="btn-survey-skip" class="text-xs font-bold text-zinc-500 hover:text-zinc-300 transition-colors uppercase tracking-wider">
+                        Pomiń kreator
+                    </button>
+                    <button id="btn-survey-next" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-black text-xs uppercase tracking-widest rounded-lg flex items-center gap-2 transition-all shadow-[0_4px_14px_rgba(245,158,11,0.2)]">
+                        Następny <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GŁÓWNA APLIKACJA -->
+    <main id="main-app" class="flex-grow max-w-6xl mx-auto w-full px-4 py-8 opacity-20 pointer-events-none transition-opacity duration-300">
+        
+        <!-- TOP ZONE: PRESETS & SHARE -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+            <!-- PRESETS -->
+            <section class="lg:col-span-8 p-6 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+                        <h2 class="text-xs font-bold uppercase text-zinc-400 tracking-wider">Wybierz Szablon Główny</h2>
+                    </div>
+                    <span id="custom-badge" class="hidden text-[10px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-0.5 rounded font-black tracking-widest uppercase">Własna Modyfikacja</span>
+                </div>
+                <div id="presets-container" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <!-- Presety generowane przez JS -->
+                </div>
+            </section>
+
+            <!-- SHARE & IMPORT -->
+            <section class="lg:col-span-4 p-6 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl flex flex-col justify-between">
+                <div class="mb-4">
+                    <h2 class="text-xs font-bold uppercase text-zinc-400 tracking-wider mb-2 flex items-center gap-1.5">
+                        <i data-lucide="share-2" class="w-3.5 h-3.5 text-amber-500"></i> Eksport / Import (ZSSP)
+                    </h2>
+                    <p class="text-[11px] text-zinc-500 leading-normal">Wygeneruj link URL zawierający pełną konfigurację, gotowy do wysłania znajomym.</p>
+                </div>
+                <div class="space-y-3">
+                    <button id="btn-share" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-black text-xs uppercase tracking-wider rounded-lg flex items-center justify-center gap-2 transition-all">
+                        <i data-lucide="copy" class="w-4 h-4"></i> Kopiuj Link URL
+                    </button>
+                    <div class="flex items-center gap-2 bg-zinc-950/80 border border-zinc-800 p-1 rounded-lg">
+                        <input type="text" id="import-input" placeholder="Wklej klucz Base64..." class="bg-transparent text-[11px] text-zinc-300 placeholder-zinc-600 px-2 py-1 w-full focus:outline-none font-mono">
+                        <button id="btn-import" class="bg-zinc-800 text-white font-bold text-xs uppercase px-3 py-1 rounded hover:bg-zinc-700 transition-all">Import</button>
+                    </div>
+                    <div id="status-message" class="hidden text-[11px] font-mono px-2 py-1 rounded text-center font-bold"></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- WORKSPACE (SIDEBAR + CONTENT) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- SIDEBAR -->
+            <aside class="lg:col-span-3 space-y-4">
+                <div class="bg-zinc-950 p-2 rounded-xl border border-zinc-800">
+                    <p class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-2 px-3">Moduły</p>
+                    <nav id="categories-nav" class="flex flex-row lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 hide-scrollbar">
+                        <!-- Kategorie generowane przez JS -->
+                    </nav>
+                </div>
+                <!-- TELEMETRY -->
+                <div class="p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl space-y-4">
+                    <h3 class="text-xs uppercase text-zinc-500 font-bold flex items-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4 text-amber-500"></i> Wydajność (Est.)
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between items-center border-b border-zinc-800/50 pb-2">
+                            <span class="text-zinc-500 text-xs uppercase">FPS:</span>
+                            <span id="tel-fps" class="text-emerald-400 font-mono font-bold text-xs">60</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-zinc-800/50 pb-2">
+                            <span class="text-zinc-500 text-xs uppercase">Input Lag:</span>
+                            <span id="tel-lag" class="text-amber-400 font-mono font-bold text-xs">45ms</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-zinc-500 text-xs uppercase">Zalecany FOV:</span>
+                            <span id="tel-fov" class="text-cyan-400 font-mono font-bold text-xs">110</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT GRID -->
+            <section class="lg:col-span-9">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-zinc-800/80 pb-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <i id="active-cat-icon" data-lucide="target" class="w-6 h-6 text-amber-500"></i>
+                        <h2 id="active-cat-title" class="text-xl md:text-2xl font-black uppercase tracking-wider text-white">Moduł</h2>
+                    </div>
+                    <!-- PLATFORM SELECTOR (Ścieżki) -->
+                    <div class="flex items-center gap-2 bg-zinc-900 p-1 rounded-lg border border-zinc-800">
+                        <span class="text-[10px] uppercase font-bold text-zinc-500 px-2">Lokalizacje dla:</span>
+                        <div id="platform-selectors" class="flex">
+                            <button class="plat-btn px-2.5 py-1 text-xs font-mono font-bold rounded transition-all bg-amber-500 text-zinc-950" data-plat="PS4">PS4</button>
+                            <button class="plat-btn px-2.5 py-1 text-xs font-mono font-bold rounded transition-all text-zinc-400 hover:text-white" data-plat="PS5">PS5</button>
+                            <button class="plat-btn px-2.5 py-1 text-xs font-mono font-bold rounded transition-all text-zinc-400 hover:text-white" data-plat="PC">PC</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="category-warning" class="hidden p-4 mb-6 bg-amber-500/5 border-l-4 border-amber-500 rounded-r-lg flex items-start gap-3">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5"></i>
+                    <p id="category-warning-text" class="text-xs text-amber-200/90 leading-relaxed font-medium"></p>
+                </div>
+
+                <div id="settings-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Kafelki ustawień generowane przez JS -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-zinc-900 bg-zinc-950 py-12 px-4 mt-auto">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
+            <div>
+                <h3 class="text-white font-bold mb-2 uppercase tracking-widest">Anonymousik</h3>
+                <p class="text-zinc-600 text-xs max-w-sm">Optymalizacja wydajności gier, protokoły Low-Level i nowoczesne interfejsy narzędziowe dla graczy.</p>
+            </div>
+            <div class="flex gap-6">
+                <a href="https://github.com/Anonymousik" target="_blank" rel="noopener noreferrer" class="text-zinc-500 hover:text-amber-500 transition-colors"><i data-lucide="github" class="w-5 h-5"></i></a>
+                <a href="https://anonymousik.is-a.dev" target="_blank" rel="noopener noreferrer" class="text-zinc-500 hover:text-amber-500 transition-colors"><i data-lucide="globe" class="w-5 h-5"></i></a>
+                <a href="mailto:dev@is-a.dev" class="text-zinc-500 hover:text-amber-500 transition-colors"><i data-lucide="mail" class="w-5 h-5"></i></a>
+            </div>
+            <div class="text-zinc-700 text-[10px] uppercase font-mono tracking-widest">© 2026 anonymousik.is-a.dev</div>
+        </div>
+    </footer>
+
+    <!-- LOGIKA APLIKACJI (VANILLA JS) -->
+    <script>
+        // --- 1. DANE KONFIGURACYJNE (MOCK BAZY DANYCH) ---
+        const INITIAL_STATE = {
+            layout: 'Domyślny', vib: false, trig: false, sens: 1.6, dz_l_min: 3, dz_l_max: 50, dz_r_max: 99, dz_trig: 0,
+            ads_low: 0.80, ads_high: 1.00, trans: 'Natychmiastowy', curve: 'Dynamiczny', assist: true,
+            sprint: 'Auto. Sprint Taktyczny', sprint_del: 0, slide: 'Hybrydowe', para: false, mantle: false, armor: 'Zastosuj jedną', interact: 'Priorytet interakcji',
+            fov: 110, ads_fov: 'Zależne (Affected)', w_fov: 'Szerokie (Wide)', cas: 90, blur: false, shake: 50,
+            filter: 'Filtr 2 (Oba)', hud: 'Minimalne (Środek)', cross: 'Większa / Żółta', radar: 'Kwadrat / Kontury Wł.', audio: 'Sucker Punch', mono: false
+        };
+
+        const PRESETS = {
+            performance: { id: 'performance', name: 'Turniejowy (Input Lag Cut)', badge: 'PRO', color: 'text-red-400 bg-red-950/20 border-red-500/50', metrics: { fps: '60 (Locked)', lag: '35ms', fov: '105-110 FOV' },
+                overrides: { vib: false, trig: false, sens: 1.8, dz_l_min: 2, dz_l_max: 45, dz_trig: 0, ads_low: 0.75, fov: 110, cas: 85 } },
+            balanced: { id: 'balanced', name: 'Zbalansowany (PS4 Pro / 4K)', badge: 'BALANCED', color: 'text-amber-400 bg-amber-950/20 border-amber-500/50', metrics: { fps: '55-60 FPS', lag: '45ms', fov: '115 FOV' },
+                overrides: { vib: false, trig: false, sens: 1.6, dz_l_min: 4, dz_l_max: 50, dz_trig: 0, ads_low: 0.80, fov: 115, cas: 90 } },
+            movement: { id: 'movement', name: 'Agresywny Ruch (CQC)', badge: 'AGILE', color: 'text-cyan-400 bg-cyan-950/20 border-cyan-500/50', metrics: { fps: '50-60 FPS', lag: '42ms', fov: '120 FOV' },
+                overrides: { vib: false, trig: false, sens: 2.2, dz_l_min: 3, dz_l_max: 30, dz_trig: 0, fov: 120, ads_low: 0.85 } }
+        };
+
+        const METADATA = {
+            controller: {
+                title: 'Kontroler & Ruch', icon: 'gamepad-2', warning: 'Aby zminimalizować Input Lag na PS4/PS5, zawsze łącz kontroler kablem USB i wymuś komunikację po kablu w ustawieniach systemu konsoli.',
+                items: [
+                    { id: 'layout', name: 'Układ przycisków', type: 'select', options: ['Domyślny', 'Taktyczny', 'Weteran taktyczny'], beg: 'Użyj Taktyczny jeśli nie masz łopatek (wślizg pod gałką).', adv: 'Tactical. Pozwala na slide-cancel bez odrywania kciuka.', paths: { PS4: 'Kontroler -> Układ przycisków', PC: 'Controller -> Button Layout' } },
+                    { id: 'vib', name: 'Wibracje kontrolera', type: 'toggle', beg: 'Wyłącz. Drżenie rąk psuje celowanie.', adv: 'Zakłóca mikrokorekty. Obowiązkowo wyłączone.', paths: { PS4: 'Ustawienia systemu -> Urządzenia -> Kontrolery', PC: 'Controller -> Vibration' } },
+                    { id: 'sens', name: 'Czułość (Pion/Poziom)', type: 'slider', min: 0.5, max: 4.0, step: 0.1, beg: 'Szybkość obrotu kamery. 1.6 to klasyczne 7/7.', adv: 'Klucz do Rotational Aim Assist. Wymaga wyczucia centrowania.', paths: { PS4: 'Kontroler -> Czułość drążków' } },
+                    { id: 'dz_l_min', name: 'Min. Strefa Martwa Lewa', type: 'slider', min: 0, max: 20, step: 1, beg: 'Zmniejszaj aż postać zacznie sama chodzić (stick drift), wtedy lekko podnieś.', adv: 'Minimalizacja input delay lewej gałki.', paths: { PS4: 'Kontroler -> Zaawansowane -> Strefy Martwe' } },
+                    { id: 'dz_l_max', name: 'Max. Strefa Martwa Lewa', type: 'slider', min: 10, max: 100, step: 5, beg: 'Ile trzeba wychylić gałkę by postać biegła. 50 ułatwia ucieczkę.', adv: 'Wymusza pełny wektor ruchu błyskawicznie.', paths: { PS4: 'Kontroler -> Zaawansowane -> Strefy Martwe' } },
+                    { id: 'dz_trig', name: 'Strefa Martwa L2/R2', type: 'slider', min: 0, max: 10, step: 1, beg: 'Szybkość reakcji strzału.', adv: 'Wartość 0 aktywuje strzał tuż za progiem mechanicznym sprężyny.', paths: { PS4: 'Kontroler -> Zaawansowane -> Spusty' } }
+                ]
+            },
+            aiming: {
+                title: 'Celowanie (Aiming)', icon: 'crosshair',
+                items: [
+                    { id: 'ads_low', name: 'Mnożnik ADS (Do 5x)', type: 'slider', min: 0.5, max: 1.5, step: 0.05, beg: 'Zwalnia celownik podczas mierzenia z broni.', adv: 'Redukuje nadmierną kompensację podczas trackingu.', paths: { PS4: 'Kontroler -> Celowanie -> Mnożnik ADS' } },
+                    { id: 'curve', name: 'Krzywa reakcji', type: 'select', options: ['Standardowa', 'Liniowa', 'Dynamiczna'], beg: 'Dynamiczna to najlepszy wybór na pada.', adv: 'Odwrócona krzywa S (Dynamic) maksymalizuje aktywację asysty celowania.', paths: { PS4: 'Kontroler -> Celowanie -> Typ krzywej' } },
+                    { id: 'assist', name: 'Asysta celowania', type: 'toggle', beg: 'Pomaga trzymać celownik na wrogu.', adv: 'Wymaga nieustannego strafingu do aktywacji magnetyzmu Rotational AA.', paths: { PS4: 'Kontroler -> Celowanie -> Pomoc' } }
+                ]
+            },
+            graphics: {
+                title: 'Grafika i Widok', icon: 'monitor', warning: 'Zbyt wysokie FOV (120) na PS4 Pro powoduje stuttering w walkach na krótki dystans ze względu na architekturę procesora Jaguar.',
+                items: [
+                    { id: 'fov', name: 'Pole widzenia (FOV)', type: 'slider', min: 80, max: 120, step: 5, beg: 'Zwiększa obszar widzenia. PS4 Pro działa najlepiej przy 110.', adv: 'Wyższe FOV obniża odrzut wizualny, kosztem Frametime.', paths: { PS4: 'Grafika -> Widok -> FOV' } },
+                    { id: 'ads_fov', name: 'Pole widzenia ADS', type: 'select', options: ['Niezależne (Independent)', 'Zależne (Affected)'], beg: 'Broń nie skacze po ekranie w trakcie strzelania.', adv: 'Skaluje kamerę do bazowego FOV. Bezwzględny priorytet.', paths: { PS4: 'Grafika -> Widok -> ADS FOV' } },
+                    { id: 'cas', name: 'FidelityFX CAS', type: 'slider', min: 0, max: 100, step: 5, beg: 'Mocno wyostrza konsolowy, zamazany obraz.', adv: 'Leczy mydło TAA (Temporal Anti-Aliasing). 90 to sweet-spot.', paths: { PS4: 'Grafika -> Jakość -> Skalowanie/Wyostrzanie' } },
+                    { id: 'blur', name: 'Motion Blur', type: 'toggle', beg: 'Rozmycie obrazu przy ruchu. Wyłącz.', adv: 'Uwalnia cenne cykle GPU.', paths: { PS4: 'Grafika -> Jakość -> Rozmycie' } }
+                ]
+            }
+        };
+
+        const SURVEY_QUESTIONS = [
+            { id: 'platform', q: 'Na czym grasz?', opts: [{v: 'PS4', l: 'PS4 (Base)', d: 'Priorytet klatek.'}, {v: 'PS4 Pro', l: 'PS4 Pro', d: 'Balans 1080p/60.'}, {v: 'PS5/PC', l: 'PS5 / PC', d: 'Pełna płynność.'}] },
+            { id: 'playstyle', q: 'Styl gry?', opts: [{v: 'cqc', l: 'Agresywny', d: 'Szybkie tempo.'}, {v: 'bal', l: 'Taktyczny', d: 'Średni dystans.'}, {v: 'snip', l: 'Snajper', d: 'Cierpliwość.'}] },
+            { id: 'display', q: 'Ekran?', opts: [{v: 'tv', l: 'Zwykły TV', d: 'Wysoki input lag.'}, {v: 'mon', l: 'Monitor', d: 'Niski lag.'}] }
+        ];
+
+        // --- 2. ZARZĄDZANIE STANEM (STATE MANAGEMENT) ---
+        let appState = {
+            config: { ...INITIAL_STATE },
+            activeTab: 'controller',
+            activePreset: 'balanced',
+            isAdvancedMode: false,
+            activePlatform: 'PS4',
+            surveyStep: 0,
+            surveyAnswers: {}
+        };
+
+        // --- 3. REFERENCJE DOM ---
+        const DOM = {
+            app: document.getElementById('main-app'),
+            survey: document.getElementById('survey-overlay'),
+            presetsContainer: document.getElementById('presets-container'),
+            categoriesNav: document.getElementById('categories-nav'),
+            settingsGrid: document.getElementById('settings-grid'),
+            telemetry: { fps: document.getElementById('tel-fps'), lag: document.getElementById('tel-lag'), fov: document.getElementById('tel-fov') },
+            catTitle: document.getElementById('active-cat-title'),
+            catIcon: document.getElementById('active-cat-icon'),
+            warningBlock: document.getElementById('category-warning'),
+            warningText: document.getElementById('category-warning-text'),
+            statusMsg: document.getElementById('status-message')
+        };
+
+        // --- 4. LOGIKA RENDEROWANIA ---
+        
+        function renderPresets() {
+            DOM.presetsContainer.innerHTML = Object.values(PRESETS).map(p => {
+                const isActive = appState.activePreset === p.id;
+                return `
+                    <button onclick="applyPreset('${p.id}')" class="text-left p-3.5 rounded-xl border transition-all duration-300 ${isActive ? 'bg-zinc-900 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.15)] text-white' : 'bg-zinc-950/50 border-zinc-800/60 hover:border-zinc-700 text-zinc-400'}">
+                        <div class="flex justify-between items-start mb-1.5">
+                            <span class="text-[9px] font-mono font-bold uppercase tracking-wider text-zinc-500">Preset</span>
+                            <span class="text-[9px] px-1.5 py-0.5 rounded font-black tracking-widest border ${p.color}">${p.badge}</span>
+                        </div>
+                        <h3 class="font-bold text-sm flex items-center gap-1.5">${p.name} ${isActive ? '<i data-lucide="check" class="w-3.5 h-3.5 text-amber-500"></i>' : ''}</h3>
+                    </button>
+                `;
+            }).join('');
+            
+            const badge = document.getElementById('custom-badge');
+            appState.activePreset === 'custom' ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+            updateTelemetry();
+        }
+
+        function renderCategories() {
+            DOM.categoriesNav.innerHTML = Object.keys(METADATA).map(key => {
+                const isActive = appState.activeTab === key;
+                const cat = METADATA[key];
+                return `
+                    <button onclick="switchTab('${key}')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all border whitespace-nowrap lg:whitespace-normal ${isActive ? 'bg-zinc-900 border-amber-500/30 text-amber-500 shadow-[inset_3px_0_0_0_rgba(245,158,11,1)]' : 'border-transparent text-zinc-400 hover:bg-zinc-900/50 hover:text-zinc-200'}">
+                        <i data-lucide="${cat.icon}" class="w-4 h-4 flex-shrink-0 ${isActive ? 'text-amber-500' : 'text-zinc-500'}"></i>
+                        <span class="font-bold uppercase text-xs tracking-wider">${cat.title}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderSettings() {
+            const cat = METADATA[appState.activeTab];
+            DOM.catTitle.textContent = cat.title;
+            DOM.catIcon.setAttribute('data-lucide', cat.icon);
+            
+            if(cat.warning) {
+                DOM.warningBlock.classList.remove('hidden');
+                DOM.warningText.textContent = cat.warning;
+            } else {
+                DOM.warningBlock.classList.add('hidden');
+            }
+
+            DOM.settingsGrid.innerHTML = cat.items.map(item => {
+                const val = appState.config[item.id];
+                const info = appState.isAdvancedMode ? item.adv : item.beg;
+                const pathInfo = item.paths[appState.activePlatform] || item.paths['PS4'] || 'Brak ścieżki (Domyślna)';
+
+                let controlHTML = '';
+                if(item.type === 'toggle') {
+                    controlHTML = `
+                        <button onclick="updateSetting('${item.id}', ${!val})" class="w-10 h-5 flex items-center rounded-full p-1 transition-colors duration-300 ${val ? 'bg-amber-500' : 'bg-zinc-700'}">
+                            <div class="bg-white w-3 h-3 rounded-full shadow-md transform transition-transform duration-300 ${val ? 'translate-x-5' : 'translate-x-0'}"></div>
+                        </button>
+                    `;
+                } else if(item.type === 'select') {
+                    controlHTML = `
+                        <select onchange="updateSetting('${item.id}', this.value)" class="bg-zinc-950 border border-zinc-800 text-amber-500 font-mono text-xs px-2 py-1 rounded focus:outline-none cursor-pointer">
+                            ${item.options.map(o => `<option value="${o}" ${o === val ? 'selected' : ''}>${o}</option>`).join('')}
+                        </select>
+                    `;
+                }
+
+                let sliderHTML = '';
+                if(item.type === 'slider') {
+                    sliderHTML = `
+                        <div class="mb-4">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-zinc-100 uppercase text-xs tracking-wider">${item.name}</span>
+                                <span class="inline-block bg-zinc-950 border border-zinc-800 text-amber-500 font-mono text-xs px-2 py-0.5 rounded">${val}</span>
+                            </div>
+                            <input type="range" min="${item.min}" max="${item.max}" step="${item.step}" value="${val}" oninput="updateSetting('${item.id}', this.value)" class="w-full">
+                            <div class="flex justify-between text-[9px] text-zinc-600 font-mono mt-1"><span>MIN: ${item.min}</span><span>MAX: ${item.max}</span></div>
+                        </div>
+                    `;
+                } else {
+                    sliderHTML = `
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="font-bold text-zinc-100 uppercase text-xs tracking-wider pr-4">${item.name}</span>
+                            ${controlHTML}
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="p-5 rounded-xl border transition-all bg-zinc-900/20 border-zinc-800/80 hover:border-zinc-700 animate-fade-in flex flex-col justify-between">
+                        <div>
+                            ${sliderHTML}
+                            <div class="mt-3 pt-3 border-t border-zinc-800/50 flex items-start gap-2.5">
+                                <i data-lucide="info" class="w-4 h-4 mt-0.5 flex-shrink-0 ${appState.isAdvancedMode ? 'text-amber-500' : 'text-emerald-500'}"></i>
+                                <p class="text-xs leading-relaxed ${appState.isAdvancedMode ? 'text-zinc-400 font-mono text-[10px]' : 'text-zinc-300'}">${info}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button onclick="toggleFinder('${item.id}')" class="w-full flex items-center justify-between px-3 py-1.5 rounded text-xs transition-all bg-zinc-950/80 border border-zinc-800/50 text-zinc-400 hover:text-white hover:border-zinc-700">
+                                <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Gdzie to jest?</span>
+                                <i data-lucide="chevron-down" id="icon-find-${item.id}" class="w-3.5 h-3.5 transition-transform"></i>
+                            </button>
+                            <div id="finder-${item.id}" class="hidden mt-2 p-3 bg-zinc-950/90 border border-zinc-800 rounded-lg text-xs space-y-2">
+                                <p class="text-amber-400 font-semibold leading-relaxed font-mono">Lokalizacja: ${pathInfo}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            lucide.createIcons(); // Reactivate icons in new DOM
+        }
+
+        function updateTelemetry() {
+            let metrics = PRESETS[appState.activePreset]?.metrics || { fps: '58 FPS', lag: '42ms', fov: `${appState.config.fov} FOV` };
+            if(appState.activePreset === 'custom') {
+                metrics.fps = appState.config.fov > 110 ? '50-55 FPS' : '60 FPS';
+                metrics.lag = appState.config.dz_l_min < 4 ? '38ms' : '45ms';
+                metrics.fov = `${appState.config.fov} FOV`;
+            }
+            DOM.telemetry.fps.textContent = metrics.fps;
+            DOM.telemetry.lag.textContent = metrics.lag;
+            DOM.telemetry.fov.textContent = metrics.fov;
+        }
+
+        // --- 5. LOGIKA ANKIETY (SURVEY ENGINE) ---
+        function renderSurvey() {
+            const q = SURVEY_QUESTIONS[appState.surveyStep];
+            document.getElementById('survey-step-counter').textContent = `Krok ${appState.surveyStep + 1} z ${SURVEY_QUESTIONS.length}`;
+            document.getElementById('survey-question').textContent = q.q;
+            document.getElementById('survey-progress').style.width = `${((appState.surveyStep + 1) / SURVEY_QUESTIONS.length) * 100}%`;
+            
+            const currentAnswer = appState.surveyAnswers[q.id];
+            
+            document.getElementById('survey-options').innerHTML = q.opts.map(opt => `
+                <button onclick="selectSurveyOpt('${q.id}', '${opt.v}')" class="p-4 rounded-xl text-left border transition-all flex flex-col justify-between ${currentAnswer === opt.v ? 'bg-amber-500/10 border-amber-500 text-white shadow-[0_0_15px_rgba(245,158,11,0.1)]' : 'bg-zinc-950/50 border-zinc-800 hover:bg-zinc-900/40 text-zinc-400'}">
+                    <div class="flex justify-between items-center w-full mb-2">
+                        <span class="font-bold text-sm">${opt.l}</span>
+                        <div class="w-4 h-4 rounded-full border flex items-center justify-center ${currentAnswer === opt.v ? 'border-amber-500 bg-amber-500' : 'border-zinc-600'}">
+                            ${currentAnswer === opt.v ? '<div class="w-2 h-2 bg-zinc-950 rounded-full"></div>' : ''}
+                        </div>
+                    </div>
+                    <p class="text-xs text-zinc-500 leading-relaxed">${opt.d}</p>
+                </button>
+            `).join('');
+        }
+
+        window.selectSurveyOpt = (questionId, value) => {
+            appState.surveyAnswers[questionId] = value;
+            renderSurvey();
+        };
+
+        document.getElementById('btn-survey-next').addEventListener('click', () => {
+            if(appState.surveyStep < SURVEY_QUESTIONS.length - 1) {
+                appState.surveyStep++;
+                renderSurvey();
+            } else {
+                applyAdaptiveProfile();
+                closeSurvey();
+            }
+        });
+
+        document.getElementById('btn-survey-skip').addEventListener('click', closeSurvey);
+        document.getElementById('btn-reset-survey').addEventListener('click', () => {
+            appState.surveyStep = 0;
+            appState.surveyAnswers = {};
+            DOM.survey.classList.remove('opacity-0', 'pointer-events-none');
+            DOM.app.classList.add('opacity-20', 'pointer-events-none');
+            renderSurvey();
+        });
+
+        function closeSurvey() {
+            DOM.survey.classList.add('opacity-0', 'pointer-events-none');
+            DOM.app.classList.remove('opacity-20', 'pointer-events-none');
+        }
+
+        function applyAdaptiveProfile() {
+            const ans = appState.surveyAnswers;
+            if(ans.platform === 'PS4') appState.config.fov = 105;
+            if(ans.playstyle === 'cqc') { appState.config.sens = 2.0; appState.config.dz_l_max = 30; }
+            if(ans.display === 'tv') appState.config.dz_l_min = 5; else appState.config.dz_l_min = 2;
+            
+            appState.activePlatform = ans.platform === 'PS5/PC' ? 'PC' : ans.platform || 'PS4';
+            appState.activePreset = 'custom';
+            
+            // Update platform selectors visually
+            document.querySelectorAll('.plat-btn').forEach(btn => {
+                btn.classList.toggle('bg-amber-500', btn.dataset.plat === appState.activePlatform);
+                btn.classList.toggle('text-zinc-950', btn.dataset.plat === appState.activePlatform);
+                btn.classList.toggle('text-zinc-400', btn.dataset.plat !== appState.activePlatform);
+            });
+            
+            refreshUI();
+        }
+
+        // --- 6. GLOBALNE AKCJE UI ---
+        window.switchTab = (tabId) => { appState.activeTab = tabId; renderCategories(); renderSettings(); };
+        window.applyPreset = (presetId) => {
+            appState.activePreset = presetId;
+            appState.config = { ...INITIAL_STATE, ...PRESETS[presetId].overrides };
+            refreshUI();
+        };
+        window.updateSetting = (key, value) => {
+            // Check if type should be float (slider values)
+            const parsedVal = isNaN(value) || typeof value === 'boolean' ? value : parseFloat(value);
+            appState.config[key] = parsedVal;
+            appState.activePreset = 'custom';
+            renderPresets();
+            renderSettings(); // Re-render to update inputs
+        };
+        window.toggleFinder = (id) => {
+            const el = document.getElementById(`finder-${id}`);
+            const icon = document.getElementById(`icon-find-${id}`);
+            el.classList.toggle('hidden');
+            icon.style.transform = el.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        };
+
+        // ZSSP (Kopiowanie stanu)
+        document.getElementById('btn-share').addEventListener('click', () => {
+            try {
+                const b64 = btoa(JSON.stringify(appState.config));
+                const url = `${window.location.origin}${window.location.pathname}?cfg=${b64}`;
+                navigator.clipboard.writeText(url).then(() => {
+                    DOM.statusMsg.textContent = "Skopiowano URL!";
+                    DOM.statusMsg.className = "text-[11px] font-mono px-2 py-1 rounded text-center font-bold bg-emerald-500/10 text-emerald-400 mt-2 block";
+                    setTimeout(() => DOM.statusMsg.classList.add('hidden'), 3000);
+                });
+            } catch(e) { console.error("Export fail"); }
+        });
+
+        // Import
+        document.getElementById('btn-import').addEventListener('click', () => {
+            const val = document.getElementById('import-input').value.trim();
+            if(!val) return;
+            try {
+                const raw = val.includes('?cfg=') ? val.split('?cfg=')[1] : val;
+                const parsed = JSON.parse(atob(raw));
+                appState.config = { ...INITIAL_STATE, ...parsed };
+                appState.activePreset = 'custom';
+                DOM.statusMsg.textContent = "Wczytano konfigurację!";
+                DOM.statusMsg.className = "text-[11px] font-mono px-2 py-1 rounded text-center font-bold bg-emerald-500/10 text-emerald-400 mt-2 block";
+                document.getElementById('import-input').value = '';
+                refreshUI();
+            } catch(e) {
+                DOM.statusMsg.textContent = "Błędny kod!";
+                DOM.statusMsg.className = "text-[11px] font-mono px-2 py-1 rounded text-center font-bold bg-red-500/10 text-red-400 mt-2 block";
+            }
+            setTimeout(() => DOM.statusMsg.classList.add('hidden'), 3000);
+        });
+
+        // Toggle trybów (Początkujący / Zaawansowany)
+        document.querySelectorAll('.mode-toggle').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const mode = e.currentTarget.dataset.mode;
+                appState.isAdvancedMode = (mode === 'advanced');
+                
+                document.getElementById('btn-mode-adv').className = `mode-toggle px-3 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 flex items-center gap-1 ${appState.isAdvancedMode ? 'bg-amber-500/10 text-amber-500 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`;
+                document.getElementById('btn-mode-beg').className = `mode-toggle px-3 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 ${!appState.isAdvancedMode ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`;
+                
+                renderSettings();
+            });
+        });
+
+        // Platform selectors logic
+        document.querySelectorAll('.plat-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                appState.activePlatform = e.target.dataset.plat;
+                document.querySelectorAll('.plat-btn').forEach(b => {
+                    b.classList.remove('bg-amber-500', 'text-zinc-950');
+                    b.classList.add('text-zinc-400');
+                });
+                e.target.classList.add('bg-amber-500', 'text-zinc-950');
+                e.target.classList.remove('text-zinc-400');
+                renderSettings();
+            });
+        });
+
+        function refreshUI() {
+            renderPresets();
+            renderCategories();
+            renderSettings();
+        }
+
+        // --- 7. INICJALIZACJA ---
+        function init() {
+            lucide.createIcons();
+            
+            // Check URL for Config via ZSSP
+            const urlParams = new URLSearchParams(window.location.search);
+            const cfgParam = urlParams.get('cfg');
+            if(cfgParam) {
+                try {
+                    appState.config = { ...INITIAL_STATE, ...JSON.parse(atob(cfgParam)) };
+                    appState.activePreset = 'custom';
+                    closeSurvey();
+                } catch(e) { console.error("URL Load fail"); }
+            } else {
+                renderSurvey(); // Start from survey if no config loaded
+            }
+
+            refreshUI();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+</html>
