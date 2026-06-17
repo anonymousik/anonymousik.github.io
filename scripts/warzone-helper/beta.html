@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WARZONE HELPER (testowa wersja beta)</title>
+<meta name="description" content="Profesjonalny konfigurator ustawień Warzone dla PS4 Pro, PS5 i PC — styl BlackOps 7."/>
+<meta name="theme-color" content="#080b08"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+:root{
+  --void:#080b08;
+  --p1:#0e130e;
+  --p2:#151c14;
+  --p3:#1c261a;
+  --border:#263024;
+  --border2:#344030;
+  --ink:#dde8d8;
+  --ink2:#9aac92;
+  --ink3:#5a6e54;
+  --g:#a8ff3e;
+  --gd:#6aaa2a;
+  --gs:rgba(168,255,62,.10);
+  --warn:#ffb830;
+  --crit:#ff4040;
+  --info:#38d9f5;
+  --r:2px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body,#root{min-height:100%;background:var(--void)}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+.fd{font-family:'Teko',sans-serif;letter-spacing:.04em}
+.fm{font-family:'JetBrains Mono',monospace}
+
+/* Tactical grid */
+.tg{background-image:linear-gradient(rgba(168,255,62,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(168,255,62,.018) 1px,transparent 1px);background-size:40px 40px}
+
+/* Vignette */
+.vg::after{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%);pointer-events:none;z-index:0}
+
+/* Corner brackets */
+.cb{position:relative}
+.cb::before,.cb::after,.cb .ct,.cb .cb2{content:"";position:absolute;width:9px;height:9px;border-color:var(--gd);transition:all .18s}
+.cb::before{top:-1px;left:-1px;border-top:1.5px solid;border-left:1.5px solid;opacity:.5}
+.cb::after{bottom:-1px;right:-1px;border-bottom:1.5px solid;border-right:1.5px solid;opacity:.5}
+.cb .ct{top:-1px;right:-1px;border-top:1.5px solid var(--gd);border-right:1.5px solid var(--gd);opacity:.5}
+.cb .cb2{bottom:-1px;left:-1px;border-bottom:1.5px solid var(--gd);border-left:1.5px solid var(--gd);opacity:.5}
+.cb:hover::before,.cb:hover::after,.cb:hover .ct,.cb:hover .cb2{opacity:1;border-color:var(--g);width:12px;height:12px}
+.cb.act::before,.cb.act::after,.cb.act .ct,.cb.act .cb2{opacity:1;border-color:var(--g);width:12px;height:12px}
+
+/* Scanlines */
+body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(to bottom,rgba(255,255,255,0) 0,rgba(255,255,255,0) 3px,rgba(255,255,255,.008) 4px);pointer-events:none;z-index:999}
+
+/* Slider */
+input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:var(--border2);border-radius:1px;outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;background:var(--g);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);cursor:pointer;box-shadow:0 0 8px rgba(168,255,62,.5)}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;background:var(--g);border:none;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);cursor:pointer}
+
+/* Select */
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a8ff3e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:22px;-webkit-appearance:none;appearance:none}
+
+/* Toggle */
+.tog{width:40px;height:21px;border:1.5px solid var(--border2);background:var(--void);position:relative;transition:all .18s;cursor:pointer;flex-shrink:0}
+.tog.on{border-color:var(--g);background:var(--gs)}
+.tog .kn{position:absolute;top:2px;left:2px;width:13px;height:13px;background:var(--ink3);transition:all .18s;clip-path:polygon(20% 0%,100% 0%,80% 100%,0% 100%)}
+.tog.on .kn{left:21px;background:var(--g);box-shadow:0 0 8px rgba(168,255,62,.6)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--void)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--gd)}
+.hs::-webkit-scrollbar{display:none}
+.hs{-ms-overflow-style:none;scrollbar-width:none}
+
+/* Clip corners */
+.cc{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}
+.cc-sm{clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px))}
+
+/* Animations */
+@keyframes fi{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes sw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes pl{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+.fi{animation:fi .2s ease-out forwards}
+.sw{animation:sw .4s cubic-bezier(.16,1,.3,1) forwards;transform-origin:left}
+.pulse{animation:pl 2.5s ease-in-out infinite}
+
+/* Scanning line effect */
+.scan-line{position:fixed;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,rgba(168,255,62,.15),transparent);animation:scan 8s linear infinite;pointer-events:none;z-index:998}
+
+/* Bar chart segments */
+.seg-bar{display:flex;gap:2px}
+.seg{height:5px;flex:1;background:var(--border)}
+.seg.f{background:var(--g)}
+.seg.fw{background:var(--warn)}
+.seg.fc{background:var(--crit)}
+
+/* Stat ring */
+.ring{position:relative;display:inline-flex;align-items:center;justify-content:center}
+
+/* Focus visible */
+*:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+
+/* Skip link */
+.sk{position:absolute;left:-9999px;top:4px;background:var(--g);color:var(--void);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:6px 14px;text-decoration:none;z-index:9999;text-transform:uppercase;letter-spacing:.15em}
+.sk:focus{left:4px}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* BO7-style decorative line */
+.deco{height:1px;background:linear-gradient(90deg,transparent,var(--gd),transparent)}
+.deco-v{width:1px;background:linear-gradient(180deg,transparent,var(--gd),transparent)}
+
+/* Tooltip */
+.tip{position:relative}
+.tip .tip-box{visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--p3);border:1px solid var(--border2);padding:6px 10px;white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink2);transition:opacity .15s;z-index:100;pointer-events:none;letter-spacing:.05em;text-transform:uppercase}
+.tip:hover .tip-box{visibility:visible;opacity:1}
+
+/* Progress arc SVG helper */
+.arc-bg{stroke:var(--border2);fill:none}
+.arc-fg{fill:none;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body class="tg vg">
+<div class="scan-line" aria-hidden="true"></div>
+<a href="#main" class="sk">Przejdź do treści</a>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="env,react">
+const {useState,useMemo,useEffect,useCallback,useRef} = React;
+
+/* ─────────────────────────────────────────
+   INLINE SVG ICONS — zero CDN dependency
+   ───────────────────────────────────────── */
+const Ic = ({d,vb="0 0 24 24",sz=16,stroke="currentColor",fill="none",sw=1.75,cls=""}) => (
+  <svg width={sz} height={sz} viewBox={vb} fill={fill} stroke={stroke} strokeWidth={sw}
+       strokeLinecap="round" strokeLinejoin="round" className={cls} aria-hidden="true">
+    {Array.isArray(d) ? d.map((p,i)=><path key={i} d={p}/>) : <path d={d}/>}
+  </svg>
+);
+
+const ICONS = {
+  gamepad:   "M6 11h4m2 0h4M15 7v4M13 9h4M5 16l2-8h10l2 8M3 16h18M6 19h2m8 0h2",
+  crosshair: ["M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20","M12 8v8","M8 12h8","M12 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2"],
+  monitor:   ["M2 3h20v13H2z","M8 20h8","M12 16v4"],
+  headphones:"M3 18v-6a9 9 0 0 1 18 0v6M3 18a2 2 0 1 0 4 0v-3a2 2 0 1 0-4 0v3zm14 0a2 2 0 1 0 4 0v-3a2 2 0 1 0-4 0v3z",
+  activity:  "M22 12h-4l-3 9L9 3l-3 9H2",
+  zap:       "M13 2L3 14h9l-1 8 10-12h-9l1-8z",
+  target:    ["M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20","M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12","M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4"],
+  info:      ["M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20","M12 16v-4","M12 8h.01"],
+  alert:     ["M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z","M12 9v4","M12 17h.01"],
+  map:       ["M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z","M12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6"],
+  laptop:    ["M2 3h20v13H2z","M5 20h14","M12 16v4"],
+  tv:        ["M2 7h20v13H2z","M8 2l4 5 4-5"],
+  sparkles:  ["M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z","M19 2l.7 2.1 2.1.7-2.1.7L19 7.6l-.7-2.1L16.2 4.8l2.1-.7z","M5 17l.5 1.5L7 19l-1.5.5L5 21l-.5-1.5L3 19l1.5-.5z"],
+  check:     "M20 6L9 17l-5-5",
+  chevD:     "M6 9l6 6 6-6",
+  chevU:     "M18 15l-6-6-6 6",
+  chevL:     "M15 18l-6-6 6-6",
+  chevR:     "M9 18l6-6-6-6",
+  share:     ["M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8","M16 6l-4-4-4 4","M12 2v13"],
+  copy:      ["M20 9H11a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2z","M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"],
+  refresh:   "M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15",
+  clipOk:    ["M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2","M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2","M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2","M9 14l2 2 4-4"],
+  arrowR:    "M5 12h14M12 5l7 7-7 7",
+  arrowL:    "M19 12H5M12 19l-7-7 7-7",
+  radio:     ["M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z","M19 10v2a7 7 0 0 1-14 0v-2","M12 19v4","M8 23h8"],
+  signal:    ["M2 20h.01","M7 20v-4","M12 20v-8","M17 20V8","M22 4v16"],
+  shield:    ["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z","M9 12l2 2 4-4"],
+  settings:  ["M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z","M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"],
+  user:      ["M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2","M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8"],
+  trophy:    ["M6 9H3l3 6h12l3-6h-3","M12 15v4","M8 19h8","M8 2h8v7a4 4 0 0 1-8 0V2z"],
+  eye:       ["M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z","M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6"],
+  flame:     "M12 22c-4 0-7-2.7-7-7 0-2.5 1.5-4.5 3-6l1 3c0-3 2-5.5 4-7-.5 2 .5 4 2 5 0-1.5.5-3 1.5-4C18 8 19 11.5 19 13c0 4-2.5 7-7 7z",
+  skull:     ["M12 2a8 8 0 0 0-5 14.24V18h10v-1.76A8 8 0 0 0 12 2z","M9 22v-4","M15 22v-4","M9 18h6","M9 11a1 1 0 1 0 0-2 1 1 0 0 0 0 2z","M15 11a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"],
+  swords:    ["M14.5 17.5L3 6V3h3l11.5 11.5M13 19l5-5M19 19a2 2 0 0 0 0-4M16.5 16.5l3 3","M3 21l5-5M5.5 18.5l-3 3"],
+  x:         "M18 6L6 18M6 6l12 12",
+  bullet:    "M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z",
+};
+
+const I = ({n,sz=16,cls=""}) => {
+  const d = ICONS[n];
+  if(!d) return <span style={{width:sz,height:sz,display:'inline-block'}}/>;
+  return <Ic d={d} sz={sz} cls={cls}/>;
+};
+
+/* ─────────────────────────────────────────
+   ARC PROGRESS (SVG ring for stats)
+   ───────────────────────────────────────── */
+const ArcRing = ({value=0,max=100,size=72,stroke=6,color="var(--g)",label,sublabel}) => {
+  const r = (size-stroke)/2;
+  const circ = 2*Math.PI*r;
+  const pct = Math.min(value/max,1);
+  const offset = circ*(1-pct);
+  const angle = -90;
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <svg width={size} height={size} style={{transform:'rotate(-90deg)'}}>
+        <circle cx={size/2} cy={size/2} r={r} strokeWidth={stroke} className="arc-bg"/>
+        <circle cx={size/2} cy={size/2} r={r} strokeWidth={stroke}
+          stroke={color} fill="none" strokeLinecap="square"
+          strokeDasharray={circ} strokeDashoffset={offset}
+          style={{transition:'stroke-dashoffset .7s ease'}}/>
+      </svg>
+      <div className="text-center" style={{marginTop:-4}}>
+        <div className="fd" style={{fontSize:18,color,lineHeight:1}}>{value}</div>
+        {label && <div className="fm" style={{fontSize:9,color:'var(--ink3)',letterSpacing:'.15em',textTransform:'uppercase'}}>{label}</div>}
+      </div>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────
+   SEGMENT BAR
+   ───────────────────────────────────────── */
+const SegBar = ({value=0,max=10,color="var(--g)",count=10}) => {
+  const filled = Math.round((value/max)*count);
+  return (
+    <div className="seg-bar" style={{gap:2}}>
+      {Array.from({length:count}).map((_,i)=>(
+        <div key={i} className="seg" style={{height:5,flex:1,background:i<filled?color:'var(--border)'}}/>
+      ))}
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────
+   TOGGLE
+   ───────────────────────────────────────── */
+const Toggle = ({on,onChange,label}) => (
+  <button
+    role="switch" aria-checked={on} aria-label={label}
+    onClick={onChange}
+    className={`tog${on?' on':''}`}
+  >
+    <div className="kn"/>
+    <span className="sr">{label}: {on?'włączone':'wyłączone'}</span>
+  </button>
+);
+
+/* ─────────────────────────────────────────
+   CORNER BRACKET WRAPPER
+   ───────────────────────────────────────── */
+const CB = ({children,className="",active=false,as:Tag="div",...rest}) => (
+  <Tag className={`cb${active?' act':''} ${className}`} {...rest}>
+    <span className="ct" aria-hidden="true"/>
+    <span className="cb2" aria-hidden="true"/>
+    {children}
+  </Tag>
+);
+
+/* ─────────────────────────────────────────
+   DATA: INITIAL + PRESETS + METADATA
+   ───────────────────────────────────────── */
+const INIT = {
+  layout:'Domyślny',vib:false,trig:false,sens:1.6,
+  dz_l_min:3,dz_l_max:50,dz_r_max:99,dz_trig:0,
+  ads_low:0.80,ads_high:1.00,trans:'Natychmiastowy',
+  curve:'Dynamiczny',assist:true,
+  sprint:'Auto. Sprint Taktyczny',sprint_del:0,
+  slide:'Hybrydowe',para:false,mantle:false,
+  armor:'Zastosuj jedną',interact:'Priorytet interakcji',
+  fov:110,ads_fov:'Zależne (Affected)',w_fov:'Szerokie (Wide)',
+  cas:90,blur:false,shake:50,
+  filter:'Filtr 2 (Oba)',hud:'Minimalne (Środek)',
+  cross:'Większa / Żółta',radar:'Kwadrat / Kontury Wł.',
+  audio:'Sucker Punch',mono:false
+};
+
+const PRESETS = {
+  performance:{
+    id:'performance',name:'Turniejowy',tag:'INPUT LAG',
+    desc:'Minimalne opóźnienia sprzętowe, zrównoważone progi deadzone.',
+    color:'var(--crit)',
+    metrics:{fps:'60',lag:'35',cpu:'MIN',fov:'105'},
+    overrides:{vib:false,trig:false,sens:1.8,dz_l_min:2,dz_l_max:45,dz_trig:0,ads_low:0.75,ads_high:0.90,curve:'Dynamiczny',assist:true,sprint:'Auto. Sprint Taktyczny',sprint_del:0,slide:'Hybrydowe',fov:110,ads_fov:'Zależne (Affected)'}
+  },
+  balanced:{
+    id:'balanced',name:'Zbalansowany',tag:'PS4 PRO',
+    desc:'Najwyższa ostrość FidelityFX CAS przy stabilnych 55–60 FPS.',
+    color:'var(--warn)',
+    metrics:{fps:'58',lag:'45',cpu:'MED',fov:'110'},
+    overrides:{vib:false,trig:false,sens:1.6,dz_l_min:4,dz_l_max:50,dz_trig:0,ads_low:0.80,ads_high:1.00,curve:'Dynamiczny',assist:true,sprint:'Auto. Sprint Taktyczny',slide:'Hybrydowe',fov:115,ads_fov:'Zależne (Affected)',cas:90}
+  },
+  movement:{
+    id:'movement',name:'Agresywny',tag:'CQC',
+    desc:'Ekstremalna czułość obrotu i skrócone animacje — slide cancel.',
+    color:'var(--info)',
+    metrics:{fps:'54',lag:'42',cpu:'HIGH',fov:'120'},
+    overrides:{vib:false,trig:false,sens:2.2,dz_l_min:3,dz_l_max:30,dz_trig:0,ads_low:0.85,ads_high:1.00,curve:'Dynamiczny',assist:true,sprint:'Auto. Sprint Taktyczny',slide:'Hybrydowe',fov:120,ads_fov:'Zależne (Affected)'}
+  }
+};
+
+const META = {
+  controller:{
+    title:'Kontroler',code:'01',icon:'gamepad',
+    warn:"Podłącz kontroler kablem USB i w systemie PS4/PS5 ustaw 'Użyj kabla USB' — eliminuje opóźnienie Bluetooth.",
+    items:[
+      {id:'layout',name:'Układ przycisków',isSelect:true,opts:['Domyślny','Taktyczny','Weteran taktyczny'],
+       path:{PS4:'Kontroler → Układ przycisków',PS5:'Kontroler → Układ przycisków',PC:'Controller → Button Layout'},
+       beg:'Taktyczny umożliwia slide cancel bez puszczania prawego analoga.',
+       adv:'Default/Tactical — slide-cancel prawym analogiem bez zwalniania celowania.'},
+      {id:'vib',name:'Wibracje',isToggle:true,
+       path:{PS4:'Ustawienia → Urządzenia → Kontrolery',PS5:'Akcesoria → Kontrolery → Siła wibracji → Wyłącz',PC:'Controller → Vibration → Off'},
+       beg:'Wyłącz — drżenie rąk psuje mikrokorektę odrzutu.',adv:'Wibration destroys muscle memory during recoil correction. Mandatory OFF.'},
+      {id:'trig',name:'Efekt triggerów L2/R2',isToggle:true,
+       path:{PS4:'Niedostępne na PS4',PS5:'Akcesoria → Kontrolery → Efekt triggerów → Wyłącz',PC:'Controller → Trigger Effect → Off'},
+       beg:'Usuwa opór mechaniczny — strzelasz szybciej.',adv:'Eliminuje opóźnienie sprzętowe sygnału trigger do 0 ms.'},
+      {id:'sens',name:'Czułość drążków',sub:'(poziom / pion)',isSlider:true,min:0.5,max:4.0,step:0.1,
+       path:{PS4:'Kontroler → Czułość drążków',PS5:'Kontroler → Czułość drążków',PC:'Controller → Stick Sensitivity'},
+       beg:'1.6 = klasyczne ustawienie 7/7. Zacznij tutaj.',adv:'Sweet spot pod RAA (Rotational Aim Assist). Wyższe wartości = szybsza rotacja, trudniejsza mikrokontrola.'},
+      {id:'dz_l_min',name:'Deadzone lewa (min)',isSlider:true,min:0,max:20,step:1,
+       path:{PS4:'Kontroler → Strefy martwe → Min. lewa',PS5:'Kontroler → Strefy martwe → Min. lewa',PC:'Inputs → Deadzone → Left Stick Min'},
+       beg:'Ustaw możliwie najniżej bez drift-efektu.',adv:'Redukuje opóźnienie fizyczne analogu — przyspiesza strafing i aktywację asysty.'},
+      {id:'dz_l_max',name:'Deadzone lewa (max)',isSlider:true,min:10,max:100,step:5,
+       path:{PS4:'Kontroler → Strefy martwe → Max lewa',PS5:'Kontroler → Strefy martwe → Max lewa',PC:'Inputs → Deadzone → Left Stick Max'},
+       beg:'Wartość 50 daje natychmiastowy pełny bieg.',adv:'50 wymusza instant sprint przy minimalnym wychyleniu — kluczowe dla slide-cancel loop.'},
+      {id:'dz_r_max',name:'Deadzone prawa (max)',isSlider:true,min:50,max:100,step:1,
+       path:{PS4:'Kontroler → Strefy martwe → Max prawa',PS5:'Kontroler → Strefy martwe → Max prawa',PC:'Inputs → Deadzone → Right Stick Max'},
+       beg:'99 = pełna prędkość obrotu na krawędzi analogu.',adv:'Liniowe przeniesienie pełnego wektora obrotu na granicy fizycznej muszli.'},
+      {id:'dz_trig',name:'Deadzone L2/R2',isSlider:true,min:0,max:10,step:1,
+       path:{PS4:'Kontroler → Strefy martwe → Spusty',PS5:'Kontroler → Strefy martwe → Spusty',PC:'Inputs → Deadzone → L2/R2'},
+       beg:'0 = strzał aktywuje się przy minimalnym wciśnięciu.',adv:'Eliminuje opóźnienie mechaniczne DualShock/DualSense — instant trigger response.'}
+    ]
+  },
+  aiming:{
+    title:'Celowanie',code:'02',icon:'crosshair',
+    items:[
+      {id:'ads_low',name:'Mnożnik ADS',sub:'(niskie powiększenie)',isSlider:true,min:0.50,max:1.50,step:0.05,
+       path:{PS4:'Celowanie → Mnożnik ADS (niski)',PS5:'Celowanie → Mnożnik ADS (niski)',PC:'Aiming → ADS Sensitivity (Low Zoom)'},
+       beg:'0.80 = łatwiejsze utrzymanie na celu z kolimatorów.',adv:'0.80 minimalizuje pozycjonowanie błędów w CQC i mid-range engagements.'},
+      {id:'ads_high',name:'Mnożnik ADS',sub:'(wysokie powiększenie)',isSlider:true,min:0.50,max:1.50,step:0.05,
+       path:{PS4:'Celowanie → Mnożnik ADS (wysoki)',PS5:'Celowanie → Mnożnik ADS (wysoki)',PC:'Aiming → ADS Sensitivity (High Zoom)'},
+       beg:'1.00 zachowuje stałą pamięć mięśniową przy snajperce.',adv:'1.00 = consistent flick-shot muscle memory niezależnie od zoomu.'},
+      {id:'trans',name:'Przejście czułości ADS',isSelect:true,opts:['Natychmiastowy','Po przybliżeniu','Stopniowy'],
+       path:{PS4:'Celowanie → Czas przejścia czułości',PS5:'Celowanie → Czas przejścia czułości',PC:'Aiming → ADS Sensitivity Transition'},
+       beg:'Natychmiastowy eliminuje opóźnienie zmiany czułości.',adv:'Instant — brak nieliniowej krzywej podczas trwania animacji ADS.'},
+      {id:'curve',name:'Krzywa reakcji celowania',isSelect:true,opts:['Standardowa','Liniowa','Dynamiczny'],
+       path:{PS4:'Celowanie → Typ krzywej reakcji',PS5:'Celowanie → Typ krzywej reakcji',PC:'Aiming → Aim Response Curve'},
+       beg:'Dynamiczny najlepiej współpracuje z Aim Assist.',adv:'S-shape curve — microcontrol w centrum, acceleration na krawędziach.'},
+      {id:'assist',name:'Asysta celowania',isToggle:true,
+       path:{PS4:'Celowanie → Asysta celowania',PS5:'Celowanie → Asysta celowania',PC:'Aiming → Target Aim Assist'},
+       beg:'Zawsze włączona — to klucz do wygrywania starć.',adv:'Wymaga ciągłego dryfu lewą gałką (RAA) do utrzymania magnetyzmu śledzenia.'}
+    ]
+  },
+  movement:{
+    title:'Ruch',code:'03',icon:'activity',
+    items:[
+      {id:'sprint',name:'Zachowanie sprintu',isSelect:true,opts:['Ręczny','Automatyczny','Auto. Sprint Taktyczny'],
+       path:{PS4:'Rozgrywka → Automatyczny sprint',PS5:'Rozgrywka → Automatyczny sprint',PC:'Gameplay → Automatic Sprint'},
+       beg:'Auto Sprint Taktyczny uruchamia najszybszy bieg od razu.',adv:'Auto Tac Sprint minimalizuje input lag animacji biegu — instant dodge window.'},
+      {id:'sprint_del',name:'Opóźnienie sprintu',isSlider:true,min:0,max:10,step:1,
+       path:{PS4:'Rozgrywka → Opóźnienie sprintu',PS5:'Rozgrywka → Opóźnienie sprintu',PC:'Gameplay → Tactical Sprint Delay'},
+       beg:'0 = brak sztucznego buforowania wejścia.',adv:'0 ms — usuwa engine-level input buffer. Instant sprint registration.'},
+      {id:'slide',name:'Wślizg i padanie',isSelect:true,opts:['Tapnięcie','Przytrzymanie','Hybrydowe'],
+       path:{PS4:'Rozgrywka → Zachowanie wślizgu',PS5:'Rozgrywka → Zachowanie wślizgu',PC:'Gameplay → Slide/Dive Behavior'},
+       beg:'Hybrydowe = najszybsza rejestracja wślizgu.',adv:'Hybrid eliminuje hold-time delay — natychmiastowy slide przy tap.'},
+      {id:'para',name:'Auto-spadochron',isToggle:true,
+       path:{PS4:'Rozgrywka → Spadochron',PS5:'Rozgrywka → Spadochron',PC:'Gameplay → Auto Parachute Deploy'},
+       beg:'Wyłącz = szybsze lądowanie. Pamiętaj o ręcznym otwarciu.',adv:'Zapobiega przypadkowym animacjom otwarcia blisko budynków i dachów.'},
+      {id:'mantle',name:'Asysta wspinania',isToggle:true,
+       path:{PS4:'Rozgrywka → Autowspinanie',PS5:'Rozgrywka → Autowspinanie',PC:'Gameplay → Ground Mantle'},
+       beg:'Wyłącz — postać nie wspina się sama podczas strzelania.',adv:'Prevents Mantle Lock — weapon animation freeze przy niskich murkach w CQC.'},
+      {id:'armor',name:'Płyty pancerza',isSelect:true,opts:['Zastosuj jedną','Zastosuj wszystkie'],
+       path:{PS4:'Rozgrywka → Zachowanie pancerza',PS5:'Rozgrywka → Zachowanie pancerza',PC:'Gameplay → Armor Plate Behavior'},
+       beg:'Jedna płyta = możliwość przerwania animacji atakiem.',adv:'Apply One — maksymalna elastyczność przerwania platingu przez sprint lub slide.'},
+      {id:'interact',name:'Interakcja / przeładowanie',isSelect:true,opts:['Domyślne','Priorytet przeładowania','Priorytet interakcji'],
+       path:{PS4:'Rozgrywka → Interakcja/przeładowanie',PS5:'Rozgrywka → Interakcja/przeładowanie',PC:'Gameplay → Interact/Reload Behavior'},
+       beg:'Priorytet interakcji = błyskawiczny loot jednym tapnięciem.',adv:'Prioritize Interact — critical do ultra-fast loot pickup przy starcie meczu.'}
+    ]
+  },
+  graphics:{
+    title:'Grafika',code:'04',icon:'monitor',
+    warn:"PS4 Pro miewa spadki FPS na dużych mapach. Poniższa konfiguracja optymalizuje GPU/CPU frame-times.",
+    items:[
+      {id:'fov',name:'Pole widzenia (FOV)',isSlider:true,min:80,max:120,step:5,
+       path:{PS4:'Grafika → Widok → Pole widzenia',PS5:'Grafika → Widok → Pole widzenia',PC:'Graphics → View → Field of View'},
+       beg:'110 = stabilne na PS4 Pro. 120 może obciążać CPU.',adv:'Wider FOV = mniejszy visual recoil. Optimal PS4 Pro zone: 108–112.'},
+      {id:'ads_fov',name:'ADS FOV',isSelect:true,opts:['Niezależne (Independent)','Zależne (Affected)'],
+       path:{PS4:'Grafika → Widok → ADS FOV',PS5:'Grafika → Widok → ADS FOV',PC:'Graphics → View → ADS FOV'},
+       beg:'Zależne zapobiega gwałtownemu przybliżeniu kamery.',adv:'Affected — skaluje visual recoil do globalnego FOV. Massive recoil control upgrade.'},
+      {id:'w_fov',name:'FOV broni',isSelect:true,opts:['Domyślne','Wąskie','Szerokie (Wide)'],
+       path:{PS4:'Grafika → Widok → Pole broni',PS5:'Grafika → Widok → Pole broni',PC:'Graphics → View → Weapon FOV'},
+       beg:'Szerokie = mniejsza broń, więcej otoczenia.',adv:'Wide — maksymalizuje peripheral visibility z masywnym rusznikarstwem.'},
+      {id:'cas',name:'FidelityFX CAS',sub:'(wyostrzanie)',isSlider:true,min:0,max:100,step:5,
+       path:{PS4:'Grafika → Jakość → Wyostrzanie',PS5:'Grafika → Jakość → Wyostrzanie',PC:'Graphics → Quality → Upscaling/Sharpening'},
+       beg:'90 = ostre krawędzie wrogów bez szumu.',adv:'CAS 90 niweluje blur z TAA — wrogowie wyraźniejsi w cieniach i krzakach.'},
+      {id:'blur',name:'Motion blur',isToggle:true,
+       path:{PS4:'Grafika → Rozmycie',PS5:'Grafika → Rozmycie',PC:'Graphics → Post Processing → Motion Blur'},
+       beg:'Wyłącz — czysty obraz przy obrotach kamery.',adv:'Disable uwalnia GPU cycles na Jaguar CPU architecture (PS4 Pro).'},
+      {id:'shake',name:'Ruch kamery (wstrząs)',isSlider:true,min:50,max:100,step:10,
+       path:{PS4:'Grafika → Widok → Ruch kamery',PS5:'Grafika → Widok → Ruch kamery',PC:'Graphics → View → Camera Movement'},
+       beg:'50% = minimalne trzęsienie pod ostrzałem artylerii.',adv:'50% — eliminuje forced camera destablization podczas gameplay stressors.'}
+    ]
+  },
+  audio:{
+    title:'Dźwięk i HUD',code:'05',icon:'headphones',
+    items:[
+      {id:'filter',name:'Filtr kolorów',isSelect:true,opts:['Brak','Filtr 1','Filtr 2 (Oba)','Filtr 3'],
+       path:{PS4:'Interfejs → Dostosowanie kolorów',PS5:'Interfejs → Dostosowanie kolorów',PC:'Interface → Color Customization'},
+       beg:'Filtr 2 ożywia kolory — wrogowie lepiej widoczni.',adv:'Filter 2 + Both + 100% — luminance boost ułatwia identyfikację w cieniach.'},
+      {id:'hud',name:'Marginesy HUD',isSelect:true,opts:['Szerokie','Średnie','Minimalne (Środek)'],
+       path:{PS4:'Interfejs → HUD → Bezpieczna strefa',PS5:'Interfejs → HUD → Bezpieczna strefa',PC:'Interface → HUD → Safe Area'},
+       beg:'Minimalne przesuwa minimapę bliżej środka — mniej ruchów oczu.',adv:'Compressed HUD skraca sakkadową drogę oka — szybsze odczytanie radaru.'},
+      {id:'cross',name:'Środkowa kropka',isSelect:true,opts:['Wyłączona','Domyślna','Większa / Żółta'],
+       path:{PS4:'Interfejs → HUD → Środkowa kropka',PS5:'Interfejs → HUD → Środkowa kropka',PC:'Interface → HUD → Center Dot'},
+       beg:'Duża żółta kropka — pewny punkt odniesienia przed ADS.',adv:'Stały anchor dla crosshair centering — klucz do pre-aim.'},
+      {id:'radar',name:'Minimapa',isSelect:true,opts:['Okrągła','Kwadrat / Kontury Wł.'],
+       path:{PS4:'Interfejs → HUD → Kształt minimapy',PS5:'Interfejs → HUD → Kształt minimapy',PC:'Interface → HUD → Minimap Shape'},
+       beg:'Kwadrat pokazuje 20% więcej terenu.',adv:'Square radar — taktyczny wymóg do UAV tracking i rotacji strefowych.'},
+      {id:'audio',name:'Miks audio',isSelect:true,opts:['Kino domowe','Słuchawki','Sucker Punch','Wzmocnienie basów'],
+       path:{PS4:'Audio → Miks dźwięku',PS5:'Audio → Miks dźwięku',PC:'Audio → Audio Mix'},
+       beg:'Sucker Punch = najlepsze pozycjonowanie kroków.',adv:'Sucker Punch / Boost Low — optimal frequency curve dla footstep detection.'},
+      {id:'mono',name:'Dźwięk mono',isToggle:true,
+       path:{PS4:'Audio → Dźwięk mono → Wyłącz',PS5:'Audio → Dźwięk mono → Wyłącz',PC:'Audio → Mono Audio → Off'},
+       beg:'ZOSTAW WYŁĄCZONE — niszczy kierunkowość dźwięku.',adv:'Merging stereo channels destroys 3D acoustic directional perception. Always OFF.'}
+    ]
+  }
+};
+
+const CATS = Object.keys(META);
+
+const SURVEY = [
+  {id:'platform',q:'Na jakiej platformie grasz?',
+   opts:[{v:'PS4',l:'PlayStation 4 / Slim',d:'Wydajność krytyczna — każda klatka się liczy.'},
+         {v:'PS4 Pro',l:'PlayStation 4 Pro',d:'Skalowanie 4K i FidelityFX CAS.'},
+         {v:'PS5',l:'PlayStation 5',d:'Do 120 FPS, szeroki FOV, DualSense.'},
+         {v:'PC',l:'Komputer (PC)',d:'Nieograniczona wydajność, pełna kontrola.'}]},
+  {id:'playstyle',q:'Twój styl gry?',
+   opts:[{v:'cqc',l:'Agresywny (CQC)',d:'Bliski dystans, wślizgi, wysoka czułość.',icon:'flame'},
+         {v:'balanced',l:'Zbalansowany',d:'Kontrola stref, flankowanie, precyzja.',icon:'target'},
+         {v:'sniper',l:'Snajper / daleki dystans',d:'Kontrola odrzutu, niski mnożnik ADS.',icon:'eye'}]},
+  {id:'display',q:'Twój ekran?',
+   opts:[{v:'tv_std',l:'Zwykły telewizor',d:'Input lag może być wyższy — ułatwienia aktywne.'},
+         {v:'tv_game',l:'TV Tryb Gry',d:'Zbalansowany czas reakcji.'},
+         {v:'monitor',l:'Monitor dla graczy',d:'Niski input lag — precyzyjne strefy martwe.'}]},
+  {id:'controller',q:'Jakiego kontrolera używasz?',
+   opts:[{v:'std',l:'Standardowy',d:'Bez łopatek — układ taktyczny.'},
+         {v:'pro',l:'Wyczynowy (łopatki)',d:'Dodatkowe przyciski z tyłu.'}]}
+];
+
+/* ─────────────────────────────────────────
+   PLAYER STATS  (mock / editable)
+   ───────────────────────────────────────── */
+const DEFAULT_STATS = {
+  callsign:'OPERATOR_01',
+  rank:55,
+  kd:1.84,
+  wins:47,
+  matches:312,
+  avgDmg:1240,
+  headshotPct:18,
+  gulagWin:62,
+  topPct:12,
+  playtime:148,
+};
+
+/* ─────────────────────────────────────────
+   APP
+   ───────────────────────────────────────── */
+const App = () => {
+  const [tab, setTab] = useState('controller');
+  const [advanced, setAdvanced] = useState(false);
+  const [preset, setPreset] = useState('balanced');
+  const [platform, setPlatform] = useState('PS4');
+  const [expanded, setExpanded] = useState(null);
+  const [cfg, setCfg] = useState({...INIT});
+  const [view, setView] = useState('config'); // 'config'|'stats'|'survey'
+  const [surveyStep, setSurveyStep] = useState(0);
+  const [surveyAns, setSurveyAns] = useState({platform:'PS4 Pro',playstyle:'balanced',display:'tv_game',controller:'std'});
+  const [shareOk, setShareOk] = useState(false);
+  const [importStatus, setImportStatus] = useState(null);
+  const [importInput, setImportInput] = useState('');
+  const [stats, setStats] = useState({...DEFAULT_STATS});
+  const [editingStats, setEditingStats] = useState(false);
+  const [statsInput, setStatsInput] = useState({...DEFAULT_STATS});
+
+  const catIdx = CATS.indexOf(tab);
+
+  // Load ?config= from URL
+  useEffect(()=>{
+    try{
+      const p = new URLSearchParams(window.location.search);
+      const enc = p.get('config');
+      if(enc){
+        const dec = JSON.parse(atob(enc));
+        const val={};
+        Object.keys(INIT).forEach(k=>{val[k]=dec[k]!==undefined?dec[k]:INIT[k]});
+        setCfg(val); setPreset('custom'); setView('config');
+        setImportStatus('success'); setTimeout(()=>setImportStatus(null),4000);
+      }
+    }catch(e){}
+  },[]);
+
+  const metrics = useMemo(()=>{
+    if(preset==='custom'){
+      return {fps:cfg.fov>115?'50':'58',lag:cfg.dz_l_min<3?'36':'45',cpu:cfg.fov>115?'HIGH':'MED',fov:`${cfg.fov}`};
+    }
+    return PRESETS[preset]?.metrics||PRESETS.balanced.metrics;
+  },[preset,cfg.fov,cfg.dz_l_min]);
+
+  const applyPreset = id => {
+    setPreset(id);
+    if(PRESETS[id]) setCfg(p=>({...p,...PRESETS[id].overrides}));
+  };
+
+  const set = (k,v) => { setPreset('custom'); setCfg(p=>({...p,[k]:v})); };
+  const tog = k => { setPreset('custom'); setCfg(p=>({...p,[k]:!p[k]})); };
+  const toggleExp = id => setExpanded(e=>e===id?null:id);
+
+  const doShare = () => {
+    try{
+      const enc = btoa(JSON.stringify(cfg));
+      const url = `${location.origin}${location.pathname}?config=${enc}`;
+      const ta = document.createElement('textarea');
+      ta.value=url; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      setShareOk(true); setTimeout(()=>setShareOk(false),3000);
+    }catch(e){ setImportStatus('error'); setTimeout(()=>setImportStatus(null),3000); }
+  };
+
+  const doImport = () => {
+    try{
+      const dec = JSON.parse(atob(importInput.trim()));
+      const val={};
+      Object.keys(INIT).forEach(k=>{val[k]=dec[k]!==undefined?dec[k]:INIT[k]});
+      setCfg(val); setPreset('custom'); setImportInput('');
+      setImportStatus('success'); setTimeout(()=>setImportStatus(null),4000);
+    }catch(e){ setImportStatus('error'); setTimeout(()=>setImportStatus(null),4000); }
+  };
+
+  const processSurvey = () => {
+    let a={...INIT};
+    setPlatform(surveyAns.platform);
+    if(surveyAns.platform==='PS4'){a.fov=105;a.cas=80;}
+    else if(surveyAns.platform==='PS4 Pro'){a.fov=110;a.cas=90;}
+    else{a.fov=120;a.cas=100;}
+    if(surveyAns.playstyle==='cqc'){a.sens=2.0;a.dz_l_max=30;}
+    else if(surveyAns.playstyle==='sniper'){a.sens=1.4;a.ads_low=0.70;a.ads_high=0.95;a.curve='Standardowa';}
+    else{a.sens=1.6;a.ads_low=0.80;}
+    if(surveyAns.display==='tv_std'){a.dz_l_min=5;a.filter='Filtr 2 (Oba)';}
+    else if(surveyAns.display==='monitor'){a.dz_l_min=2;}
+    a.layout=surveyAns.controller==='std'?'Taktyczny':'Domyślny';
+    setCfg(a); setPreset('custom'); setView('config');
+  };
+
+  const saveStats = () => {
+    setStats({...statsInput}); setEditingStats(false);
+  };
+
+  const kdColor = kd => kd>=2?'var(--g)':kd>=1.5?'var(--warn)':'var(--ink2)';
+  const winRate = () => Math.round((stats.wins/Math.max(stats.matches,1))*100);
+
+  /* ── RENDER ── */
+  return (
+    <div className="min-h-screen" style={{color:'var(--ink)',background:'var(--void)'}}>
+
+      {/* ═══ TOP HUD BAR ═══ */}
+      <header style={{background:'rgba(8,11,8,.9)',borderBottom:'1px solid var(--border)',backdropFilter:'blur(12px)',position:'sticky',top:0,zIndex:50}}>
+        <div style={{maxWidth:1440,margin:'0 auto',padding:'0 20px'}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',height:54,gap:12}}>
+
+            {/* Logo */}
+            <div style={{display:'flex',alignItems:'center',gap:10}}>
+              <div style={{width:36,height:36,background:'var(--p2)',border:'1.5px solid var(--border2)',display:'flex',alignItems:'center',justifyContent:'center',clipPath:'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))'}}>
+                <I n="target" sz={16} cls="" style={{color:'var(--g)'}}/>
+              </div>
+              <div>
+                <div className="fd" style={{fontSize:22,lineHeight:1,letterSpacing:'.08em'}}>
+                  WZ <span style={{color:'var(--g)'}}>// OPERATOR</span>
+                </div>
+                <div className="fm" style={{fontSize:9,color:'var(--ink3)',letterSpacing:'.25em',textTransform:'uppercase'}}>Tactical Config System v5.0</div>
+              </div>
+            </div>
+
+            {/* Nav pills */}
+            <nav style={{display:'flex',gap:2,background:'var(--p1)',padding:3,border:'1px solid var(--border)'}}>
+              {[['config','settings','Konfiguracja'],['stats','user','Statystyki'],['survey','sparkles','Kreator']].map(([v,ic,lb])=>(
+                <button key={v} onClick={()=>setView(v)}
+                  style={{padding:'6px 14px',fontFamily:'JetBrains Mono',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.15em',
+                    background:view===v?'var(--g)':'transparent',color:view===v?'var(--void)':'var(--ink3)',
+                    border:'none',cursor:'pointer',display:'flex',alignItems:'center',gap:6,transition:'all .15s'}}>
+                  <I n={ic} sz={12}/>
+                  <span className="hidden-xs">{lb}</span>
+                </button>
+              ))}
+            </nav>
+
+            {/* Right controls */}
+            <div style={{display:'flex',alignItems:'center',gap:8}}>
+              <div style={{display:'flex',gap:2,background:'var(--p1)',padding:3,border:'1px solid var(--border)'}}>
+                {['Start','PRO'].map((l,i)=>(
+                  <button key={l} onClick={()=>setAdvanced(!!i)}
+                    aria-pressed={advanced===!!i}
+                    style={{padding:'5px 12px',fontFamily:'JetBrains Mono',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.12em',
+                      background:advanced===!!i?(i?'var(--gs)':'var(--p3)'):'transparent',
+                      color:advanced===!!i?(i?'var(--g)':'var(--ink)'):'var(--ink3)',
+                      border:advanced===!!i&&i?'1px solid rgba(168,255,62,.3)':'1px solid transparent',
+                      cursor:'pointer',transition:'all .15s'}}>
+                    {l}
+                  </button>
+                ))}
+              </div>
+              {/* Live signal */}
+              <div style={{display:'flex',alignItems:'center',gap:5,padding:'5px 10px',background:'var(--p1)',border:'1px solid var(--border)'}}>
+                <div className="pulse" style={{width:6,height:6,background:'var(--g)',borderRadius:'50%'}}/>
+                <span className="fm" style={{fontSize:9,color:'var(--ink3)',letterSpacing:'.2em',textTransform:'uppercase'}}>LIVE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="deco"/>
+      </header>
+
+      {/* ═══ SURVEY VIEW ═══ */}
+      {view==='survey' && (
+        <section style={{maxWidth:680,margin:'0 auto',padding:'48px 20px'}} className="fi">
+          <CB className="fi" style={{background:'var(--p1)',border:'1px solid var(--border)',padding:32,position:'relative',overflow:'hidden'}}>
+            {/* Progress bar */}
+            <div style={{position:'absolute',top:0,left:0,right:0,height:3,background:'var(--border)'}}>
+              <div className="sw" style={{height:'100%',background:'var(--g)',width:`${((surveyStep+1)/SURVEY.length)*100}%`}}/>
+            </div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24,marginTop:8}}>
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <I n="sparkles" sz={14} cls="" style={{color:'var(--g)'}}/>
+                <span className="fm" style={{fontSize:10,color:'var(--g)',letterSpacing:'.25em',textTransform:'uppercase',fontWeight:700}}>Kalibracja operatora</span>
+              </div>
+              <span className="fm" style={{fontSize:10,color:'var(--ink3)',letterSpacing:'.1em'}}>{`${String(surveyStep+1).padStart(2,'0')} / ${String(SURVEY.length).padStart(2,'0')}`}</span>
+            </div>
+            <h2 className="fd" style={{fontSize:28,color:'var(--ink)',textTransform:'uppercase',letterSpacing:'.06em',marginBottom:20}}>
+              {SURVEY[surveyStep].q}
+            </h2>
+            <div role="radiogroup" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:24}}>
+              {SURVEY[surveyStep].opts.map(o=>{
+                const sel = surveyAns[SURVEY[surveyStep].id]===o.v;
+                return (
+                  <CB key={o.v} as="button" active={sel}
+                    onClick={()=>setSurveyAns(p=>({...p,[SURVEY[surveyStep].id]:o.v}))}
+                    role="radio" aria-checked={sel}
+                    style={{padding:'14px 16px',textAlign:'left',background:sel?'var(--gs)':'var(--void)',
+                      border:`1px solid ${sel?'var(--g)':'var(--border)'}`,cursor:'pointer',transition:'all .15s',display:'flex',flexDirection:'column',gap:4}}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                      <span style={{fontWeight:700,fontSize:13,color:'var(--ink)',textTransform:'uppercase',letterSpacing:'.05em'}}>{o.l}</span>
+                      <span style={{width:14,height:14,border:`1.5px solid ${sel?'var(--g)':'var(--border2)'}`,background:sel?'var(--g)':'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                        {sel && <I n="check" sz={10}/>}
+                      </span>
+                    </div>
+                    <span style={{fontSize:11,color:'var(--ink3)',lineHeight:1.4}}>{o.d}</span>
+                  </CB>
+                );
+              })}
+            </div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',borderTop:'1px solid var(--border)',paddingTop:20}}>
+              {surveyStep>0
+                ? <button onClick={()=>setSurveyStep(p=>p-1)} style={{display:'flex',alignItems:'center',gap:6,fontFamily:'JetBrains Mono',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.15em',color:'var(--ink3)',background:'none',border:'none',cursor:'pointer'}}>
+                    <I n="arrowL" sz={13}/> Wstecz
+                  </button>
+                : <button onClick={()=>setView('config')} style={{fontFamily:'JetBrains Mono',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.15em',color:'var(--ink3)',background:'none',border:'none',cursor:'pointer'}}>Pomiń</button>
+              }
+              <button
+                onClick={()=>surveyStep<SURVEY.length-1?setSurveyStep(p=>p+1):processSurvey()}
+                style={{display:'flex',alignItems:'center',gap:8,padding:'10px 20px',background:'var(--g)',color:'var(--void)',fontFamily:'JetBrains Mono',fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'.15em',border:'none',cursor:'pointer',clipPath:'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))'}}>
+                {surveyStep===SURVEY.length-1?'Generuj profil':'Dalej'}
+                <I n="arrowR" sz={13}/>
+              </button>
+            </div>
+          </CB>
+        </section>
+      )}
+
+      {/* ═══ STATS VIEW ═══ */}
+      {view==='stats' && (
+        <section id="main" style={{maxWidth:1440,margin:'0 auto',padding:'32px 20px'}} className="fi">
+          {/* Header */}
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:24,flexWrap:'wrap',gap:12}}>
+            <div>
+              <div className="fm" style={{fontSize:10,color:'var(--ink3)',letterSpacing:'.25em',textTransform:'uppercase',marginBottom:4}}>Operator Profile</div>
+              <h2 className="fd" style={{fontSize:36,color:'var(--g)',textTransform:'uppercase',letterSpacing:'.1em',lineHeight:1}}>
+                {stats.callsign}
+              </h2>
+              <div className="fd" style={{fontSize:18,color:'var(--ink2)',letterSpacing:'.08em'}}>
+                RANK {stats.rank} // KD {stats.kd.toFixed(2)}
+              </div>
+            </div>
+            <button onClick={()=>{setStatsInput({...stats});setEditingStats(true);}}
+              style={{display:'flex',alignItems:'center',gap:6,padding:'8px 16px',background:'var(--p2)',border:'1px solid var(--border2)',color:'var(--ink2)',fontFamily:'JetBrains Mono',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.15em',cursor:'pointer'}}>
+              <I n="settings" sz={12}/> Edytuj statystyki
+            </button>
+          </div>
+          <div className="deco" style={{marginBottom:24}}/>
+
+          {/* Stats grid */}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:16,marginBottom:24}}>
+            {/* K/D Ratio */}
+            <CB style={{background:'var(--p1)',border:'1px solid var(--border)',padding:20}}>
+              <div className="fm" style={{fontSize:9,color:'var(--ink3)',letterSpacing:'.25em',textTransform:'uppercase',marginBottom:12}}>K/D Ratio</div>
+              <div className="fd" style={{fontSize:48,lineHeight:1,color:kdColor(stats.kd)}}>{stats.kd.toFixed(2)}</div>
+              <div style={{marginTop:10}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                  <span className="fm" style={{fontSize:9,color:'var(--ink3)'}}>TARGET: 2.00</span>
+                  <span className="fm" style={{fontSize:9,color:kdColor(stats.kd)}}>{Math.round((stats.kd/2)*100)}%</span>
+                </div>
+                <SegBar value={stats.kd} max={3} color={kdColor(stats.kd)} count={10}/>
+              </div>
+              <div className="tip" style={{marginTop:10}}>
+                <span className="fm" style={{fontSize:9,color:'var(--ink3)',borderBottom:'1px dashed var(--border2)',cursor:'help'}}>Co to znaczy?</span>
+                <div className="tip-box">K/D &gt; 1.5 = top 15% graczy Warzone</div>
+              </div>
+            </CB>
+
+            {/* Win Rate */}
+            <CB style={{background:'var(--p1)',border:'1px solid var(--border)',padding:20}}>
+              <div className="fm" style={{fontSize:9,color:'var(--ink3)',letterSpacing:'.25em',textTransform:'uppercase',marginBottom:12}}>Win Rate</div>
+              <div style={{display:'flex',alignItems:'center',gap:16}}>
+                <ArcRing value={winRate()} max={100} size={80} stroke={6} color="var(--warn)" label="WIN %"/>
+                <div>
+                  <div className="fd" style={{fontSize:24,color:'var(--warn)',lineHeight:1}}>{stats.wins} <span style={{fontSize:14,color:'var(--ink3)'}}>win</span></div>
+                  <div className="fm" style={{fontSize:10,color:'var(--ink3)',marginTop:4}}>{stats.matches} meczów</div>
+                  <div className="fm" style={{fontSize:9,color:'var(--ink3)',marginTop:2}}>Top {stats.topPct}% lobbies</div>
+                </div>
+              </div>
+            </CB>
+
+            {/* Avg Damage */}
+            <CB style={{background:'var(--p1)',border:'1px solid var(--border)',padding:20}}>
+              <div className="fm" style={{fontSize:9,color:'var(--ink3)',letterSpacing:'.25em',textTransform:'uppercase',marginBottom:12}}>Śr. obrażenia / mecz</div>
+              <div className="fd" style={{fontSize:42,color:'var(--info)',lineHeight:1}}>{stats.avgDmg.toLocaleString()}</div>
+              <div style={{marginTop:10}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                  <span className="fm" style={{fontSize:9,color:'var(--ink3)'}}>PRO THRESHOLD: 2000</span>
+                  <span className="fm" style={{fontSize:9,color:'var(--info)'}}>{Math.round((stats.avgDmg/2000)*100)}%</span>
+                </div>
+                <SegBar value={stats.avgDmg} max={2500} color="var(--info)" count={12}/>
+              </div>
+              <div className="tip" style={{marginTop:8}}>
+                <span className="fm" style={{fontSize:9,color:'var(--ink3)',borderBottom:'1px dashed var(--border2)',cursor:'help'}}>Jak poprawić?</span>
+                <div className="tip-box">Przesuń FOV na 110–115, włącz ADS FOV Affected</div>
+              </div>
+            </CB>
+
+            {/* Gulag */}
+            <CB style={{background:'var(--p1)',border:'1px solid var(--border)',padding:20}}>
+              <div className="fm" style={{fontSize:9,color:'var(--ink3)',letterSpacing:'.25em',textTransform:'uppercase',marginBottom:12}}>Gulag Win %</div>
+              <div style={{display:'flex',alignItems:'center',gap:16}}>
+                <ArcRing value={stats.gulagWin} max={100} size={80} stroke={6} color={stats.gulagWin>=60?'var(--g)':'var(--crit)'} label="GULAG"/>
+                <div>
+                  <div className="fd" style={{fontSize:24,color:stats.gulagWin>=60?'var(--g)':'var(--crit)',lineHeight:1}}>{stats.gulagWin}%</div>
+                  <div className="fm" style={{fontSize:10,color:'var(--ink3)',marginTop:4}}>{stats.gulagWin>=60?'✓ Dominujesz':'↓ Poprawa konieczna'}</div>
+                </div>
+              </div>
+              <div className="tip" style={{marginTop:8}}>
+                <span className="fm" style={{fontSize:9,color:'var(--ink3)',borderBottom:'1px dashed var(--border2)',cursor:'help'}}>Tip</span>
+                <div className="tip-box">Sens 1.4–1.8 + Curve Dynamic = gulag specialist</div>
+              </div>
+            </CB>
+
+            {/* Headshot % */}
+            <CB style={{background:'var(--p1)',border:'1px solid var(--border)',padding:20}}>
+              <div className="fm" style={{fontSize:9,color:'var(--ink3)',letterSpacing:'.25em',textTransform:'uppercase',marginBottom:12}}>Headshot %</div>
+              <div className="fd" style={{fontSize:42,color:'var(--g)',lineHeight:1}}>{stats.headshotPct}<span style={{fontSize:20}}>%</span></div>
+              <div style={{marginTop:10}}>
+                <SegBar value={stats.headshotPct} max={40} color="var(--g)" count={10}/>
+                <div className="fm" style={{fontSize:9,color:'var(--ink3)',marginTop:4}}>
+                  {stats.headshotPct<15?'↑ Cel wyżej — ADS low = 0.75':'✓ Dobra precyzja'}
+                </div>
+              </div>
+            </CB>
+
+            {/* Playtime */}
+            <CB style={{background:'var(--p1)',border:'1px solid var(--border)',padding:20}}>
+              <div className="fm" style={{fontSize:9,color:'var(--ink3)',letterSpacing:'.25em',textTransform:'uppercase',marginBottom:12}}>Czas gry</div>
+              <div className="fd" style={{fontSize:36,color:'var(--ink)',lineHeight:1}}>{stats.playtime}<span style={{fontSize:16,color:'var(--ink3)'}}> h</span></div>
+              <div className="fm" style={{fontSize:10,color:'var(--ink3)',marginTop:8}}>
+                {stats.matches} meczów · śr. {Math.round(stats.playtime/Math.max(stats.matches,1)*60)} min/mecz
+              </div>
+              <div style={{marginTop:10,padding:'8px 10px',background:'var(--void)',border:'1px solid var(--border)'}}>
+                <div className="fm" style={{fontSize:9,color:'var(--g)',letterSpacing:'.1em'}}>CONFIG TIP</div>
+                <div className="fm" style={{fontSize:10,color:'var(--ink2)',marginTop:2,lineHeight:1.4}}>
+                  {stats.playtime>200?'Veteran — rozważ preset Turniejowy dla edge cases.':'Rozgrzewasz się — preset Zbalansowany to Twój cel.'}
+                </div>
+              </div>
+            </CB>
+          </div>
+
+          {/* Config recommendations from stats */}
+          <CB style={{background:'var(--p1)',border:'1px solid var(--border)',padding:20,marginBottom:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16}}>
+              <I n="zap" sz={14} cls="" style={{color:'var(--g)'}}/>
+              <span className="fd" style={{fontSize:20,color:'var(--g)',textTransform:'uppercase',letterSpacing:'.08em'}}>Rekomendacje konfiguracji na podstawie Twoich statów</span>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:10}}>
+              {[
+                {stat:'K/D',check:stats.kd<1.5,tip:'Twoje K/D sugeruje problemy z celowaniem — spróbuj Sensitivity 1.4–1.6, Deadzone min: 3, Curve: Dynamic.',ok:'K/D ok — utrzymuj obecną czułość.'},
+                {stat:'Gulag',check:stats.gulagWin<55,tip:'Niski Gulag Win — ustaw ADS Low Multiplier na 0.75 i wyłącz wibracje dla lepszej mikrokorekty.',ok:'Gulag ok — skuteczna mikrokorekta.'},
+                {stat:'Headshot',check:stats.headshotPct<15,tip:'Mały % headshot — zmniejsz FOV do 105 dla lepszej widoczności celów i ADS High = 0.95.',ok:'Precyzja ok — obecne ustawienia celowania działają.'},
+                {stat:'Damage',check:stats.avgDmg<1000,tip:'Niskie obrażenia — sprawdź FOV (110+), FidelityFX CAS 90%, Filter 2 dla lepszej widoczności.',ok:'Dobre obrażenia — grafika i audio skonfigurowane optymalnie.'},
+              ].map(r=>(
+                <div key={r.stat} style={{padding:'12px 14px',background:'var(--void)',border:`1px solid ${r.check?'rgba(255,64,64,.3)':'rgba(168,255,62,.2)'}`,display:'flex',gap:10,alignItems:'flex-start'}}>
+                  <I n={r.check?'alert':'shield'} sz={14} cls="" style={{color:r.check?'var(--crit)':'var(--g)',flexShrink:0,marginTop:2}}/>
+                  <div>
+                    <div className="fm" style={{fontSize:9,fontWeight:700,color:r.check?'var(--crit)':'var(--g)',textTransform:'uppercase',letterSpacing:'.15em',marginBottom:3}}>{r.stat}</div>
+                    <div className="fm" style={{fontSize:10,color:'var(--ink2)',lineHeight:1.5}}>{r.check?r.tip:r.ok}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CB>
+
+          {/* Edit stats modal */}
+          {editingStats && (
+            <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,.85)',zIndex:200,display:'flex',alignItems:'center',justifyContent:'center',padding:20}} className="fi">
+              <CB style={{background:'var(--p1)',border:'1px solid var(--border)',padding:28,width:'100%',maxWidth:480}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
+                  <span className="fd" style={{fontSize:22,color:'var(--g)',textTransform:'uppercase'}}>Edytuj profil</span>
+                  <button onClick={()=>setEditingStats(false)} style={{background:'none',border:'none',color:'var(--ink3)',cursor:'pointer'}}><I n="x" sz={18}/></button>
+                </div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:20}}>
+                  {[
+                    ['callsign','Callsign','text'],
+                    ['kd','K/D Ratio','number'],
+                    ['wins','Wygrane','number'],
+                    ['matches','Mecze','number'],
+                    ['avgDmg','Śr. obrażenia','number'],
+                    ['headshotPct','Headshot %','number'],
+                    ['gulagWin','Gulag Win %','number'],
+                    ['rank','Ranga','number'],
+                    ['playtime','Czas gry (h)','number'],
+                    ['topPct','Top %','number'],
+                  ].map(([k,lb,t])=>(
+                    <div key={k} style={{gridColumn:k==='callsign'?'1/-1':'auto'}}>
+                      <label className="fm" style={{fontSize:9,color:'var(--ink3)',textTransform:'uppercase',letterSpacing:'.15em',display:'block',marginBottom:4}}>{lb}</label>
+                      <input type={t} value={statsInput[k]}
+                        onChange={e=>setStatsInput(p=>({...p,[k]:t==='number'?parseFloat(e.target.value)||0:e.target.value}))}
+                        style={{width:'100%',background:'var(--void)',border:'1px solid var(--border2)',color:'var(--ink)',fontFamily:'JetBrains Mono',fontSize:12,padding:'7px 10px',outline:'none'}}/>
+                    </div>
+                  ))}
+                </div>
+                <div style={{display:'flex',gap:8}}>
+                  <button onClick={saveStats}
+                    style={{flex:1,padding:'10px 0',background:'var(--g)',color:'var(--void)',fontFamily:'JetBrains Mono',fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'.15em',border:'none',cursor:'pointer',clipPath:'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))'}}>
+                    Zapisz
+                  </button>
+                  <button onClick={()=>setEditingStats(false)}
+                    style={{padding:'10px 20px',background:'var(--p2)',color:'var(--ink2)',fontFamily:'JetBrains Mono',fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'.1em',border:'1px solid var(--border2)',cursor:'pointer'}}>
+                    Anuluj
+                  </button>
+                </div>
+              </CB>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ═══ CONFIG VIEW ═══ */}
+      {view==='config' && (
+        <main id="main" style={{maxWidth:1440,margin:'0 auto',padding:'24px 20px'}} className="fi">
+
+          {/* Preset + Share row */}
+          <div style={{display:'grid',gridTemplateColumns:'1fr auto',gap:16,marginBottom:20}}>
+
+            {/* Presets */}
+            <div style={{background:'var(--p1)',border:'1px solid var(--border)',padding:'16px 20px'}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12,flexWrap:'wrap',gap:8}}>
+                <div style={{display:'flex',alignItems:'center',gap:6}}>
+                  <I n="bullet" sz={13} cls="" style={{color:'var(--g)'}}/>
+                  <span className="fm" style={{fontSize:9,color:'var(--ink3)',textTransform:'uppercase',letterSpacing:'.25em'}}>Profil bazowy</span>
+                </div>
+                {preset==='custom' && (
+                  <span className="fm" style={{fontSize:9,background:'rgba(56,217,245,.08)',color:'var(--info)',border:'1px solid rgba(56,217,245,.25)',padding:'2px 8px',textTransform:'uppercase',letterSpacing:'.15em',fontWeight:700}}>
+                    CUSTOM
+                  </span>
+                )}
+              </div>
+              <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+                {Object.values(PRESETS).map(p=>{
+                  const sel=preset===p.id;
+                  return(
+                    <CB key={p.id} as="button" active={sel}
+                      onClick={()=>applyPreset(p.id)}
+                      style={{flex:'1 1 160px',padding:'12px 16px',textAlign:'left',background:sel?'var(--p2)':'var(--void)',
+                        border:`1px solid ${sel?p.color:'var(--border)'}`,cursor:'pointer',transition:'all .15s',
+                        boxShadow:sel?`0 0 18px ${p.color}22`:undefined}}>
+                      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
+                        <span className="fm" style={{fontSize:8,color:'var(--ink3)',textTransform:'uppercase',letterSpacing:'.2em'}}>Preset</span>
+                        <span className="fm" style={{fontSize:8,color:p.color,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase'}}>{p.tag}</span>
+                      </div>
+                      <div className="fd" style={{fontSize:18,color:sel?p.color:'var(--ink)',textTransform:'uppercase',letterSpacing:'.06em',display:'flex',alignItems:'center',gap:6}}>
+                        {p.name} {sel&&<I n="check" sz={13}/>}
+                      </div>
+                      <div style={{fontSize:10,color:'var(--ink3)',marginTop:4,lineHeight:1.4}}>{p.desc}</div>
+                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:4,marginTop:10}}>
+                        {Object.entries(p.metrics).map(([k,v])=>(
+                          <div key={k} style={{background:'var(--void)',border:'1px solid var(--border)',padding:'3px 6px'}}>
+                            <div className="fm" style={{fontSize:8,color:'var(--ink3)',textTransform:'uppercase'}}>{k}</div>
+                            <div className="fm" style={{fontSize:11,color:p.color,fontWeight:700}}>{v}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </CB>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Share panel */}
+            <div style={{background:'var(--p1)',border:'1px solid var(--border)',padding:'16px 20px',minWidth:260,display:'flex',flexDirection:'column',gap:12}}>
+              <div style={{display:'flex',alignItems:'center',gap:6}}>
+                <I n="share" sz={13} cls="" style={{color:'var(--g)'}}/>
+                <span className="fm" style={{fontSize:9,color:'var(--ink3)',textTransform:'uppercase',letterSpacing:'.25em'}}>Udostępnij</span>
+              </div>
+              <button onClick={doShare}
+                style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,padding:'9px 0',background:'var(--g)',color:'var(--void)',fontFamily:'JetBrains Mono',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.15em',border:'none',cursor:'pointer',clipPath:'polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px))'}}>
+                <I n={shareOk?'clipOk':'copy'} sz={12}/>
+                {shareOk?'Skopiowano':'Kopiuj link'}
+              </button>
+              <div style={{display:'flex',gap:6,background:'var(--void)',border:'1px solid var(--border)',padding:4}}>
+                <label htmlFor="imp" className="sr">Klucz importu</label>
+                <input id="imp" type="text" placeholder="Wklej klucz…" value={importInput}
+                  onChange={e=>setImportInput(e.target.value)}
+                  style={{flex:1,background:'transparent',border:'none',fontFamily:'JetBrains Mono',fontSize:10,color:'var(--ink)',outline:'none',padding:'4px 6px'}}/>
+                <button onClick={doImport}
+                  style={{padding:'4px 10px',background:'var(--p2)',border:'1px solid var(--border2)',color:'var(--ink2)',fontFamily:'JetBrains Mono',fontSize:9,fontWeight:700,textTransform:'uppercase',letterSpacing:'.1em',cursor:'pointer'}}>
+                  Import
+                </button>
+              </div>
+              {importStatus && (
+                <div role="status" className="fm"
+                  style={{padding:'6px 10px',fontSize:9,fontWeight:700,textTransform:'uppercase',letterSpacing:'.15em',textAlign:'center',
+                    background:importStatus==='success'?'rgba(168,255,62,.08)':'rgba(255,64,64,.08)',
+                    color:importStatus==='success'?'var(--g)':'var(--crit)',
+                    border:`1px solid ${importStatus==='success'?'rgba(168,255,62,.25)':'rgba(255,64,64,.25)'}`}}>
+                  {importStatus==='success'?'✓ Wczytano konfigurację':'✗ Błędny klucz'}
+                </div>
+              )}
+
+              {/* Live telemetry mini */}
+              <div style={{borderTop:'1px solid var(--border)',paddingTop:12}}>
+                <div className="fm" style={{fontSize:8,color:'var(--ink3)',textTransform:'uppercase',letterSpacing:'.25em',marginBottom:8}}>Telemetria (szac.)</div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:4}}>
+                  {[['FPS',metrics.fps,'var(--g)'],['LAG',metrics.lag+'ms','var(--warn)'],['CPU',metrics.cpu,'var(--ink2)'],['FOV',metrics.fov,'var(--info)']].map(([k,v,c])=>(
+                    <div key={k} style={{background:'var(--void)',border:'1px solid var(--border)',padding:'5px 8px'}}>
+                      <div className="fm" style={{fontSize:7,color:'var(--ink3)',textTransform:'uppercase',letterSpacing:'.1em'}}>{k}</div>
+                      <div className="fm" style={{fontSize:12,color:c,fontWeight:700,lineHeight:1.2}}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main workspace */}
+          <div style={{display:'grid',gridTemplateColumns:'220px 1fr',gap:16,alignItems:'start'}}>
+
+            {/* Sidebar nav */}
+            <aside>
+              <nav aria-label="Kategorie ustawień" style={{background:'var(--p1)',border:'1px solid var(--border)',padding:6}}>
+                <div className="fm" style={{fontSize:8,color:'var(--ink3)',textTransform:'uppercase',letterSpacing:'.25em',padding:'6px 10px 8px'}}>Kategorie</div>
+                {CATS.map(k=>{
+                  const c=META[k]; const act=tab===k;
+                  return(
+                    <button key={k} onClick={()=>{setTab(k);setExpanded(null);}} aria-current={act}
+                      style={{display:'flex',alignItems:'center',gap:10,width:'100%',padding:'9px 10px',textAlign:'left',
+                        background:act?'var(--p2)':'transparent',
+                        borderLeft:`2px solid ${act?'var(--g)':'transparent'}`,
+                        color:act?'var(--ink)':'var(--ink3)',border:'none',cursor:'pointer',transition:'all .15s'}}>
+                      <span className="fm" style={{fontSize:9,fontWeight:700,color:act?'var(--g)':'var(--ink3)',minWidth:18}}>{c.code}</span>
+                      <I n={c.icon} sz={13}/>
+                      <span style={{fontWeight:700,fontSize:11,textTransform:'uppercase',letterSpacing:'.1em'}}>{c.title}</span>
+                    </button>
+                  );
+                })}
+              </nav>
+
+              {/* Quick tips box */}
+              <div style={{marginTop:12,background:'var(--p1)',border:'1px solid var(--border)',padding:16}}>
+                <div className="fm" style={{fontSize:8,color:'var(--g)',textTransform:'uppercase',letterSpacing:'.25em',marginBottom:10}}>Szybkie porady</div>
+                <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                  {[
+                    advanced
+                      ? ['skull','RAA Farming','Utrzymuj lewy analog w ciągłym dryf-ruchu ~10% wychylenia — magnetyzm asysty jest aktywny tylko w ruchu.']
+                      : ['target','Pierwsze kroki','Zacznij od presetów. Kreator Adaptacyjny dobierze ustawienia do Twojego stylu.'],
+                    advanced
+                      ? ['flame','Slide-Cancel Loop','Sprint → Slide → Sprint w 0.2s oknie. Hybrydowe + Auto Tac Sprint = najszybsza pętla.']
+                      : ['zap','Najważniejsze','Wyłącz wibracje i Motion Blur. Te dwa ustawienia najbardziej wpływają na precyzję.'],
+                  ].map(([ic,t,d],i)=>(
+                    <div key={i} style={{padding:'8px 10px',background:'var(--void)',border:'1px solid var(--border)'}}>
+                      <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:4}}>
+                        <I n={ic} sz={11} cls="" style={{color:'var(--g)'}}/>
+                        <span className="fm" style={{fontSize:9,color:'var(--g)',fontWeight:700,textTransform:'uppercase',letterSpacing:'.1em'}}>{t}</span>
+                      </div>
+                      <p className="fm" style={{fontSize:9.5,color:'var(--ink3)',lineHeight:1.5}}>{d}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </aside>
+
+            {/* Settings panel */}
+            <section>
+              {/* Category header */}
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14,flexWrap:'wrap',gap:10}}>
+                <div style={{display:'flex',alignItems:'center',gap:10}}>
+                  <span className="fd" style={{fontSize:32,color:'var(--g)',lineHeight:1}}>{META[tab].code}</span>
+                  <div style={{width:1,height:32,background:'var(--border)'}}/>
+                  <div>
+                    <div className="fd" style={{fontSize:28,color:'var(--ink)',textTransform:'uppercase',letterSpacing:'.06em',lineHeight:1}}>{META[tab].title}</div>
+                    <div className="fm" style={{fontSize:9,color:'var(--ink3)',letterSpacing:'.2em',textTransform:'uppercase'}}>{META[tab].items.length} ustawień</div>
+                  </div>
+                </div>
+                {/* Platform selector */}
+                <div style={{display:'flex',gap:2,background:'var(--p1)',padding:3,border:'1px solid var(--border)'}}>
+                  <span className="fm" style={{fontSize:8,color:'var(--ink3)',padding:'4px 8px',textTransform:'uppercase',letterSpacing:'.1em',display:'flex',alignItems:'center'}}>Ścieżka:</span>
+                  {['PS4','PS5','PC'].map(p=>(
+                    <button key={p} onClick={()=>setPlatform(p)} aria-pressed={platform===p}
+                      style={{padding:'5px 12px',fontFamily:'JetBrains Mono',fontSize:10,fontWeight:700,
+                        background:platform===p?'var(--g)':'transparent',color:platform===p?'var(--void)':'var(--ink3)',
+                        border:'none',cursor:'pointer',transition:'all .15s'}}>
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {META[tab].warn && (
+                <div style={{padding:'10px 14px',background:'rgba(255,184,48,.04)',borderLeft:'2px solid var(--warn)',marginBottom:14,display:'flex',gap:10,alignItems:'flex-start'}}>
+                  <I n="alert" sz={13} cls="" style={{color:'var(--warn)',flexShrink:0,marginTop:1}}/>
+                  <p className="fm" style={{fontSize:10,color:'var(--ink2)',lineHeight:1.6}}>{META[tab].warn}</p>
+                </div>
+              )}
+
+              {/* Settings grid */}
+              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:10}}>
+                {META[tab].items.map(item=>{
+                  const val=cfg[item.id];
+                  const isExp=expanded===item.id;
+                  return(
+                    <CB key={item.id}
+                      style={{background:'var(--p1)',border:'1px solid var(--border)',padding:'14px 16px',display:'flex',flexDirection:'column',gap:0,transition:'border-color .15s'}}>
+
+                      {/* Name + control row */}
+                      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:10,marginBottom:10}}>
+                        <div>
+                          <div style={{fontWeight:700,fontSize:11,color:'var(--ink)',textTransform:'uppercase',letterSpacing:'.1em'}}>{item.name}</div>
+                          {item.sub && <div className="fm" style={{fontSize:9,color:'var(--ink3)',marginTop:2,letterSpacing:'.05em'}}>{item.sub}</div>}
+                        </div>
+                        {item.isToggle
+                          ? <Toggle on={val} onChange={()=>tog(item.id)} label={item.name}/>
+                          : item.isSelect
+                            ? <select value={val} onChange={e=>set(item.id,e.target.value)} aria-label={item.name}
+                                style={{background:'var(--void)',border:'1px solid var(--border2)',color:'var(--g)',fontFamily:'JetBrains Mono',fontSize:10,padding:'4px 24px 4px 8px',maxWidth:150,flexShrink:0,cursor:'pointer',outline:'none'}}>
+                                {item.opts.map(o=><option key={o} value={o}>{o}</option>)}
+                              </select>
+                            : <span className="fm" style={{fontSize:13,background:'var(--void)',border:'1px solid var(--border2)',color:'var(--g)',padding:'3px 10px',fontWeight:700,flexShrink:0}}>{val}</span>
+                        }
+                      </div>
+
+                      {/* Slider */}
+                      {item.isSlider && (
+                        <div style={{marginBottom:10}}>
+                          <label htmlFor={`s-${item.id}`} className="sr">{item.name}</label>
+                          <input id={`s-${item.id}`} type="range" min={item.min} max={item.max} step={item.step} value={val}
+                            onChange={e=>set(item.id,parseFloat(e.target.value))}
+                            style={{width:'100%',accentColor:'var(--g)'}}/>
+                          <div style={{display:'flex',justifyContent:'space-between',marginTop:3}}>
+                            <span className="fm" style={{fontSize:8,color:'var(--ink3)'}}>{item.min}</span>
+                            <span className="fm" style={{fontSize:8,color:'var(--ink3)'}}>{item.max}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Tip text */}
+                      <div style={{display:'flex',gap:8,alignItems:'flex-start',padding:'8px 10px',background:'var(--void)',border:'1px solid var(--border)',marginBottom:10}}>
+                        <I n="info" sz={12} cls="" style={{color:advanced?'var(--warn)':'var(--g)',flexShrink:0,marginTop:1}}/>
+                        <p className="fm" style={{fontSize:10,color:'var(--ink2)',lineHeight:1.55}}>
+                          {advanced?item.adv:item.beg}
+                        </p>
+                      </div>
+
+                      {/* Where to find */}
+                      <button onClick={()=>toggleExp(item.id)} aria-expanded={isExp}
+                        style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'6px 10px',
+                          background:isExp?'var(--g)':'var(--void)',color:isExp?'var(--void)':'var(--ink3)',
+                          border:`1px solid ${isExp?'var(--g)':'var(--border)'}`,fontFamily:'JetBrains Mono',fontSize:9,fontWeight:700,textTransform:'uppercase',letterSpacing:'.15em',cursor:'pointer',width:'100%',transition:'all .15s'}}>
+                        <span style={{display:'flex',alignItems:'center',gap:5}}>
+                          <I n="map" sz={11}/> Gdzie to znajdę?
+                        </span>
+                        <I n={isExp?'chevU':'chevD'} sz={11}/>
+                      </button>
+
+                      {isExp && (
+                        <div className="fi" style={{marginTop:6,padding:'10px 12px',background:'var(--void)',border:'1px solid var(--border)'}}>
+                          <div style={{display:'flex',alignItems:'center',gap:6,borderBottom:'1px solid var(--border)',paddingBottom:6,marginBottom:6}}>
+                            <I n={platform==='PC'?'laptop':'tv'} sz={11} cls="" style={{color:'var(--ink3)'}}/>
+                            <span className="fm" style={{fontSize:8,color:'var(--ink3)',textTransform:'uppercase',letterSpacing:'.2em'}}>Ścieżka ({platform})</span>
+                          </div>
+                          <p className="fm" style={{fontSize:10,color:'var(--g)',fontWeight:600,lineHeight:1.5}}>
+                            {item.path[platform]||item.path['PS4']}
+                          </p>
+                        </div>
+                      )}
+                    </CB>
+                  );
+                })}
+              </div>
+
+              {/* Pagination */}
+              <nav aria-label="Nawigacja kategorii" style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:16,paddingTop:14,borderTop:'1px solid var(--border)'}}>
+                <button onClick={()=>catIdx>0&&setTab(CATS[catIdx-1])} disabled={catIdx===0}
+                  style={{display:'flex',alignItems:'center',gap:6,fontFamily:'JetBrains Mono',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.12em',
+                    color:catIdx===0?'var(--ink3)':'var(--ink2)',background:'none',border:'none',cursor:catIdx===0?'default':'pointer',opacity:catIdx===0?.35:1}}>
+                  <I n="arrowL" sz={12}/>{catIdx>0?META[CATS[catIdx-1]].title:'—'}
+                </button>
+                <div style={{display:'flex',gap:4}}>
+                  {CATS.map((k,i)=>(
+                    <button key={k} onClick={()=>setTab(k)}
+                      style={{width:8,height:8,border:'none',cursor:'pointer',background:tab===k?'var(--g)':'var(--border2)',transition:'all .15s',
+                        clipPath:tab===k?'polygon(50% 0%,100% 50%,50% 100%,0% 50%)':'none'}}
+                      aria-label={META[k].title}/>
+                  ))}
+                </div>
+                <button onClick={()=>catIdx<CATS.length-1&&setTab(CATS[catIdx+1])} disabled={catIdx===CATS.length-1}
+                  style={{display:'flex',alignItems:'center',gap:6,fontFamily:'JetBrains Mono',fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.12em',
+                    color:catIdx===CATS.length-1?'var(--ink3)':'var(--ink2)',background:'none',border:'none',cursor:catIdx===CATS.length-1?'default':'pointer',opacity:catIdx===CATS.length-1?.35:1}}>
+                  {catIdx<CATS.length-1?META[CATS[catIdx+1]].title:'—'}<I n="arrowR" sz={12}/>
+                </button>
+              </nav>
+            </section>
+          </div>
+        </main>
+      )}
+
+      {/* FOOTER */}
+      <footer style={{maxWidth:1440,margin:'40px auto 0',padding:'0 20px 24px'}}>
+        <div className="deco" style={{marginBottom:12}}/>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
+          <span className="fm" style={{fontSize:8,color:'var(--ink3)',textTransform:'uppercase',letterSpacing:'.2em'}}>
+            WARZONE HELPER (in-dev_beta)       </span>
+          <div style={{display:'flex',alignItems:'center',gap:6}}>
+            <I n="shield" sz={11} cls="" style={{color:'var(--gd)'}}/>
+            <span className="fm" style={{fontSize:8,color:'var(--ink3)',textTransform:'uppercase',letterSpacing:'.2em'}}>Dane przechowywane lokalnie</span>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
