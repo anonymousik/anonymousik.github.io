@@ -1,8 +1,4 @@
-https://Anonymousik.is-a.dev/scripts/warzone-helper
-
-# Warzone-Helper — Instrukcja wdrożenia na GitHub Pages
-Najnowszy build (aktualnie v5.1.0)
-Dostępny pod adresem: 
+Narzędzie dostępne pod adresem: 
 https://Anonymousik.is-a.dev/scripts/warzone-helper
 
 Wersja testowa:
@@ -12,6 +8,9 @@ Changelog:
 https://anonymousik.github.io/anonymousik.is-a
 dev/docs/warzone-helper/changelog.md (już wkrótce)
 
+
+# Warzone-Helper — Instrukcja wdrożenia na GitHub Pages
+Najnowszy build (aktualnie v5.1.0)
 
 > **Czas wdrożenia: ~5 minut.**(Brak Node.js, npm) Projekt to czysty HTML/JS działający w przeglądarce.
 
