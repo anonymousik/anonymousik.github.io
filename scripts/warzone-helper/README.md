@@ -1,3 +1,5 @@
+Warzone Helper to proste narzędzie pomagające znaleźć idealną konfigurację e grze COD.WARZONE, niezależnie na jakiej grasz platformie! 
+
 Narzędzie dostępne pod adresem: 
 https://Anonymousik.is-a.dev/scripts/warzone-helper
 
@@ -5,11 +7,10 @@ Wersja testowa:
 https://Anonymousik.is-a.dev/scripts/warzone-helper/beta
 
 Changelog:
-https://anonymousik.github.io/anonymousik.is-a
-dev/docs/warzone-helper/changelog.md (już wkrótce)
+https://anonymousik.github.io/anonymousik.is-a.dev/scripts/warzone-helper/changelog.md (już wkrótce)
 
 
-# Warzone-Helper — Instrukcja wdrożenia na GitHub Pages
+# Instrukcja wdrożenia na GitHub Pages
 Najnowszy build (aktualnie v5.1.0)
 
 > **Czas wdrożenia: ~5 minut.**(Brak Node.js, npm) Projekt to czysty HTML/JS działający w przeglądarce.
