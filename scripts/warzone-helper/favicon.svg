@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" fill="#0a0d0a"/>
+  <!-- Outer frame corners -->
+  <path d="M2 8 L2 2 L8 2" stroke="#c8ff4d" stroke-width="1.5" stroke-linecap="square"/>
+  <path d="M24 2 L30 2 L30 8" stroke="#c8ff4d" stroke-width="1.5" stroke-linecap="square"/>
+  <path d="M30 24 L30 30 L24 30" stroke="#c8ff4d" stroke-width="1.5" stroke-linecap="square"/>
+  <path d="M8 30 L2 30 L2 24" stroke="#c8ff4d" stroke-width="1.5" stroke-linecap="square"/>
+  <!-- Crosshair -->
+  <line x1="16" y1="7" x2="16" y2="13" stroke="#c8ff4d" stroke-width="1.5" stroke-linecap="square"/>
+  <line x1="16" y1="19" x2="16" y2="25" stroke="#c8ff4d" stroke-width="1.5" stroke-linecap="square"/>
+  <line x1="7" y1="16" x2="13" y2="16" stroke="#c8ff4d" stroke-width="1.5" stroke-linecap="square"/>
+  <line x1="19" y1="16" x2="25" y2="16" stroke="#c8ff4d" stroke-width="1.5" stroke-linecap="square"/>
+  <!-- Center diamond -->
+  <rect x="14" y="14" width="4" height="4" fill="#c8ff4d" transform="rotate(45 16 16)"/>
+</svg>
