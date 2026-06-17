@@ -1,1428 +1,698 @@
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Warzone Helper(Wersja beta)</title>
-<meta name="description" content="Konfigurator ustawień Warzone — PS4 Pro, PS5, PC"/>
-<meta name="theme-color" content="#080b08"/>
-<style>
-/* ═══════════════════════════════════════
-   DESIGN TOKENS — BO7 WARZONE PALETTE
-═══════════════════════════════════════ */
-:root{
-  --void:#080b08;
-  --p1:#0e130e;
-  --p2:#151c14;
-  --p3:#1c261a;
-  --b1:#263024;
-  --b2:#344030;
-  --ink:#dde8d8;
-  --ink2:#9aac92;
-  --ink3:#5a6e54;
-  --g:#a8ff3e;
-  --gd:#6aaa2a;
-  --gs:rgba(168,255,62,.09);
-  --warn:#ffb830;
-  --crit:#ff4040;
-  --info:#38d9f5;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WARZ HQ | Tactical Configurator v5.2.0</title>
+    <meta name="description" content="Zaawansowany konfigurator i analizator statystyk dla Warzone.">
+    <meta name="author" content="Anonymousik (FerroART)">
+    
+    <!-- Typografia Black Ops (Teko, JetBrains Mono, Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700;800&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
 
-/* ═══ RESET ═══ */
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{
-  min-height:100vh;
-  background:var(--void);
-  color:var(--ink);
-  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bo6: { bg: '#0a0d0a', panel: '#111611', border: '#1e281e', acid: '#a8ff3e', acidDim: 'rgba(168,255,62,0.15)' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        teko: ['Teko', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-/* ═══ TACTICAL TEXTURE ═══ */
-body::after{
-  content:"";
-  position:fixed;inset:0;
-  background-image:
-    linear-gradient(rgba(168,255,62,.016) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(168,255,62,.016) 1px,transparent 1px);
-  background-size:36px 36px;
-  pointer-events:none;
-  z-index:0;
-}
-/* Scanline */
-body::before{
-  content:"";
-  position:fixed;inset:0;
-  background:repeating-linear-gradient(
-    to bottom,
-    transparent 0,transparent 3px,
-    rgba(255,255,255,.007) 4px
-  );
-  pointer-events:none;
-  z-index:1;
-}
+    <style>
+        /* CSS Reset & Scrollbar */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        body { background-color: #0a0d0a; color: #d4d4d8; overflow-x: hidden; }
 
-/* ═══ LAYOUT ═══ */
-#app{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column}
+        /* BO6 Environment: Scanlines & Grid */
+        .ambient-scanlines {
+            position: fixed; inset: 0; pointer-events: none; z-index: 999;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%);
+            background-size: 100% 4px;
+            opacity: 0.6;
+        }
+        .tactical-grid {
+            position: fixed; inset: 0; pointer-events: none; z-index: -1;
+            background-image: linear-gradient(to right, rgba(168,255,62,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(168,255,62,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
 
-/* ═══ SCROLLBAR ═══ */
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:var(--void)}
-::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
-::-webkit-scrollbar-thumb:hover{background:var(--gd)}
+        /* BO6 Elements: Brackets, Clips, Skews */
+        .bo6-bracket {
+            position: relative; border: 1px solid #1e281e; background: #111611;
+        }
+        .bo6-bracket::before, .bo6-bracket::after {
+            content: ''; position: absolute; width: 12px; height: 12px; border-color: #a8ff3e; pointer-events: none; transition: all 0.3s;
+        }
+        .bo6-bracket::before { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; }
+        .bo6-bracket::after { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; }
+        .bo6-bracket:hover::before, .bo6-bracket:hover::after { width: 18px; height: 18px; }
 
-/* ═══ TYPOGRAPHY ═══ */
-.fd{font-family:'Impact','Arial Narrow',Arial,sans-serif;letter-spacing:.06em}
-.fm{font-family:'Courier New',Courier,monospace;letter-spacing:.04em}
+        .bo6-clip {
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+        }
 
-/* ═══ HEADER ═══ */
-#hdr{
-  position:sticky;top:0;z-index:50;
-  background:rgba(8,11,8,.92);
-  border-bottom:1px solid var(--b1);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-}
-#hdr-inner{
-  max-width:1400px;margin:0 auto;
-  padding:0 16px;
-  display:flex;align-items:center;justify-content:space-between;
-  height:52px;gap:12px;
-}
-.logo-box{
-  width:36px;height:36px;
-  background:var(--p2);
-  border:1.5px solid var(--b2);
-  display:flex;align-items:center;justify-content:center;
-  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
-  flex-shrink:0;
-}
-.logo-title{font-size:20px;font-weight:900;color:var(--ink);text-transform:uppercase;letter-spacing:.1em;line-height:1}
-.logo-sub{font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.25em;margin-top:2px}
-.logo-accent{color:var(--g)}
+        .toggle-skew { transform: skewX(-15deg); }
+        .toggle-thumb { transform: skewX(15deg); transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
-/* ═══ NAV PILLS ═══ */
-.nav-pills{display:flex;gap:2px;background:var(--p1);padding:3px;border:1px solid var(--b1)}
-.nav-btn{
-  padding:6px 12px;
-  font-family:'Courier New',monospace;font-size:9px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.15em;
-  background:transparent;color:var(--ink3);
-  border:none;cursor:pointer;transition:all .15s;
-  display:flex;align-items:center;gap:5px;
-  white-space:nowrap;
-}
-.nav-btn.active{background:var(--g);color:var(--void)}
-.nav-btn:hover:not(.active){color:var(--ink)}
+        /* Diamond Range Slider */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 18px; width: 18px;
+            background: #a8ff3e; cursor: pointer; margin-top: -7px;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            box-shadow: 0 0 15px rgba(168, 255, 62, 0.8);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: #1e281e;
+        }
 
-/* ═══ MODE TOGGLE ═══ */
-.mode-pills{display:flex;gap:2px;background:var(--p1);padding:3px;border:1px solid var(--b1)}
-.mode-btn{
-  padding:5px 10px;
-  font-family:'Courier New',monospace;font-size:9px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.12em;
-  background:transparent;color:var(--ink3);
-  border:1px solid transparent;cursor:pointer;transition:all .15s;
-}
-.mode-btn.active{background:var(--p3);color:var(--g);border-color:rgba(168,255,62,.3)}
-.mode-btn:hover:not(.active){color:var(--ink)}
+        /* SVG Rings */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: rotate(-90deg); transform-origin: 50% 50%;
+        }
 
-/* ═══ LIVE DOT ═══ */
-.live{display:flex;align-items:center;gap:5px;padding:5px 10px;background:var(--p1);border:1px solid var(--b1)}
-.live-dot{width:6px;height:6px;background:var(--g);border-radius:50%;animation:pulse 2.5s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
-.live-txt{font-family:'Courier New',monospace;font-size:8px;color:var(--ink3);text-transform:uppercase;letter-spacing:.2em}
+        /* Tooltip */
+        #global-tooltip {
+            position: absolute; z-index: 1000; pointer-events: none; opacity: 0;
+            transition: opacity 0.2s; transform: translate(-50%, -100%);
+        }
 
-/* ═══ MAIN CONTENT ═══ */
-#main{flex:1;max-width:1400px;margin:0 auto;width:100%;padding:20px 16px}
-
-/* ═══ VIEW SECTIONS ═══ */
-.view{display:none;animation:fi .18s ease-out}
-.view.active{display:block}
-@keyframes fi{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-
-/* ═══ SECTION CARD ═══ */
-.card{
-  background:var(--p1);
-  border:1px solid var(--b1);
-  position:relative;
-}
-.card::before,.card::after,.card .ct,.card .cb2{
-  content:"";position:absolute;width:8px;height:8px;
-  border-color:var(--gd);opacity:.4;transition:all .18s;
-}
-.card::before{top:-1px;left:-1px;border-top:1.5px solid;border-left:1.5px solid}
-.card::after{bottom:-1px;right:-1px;border-bottom:1.5px solid;border-right:1.5px solid}
-.card .ct{top:-1px;right:-1px;border-top:1.5px solid var(--gd);border-right:1.5px solid var(--gd)}
-.card .cb2{bottom:-1px;left:-1px;border-bottom:1.5px solid var(--gd);border-left:1.5px solid var(--gd)}
-.card:hover::before,.card:hover::after,.card:hover .ct,.card:hover .cb2{opacity:.9;border-color:var(--g);width:11px;height:11px}
-
-/* ═══ PRESET CARDS ═══ */
-.preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-@media(max-width:600px){.preset-grid{grid-template-columns:1fr}}
-.preset-card{
-  padding:14px 16px;background:var(--void);
-  border:1px solid var(--b1);cursor:pointer;transition:all .15s;
-  text-align:left;width:100%;position:relative;
-}
-.preset-card.sel{background:var(--p2)}
-.preset-card:hover:not(.sel){border-color:var(--b2)}
-.preset-badge{font-family:'Courier New',monospace;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.15em}
-.preset-name{font-family:'Impact',Arial,sans-serif;font-size:20px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:4px 0}
-.preset-desc{font-size:10px;color:var(--ink3);line-height:1.5}
-.preset-metrics{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:10px}
-.metric-box{background:var(--p1);border:1px solid var(--b1);padding:4px 7px}
-.metric-k{font-family:'Courier New',monospace;font-size:7px;color:var(--ink3);text-transform:uppercase;letter-spacing:.1em}
-.metric-v{font-family:'Courier New',monospace;font-size:11px;font-weight:700;line-height:1.3}
-
-/* ═══ SHARE PANEL ═══ */
-.share-panel{background:var(--p1);border:1px solid var(--b1);padding:16px 18px;display:flex;flex-direction:column;gap:10px}
-.panel-label{font-family:'Courier New',monospace;font-size:8px;color:var(--ink3);text-transform:uppercase;letter-spacing:.25em;margin-bottom:2px}
-.btn-primary{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:9px 0;background:var(--g);color:var(--void);
-  font-family:'Courier New',monospace;font-size:10px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.15em;border:none;cursor:pointer;
-  clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px));
-  transition:all .15s;
-}
-.btn-primary:hover{background:#c0ff5a}
-.import-row{display:flex;gap:4px;background:var(--void);border:1px solid var(--b1);padding:3px}
-.import-row input{
-  flex:1;background:transparent;border:none;outline:none;
-  font-family:'Courier New',monospace;font-size:10px;color:var(--ink);padding:4px 7px;
-}
-.import-row input::placeholder{color:var(--ink3)}
-.btn-sec{
-  padding:4px 12px;background:var(--p2);border:1px solid var(--b2);
-  color:var(--ink2);font-family:'Courier New',monospace;font-size:9px;
-  font-weight:700;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;
-  transition:all .15s;white-space:nowrap;
-}
-.btn-sec:hover{border-color:var(--gd);color:var(--g)}
-.status-ok{background:rgba(168,255,62,.07);color:var(--g);border:1px solid rgba(168,255,62,.25);padding:5px 8px;font-family:'Courier New',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.15em;text-align:center}
-.status-err{background:rgba(255,64,64,.07);color:var(--crit);border:1px solid rgba(255,64,64,.25);padding:5px 8px;font-family:'Courier New',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.15em;text-align:center}
-
-/* ═══ TELE GRID ═══ */
-.tele-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px}
-.tele-box{background:var(--void);border:1px solid var(--b1);padding:5px 8px}
-.tele-k{font-family:'Courier New',monospace;font-size:7px;color:var(--ink3);text-transform:uppercase;letter-spacing:.1em}
-.tele-v{font-family:'Courier New',monospace;font-size:13px;font-weight:700;line-height:1.2}
-
-/* ═══ WORKSPACE ═══ */
-.workspace{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-top:14px;align-items:start}
-@media(max-width:768px){.workspace{grid-template-columns:1fr}}
-
-/* ═══ SIDEBAR NAV ═══ */
-.sidebar-nav{background:var(--p1);border:1px solid var(--b1);padding:5px}
-.sidebar-lbl{font-family:'Courier New',monospace;font-size:7px;color:var(--ink3);text-transform:uppercase;letter-spacing:.25em;padding:6px 10px 6px;display:block}
-.cat-btn{
-  display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;
-  background:transparent;border:none;border-left:2px solid transparent;
-  color:var(--ink3);cursor:pointer;transition:all .15s;text-align:left;
-}
-.cat-btn.active{background:var(--p2);border-left-color:var(--g);color:var(--ink)}
-.cat-btn:hover:not(.active){color:var(--ink);background:rgba(255,255,255,.03)}
-.cat-code{font-family:'Courier New',monospace;font-size:9px;font-weight:700;min-width:20px}
-.cat-btn.active .cat-code{color:var(--g)}
-.cat-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
-
-/* CAT mobile horizontal scroll */
-@media(max-width:768px){
-  .sidebar-nav{overflow-x:auto;white-space:nowrap}
-  .sidebar-nav .cats-wrap{display:flex;gap:2px}
-  .cat-btn{display:inline-flex;border-left:none;border-bottom:2px solid transparent;white-space:nowrap;padding:8px 12px}
-  .cat-btn.active{border-bottom-color:var(--g);border-left-color:transparent}
-  .sidebar-lbl{display:none}
-}
-
-/* ═══ TIPS BOX ═══ */
-.tips-box{background:var(--p1);border:1px solid var(--b1);padding:14px;margin-top:10px}
-@media(max-width:768px){.tips-box{display:none}}
-.tip-item{padding:8px 10px;background:var(--void);border:1px solid var(--b1);margin-bottom:7px}
-.tip-item:last-child{margin-bottom:0}
-.tip-title{font-family:'Courier New',monospace;font-size:8px;color:var(--g);font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:3px}
-.tip-text{font-family:'Courier New',monospace;font-size:9.5px;color:var(--ink3);line-height:1.55}
-
-/* ═══ SETTINGS PANEL ═══ */
-.settings-panel{min-width:0}
-.cat-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--b1)}
-.cat-title-wrap{display:flex;align-items:center;gap:10px}
-.cat-num{font-family:'Impact',Arial,sans-serif;font-size:34px;color:var(--g);line-height:1}
-.divider-v{width:1px;height:34px;background:var(--b1)}
-.cat-title{font-family:'Impact',Arial,sans-serif;font-size:26px;color:var(--ink);text-transform:uppercase;letter-spacing:.06em;line-height:1}
-.cat-count{font-family:'Courier New',monospace;font-size:8px;color:var(--ink3);text-transform:uppercase;letter-spacing:.18em;margin-top:2px}
-
-/* Platform tabs */
-.plat-tabs{display:flex;gap:2px;background:var(--p1);padding:3px;border:1px solid var(--b1)}
-.plat-btn{
-  padding:4px 12px;font-family:'Courier New',monospace;font-size:10px;font-weight:700;
-  background:transparent;color:var(--ink3);border:none;cursor:pointer;transition:all .15s;
-}
-.plat-btn.active{background:var(--g);color:var(--void)}
-
-/* Warning bar */
-.warn-bar{
-  display:flex;gap:10px;align-items:flex-start;
-  padding:10px 14px;background:rgba(255,184,48,.04);
-  border-left:2px solid var(--warn);margin-bottom:12px;
-}
-.warn-txt{font-family:'Courier New',monospace;font-size:10px;color:var(--ink2);line-height:1.6}
-
-/* Settings grid */
-.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
-
-/* Setting card */
-.setting-card{
-  background:var(--p1);border:1px solid var(--b1);
-  padding:14px 15px;display:flex;flex-direction:column;
-  gap:0;transition:border-color .15s;position:relative;
-}
-.setting-card:hover{border-color:var(--b2)}
-.setting-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
-.setting-name{font-size:11px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.09em}
-.setting-sub{font-family:'Courier New',monospace;font-size:9px;color:var(--ink3);margin-top:2px;letter-spacing:.03em}
-.val-badge{
-  font-family:'Courier New',monospace;font-size:12px;font-weight:700;
-  background:var(--void);border:1px solid var(--b2);
-  color:var(--g);padding:3px 10px;flex-shrink:0;white-space:nowrap;
-}
-
-/* Select */
-.wz-select{
-  background:var(--void);border:1px solid var(--b2);
-  color:var(--g);font-family:'Courier New',monospace;font-size:9px;
-  padding:4px 22px 4px 8px;cursor:pointer;outline:none;flex-shrink:0;
-  max-width:145px;
-  -webkit-appearance:none;appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23a8ff3e'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 6px center;
-}
-
-/* Toggle */
-.wz-tog{
-  width:38px;height:20px;background:var(--void);
-  border:1.5px solid var(--b2);position:relative;cursor:pointer;
-  flex-shrink:0;transition:all .18s;
-}
-.wz-tog.on{border-color:var(--g);background:var(--gs)}
-.wz-tog-kn{
-  position:absolute;top:2px;left:2px;
-  width:12px;height:12px;background:var(--ink3);
-  clip-path:polygon(20% 0%,100% 0%,80% 100%,0% 100%);
-  transition:all .18s;
-}
-.wz-tog.on .wz-tog-kn{left:20px;background:var(--g);box-shadow:0 0 7px rgba(168,255,62,.55)}
-
-/* Slider */
-.wz-slider{width:100%;height:3px;background:var(--b2);border-radius:1px;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;margin:4px 0}
-.wz-slider::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;background:var(--g);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);cursor:pointer}
-.wz-slider::-moz-range-thumb{width:13px;height:13px;background:var(--g);border:none;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)}
-.slider-row{margin-bottom:8px}
-.slider-ends{display:flex;justify-content:space-between;font-family:'Courier New',monospace;font-size:8px;color:var(--ink3);margin-top:2px}
-
-/* Info box */
-.info-box{
-  display:flex;gap:7px;align-items:flex-start;
-  padding:8px 10px;background:var(--void);
-  border:1px solid var(--b1);margin-bottom:8px;
-}
-.info-txt{font-family:'Courier New',monospace;font-size:10px;color:var(--ink2);line-height:1.55}
-
-/* Where btn */
-.where-btn{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:6px 10px;width:100%;
-  font-family:'Courier New',monospace;font-size:8px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.15em;
-  background:var(--void);border:1px solid var(--b1);
-  color:var(--ink3);cursor:pointer;transition:all .15s;
-}
-.where-btn.open{background:var(--g);color:var(--void);border-color:var(--g)}
-.where-btn:hover:not(.open){border-color:var(--b2);color:var(--ink)}
-.where-drop{
-  padding:10px 12px;background:var(--void);
-  border:1px solid var(--b1);border-top:none;
-  display:none;
-}
-.where-drop.open{display:block;animation:fi .15s ease-out}
-.where-path{font-family:'Courier New',monospace;font-size:10px;color:var(--g);font-weight:600;line-height:1.6;margin-top:5px}
-.where-plat{font-family:'Courier New',monospace;font-size:7px;color:var(--ink3);text-transform:uppercase;letter-spacing:.2em;padding-bottom:5px;border-bottom:1px solid var(--b1);margin-bottom:4px}
-
-/* Pagination */
-.pag{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--b1)}
-.pag-btn{
-  display:flex;align-items:center;gap:5px;
-  font-family:'Courier New',monospace;font-size:9px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.1em;
-  background:none;border:none;cursor:pointer;color:var(--ink2);transition:color .15s;
-}
-.pag-btn:hover{color:var(--g)}
-.pag-btn:disabled{opacity:.3;cursor:default}
-.pag-dots{display:flex;gap:5px;align-items:center}
-.pag-dot{width:7px;height:7px;border:none;cursor:pointer;background:var(--b2);transition:all .15s}
-.pag-dot.active{background:var(--g);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)}
-
-/* ═══ STATS VIEW ═══ */
-.stats-header{margin-bottom:20px}
-.stats-callsign{font-family:'Impact',Arial,sans-serif;font-size:38px;color:var(--g);text-transform:uppercase;letter-spacing:.1em;line-height:1}
-.stats-rank{font-family:'Impact',Arial,sans-serif;font-size:18px;color:var(--ink2);letter-spacing:.06em;margin-top:2px}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:16px}
-.stat-card{background:var(--p1);border:1px solid var(--b1);padding:16px 18px}
-.stat-lbl{font-family:'Courier New',monospace;font-size:8px;color:var(--ink3);text-transform:uppercase;letter-spacing:.25em;margin-bottom:10px}
-.stat-big{font-family:'Impact',Arial,sans-serif;font-size:44px;line-height:1}
-.stat-sub{font-family:'Courier New',monospace;font-size:9px;color:var(--ink3);margin-top:4px;line-height:1.4}
-.seg-bar{display:flex;gap:2px;height:5px;margin:8px 0 4px}
-.seg{flex:1;background:var(--b1)}
-.seg.f{background:var(--g)}
-.seg.fw{background:var(--warn)}
-.seg.fc{background:var(--crit)}
-
-/* Arc ring via SVG */
-.arc-wrap{display:flex;align-items:center;gap:14px}
-.arc-info .arc-big{font-family:'Impact',Arial,sans-serif;font-size:26px;line-height:1}
-.arc-info .arc-sub{font-family:'Courier New',monospace;font-size:9px;color:var(--ink3);margin-top:2px}
-
-/* Rec box */
-.rec-card{background:var(--p1);border:1px solid var(--b1);padding:16px 18px;margin-bottom:12px}
-.rec-title{font-family:'Impact',Arial,sans-serif;font-size:20px;color:var(--g);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.recs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
-.rec-item{padding:10px 12px;background:var(--void);display:flex;gap:8px;align-items:flex-start}
-.rec-item.ok{border:1px solid rgba(168,255,62,.2)}
-.rec-item.warn{border:1px solid rgba(255,64,64,.25)}
-.rec-item-tag{font-family:'Courier New',monospace;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:3px}
-.rec-item-txt{font-family:'Courier New',monospace;font-size:9.5px;color:var(--ink2);line-height:1.5}
-.edit-stats-btn{
-  display:flex;align-items:center;gap:6px;
-  padding:7px 14px;background:var(--p2);border:1px solid var(--b2);
-  color:var(--ink2);font-family:'Courier New',monospace;font-size:9px;
-  font-weight:700;text-transform:uppercase;letter-spacing:.12em;cursor:pointer;transition:all .15s;
-}
-.edit-stats-btn:hover{border-color:var(--gd);color:var(--g)}
-
-/* Modal */
-.modal-bg{
-  position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;
-  display:flex;align-items:center;justify-content:center;padding:16px;
-  animation:fi .15s ease-out;
-}
-.modal-box{
-  background:var(--p1);border:1px solid var(--b2);
-  padding:24px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;
-}
-.modal-title{font-family:'Impact',Arial,sans-serif;font-size:24px;color:var(--g);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
-.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.modal-field{display:flex;flex-direction:column;gap:3px}
-.modal-field.full{grid-column:1/-1}
-.modal-lbl{font-family:'Courier New',monospace;font-size:8px;color:var(--ink3);text-transform:uppercase;letter-spacing:.15em}
-.modal-input{
-  background:var(--void);border:1px solid var(--b2);
-  color:var(--ink);font-family:'Courier New',monospace;font-size:11px;
-  padding:7px 10px;outline:none;width:100%;transition:border-color .15s;
-}
-.modal-input:focus{border-color:var(--gd)}
-.modal-btns{display:flex;gap:8px}
-.btn-close{
-  padding:4px 8px;background:none;border:none;
-  color:var(--ink3);cursor:pointer;font-size:18px;line-height:1;transition:color .15s;
-}
-.btn-close:hover{color:var(--crit)}
-
-/* ═══ SURVEY VIEW ═══ */
-.survey-wrap{max-width:640px;margin:32px auto}
-.survey-card{background:var(--p1);border:1px solid var(--b1);padding:28px;position:relative;overflow:hidden}
-.survey-prog{position:absolute;top:0;left:0;right:0;height:3px;background:var(--b1)}
-.survey-prog-fill{height:100%;background:var(--g);transition:width .3s ease}
-.survey-step{font-family:'Courier New',monospace;font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.2em}
-.survey-q{font-family:'Impact',Arial,sans-serif;font-size:26px;color:var(--ink);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 16px;line-height:1.2}
-.survey-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
-@media(max-width:500px){.survey-opts{grid-template-columns:1fr}}
-.survey-opt{
-  padding:12px 14px;background:var(--void);border:1px solid var(--b1);
-  cursor:pointer;transition:all .15s;text-align:left;width:100%;
-}
-.survey-opt.sel{background:var(--gs);border-color:var(--g)}
-.survey-opt:hover:not(.sel){border-color:var(--b2)}
-.survey-opt-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.survey-opt-lbl{font-size:12px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.05em}
-.survey-opt-check{width:13px;height:13px;border:1.5px solid var(--b2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.survey-opt.sel .survey-opt-check{border-color:var(--g);background:var(--g)}
-.survey-opt-desc{font-family:'Courier New',monospace;font-size:9.5px;color:var(--ink3);line-height:1.4}
-.survey-footer{display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--b1)}
-.btn-ghost{
-  font-family:'Courier New',monospace;font-size:9px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.15em;color:var(--ink3);
-  background:none;border:none;cursor:pointer;transition:color .15s;
-  display:flex;align-items:center;gap:4px;
-}
-.btn-ghost:hover{color:var(--ink)}
-.btn-next{
-  display:flex;align-items:center;gap:7px;
-  padding:9px 20px;background:var(--g);color:var(--void);
-  font-family:'Courier New',monospace;font-size:10px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.15em;border:none;cursor:pointer;
-  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
-  transition:background .15s;
-}
-.btn-next:hover{background:#c0ff5a}
-
-/* ═══ DECO LINES ═══ */
-.deco-h{height:1px;background:linear-gradient(90deg,transparent,var(--gd),transparent);margin:14px 0}
-
-/* ═══ FOOTER ═══ */
-#ftr{padding:20px 16px 28px;max-width:1400px;margin:0 auto;border-top:1px solid var(--b1);margin-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-.ftr-txt{font-family:'Courier New',monospace;font-size:8px;color:var(--ink3);text-transform:uppercase;letter-spacing:.2em}
-
-/* ═══ SVG ICONS ═══ */
-.ico{display:inline-block;vertical-align:middle;flex-shrink:0}
-
-/* ═══ ACCESSIBILITY ═══ */
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-*:focus-visible{outline:2px solid var(--g);outline-offset:2px;border-radius:1px}
-.skip-link{position:absolute;left:-9999px;top:4px;background:var(--g);color:var(--void);font-family:'Courier New',monospace;font-size:11px;font-weight:700;padding:6px 14px;text-decoration:none;z-index:9999;text-transform:uppercase}
-.skip-link:focus{left:4px}
-
-/* ═══ RESPONSIVE ═══ */
-@media(max-width:900px){
-  #hdr-inner{flex-wrap:wrap;height:auto;padding:10px 16px;gap:8px}
-  .logo-title{font-size:16px}
-  .nav-btn{padding:5px 8px;font-size:8px}
-}
-@media(max-width:600px){
-  .preset-grid{grid-template-columns:1fr}
-  .stats-grid{grid-template-columns:1fr 1fr}
-  #main{padding:14px 12px}
-  .settings-grid{grid-template-columns:1fr}
-  .modal-grid{grid-template-columns:1fr}
-}
-@media(max-width:400px){
-  .stats-grid{grid-template-columns:1fr}
-  .live{display:none}
-}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
-</style>
+        /* Animations */
+        @keyframes glitch { 0% { clip-path: inset(10% 0 80% 0); } 20% { clip-path: inset(80% 0 5% 0); } 40% { clip-path: inset(30% 0 40% 0); } 60% { clip-path: inset(50% 0 20% 0); } 80% { clip-path: inset(5% 0 80% 0); } 100% { clip-path: inset(40% 0 30% 0); } }
+        .glitch-hover:hover { animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+    </style>
 </head>
-<body>
-<a href="#main" class="skip-link">Przejdź do treści</a>
-<div id="app">
+<body class="flex flex-col min-h-screen">
 
-<!-- ═══════════ HEADER ═══════════ -->
-<header id="hdr">
-  <div id="hdr-inner">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div class="logo-box">
-        <svg class="ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--g)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
-          <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
-          <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
-        </svg>
-      </div>
-      <div>
-        <div class="logo-title fd">WZ <span class="logo-accent">// OPERATOR</span></div>
-        <div class="logo-sub fm">Config System v5.0</div>
-      </div>
+    <!-- ENV LAYERS -->
+    <div class="ambient-scanlines"></div>
+    <div class="tactical-grid"></div>
+
+    <!-- TOOLTIP CONTAINER -->
+    <div id="global-tooltip" class="bg-bo6-panel border border-bo6-acid p-2 shadow-[0_0_15px_rgba(168,255,62,0.2)] text-white text-[10px] font-mono max-w-xs mt-[-10px]"></div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-container" class="fixed top-20 right-6 z-[100] p-4 bg-bo6-panel border border-bo6-acid text-bo6-acid font-mono text-xs font-bold bo6-clip shadow-[0_0_20px_rgba(168,255,62,0.2)] hidden flex items-center gap-3">
+        <i id="toast-icon" data-lucide="crosshair" class="w-4 h-4"></i><span id="toast-msg"></span>
     </div>
 
-    <nav class="nav-pills" role="navigation" aria-label="Główne menu">
-      <button class="nav-btn active" onclick="switchView('config',this)" id="nb-config">
-        <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20"/><path d="M12 6v6l4 2"/></svg>
-        Konfiguracja
-      </button>
-      <button class="nav-btn" onclick="switchView('stats',this)" id="nb-stats">
-        <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        Statystyki
-      </button>
-      <button class="nav-btn" onclick="switchView('survey',this)" id="nb-survey">
-        <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/></svg>
-        Kreator
-      </button>
+    <!-- TOP NAV (BO6 STYLE) -->
+    <nav class="w-full bg-bo6-panel border-b border-bo6-border px-4 py-2 flex flex-col md:flex-row justify-between items-center relative z-50">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-bo6-acid text-black flex items-center justify-center font-teko font-bold text-xl bo6-clip cursor-pointer glitch-hover" onclick="window.location.href='https://anonymousik.is-a.dev'">A</div>
+            <div>
+                <h1 class="font-teko text-2xl tracking-widest leading-none text-white">WARZ <span class="text-bo6-acid">HQ</span></h1>
+                <p class="font-mono text-[9px] text-zinc-500 tracking-[0.2em] -mt-1">SYS.VER.5.2.0 // ANONYMOUSIK</p>
+            </div>
+        </div>
+        
+        <!-- ROUTER TABS -->
+        <div class="flex gap-2 mt-4 md:mt-0 font-teko text-lg tracking-widest">
+            <button onclick="router('config')" id="tab-config" class="nav-tab px-6 py-1 text-bo6-acid border-b-2 border-bo6-acid bg-bo6-acidDim transition-all">KONFIGURATOR</button>
+            <button onclick="router('stats')" id="tab-stats" class="nav-tab px-6 py-1 text-zinc-500 border-b-2 border-transparent hover:text-white transition-all">STATYSTYKI (AI)</button>
+            <button onclick="router('changelog')" id="tab-changelog" class="nav-tab px-6 py-1 text-zinc-500 border-b-2 border-transparent hover:text-white transition-all">CHANGELOG</button>
+            <button onclick="router('support')" id="tab-support" class="nav-tab px-6 py-1 text-zinc-500 border-b-2 border-transparent hover:text-white transition-all">WSPARCIE</button>
+        </div>
     </nav>
 
-    <div style="display:flex;align-items:center;gap:8px">
-      <div class="mode-pills" role="group" aria-label="Tryb wyświetlania">
-        <button class="mode-btn active" onclick="setMode(false,this)" id="mb-start">Start</button>
-        <button class="mode-btn" onclick="setMode(true,this)" id="mb-pro">PRO</button>
-      </div>
-      <div class="live" aria-hidden="true">
-        <div class="live-dot"></div>
-        <span class="live-txt fm">LIVE</span>
-      </div>
-    </div>
-  </div>
-</header>
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 py-8 relative z-10">
 
-<main id="main">
+        <!-- ==============================
+             WIDOK 1: KONFIGURATOR
+        =================================== -->
+        <section id="view-config" class="view-section animate-fadeIn block">
+            
+            <!-- PRESETS (BO6 CARDS) -->
+            <div class="mb-8 bo6-bracket p-6">
+                <div class="flex items-center gap-2 mb-4 font-teko text-xl tracking-wider text-bo6-acid">
+                    <i data-lucide="cpu" class="w-5 h-5"></i> METRYKI WYDAJNOŚCI & SZABLONY
+                </div>
+                <div id="presets-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- JS Injected -->
+                </div>
+            </div>
 
-<!-- ══════════════════════════════════
-     CONFIG VIEW
-══════════════════════════════════ -->
-<section class="view active" id="v-config">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- LEWA KOLUMNA: NAWIGACJA & QUICK TIPS -->
+                <aside class="lg:col-span-3 space-y-6">
+                    <!-- Dot Navigator (Diamonds) -->
+                    <div class="bo6-bracket p-4">
+                        <div class="flex flex-col gap-3 font-mono text-xs tracking-widest text-zinc-400" id="cat-navigator">
+                            <!-- JS Injected -->
+                        </div>
+                    </div>
 
-  <!-- Top row: presets + share + telemetry -->
-  <div style="display:grid;grid-template-columns:1fr auto;gap:14px;margin-bottom:14px">
+                    <!-- Platform Selector -->
+                    <div class="bo6-bracket p-4">
+                        <p class="font-teko text-lg text-bo6-acid mb-2 tracking-wider">PLATFORMA DOCELOWA</p>
+                        <div class="flex gap-2 font-mono text-[10px]" id="platform-selectors">
+                            <!-- JS Injected -->
+                        </div>
+                    </div>
 
-    <!-- Presets -->
-    <div class="card" style="padding:16px 18px">
-      <span class="ct" aria-hidden="true"></span><span class="cb2" aria-hidden="true"></span>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px">
-        <span class="panel-label fm">
-          <svg class="ico" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--g)" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Profil bazowy
-        </span>
-        <span id="custom-badge" class="fm" style="display:none;font-size:8px;background:rgba(56,217,245,.07);color:var(--info);border:1px solid rgba(56,217,245,.25);padding:2px 8px;text-transform:uppercase;letter-spacing:.15em;font-weight:700">CUSTOM</span>
-      </div>
-      <div class="preset-grid" id="preset-grid"></div>
-    </div>
+                    <!-- Quick Tips Sidebar -->
+                    <div class="bo6-bracket p-4 bg-[#141b14]">
+                        <p class="font-teko text-lg text-white mb-2 tracking-wider flex items-center gap-2">
+                            <i data-lucide="lightbulb" class="w-4 h-4 text-bo6-acid"></i> RAPORT TAKTYCZNY
+                        </p>
+                        <div id="quick-tips-content" class="text-xs font-mono text-zinc-400 space-y-3 leading-relaxed">
+                            <!-- Dynamic Content -->
+                        </div>
+                    </div>
+                </aside>
 
-    <!-- Share + Telemetry -->
-    <div style="display:flex;flex-direction:column;gap:10px;min-width:240px">
-      <div class="share-panel card">
-        <span class="ct" aria-hidden="true"></span><span class="cb2" aria-hidden="true"></span>
-        <p class="panel-label fm">
-          <svg class="ico" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--g)" stroke-width="2" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-          Udostępnij
-        </p>
-        <button class="btn-primary" id="share-btn" onclick="doShare()">
-          <svg class="ico" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" id="share-ico"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          <span id="share-txt">Kopiuj link</span>
-        </button>
-        <div class="import-row">
-          <label for="imp-inp" class="sr-only">Klucz konfiguracji</label>
-          <input type="text" id="imp-inp" class="fm" placeholder="Wklej klucz konfiguracji…"/>
-          <button class="btn-sec" onclick="doImport()">Import</button>
+                <!-- PRAWA KOLUMNA: SETTINGS GRID -->
+                <section class="lg:col-span-9">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 id="active-cat-title" class="font-teko text-3xl tracking-widest text-white uppercase">MODUŁ</h2>
+                        <div class="flex items-center gap-2 font-mono text-xs">
+                            <span class="text-zinc-500">TRYB OPISU:</span>
+                            <div class="flex bg-bo6-panel border border-bo6-border p-1">
+                                <button id="btn-mode-beg" class="px-3 py-1 bg-bo6-acid text-black font-bold">START</button>
+                                <button id="btn-mode-adv" class="px-3 py-1 text-zinc-500 hover:text-white">PRO</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="settings-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- JS Injected -->
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- ==============================
+             WIDOK 2: STATYSTYKI (AI)
+        =================================== -->
+        <section id="view-stats" class="view-section animate-fadeIn hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- OPERATOR IDENTITY -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bo6-bracket p-6">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-16 h-16 bg-bo6-border bo6-clip flex items-center justify-center">
+                                <i data-lucide="user" class="w-8 h-8 text-bo6-acid"></i>
+                            </div>
+                            <div>
+                                <input type="text" id="stat-callsign" value="GHOST_OP_01" class="bg-transparent font-teko text-3xl text-white outline-none w-full border-b border-zinc-800 focus:border-bo6-acid transition-colors">
+                                <p class="font-mono text-[10px] text-zinc-500 tracking-widest mt-1">OPERATOR CALLSIGN</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4 font-mono text-xs text-zinc-400">
+                            <div class="flex justify-between items-center border-b border-bo6-border pb-2">
+                                <span>Platforma Połączenia:</span>
+                                <select id="stat-platform" class="bg-transparent text-bo6-acid font-bold outline-none text-right appearance-none" onchange="generateAIAdvice()">
+                                    <option value="PSN">PSN Network</option>
+                                    <option value="XBOX">Xbox Live</option>
+                                    <option value="BATTLE">Battle.net</option>
+                                    <option value="STEAM">Steam</option>
+                                </select>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-bo6-border pb-2">
+                                <span>Ranga Sezonowa:</span>
+                                <input type="text" value="Iridescent" class="bg-transparent text-white font-bold text-right outline-none w-24">
+                            </div>
+                            <div class="flex justify-between items-center border-b border-bo6-border pb-2">
+                                <span>Czas Gry (H):</span>
+                                <input type="number" id="stat-playtime" value="450" class="bg-transparent text-white font-bold text-right outline-none w-20">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI TACTICAL ADVICE -->
+                    <div class="bo6-bracket p-6 border-bo6-acid relative overflow-hidden">
+                        <div class="absolute inset-0 bg-bo6-acid opacity-5 pointer-events-none"></div>
+                        <h3 class="font-teko text-2xl text-bo6-acid tracking-wider mb-4 flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-5 h-5"></i> ANALIZA AI (A.C.I.D)
+                        </h3>
+                        <div id="ai-advice-container" class="space-y-3 font-mono text-[11px] leading-relaxed text-zinc-300">
+                            <!-- JS Injected -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMBAT RECORD (METRICS) -->
+                <div class="lg:col-span-8">
+                    <div class="bo6-bracket p-6 h-full">
+                        <h2 class="font-teko text-3xl tracking-widest text-white uppercase mb-8 border-b border-bo6-border pb-2">COMBAT RECORD</h2>
+                        
+                        <!-- ArcRings Grid -->
+                        <div class="grid grid-cols-3 gap-6 mb-10 text-center">
+                            <!-- K/D Ratio -->
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-24 h-24 mb-3">
+                                    <svg class="w-24 h-24 transform -rotate-90">
+                                        <circle cx="48" cy="48" r="40" stroke="#1e281e" stroke-width="6" fill="none" />
+                                        <circle id="arc-kd" cx="48" cy="48" r="40" stroke="#a8ff3e" stroke-width="6" fill="none" stroke-dasharray="251.2" stroke-dashoffset="120" stroke-linecap="square" class="transition-all duration-700" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <input type="number" id="stat-kd" step="0.01" value="1.25" class="bg-transparent font-teko text-2xl text-white font-bold text-center w-16 outline-none" onchange="updateStatsUI()">
+                                    </div>
+                                </div>
+                                <span class="font-mono text-[10px] tracking-widest text-zinc-500">K/D RATIO</span>
+                            </div>
+
+                            <!-- Win Rate -->
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-24 h-24 mb-3">
+                                    <svg class="w-24 h-24 transform -rotate-90">
+                                        <circle cx="48" cy="48" r="40" stroke="#1e281e" stroke-width="6" fill="none" />
+                                        <circle id="arc-win" cx="48" cy="48" r="40" stroke="#fbbf24" stroke-width="6" fill="none" stroke-dasharray="251.2" stroke-dashoffset="180" stroke-linecap="square" class="transition-all duration-700" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center flex-col">
+                                        <div class="flex items-baseline">
+                                            <input type="number" id="stat-win" value="8" class="bg-transparent font-teko text-2xl text-white font-bold text-center w-8 outline-none" onchange="updateStatsUI()">
+                                            <span class="font-teko text-lg text-zinc-500">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="font-mono text-[10px] tracking-widest text-zinc-500">WIN RATE</span>
+                            </div>
+
+                            <!-- Gulag Win -->
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-24 h-24 mb-3">
+                                    <svg class="w-24 h-24 transform -rotate-90">
+                                        <circle cx="48" cy="48" r="40" stroke="#1e281e" stroke-width="6" fill="none" />
+                                        <circle id="arc-gulag" cx="48" cy="48" r="40" stroke="#f87171" stroke-width="6" fill="none" stroke-dasharray="251.2" stroke-dashoffset="60" stroke-linecap="square" class="transition-all duration-700" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center flex-col">
+                                        <div class="flex items-baseline">
+                                            <input type="number" id="stat-gulag" value="65" class="bg-transparent font-teko text-2xl text-white font-bold text-center w-10 outline-none" onchange="updateStatsUI()">
+                                            <span class="font-teko text-lg text-zinc-500">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="font-mono text-[10px] tracking-widest text-zinc-500">GULAG WIN</span>
+                            </div>
+                        </div>
+
+                        <!-- SegBars -->
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between items-end mb-2 font-mono text-[10px] tracking-widest text-zinc-400">
+                                    <span>HEADSHOT ACCURACY</span>
+                                    <div class="flex items-center gap-1"><input type="number" id="stat-hs" value="22" class="bg-transparent text-bo6-acid font-bold w-6 text-right outline-none" onchange="updateStatsUI()">%</div>
+                                </div>
+                                <div class="flex gap-1 h-3" id="seg-hs">
+                                    <!-- JS Injected 10 segments -->
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between items-end mb-2 font-mono text-[10px] tracking-widest text-zinc-400">
+                                    <span>AVERAGE DAMAGE (PER MATCH)</span>
+                                    <div class="flex items-center gap-1"><input type="number" id="stat-dmg" value="2450" class="bg-transparent text-amber-500 font-bold w-12 text-right outline-none" onchange="updateStatsUI()"> DMG</div>
+                                </div>
+                                <div class="flex gap-1 h-3" id="seg-dmg">
+                                    <!-- JS Injected 10 segments -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================
+             WIDOK 3: CHANGELOG
+        =================================== -->
+        <section id="view-changelog" class="view-section animate-fadeIn hidden">
+            <div class="max-w-4xl mx-auto bo6-bracket p-8">
+                <h2 class="font-teko text-4xl text-white tracking-widest mb-6">SYS.CHANGELOG</h2>
+                <div class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-zinc-800 before:to-transparent">
+                    
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border border-bo6-acid bg-bo6-panel text-bo6-acid shadow-[0_0_15px_rgba(168,255,62,0.3)] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 font-mono text-xs">v5.2</div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-bo6-border bg-bo6-panel">
+                            <time class="font-mono text-[10px] text-bo6-acid mb-1 block">CZERWIEC 2026</time>
+                            <h3 class="font-teko text-xl text-white tracking-wider mb-2">BO6 Tactical Overhaul</h3>
+                            <ul class="font-mono text-xs text-zinc-400 space-y-1 list-disc list-inside ml-4 marker:text-bo6-acid">
+                                <li>Kompletny redesign interfejsu w oparciu o silnik gry BO6.</li>
+                                <li>Dodano widok Statystyk z wbudowanym asystentem A.C.I.D. (AI).</li>
+                                <li>Wdrożono system podpowiedzi Tooltip.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border border-zinc-700 bg-bo6-panel text-zinc-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 font-mono text-xs">v5.1</div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-bo6-border bg-bo6-panel">
+                            <time class="font-mono text-[10px] text-zinc-500 mb-1 block">GRUDZIEŃ 2025</time>
+                            <h3 class="font-teko text-xl text-zinc-300 tracking-wider mb-2">Stabilizacja ZSSP</h3>
+                            <ul class="font-mono text-xs text-zinc-500 space-y-1 list-disc list-inside ml-4">
+                                <li>Naprawiono błędy Unicode Base64.</li>
+                                <li>Dodano obsługę iFrame Clipboard API.</li>
+                                <li>Specjalne pozdrowienia w stopce.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================
+             WIDOK 4: SUPPORT
+        =================================== -->
+        <section id="view-support" class="view-section animate-fadeIn hidden">
+            <div class="max-w-3xl mx-auto text-center space-y-6">
+                <i data-lucide="life-buoy" class="w-16 h-16 text-bo6-acid mx-auto"></i>
+                <h2 class="font-teko text-5xl text-white tracking-widest">WSPARCIE TECHNICZNE</h2>
+                <p class="font-mono text-xs text-zinc-400 max-w-xl mx-auto leading-relaxed">System WARZ HQ jest narzędziem Open-Source służącym do maksymalizacji wydajności rozgrywki. W przypadku znalezienia błędów konfiguracyjnych, prosimy o kontakt poprzez repozytorium GitHub.</p>
+                <div class="flex justify-center gap-4 pt-6">
+                    <a href="https://github.com/Anonymousik" target="_blank" rel="noopener noreferrer" class="bo6-clip bg-bo6-acid text-black font-teko text-xl px-8 py-2 tracking-widest flex items-center gap-2 hover:bg-white transition-colors">
+                        <i data-lucide="github" class="w-5 h-5"></i> ZGŁOŚ BŁĄD (ISSUE)
+                    </a>
+                    <a href="mailto:dev@is-a.dev" class="bo6-clip bg-zinc-800 text-white border border-zinc-700 font-teko text-xl px-8 py-2 tracking-widest flex items-center gap-2 hover:bg-zinc-700 transition-colors">
+                        <i data-lucide="mail" class="w-5 h-5"></i> KONTAKT E-MAIL
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================
+             WIDOK 5: 404
+        =================================== -->
+        <section id="view-404" class="view-section animate-fadeIn hidden">
+            <div class="max-w-2xl mx-auto text-center space-y-4 pt-20">
+                <h2 class="font-teko text-[150px] text-bo6-acid leading-none tracking-tighter opacity-80" style="text-shadow: 0 0 40px rgba(168,255,62,0.4);">404</h2>
+                <p class="font-mono text-sm text-zinc-400 tracking-widest">ERROR: DANE OPERACYJNE NIE ZOSTAŁY ODNALEZIONE W BAZIE.</p>
+                <button onclick="router('config')" class="mt-8 bo6-clip bg-bo6-border text-white border border-zinc-700 font-teko text-xl px-10 py-2 tracking-widest hover:text-bo6-acid transition-colors">
+                    POWRÓT DO CENTRALI
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-bo6-border bg-bo6-panel py-8 px-4 mt-auto relative z-10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div>
+                <h3 class="text-white font-teko text-xl tracking-widest flex items-center justify-center md:justify-start gap-2">
+                    <div class="w-5 h-5 bg-bo6-acid text-black flex items-center justify-center font-bold text-[10px] bo6-clip">A</div>
+                    ANONYMOUSIK
+                </h3>
+                <p class="text-bo6-acid text-[10px] font-mono mt-2 uppercase tracking-widest flex items-center justify-center md:justify-start gap-1.5 opacity-80">
+                    <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> Pozdrowienia dla Żbika - Pro Playera Warzone!
+                </p>
+            </div>
+            <div class="text-zinc-600 text-[10px] uppercase font-mono tracking-widest font-bold">© 2026 ANONYMOUSIK.IS-A.DEV // CLASSIFIED</div>
         </div>
-        <div id="import-status" style="display:none"></div>
-      </div>
+    </footer>
 
-      <!-- Telemetry -->
-      <div class="card" style="padding:12px 14px">
-        <span class="ct" aria-hidden="true"></span><span class="cb2" aria-hidden="true"></span>
-        <p class="panel-label fm">
-          <svg class="ico" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--g)" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          Telemetria (szac.)
-        </p>
-        <div class="tele-grid" id="tele-grid"></div>
-      </div>
-    </div>
-  </div>
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- 1. CORE DATA ---
+        const INITIAL_VALUES = {
+            layout: 'Taktyczny', vib: false, trig: false, sens: 1.6, dz_l_min: 3, dz_l_max: 50, dz_r_max: 99, dz_trig: 0,
+            ads_low: 0.80, ads_high: 1.00, trans: 'Natychmiastowy', curve: 'Dynamiczny', assist: true,
+            sprint: 'Auto. Sprint Taktyczny', sprint_del: 0, slide: 'Hybrydowe', para: false, mantle: false, armor: 'Zastosuj wszystkie', interact: 'Priorytet interakcji',
+            fov: 110, ads_fov: 'Zależne (Affected)', w_fov: 'Szerokie (Wide)', cas: 90, blur: false, shake: 50,
+            filter: 'Filtr 2 (Oba)', hud: 'Minimalne (Środek)', cross: 'Większa / Żółta', radar: 'Kwadrat / Kontury Wł.', audio: 'Sucker Punch', mono: false
+        };
 
-  <!-- Workspace: sidebar + settings -->
-  <div class="workspace">
-    <!-- Sidebar -->
-    <aside>
-      <div class="sidebar-nav card">
-        <span class="ct" aria-hidden="true"></span><span class="cb2" aria-hidden="true"></span>
-        <span class="sidebar-lbl fm">Kategorie</span>
-        <div class="cats-wrap" role="tablist" aria-label="Kategorie ustawień" id="cats-nav"></div>
-      </div>
-      <div class="tips-box card" id="tips-box">
-        <span class="ct" aria-hidden="true"></span><span class="cb2" aria-hidden="true"></span>
-        <p class="panel-label fm" style="margin-bottom:8px">
-          <svg class="ico" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--g)" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Porady
-        </p>
-        <div id="tips-content"></div>
-      </div>
-    </aside>
+        const METADATA = {
+            controller: { title: 'KONTROLER & RUCH', icon: 'gamepad-2', items: [
+                { id: 'layout', name: 'Układ przycisków', type: 'select', options: ['Domyślny', 'Taktyczny'], beg: 'Standardowy układ.', adv: 'Taktyczny przenosi wślizg pod R3.', tooltip: 'Zmienia fizyczne przypisanie przycisków skoku i kucania.' },
+                { id: 'vib', name: 'Wibracje pada', type: 'toggle', beg: 'Wyłącz dla celności.', adv: 'Niszczą pamięć mięśniową.', tooltip: 'Silniki wibracyjne wprowadzają sztuczne odchylenia celownika podczas ostrzału.' },
+                { id: 'sens', name: 'Czułość (Pion/Poziom)', type: 'slider', min: 0.5, max: 4.0, step: 0.1, beg: '1.6 to baza.', adv: 'Balans dla Rotational AA.', tooltip: 'Determinuje prędkość obrotu kamery przy maksymalnym wychyleniu gałki.' },
+                { id: 'dz_l_min', name: 'Min. strefa lewa', type: 'slider', min: 0, max: 20, step: 1, beg: 'Zabezpiecza przed driftem.', adv: 'Niższa wartość szybciej aktywuje strafe.', tooltip: 'Ilość ruchu gałki ignorowana przez grę w centrum osi.' }
+            ]},
+            aiming: { title: 'CELOWANIE', icon: 'crosshair', items: [
+                { id: 'ads_low', name: 'Mnożnik ADS (Low)', type: 'slider', min: 0.5, max: 1.5, step: 0.05, beg: 'Spowalnia celownik (0.80).', adv: 'Wybacza błędy w śledzeniu.', tooltip: 'Redukcja czułości bazowej podczas korzystania z przyrządów celowniczych.' },
+                { id: 'curve', name: 'Krzywa reakcji', type: 'select', options: ['Standardowa', 'Liniowa', 'Dynamiczna'], beg: 'Użyj Dynamicznej.', adv: 'S-Shape optymalizuje asystę.', tooltip: 'Algorytm przeliczania fizycznego wejścia analogu na ruch wirtualny.' },
+                { id: 'assist', name: 'Asysta celowania', type: 'toggle', beg: 'Włączone.', adv: 'Aim Assist jest włączony.', tooltip: 'Magnetyzm celownika aktywowany przy przechodzeniu przez hitbox wroga.' }
+            ]},
+            graphics: { title: 'GRAFIKA', icon: 'monitor', items: [
+                { id: 'fov', name: 'Pole widzenia (FOV)', type: 'slider', min: 80, max: 120, step: 5, beg: 'Zalecane 110.', adv: 'Zmniejsza visual recoil.', tooltip: 'Zwiększa kąt widzenia kosztem wydajności procesora graficznego.' },
+                { id: 'ads_fov', name: 'FOV Celownika', type: 'select', options: ['Niezależne', 'Zależne (Affected)'], beg: 'Affected (Zależne).', adv: 'Skaluje odrzut optyki do globalnego FOV.', tooltip: 'Zapobiega drastycznemu "skakaniu" broni na ekranie po przybliżeniu.' }
+            ]}
+        };
 
-    <!-- Settings panel -->
-    <section class="settings-panel">
-      <div class="cat-header">
-        <div class="cat-title-wrap">
-          <span class="cat-num fd" id="cat-num">01</span>
-          <div class="divider-v"></div>
-          <div>
-            <div class="cat-title fd" id="cat-title">Kontroler</div>
-            <div class="cat-count fm" id="cat-count">8 ustawień</div>
-          </div>
-        </div>
-        <div class="plat-tabs" role="group" aria-label="Platforma">
-          <button class="plat-btn active" onclick="setPlatform('PS4',this)">PS4</button>
-          <button class="plat-btn" onclick="setPlatform('PS5',this)">PS5</button>
-          <button class="plat-btn" onclick="setPlatform('PC',this)">PC</button>
-        </div>
-      </div>
+        const PRESETS = {
+            performance: { id: 'performance', name: 'PRO PERFORMANCE', metrics: { fps: '120', lag: '2.8ms' }, overrides: { fov: 110, sens: 1.8, dz_l_min: 2, cas: 85 } },
+            balanced: { id: 'balanced', name: 'META BALANCED', metrics: { fps: '60+', lag: '4.2ms' }, overrides: { fov: 115, sens: 1.6, dz_l_min: 4, cas: 90 } },
+            movement: { id: 'movement', name: 'AGILE DEMON', metrics: { fps: '120', lag: '3.1ms' }, overrides: { fov: 120, sens: 2.2, dz_l_min: 3, cas: 95 } }
+        };
 
-      <div id="warn-bar" class="warn-bar" style="display:none">
-        <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <p class="warn-txt fm" id="warn-txt"></p>
-      </div>
+        // --- 2. STATE ---
+        let appState = {
+            view: 'config', // config, stats, changelog, support, 404
+            config: { ...INITIAL_VALUES },
+            activeTab: 'controller',
+            activePreset: 'balanced',
+            activePlatform: 'PS5',
+            isAdvanced: false,
+            stats: { kd: 1.25, win: 8, gulag: 65, hs: 22, dmg: 2450 }
+        };
 
-      <div class="settings-grid" id="settings-grid"></div>
+        const DOM = {
+            tooltip: document.getElementById('global-tooltip')
+        };
 
-      <nav class="pag" aria-label="Nawigacja kategorii">
-        <button class="pag-btn" id="pag-prev" onclick="pagNav(-1)">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-          <span id="pag-prev-lbl">—</span>
-        </button>
-        <div class="pag-dots" id="pag-dots" role="tablist" aria-label="Kategorie"></div>
-        <button class="pag-btn" id="pag-next" onclick="pagNav(1)">
-          <span id="pag-next-lbl">—</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-      </nav>
-    </section>
-  </div>
-</section>
+        let toastTimeout;
 
-<!-- ══════════════════════════════════
-     STATS VIEW
-══════════════════════════════════ -->
-<section class="view" id="v-stats">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:16px">
-    <div class="stats-header">
-      <div class="fm" style="font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.25em;margin-bottom:4px">Operator Profile</div>
-      <div class="stats-callsign fd" id="s-callsign">OPERATOR_01</div>
-      <div class="stats-rank fd" id="s-rank">RANK 55 // KD 1.84</div>
-    </div>
-    <button class="edit-stats-btn" onclick="openEditStats()">
-      <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Edytuj profil
-    </button>
-  </div>
-  <div class="deco-h"></div>
-  <div class="stats-grid" id="stats-grid"></div>
-  <div class="rec-card card" id="recs-card">
-    <span class="ct" aria-hidden="true"></span><span class="cb2" aria-hidden="true"></span>
-    <div class="rec-title fd">
-      <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g)" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      Rekomendacje konfiguracji
-    </div>
-    <div class="recs-grid" id="recs-grid"></div>
-  </div>
-</section>
+        // --- 3. CORE LOGIC ---
 
-<!-- ══════════════════════════════════
-     SURVEY VIEW
-══════════════════════════════════ -->
-<section class="view" id="v-survey">
-  <div class="survey-wrap">
-    <div class="survey-card card" id="survey-card">
-      <span class="ct" aria-hidden="true"></span><span class="cb2" aria-hidden="true"></span>
-      <div class="survey-prog"><div class="survey-prog-fill" id="s-prog" style="width:25%"></div></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-        <span style="font-size:9px;color:var(--g);font-family:'Courier New',monospace;text-transform:uppercase;letter-spacing:.25em;font-weight:700">
-          <svg class="ico" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/></svg>
-          Kalibracja operatora
-        </span>
-        <span class="survey-step fm" id="s-step">01 / 04</span>
-      </div>
-      <div class="survey-q fd" id="s-q">Na jakiej platformie grasz?</div>
-      <div class="survey-opts" id="s-opts" role="radiogroup"></div>
-      <div class="survey-footer">
-        <button class="btn-ghost" id="s-back" onclick="surveyBack()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-          Wstecz
-        </button>
-        <button class="btn-next" onclick="surveyNext()">
-          <span id="s-next-txt">Dalej</span>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
+        function showToast(msg) {
+            const toast = document.getElementById('toast-container');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.remove('hidden');
+            if(toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
 
-</main>
+        // Router
+        window.router = (viewId) => {
+            const views = ['config', 'stats', 'changelog', 'support', '404'];
+            if(!views.includes(viewId)) viewId = '404';
+            
+            appState.view = viewId;
+            
+            // Hide all, show targeted
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if(el) el.classList.toggle('hidden', v !== viewId);
+            });
 
-<!-- ═══ MODAL: EDIT STATS ═══ -->
-<div class="modal-bg" id="modal" style="display:none" role="dialog" aria-modal="true" aria-label="Edycja profilu">
-  <div class="modal-box card">
-    <span class="ct" aria-hidden="true"></span><span class="cb2" aria-hidden="true"></span>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div class="modal-title fd">Edytuj profil</div>
-      <button class="btn-close" onclick="closeModal()" aria-label="Zamknij">✕</button>
-    </div>
-    <div class="modal-grid" id="modal-fields"></div>
-    <div class="modal-btns">
-      <button class="btn-primary" style="flex:1" onclick="saveStats()">Zapisz profil</button>
-      <button class="btn-sec" onclick="closeModal()">Anuluj</button>
-    </div>
-  </div>
-</div>
+            // Update Nav Visuals
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                const isMatch = tab.id === `tab-${viewId}`;
+                tab.className = `nav-tab px-6 py-1 transition-all ${isMatch ? 'text-bo6-acid border-b-2 border-bo6-acid bg-bo6-acidDim' : 'text-zinc-500 border-b-2 border-transparent hover:text-white'}`;
+            });
 
-<footer>
-  <div id="ftr" style="max-width:1400px;margin:0 auto">
-    <span class="ftr-txt fm">WZ // OPERATOR CONFIG v5.0</span>
-    <span class="ftr-txt fm">
-      <svg class="ico" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--gd)" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      Dane lokalne — bez serwerów
-    </span>
-  </div>
-</footer>
-</div><!-- #app -->
+            if(viewId === 'stats') { updateStatsUI(); }
+        };
 
-<script>
-/* ══════════════════════════════════════════════════
-   WZ OPERATOR CONFIG — PURE VANILLA JS ENGINE
-══════════════════════════════════════════════════ */
+        // Rendering Configurator
+        function renderConfigurator() {
+            // Category Nav
+            const catNav = document.getElementById('cat-navigator');
+            catNav.innerHTML = Object.keys(METADATA).map((key, idx) => `
+                <div onclick="switchTab('${key}')" class="flex items-center gap-3 cursor-pointer group">
+                    <svg width="10" height="10" viewBox="0 0 10 10" class="${appState.activeTab === key ? 'fill-bo6-acid' : 'fill-zinc-800 group-hover:fill-zinc-600'} transition-colors"><polygon points="5,0 10,5 5,10 0,5"/></svg>
+                    <span class="${appState.activeTab === key ? 'text-bo6-acid font-bold' : 'group-hover:text-zinc-300'} transition-colors">0${idx+1}. ${METADATA[key].title}</span>
+                </div>
+            `).join('');
 
-// ─── DATA ───────────────────────────────────────
-const INIT = {
-  layout:'Domyślny',vib:false,trig:false,sens:1.6,
-  dz_l_min:3,dz_l_max:50,dz_r_max:99,dz_trig:0,
-  ads_low:0.80,ads_high:1.00,trans:'Natychmiastowy',
-  curve:'Dynamiczny',assist:true,
-  sprint:'Auto. Sprint Taktyczny',sprint_del:0,
-  slide:'Hybrydowe',para:false,mantle:false,
-  armor:'Zastosuj jedną',interact:'Priorytet interakcji',
-  fov:110,ads_fov:'Zależne (Affected)',w_fov:'Szerokie (Wide)',
-  cas:90,blur:false,shake:50,
-  filter:'Filtr 2 (Oba)',hud:'Minimalne (Środek)',
-  cross:'Większa / Żółta',radar:'Kwadrat / Kontury Wł.',
-  audio:'Sucker Punch',mono:false
-};
+            // Platform Selector
+            document.getElementById('platform-selectors').innerHTML = ['PS4', 'PS5', 'PC'].map(p => `
+                <button onclick="setPlatform('${p}')" class="px-2 py-0.5 border ${appState.activePlatform === p ? 'border-bo6-acid text-bo6-acid bg-bo6-acidDim' : 'border-zinc-800 text-zinc-500 hover:text-white'} transition-all">${p}</button>
+            `).join('');
 
-const PRESETS = {
-  performance:{id:'performance',name:'Turniejowy',tag:'INPUT LAG',color:'var(--crit)',
-    desc:'Minimalne opóźnienia sprzętowe, precyzyjne progi deadzone.',
-    metrics:{FPS:'60',LAG:'35ms',CPU:'MIN',FOV:'105'},
-    overrides:{vib:false,trig:false,sens:1.8,dz_l_min:2,dz_l_max:45,dz_trig:0,ads_low:0.75,ads_high:0.90,curve:'Dynamiczny',assist:true,sprint:'Auto. Sprint Taktyczny',sprint_del:0,slide:'Hybrydowe',fov:110,ads_fov:'Zależne (Affected)'}},
-  balanced:{id:'balanced',name:'Zbalansowany',tag:'PS4 PRO',color:'var(--warn)',
-    desc:'Najwyższa ostrość FidelityFX CAS przy stabilnych 55–60 FPS.',
-    metrics:{FPS:'58',LAG:'45ms',CPU:'MED',FOV:'110'},
-    overrides:{vib:false,trig:false,sens:1.6,dz_l_min:4,dz_l_max:50,dz_trig:0,ads_low:0.80,ads_high:1.00,curve:'Dynamiczny',assist:true,sprint:'Auto. Sprint Taktyczny',slide:'Hybrydowe',fov:115,ads_fov:'Zależne (Affected)',cas:90}},
-  movement:{id:'movement',name:'Agresywny',tag:'CQC',color:'var(--info)',
-    desc:'Ekstremalna czułość obrotu i skrócone animacje — slide cancel.',
-    metrics:{FPS:'54',LAG:'42ms',CPU:'HIGH',FOV:'120'},
-    overrides:{vib:false,trig:false,sens:2.2,dz_l_min:3,dz_l_max:30,dz_trig:0,ads_low:0.85,ads_high:1.00,curve:'Dynamiczny',assist:true,sprint:'Auto. Sprint Taktyczny',slide:'Hybrydowe',fov:120,ads_fov:'Zależne (Affected)'}}
-};
+            // Settings Grid
+            const cat = METADATA[appState.activeTab];
+            document.getElementById('active-cat-title').innerHTML = `<i data-lucide="${cat.icon}" class="inline w-6 h-6 text-bo6-acid mr-2 -mt-1"></i>${cat.title}`;
 
-const CATS = [
-  {id:'ctrl',code:'01',title:'Kontroler',
-   warn:'Podłącz pad kablem USB i w systemie PS4/PS5 ustaw "Użyj kabla USB" — eliminuje opóźnienie Bluetooth.',
-   items:[
-    {id:'layout',name:'Układ przycisków',type:'sel',opts:['Domyślny','Taktyczny','Weteran taktyczny'],
-     path:{PS4:'Kontroler → Układ przycisków',PS5:'Kontroler → Układ przycisków',PC:'Controller → Button Layout'},
-     beg:'Taktyczny = slide cancel bez puszczania prawego analoga.',adv:'Tactical — slide-cancel RS bez zwalniania aim stick.'},
-    {id:'vib',name:'Wibracje',type:'tog',
-     path:{PS4:'Ustawienia → Urządzenia → Kontrolery',PS5:'Akcesoria → Kontrolery → Siła wibracji → Wyłącz',PC:'Controller → Vibration → Off'},
-     beg:'Wyłącz — drżenie rąk psuje mikrokorektę odrzutu.',adv:'Vibration destroys muscle memory during recoil patching. Mandatory OFF.'},
-    {id:'trig',name:'Efekt triggerów L2/R2',type:'tog',
-     path:{PS4:'Niedostępne na PS4',PS5:'Akcesoria → Kontrolery → Efekt triggerów → Wyłącz',PC:'Controller → Trigger Effect → Off'},
-     beg:'Usuwa opór mechaniczny — szybszy strzał.',adv:'Eliminuje opóźnienie sprzętowe trigger do 0 ms.'},
-    {id:'sens',name:'Czułość drążków',sub:'(poziom / pion)',type:'slider',min:0.5,max:4.0,step:0.1,
-     path:{PS4:'Kontroler → Czułość drążków',PS5:'Kontroler → Czułość drążków',PC:'Controller → Stick Sensitivity'},
-     beg:'1.6 = klasyczne 7/7. Zacznij tutaj.',adv:'Sweet spot pod RAA. Wyższe = szybsza rotacja, trudniejsza mikrokontrola.'},
-    {id:'dz_l_min',name:'Deadzone lewa (min)',type:'slider',min:0,max:20,step:1,
-     path:{PS4:'Kontroler → Strefy martwe → Min. lewa',PS5:'Kontroler → Strefy martwe → Min. lewa',PC:'Inputs → Deadzone → Left Stick Min'},
-     beg:'Najniżej bez stick driftu.',adv:'Redukuje fizyczne opóźnienie analogu — szybszy strafing.'},
-    {id:'dz_l_max',name:'Deadzone lewa (max)',type:'slider',min:10,max:100,step:5,
-     path:{PS4:'Kontroler → Strefy martwe → Max lewa',PS5:'Kontroler → Strefy martwe → Max lewa',PC:'Inputs → Deadzone → Left Stick Max'},
-     beg:'50 = natychmiastowy pełny bieg.',adv:'50 wymusza instant sprint przy minimalnym wychyleniu — kluczowe dla slide-cancel loop.'},
-    {id:'dz_r_max',name:'Deadzone prawa (max)',type:'slider',min:50,max:100,step:1,
-     path:{PS4:'Kontroler → Strefy martwe → Max prawa',PS5:'Kontroler → Strefy martwe → Max prawa',PC:'Inputs → Deadzone → Right Stick Max'},
-     beg:'99 = pełna prędkość obrotu na krawędzi analogu.',adv:'Liniowe przeniesienie pełnego wektora obrotu na granicy fizycznej muszli.'},
-    {id:'dz_trig',name:'Deadzone L2/R2',type:'slider',min:0,max:10,step:1,
-     path:{PS4:'Kontroler → Strefy martwe → Spusty',PS5:'Kontroler → Strefy martwe → Spusty',PC:'Inputs → Deadzone → L2/R2'},
-     beg:'0 = strzał przy minimalnym wciśnięciu.',adv:'Eliminuje opóźnienie mechaniczne DualShock/DualSense.'}]},
-  {id:'aim',code:'02',title:'Celowanie',items:[
-    {id:'ads_low',name:'Mnożnik ADS',sub:'(niskie powiększenie)',type:'slider',min:0.50,max:1.50,step:0.05,
-     path:{PS4:'Celowanie → Mnożnik ADS (niski)',PS5:'Celowanie → Mnożnik ADS (niski)',PC:'Aiming → ADS Sensitivity (Low Zoom)'},
-     beg:'0.80 = łatwiejsze utrzymanie na celu z kolimatorów.',adv:'0.80 minimalizuje positioning error w CQC i mid-range engagements.'},
-    {id:'ads_high',name:'Mnożnik ADS',sub:'(wysokie powiększenie)',type:'slider',min:0.50,max:1.50,step:0.05,
-     path:{PS4:'Celowanie → Mnożnik ADS (wysoki)',PS5:'Celowanie → Mnożnik ADS (wysoki)',PC:'Aiming → ADS Sensitivity (High Zoom)'},
-     beg:'1.00 = stała pamięć mięśniowa przy snajperce.',adv:'1.00 = consistent flick-shot muscle memory niezależnie od zoomu.'},
-    {id:'trans',name:'Przejście czułości ADS',type:'sel',opts:['Natychmiastowy','Po przybliżeniu','Stopniowy'],
-     path:{PS4:'Celowanie → Czas przejścia czułości',PS5:'Celowanie → Czas przejścia czułości',PC:'Aiming → ADS Sensitivity Transition'},
-     beg:'Natychmiastowy eliminuje opóźnienie zmiany czułości.',adv:'Instant — brak nieliniowej krzywej podczas animacji ADS.'},
-    {id:'curve',name:'Krzywa reakcji celowania',type:'sel',opts:['Standardowa','Liniowa','Dynamiczny'],
-     path:{PS4:'Celowanie → Typ krzywej reakcji',PS5:'Celowanie → Typ krzywej reakcji',PC:'Aiming → Aim Response Curve'},
-     beg:'Dynamiczny najlepiej współpracuje z Aim Assist.',adv:'S-shape curve — microcontrol w centrum, acceleration na krawędziach.'},
-    {id:'assist',name:'Asysta celowania',type:'tog',
-     path:{PS4:'Celowanie → Asysta celowania',PS5:'Celowanie → Asysta celowania',PC:'Aiming → Target Aim Assist'},
-     beg:'Zawsze włączona — klucz do wygrywania starć.',adv:'Wymaga dryfu lewą gałką (RAA) do utrzymania magnetyzmu śledzenia.'}]},
-  {id:'move',code:'03',title:'Ruch',items:[
-    {id:'sprint',name:'Zachowanie sprintu',type:'sel',opts:['Ręczny','Automatyczny','Auto. Sprint Taktyczny'],
-     path:{PS4:'Rozgrywka → Automatyczny sprint',PS5:'Rozgrywka → Automatyczny sprint',PC:'Gameplay → Automatic Sprint'},
-     beg:'Auto Sprint Taktyczny = natychmiastowy bieg.',adv:'Auto Tac Sprint minimalizuje input lag animacji biegu — instant dodge.'},
-    {id:'sprint_del',name:'Opóźnienie sprintu',type:'slider',min:0,max:10,step:1,
-     path:{PS4:'Rozgrywka → Opóźnienie sprintu',PS5:'Rozgrywka → Opóźnienie sprintu',PC:'Gameplay → Tactical Sprint Delay'},
-     beg:'0 = brak buforowania wejścia.',adv:'0 ms — usuwa engine-level input buffer.'},
-    {id:'slide',name:'Wślizg i padanie',type:'sel',opts:['Tapnięcie','Przytrzymanie','Hybrydowe'],
-     path:{PS4:'Rozgrywka → Zachowanie wślizgu',PS5:'Rozgrywka → Zachowanie wślizgu',PC:'Gameplay → Slide/Dive Behavior'},
-     beg:'Hybrydowe = najszybsza rejestracja wślizgu.',adv:'Hybrid eliminuje hold-time delay — instant slide przy tap.'},
-    {id:'para',name:'Auto-spadochron',type:'tog',
-     path:{PS4:'Rozgrywka → Spadochron',PS5:'Rozgrywka → Spadochron',PC:'Gameplay → Auto Parachute Deploy'},
-     beg:'Wyłącz = szybsze lądowanie. Ręczne otwarcie!',adv:'Zapobiega animacjom otwarcia blisko budynków.'},
-    {id:'mantle',name:'Asysta wspinania',type:'tog',
-     path:{PS4:'Rozgrywka → Autowspinanie',PS5:'Rozgrywka → Autowspinanie',PC:'Gameplay → Ground Mantle'},
-     beg:'Wyłącz — postać nie wspina się podczas strzelania.',adv:'Prevents Mantle Lock — freeze broni przy niskich murkach w CQC.'},
-    {id:'armor',name:'Płyty pancerza',type:'sel',opts:['Zastosuj jedną','Zastosuj wszystkie'],
-     path:{PS4:'Rozgrywka → Zachowanie pancerza',PS5:'Rozgrywka → Zachowanie pancerza',PC:'Gameplay → Armor Plate Behavior'},
-     beg:'Jedna płyta = przerwanie animacji atakiem.',adv:'Apply One — max elastyczność przerwania platingu przez sprint.'},
-    {id:'interact',name:'Interakcja / przeładowanie',type:'sel',opts:['Domyślne','Priorytet przeładowania','Priorytet interakcji'],
-     path:{PS4:'Rozgrywka → Interakcja/przeładowanie',PS5:'Rozgrywka → Interakcja/przeładowanie',PC:'Gameplay → Interact/Reload Behavior'},
-     beg:'Priorytet interakcji = błyskawiczny loot.',adv:'Prioritize Interact — critical do fast loot pickup na starcie meczu.'}]},
-  {id:'gfx',code:'04',title:'Grafika',
-   warn:'PS4 Pro miewa spadki FPS na dużych mapach. Ta konfiguracja optymalizuje GPU/CPU frame-times.',
-   items:[
-    {id:'fov',name:'Pole widzenia (FOV)',type:'slider',min:80,max:120,step:5,
-     path:{PS4:'Grafika → Widok → Pole widzenia',PS5:'Grafika → Widok → Pole widzenia',PC:'Graphics → View → Field of View'},
-     beg:'110 = stabilne na PS4 Pro. 120 obciąża CPU.',adv:'Wider FOV = mniejszy visual recoil. Optimal PS4 Pro: 108–112.'},
-    {id:'ads_fov',name:'ADS FOV',type:'sel',opts:['Niezależne (Independent)','Zależne (Affected)'],
-     path:{PS4:'Grafika → Widok → ADS FOV',PS5:'Grafika → Widok → ADS FOV',PC:'Graphics → View → ADS FOV'},
-     beg:'Zależne = brak gwałtownego przybliżenia przy celowaniu.',adv:'Affected — skaluje visual recoil do globalnego FOV. Huge recoil control upgrade.'},
-    {id:'w_fov',name:'FOV broni',type:'sel',opts:['Domyślne','Wąskie','Szerokie (Wide)'],
-     path:{PS4:'Grafika → Widok → Pole broni',PS5:'Grafika → Widok → Pole broni',PC:'Graphics → View → Weapon FOV'},
-     beg:'Szerokie = mniejsza broń, więcej otoczenia.',adv:'Wide — max peripheral visibility z masywnym rusznikarstwem.'},
-    {id:'cas',name:'FidelityFX CAS',sub:'(wyostrzanie)',type:'slider',min:0,max:100,step:5,
-     path:{PS4:'Grafika → Jakość → Wyostrzanie',PS5:'Grafika → Jakość → Wyostrzanie',PC:'Graphics → Quality → Upscaling/Sharpening'},
-     beg:'90 = ostre krawędzie wrogów, bez szumu.',adv:'CAS 90 niweluje blur z TAA — wrogowie wyraźniejsi w cieniach.'},
-    {id:'blur',name:'Motion blur',type:'tog',
-     path:{PS4:'Grafika → Rozmycie',PS5:'Grafika → Rozmycie',PC:'Graphics → Post Processing → Motion Blur'},
-     beg:'Wyłącz — czysty obraz podczas obrotów kamery.',adv:'Disable uwalnia GPU cycles na Jaguar architecture (PS4 Pro).'},
-    {id:'shake',name:'Ruch kamery (wstrząs)',type:'slider',min:50,max:100,step:10,
-     path:{PS4:'Grafika → Widok → Ruch kamery',PS5:'Grafika → Widok → Ruch kamery',PC:'Graphics → View → Camera Movement'},
-     beg:'50% = minimalne trzęsienie pod ostrzałem.',adv:'50% — eliminuje forced destablization podczas gameplay stressors.'}]},
-  {id:'aud',code:'05',title:'Dźwięk & HUD',items:[
-    {id:'filter',name:'Filtr kolorów',type:'sel',opts:['Brak','Filtr 1','Filtr 2 (Oba)','Filtr 3'],
-     path:{PS4:'Interfejs → Dostosowanie kolorów',PS5:'Interfejs → Dostosowanie kolorów',PC:'Interface → Color Customization'},
-     beg:'Filtr 2 = lepiej widoczni wrogowie w cieniach.',adv:'Filter 2 + Both + 100% — luminance boost dla enemy identification.'},
-    {id:'hud',name:'Marginesy HUD',type:'sel',opts:['Szerokie','Średnie','Minimalne (Środek)'],
-     path:{PS4:'Interfejs → HUD → Bezpieczna strefa',PS5:'Interfejs → HUD → Bezpieczna strefa',PC:'Interface → HUD → Safe Area'},
-     beg:'Minimalne przesuwa minimapę bliżej środka.',adv:'Compressed HUD skraca sakkadową drogę oka przy każdym spojrzeniu na radar.'},
-    {id:'cross',name:'Środkowa kropka',type:'sel',opts:['Wyłączona','Domyślna','Większa / Żółta'],
-     path:{PS4:'Interfejs → HUD → Środkowa kropka',PS5:'Interfejs → HUD → Środkowa kropka',PC:'Interface → HUD → Center Dot'},
-     beg:'Duża żółta kropka = pewny punkt odniesienia przed ADS.',adv:'Stały anchor dla crosshair centering — klucz do pre-aim.'},
-    {id:'radar',name:'Minimapa',type:'sel',opts:['Okrągła','Kwadrat / Kontury Wł.'],
-     path:{PS4:'Interfejs → HUD → Kształt minimapy',PS5:'Interfejs → HUD → Kształt minimapy',PC:'Interface → HUD → Minimap Shape'},
-     beg:'Kwadrat pokazuje ~20% więcej terenu.',adv:'Square radar — taktyczny wymóg do UAV tracking i rotacji strefowych.'},
-    {id:'audio',name:'Miks audio',type:'sel',opts:['Kino domowe','Słuchawki','Sucker Punch','Wzmocnienie basów'],
-     path:{PS4:'Audio → Miks dźwięku',PS5:'Audio → Miks dźwięku',PC:'Audio → Audio Mix'},
-     beg:'Sucker Punch = najlepsze pozycjonowanie kroków.',adv:'Sucker Punch / Boost Low — optimal frequency curve dla footstep detection.'},
-    {id:'mono',name:'Dźwięk mono',type:'tog',
-     path:{PS4:'Audio → Dźwięk mono → Wyłącz',PS5:'Audio → Dźwięk mono → Wyłącz',PC:'Audio → Mono Audio → Off'},
-     beg:'ZOSTAW WYŁĄCZONE — niszczy kierunkowość dźwięku.',adv:'Merging stereo channels destroys 3D acoustic directional perception.'}]}
-];
+            // Quick Tips dynamic update
+            document.getElementById('quick-tips-content').innerHTML = cat.items.map(item => `
+                <div class="border-l-2 border-bo6-border pl-3 py-1">
+                    <span class="text-bo6-acid block">${item.name}</span>
+                    <span class="text-[10px] text-zinc-500">${appState.isAdvanced ? item.adv : item.beg}</span>
+                </div>
+            `).join('');
 
-const SURVEY_Q = [
-  {id:'platform',q:'Na jakiej platformie grasz?',opts:[
-    {v:'PS4',l:'PlayStation 4 / Slim',d:'Wydajność krytyczna — każda klatka się liczy.'},
-    {v:'PS4 Pro',l:'PlayStation 4 Pro',d:'Skalowanie 4K i FidelityFX CAS.'},
-    {v:'PS5',l:'PlayStation 5',d:'Do 120 FPS, szeroki FOV, DualSense.'},
-    {v:'PC',l:'Komputer (PC)',d:'Pełna wydajność, pełna kontrola.'}]},
-  {id:'playstyle',q:'Twój styl gry?',opts:[
-    {v:'cqc',l:'Agresywny (CQC)',d:'Bliski dystans, wślizgi, wysoka czułość.'},
-    {v:'balanced',l:'Zbalansowany',d:'Kontrola stref, flankowanie, precyzja.'},
-    {v:'sniper',l:'Snajper / daleki dystans',d:'Kontrola odrzutu, niski mnożnik ADS.'}]},
-  {id:'display',q:'Twój ekran?',opts:[
-    {v:'tv_std',l:'Zwykły telewizor',d:'Input lag może być wyższy — ułatwienia.'},
-    {v:'tv_game',l:'TV Tryb Gry',d:'Zbalansowany czas reakcji.'},
-    {v:'monitor',l:'Monitor dla graczy',d:'Niski input lag — precyzyjne strefy martwe.'}]},
-  {id:'controller',q:'Jakiego kontrolera używasz?',opts:[
-    {v:'std',l:'Standardowy',d:'Bez łopatek — układ taktyczny.'},
-    {v:'pro',l:'Wyczynowy (łopatki)',d:'Dodatkowe przyciski z tyłu.'}]}
-];
+            document.getElementById('settings-grid').innerHTML = cat.items.map(item => {
+                const val = appState.config[item.id];
+                const info = appState.isAdvanced ? item.adv : item.beg;
+                
+                let inputHTML = '';
+                if(item.type === 'slider') {
+                    inputHTML = `<input type="range" min="${item.min}" max="${item.max}" step="${item.step}" value="${val}" oninput="updateSetting('${item.id}', this.value)" class="w-full mt-2">
+                                 <div class="flex justify-between text-[9px] font-mono text-zinc-600 mt-1"><span>${item.min}</span><span>${item.max}</span></div>`;
+                } else if(item.type === 'toggle') {
+                    inputHTML = `<div onclick="updateSetting('${item.id}', ${!val})" class="w-12 h-5 bg-zinc-900 border border-zinc-700 toggle-skew cursor-pointer flex items-center p-0.5">
+                                    <div class="w-1/2 h-full bg-bo6-acid toggle-thumb" style="${val ? 'margin-left: 50%' : 'margin-left: 0; background: #3f3f46'}"></div>
+                                 </div>`;
+                } else if(item.type === 'select') {
+                    inputHTML = `<select onchange="updateSetting('${item.id}', this.value)" class="bg-zinc-900 border border-zinc-800 text-bo6-acid font-mono text-xs p-1 outline-none w-full mt-2">
+                                    ${item.options.map(o => `<option value="${o}" ${o === val ? 'selected' : ''}>${o}</option>`).join('')}
+                                 </select>`;
+                }
 
-const DEFAULT_STATS = {
-  callsign:'OPERATOR_01',rank:55,kd:1.84,wins:47,matches:312,
-  avgDmg:1240,headshotPct:18,gulagWin:62,topPct:12,playtime:148
-};
+                return `
+                    <div class="bo6-bracket p-4 bg-bo6-panel relative" data-tooltip="${item.tooltip}">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="font-teko text-lg text-white tracking-widest">${item.name}</span>
+                            <span class="font-mono text-[10px] text-bo6-acid font-bold border border-bo6-border px-2 py-0.5">${typeof val === 'boolean' ? (val?'WŁ':'WYŁ') : val}</span>
+                        </div>
+                        <p class="font-mono text-[10px] text-zinc-500 mb-3">${info}</p>
+                        ${inputHTML}
+                    </div>
+                `;
+            }).join('');
+            
+            lucide.createIcons();
+            renderPresets();
+        }
 
-// ─── STATE ──────────────────────────────────────
-let state = {
-  view:'config',
-  cfg:{...INIT},
-  preset:'balanced',
-  catIdx:0,
-  platform:'PS4',
-  advanced:false,
-  platform_set:false,
-  surveyStep:0,
-  surveyAns:{platform:'PS4 Pro',playstyle:'balanced',display:'tv_game',controller:'std'},
-  expandedSetting:null,
-  stats:{...DEFAULT_STATS},
-};
+        function renderPresets() {
+            document.getElementById('presets-container').innerHTML = Object.values(PRESETS).map(p => `
+                <div onclick="applyPreset('${p.id}')" class="border p-3 cursor-pointer transition-all ${appState.activePreset === p.id ? 'border-bo6-acid bg-bo6-acidDim' : 'border-zinc-800 bg-[#111611] hover:border-zinc-600'}">
+                    <div class="font-teko text-lg ${appState.activePreset === p.id ? 'text-bo6-acid' : 'text-zinc-400'}">${p.name}</div>
+                    <div class="flex gap-3 font-mono text-[9px] text-zinc-500 mt-1">
+                        <span>FPS: <span class="text-white">${p.metrics.fps}</span></span>
+                        <span>LAG: <span class="text-white">${p.metrics.lag}</span></span>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-// ─── VIEW SWITCHER ──────────────────────────────
-function switchView(v,btn){
-  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
-  document.getElementById('v-'+v).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  state.view=v;
-  if(v==='stats') renderStats();
-  if(v==='survey') renderSurvey();
-}
+        // Interakcje Globalne
+        window.switchTab = (tab) => { appState.activeTab = tab; renderConfigurator(); };
+        window.setPlatform = (p) => { appState.activePlatform = p; renderConfigurator(); showToast(`Platforma zmieniona na: ${p}`); };
+        window.updateSetting = (key, val) => { appState.config[key] = isNaN(val) || typeof val === 'boolean' ? val : parseFloat(val); appState.activePreset = 'custom'; renderConfigurator(); };
+        window.applyPreset = (id) => { appState.activePreset = id; appState.config = { ...INITIAL_VALUES, ...PRESETS[id].overrides }; renderConfigurator(); showToast('Szablon załadowany.'); };
 
-// ─── MODE ───────────────────────────────────────
-function setMode(adv,btn){
-  state.advanced=adv;
-  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderSettings();
-  renderTips();
-}
+        // Tryby Start/Pro
+        document.getElementById('btn-mode-beg').addEventListener('click', () => { appState.isAdvanced = false; document.getElementById('btn-mode-beg').className='px-3 py-1 bg-bo6-acid text-black font-bold'; document.getElementById('btn-mode-adv').className='px-3 py-1 text-zinc-500 hover:text-white'; renderConfigurator(); });
+        document.getElementById('btn-mode-adv').addEventListener('click', () => { appState.isAdvanced = true; document.getElementById('btn-mode-adv').className='px-3 py-1 bg-bo6-acid text-black font-bold'; document.getElementById('btn-mode-beg').className='px-3 py-1 text-zinc-500 hover:text-white'; renderConfigurator(); });
 
-// ─── PLATFORM ───────────────────────────────────
-function setPlatform(p,btn){
-  state.platform=p;
-  document.querySelectorAll('.plat-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  // re-render open dropdowns
-  if(state.expandedSetting) renderSettings();
-}
+        // --- 4. STATS & AI LOGIC ---
+        
+        function setArcRing(id, value, max) {
+            const circle = document.getElementById(`arc-${id}`);
+            if(!circle) return;
+            const circ = 251.2; // 2 * pi * r (r=40)
+            const percent = Math.min(Math.max(value / max, 0), 1);
+            circle.style.strokeDashoffset = circ - (percent * circ);
+        }
 
-// ─── PRESETS ────────────────────────────────────
-function renderPresets(){
-  const el=document.getElementById('preset-grid');
-  el.innerHTML='';
-  Object.values(PRESETS).forEach(p=>{
-    const sel=state.preset===p.id;
-    const div=document.createElement('button');
-    div.className='preset-card card'+(sel?' sel':'');
-    div.setAttribute('aria-pressed',sel);
-    div.style.borderColor=sel?p.color:'';
-    div.innerHTML=`
-      <span class="ct" aria-hidden="true"></span><span class="cb2" aria-hidden="true"></span>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <span class="fm preset-badge" style="color:var(--ink3)">PRESET</span>
-        <span class="fm preset-badge" style="color:${p.color}">${p.tag}</span>
-      </div>
-      <div class="preset-name fd" style="color:${sel?p.color:'var(--ink)'}">${p.name}${sel?' <svg style="display:inline;vertical-align:middle" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="'+p.color+'" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
-      <div class="preset-desc">${p.desc}</div>
-      <div class="preset-metrics">
-        ${Object.entries(p.metrics).map(([k,v])=>`<div class="metric-box"><div class="metric-k fm">${k}</div><div class="metric-v fm" style="color:${p.color}">${v}</div></div>`).join('')}
-      </div>`;
-    div.onclick=()=>applyPreset(p.id);
-    el.appendChild(div);
-  });
-  const badge=document.getElementById('custom-badge');
-  badge.style.display=state.preset==='custom'?'inline-block':'none';
-}
+        function renderSegBar(id, value, max, colorClass) {
+            const container = document.getElementById(`seg-${id}`);
+            if(!container) return;
+            const segments = 10;
+            const activeSegs = Math.round((value / max) * segments);
+            let html = '';
+            for(let i=0; i<segments; i++) {
+                html += `<div class="flex-1 ${i < activeSegs ? colorClass : 'bg-zinc-900 border border-zinc-800'} skew-x-[-15deg] transition-all duration-500"></div>`;
+            }
+            container.innerHTML = html;
+        }
 
-function applyPreset(id){
-  state.preset=id;
-  if(PRESETS[id]) state.cfg={...state.cfg,...PRESETS[id].overrides};
-  renderPresets();
-  renderSettings();
-  renderTelemetry();
-}
+        window.updateStatsUI = () => {
+            // Read inputs
+            const kd = parseFloat(document.getElementById('stat-kd').value) || 0;
+            const win = parseFloat(document.getElementById('stat-win').value) || 0;
+            const gulag = parseFloat(document.getElementById('stat-gulag').value) || 0;
+            const hs = parseFloat(document.getElementById('stat-hs').value) || 0;
+            const dmg = parseFloat(document.getElementById('stat-dmg').value) || 0;
 
-// ─── TELEMETRY ──────────────────────────────────
-function renderTelemetry(){
-  const m = state.preset==='custom'
-    ? {FPS:state.cfg.fov>115?'50':'58',LAG:(state.cfg.dz_l_min<3?'36':'45')+'ms',CPU:state.cfg.fov>115?'HIGH':'MED',FOV:''+state.cfg.fov}
-    : PRESETS[state.preset]?.metrics||PRESETS.balanced.metrics;
-  const colors={FPS:'var(--g)',LAG:'var(--warn)',CPU:'var(--ink2)',FOV:'var(--info)'};
-  document.getElementById('tele-grid').innerHTML=Object.entries(m).map(([k,v])=>`
-    <div class="tele-box">
-      <div class="tele-k fm">${k}</div>
-      <div class="tele-v fm" style="color:${colors[k]||'var(--ink)'}">${v}</div>
-    </div>`).join('');
-}
+            appState.stats = { kd, win, gulag, hs, dmg };
 
-// ─── CATEGORIES NAV ─────────────────────────────
-function renderCatsNav(){
-  const el=document.getElementById('cats-nav');
-  el.innerHTML='';
-  CATS.forEach((c,i)=>{
-    const btn=document.createElement('button');
-    btn.className='cat-btn'+(i===state.catIdx?' active':'');
-    btn.setAttribute('role','tab');
-    btn.setAttribute('aria-selected',i===state.catIdx);
-    btn.setAttribute('aria-label',c.title);
-    btn.innerHTML=`<span class="cat-code fm">${c.code}</span><span class="cat-name">${c.title}</span>`;
-    btn.onclick=()=>{ state.catIdx=i; state.expandedSetting=null; renderAll(); };
-    el.appendChild(btn);
-  });
-}
+            // Update Rings
+            setArcRing('kd', kd, 4.0); // max scale 4.0 KD
+            setArcRing('win', win, 30); // max scale 30% win rate
+            setArcRing('gulag', gulag, 100);
 
-// ─── SETTINGS ───────────────────────────────────
-function setCfg(id,val){
-  state.preset='custom';
-  state.cfg[id]=val;
-  document.getElementById('custom-badge').style.display='inline-block';
-  document.getElementById('preset-grid').querySelectorAll('.preset-card').forEach(c=>c.classList.remove('sel'));
-  renderTelemetry();
-  // update just the val badge
-  const badge=document.getElementById('vb-'+id);
-  if(badge) badge.textContent=val;
-}
-function togCfg(id){
-  state.preset='custom';
-  state.cfg[id]=!state.cfg[id];
-  document.getElementById('custom-badge').style.display='inline-block';
-  renderPresets();
-  renderTelemetry();
-  const tog=document.getElementById('tog-'+id);
-  if(tog){ tog.classList.toggle('on',state.cfg[id]); tog.setAttribute('aria-pressed',state.cfg[id]); }
-}
+            // Update SegBars
+            renderSegBar('hs', hs, 50, 'bg-bo6-acid shadow-[0_0_8px_rgba(168,255,62,0.5)]'); // max 50%
+            renderSegBar('dmg', dmg, 5000, 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'); // max 5000 dmg
 
-function renderSettings(){
-  const cat=CATS[state.catIdx];
-  document.getElementById('cat-num').textContent=cat.code;
-  document.getElementById('cat-title').textContent=cat.title;
-  document.getElementById('cat-count').textContent=cat.items.length+' ustawień';
-  const wb=document.getElementById('warn-bar');
-  if(cat.warn){ wb.style.display='flex'; document.getElementById('warn-txt').textContent=cat.warn; }
-  else wb.style.display='none';
+            generateAIAdvice();
+        };
 
-  const grid=document.getElementById('settings-grid');
-  grid.innerHTML='';
-  cat.items.forEach(item=>{
-    const val=state.cfg[item.id];
-    const isOpen=state.expandedSetting===item.id;
-    const card=document.createElement('div');
-    card.className='setting-card card';
-    card.innerHTML=`<span class="ct" aria-hidden="true"></span><span class="cb2" aria-hidden="true"></span>
-    <div class="setting-top">
-      <div>
-        <div class="setting-name">${item.name}</div>
-        ${item.sub?`<div class="setting-sub fm">${item.sub}</div>`:''}
-      </div>
-      ${item.type==='tog'
-        ? `<button class="wz-tog${val?' on':''}" id="tog-${item.id}" onclick="togCfg('${item.id}')" aria-pressed="${val}" aria-label="${item.name}: ${val?'włączone':'wyłączone'}"><div class="wz-tog-kn"></div></button>`
-        : item.type==='sel'
-          ? `<select class="wz-select" id="sel-${item.id}" aria-label="${item.name}" onchange="setCfg('${item.id}',this.value)">${item.opts.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('')}</select>`
-          : `<span class="val-badge" id="vb-${item.id}">${val}</span>`
-      }
-    </div>
-    ${item.type==='slider'?`
-    <div class="slider-row">
-      <label for="sl-${item.id}" class="sr-only">${item.name}</label>
-      <input class="wz-slider" type="range" id="sl-${item.id}" min="${item.min}" max="${item.max}" step="${item.step}" value="${val}"
-        oninput="setCfg('${item.id}',parseFloat(this.value))"/>
-      <div class="slider-ends"><span>${item.min}</span><span>${item.max}</span></div>
-    </div>`:''}
-    <div class="info-box">
-      <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${state.advanced?'var(--warn)':'var(--g)'}" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <p class="info-txt fm">${state.advanced?item.adv:item.beg}</p>
-    </div>
-    <button class="where-btn${isOpen?' open':''}" id="wb-${item.id}"
-      onclick="toggleWhere('${item.id}')" aria-expanded="${isOpen}">
-      <span style="display:flex;align-items:center;gap:5px">
-        <svg class="ico" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        Gdzie to znajdę?
-      </span>
-      <svg class="ico" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="${isOpen?'18 15 12 9 6 15':'6 9 12 15 18 9'}"/></svg>
-    </button>
-    <div class="where-drop${isOpen?' open':''}" id="wd-${item.id}">
-      <div class="where-plat fm">Ścieżka (${state.platform})</div>
-      <div class="where-path fm">${item.path[state.platform]||item.path['PS4']}</div>
-    </div>`;
-    grid.appendChild(card);
-  });
+        window.generateAIAdvice = () => {
+            const s = appState.stats;
+            let advice = [];
 
-  renderPagination();
-}
+            if(s.kd < 1.0) advice.push("KD Poniżej 1.00: Zmniejsz Czułość drążków (np. do 1.2) i zwiększ Mnożnik ADS do precyzyjniejszego trackingu.");
+            else if(s.kd > 2.0) advice.push("KD Wysokie (Pro): Przyspiesz strefy martwe do 2-3 i włącz Hybrydowy Wślizg pod agresywny movement.");
 
-function toggleWhere(id){
-  const wasOpen=state.expandedSetting===id;
-  state.expandedSetting=wasOpen?null:id;
-  renderSettings();
-  if(!wasOpen){
-    setTimeout(()=>{
-      const el=document.getElementById('wd-'+id);
-      if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'});
-    },50);
-  }
-}
+            if(s.hs < 15) advice.push("Niskie Headshot %: Używaj filtra kolorów 2 aby lepiej widzieć kontrasty głów postaci w cieniach.");
+            
+            if(s.dmg > 3000 && s.win < 5) advice.push("Damage High / Win Low: Dużo walczysz, mało wygrywasz. Ogranicz użycie sprintu taktycznego w ciasnych pomieszczeniach.");
 
-// ─── PAGINATION ─────────────────────────────────
-function renderPagination(){
-  const prev=document.getElementById('pag-prev');
-  const next=document.getElementById('pag-next');
-  const prevLbl=document.getElementById('pag-prev-lbl');
-  const nextLbl=document.getElementById('pag-next-lbl');
-  prev.disabled=state.catIdx===0;
-  next.disabled=state.catIdx===CATS.length-1;
-  prevLbl.textContent=state.catIdx>0?CATS[state.catIdx-1].title:'—';
-  nextLbl.textContent=state.catIdx<CATS.length-1?CATS[state.catIdx+1].title:'—';
+            if(advice.length === 0) advice.push("Statystyki zbalansowane. Utrzymuj obecny profil (Meta Balanced).");
 
-  const dots=document.getElementById('pag-dots');
-  dots.innerHTML='';
-  CATS.forEach((_,i)=>{
-    const d=document.createElement('button');
-    d.className='pag-dot'+(i===state.catIdx?' active':'');
-    d.setAttribute('aria-label',CATS[i].title);
-    d.setAttribute('role','tab');
-    d.onclick=()=>{ state.catIdx=i; state.expandedSetting=null; renderAll(); };
-    dots.appendChild(d);
-  });
-}
+            const plat = document.getElementById('stat-platform').value;
+            if(plat === 'PSN' || plat === 'XBOX') advice.push("Konsola wykryta: Skalowanie FidelityFX CAS jest dla Ciebie krytyczne. Trzymaj wartość wokół 90.");
 
-function pagNav(dir){
-  const n=state.catIdx+dir;
-  if(n>=0&&n<CATS.length){ state.catIdx=n; state.expandedSetting=null; renderAll(); }
-}
+            document.getElementById('ai-advice-container').innerHTML = advice.map(a => `
+                <div class="flex gap-2">
+                    <span class="text-bo6-acid">>></span>
+                    <span>${a}</span>
+                </div>
+            `).join('');
+        };
 
-// ─── TIPS ───────────────────────────────────────
-const TIPS = {
-  start:[
-    {t:'Pierwsze kroki',d:'Zacznij od Kreatora — dobierze ustawienia do Twojego stylu i sprzętu.'},
-    {t:'Najważniejsze',d:'Wyłącz wibracje i Motion Blur. Te dwa ustawienia najbardziej wpływają na precyzję celowania.'},
-  ],
-  pro:[
-    {t:'RAA Farming',d:'Utrzymuj lewy analog w ciągłym dryf-ruchu ~10% wychylenia — magnetyzm asysty jest aktywny tylko w ruchu.'},
-    {t:'Slide-Cancel Loop',d:'Sprint → Slide → Sprint w oknie 0.2s. Hybrydowe + Auto Tac Sprint = najszybsza pętla CQC.'},
-  ]
-};
-function renderTips(){
-  const tips=state.advanced?TIPS.pro:TIPS.start;
-  document.getElementById('tips-content').innerHTML=tips.map(t=>`
-    <div class="tip-item">
-      <div class="tip-title fm">${t.t}</div>
-      <div class="tip-text fm">${t.d}</div>
-    </div>`).join('');
-}
+        // --- TOOLTIP DELEGATION (O(1) Memory footprint) ---
+        document.addEventListener('mouseover', (e) => {
+            const target = e.target.closest('[data-tooltip]');
+            if(target) {
+                DOM.tooltip.textContent = target.getAttribute('data-tooltip');
+                DOM.tooltip.style.opacity = '1';
+                
+                // Track mouse position
+                const onMove = (me) => {
+                    DOM.tooltip.style.left = me.pageX + 'px';
+                    DOM.tooltip.style.top = (me.pageY - 15) + 'px';
+                };
+                document.addEventListener('mousemove', onMove);
+                
+                target.addEventListener('mouseleave', () => {
+                    DOM.tooltip.style.opacity = '0';
+                    document.removeEventListener('mousemove', onMove);
+                }, { once: true });
+            }
+        });
 
-// ─── SHARE / IMPORT ─────────────────────────────
-function doShare(){
-  try{
-    const enc=btoa(JSON.stringify(state.cfg));
-    const url=location.origin+location.pathname+'?config='+enc;
-    const ta=document.createElement('textarea');
-    ta.value=url; ta.style.cssText='position:fixed;opacity:0;top:-999px';
-    document.body.appendChild(ta); ta.focus(); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta);
-    const btn=document.getElementById('share-btn');
-    const txt=document.getElementById('share-txt');
-    const ico=document.getElementById('share-ico');
-    txt.textContent='Skopiowano!';
-    ico.innerHTML='<polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2.5" fill="none"/>';
-    setTimeout(()=>{ txt.textContent='Kopiuj link'; ico.innerHTML='<rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2" fill="none"/>'; },3000);
-  }catch(e){ showImportStatus('error','✗ Nie udało się skopiować'); }
-}
-function doImport(){
-  const inp=document.getElementById('imp-inp').value.trim();
-  if(!inp) return;
-  try{
-    const dec=JSON.parse(atob(inp));
-    const val={};
-    Object.keys(INIT).forEach(k=>{ val[k]=dec[k]!==undefined?dec[k]:INIT[k]; });
-    state.cfg=val; state.preset='custom';
-    document.getElementById('imp-inp').value='';
-    showImportStatus('ok','✓ Konfiguracja wczytana');
-    renderAll();
-  }catch(e){ showImportStatus('error','✗ Błędny klucz konfiguracji'); }
-}
-function showImportStatus(type,msg){
-  const el=document.getElementById('import-status');
-  el.style.display='block';
-  el.className=type==='ok'?'status-ok fm':'status-err fm';
-  el.textContent=msg;
-  setTimeout(()=>{ el.style.display='none'; },4000);
-}
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderConfigurator();
+            router('config');
+            setTimeout(() => setArcRing('kd', 1.25, 4.0), 100); // Trigger initial ring animation
+        });
 
-// ─── SURVEY ─────────────────────────────────────
-function renderSurvey(){
-  const q=SURVEY_Q[state.surveyStep];
-  const total=SURVEY_Q.length;
-  document.getElementById('s-prog').style.width=`${((state.surveyStep+1)/total)*100}%`;
-  document.getElementById('s-step').textContent=`${String(state.surveyStep+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
-  document.getElementById('s-q').textContent=q.q;
-  document.getElementById('s-next-txt').textContent=state.surveyStep===total-1?'Generuj profil':'Dalej';
-  const back=document.getElementById('s-back');
-  back.style.visibility=state.surveyStep>0?'visible':'hidden';
-
-  const opts=document.getElementById('s-opts');
-  opts.innerHTML='';
-  q.opts.forEach(o=>{
-    const sel=state.surveyAns[q.id]===o.v;
-    const btn=document.createElement('button');
-    btn.className='survey-opt'+(sel?' sel':'');
-    btn.setAttribute('role','radio'); btn.setAttribute('aria-checked',sel);
-    btn.innerHTML=`
-      <div class="survey-opt-top">
-        <span class="survey-opt-lbl">${o.l}</span>
-        <span class="survey-opt-check">${sel?`<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--void)" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`:''}</span>
-      </div>
-      <div class="survey-opt-desc fm">${o.d}</div>`;
-    btn.onclick=()=>{ state.surveyAns[q.id]=o.v; renderSurvey(); };
-    opts.appendChild(btn);
-  });
-}
-function surveyNext(){
-  if(state.surveyStep<SURVEY_Q.length-1){ state.surveyStep++; renderSurvey(); }
-  else processSurvey();
-}
-function surveyBack(){
-  if(state.surveyStep>0){ state.surveyStep--; renderSurvey(); }
-}
-function processSurvey(){
-  let a={...INIT};
-  state.platform=state.surveyAns.platform==='PC'?'PC':state.surveyAns.platform;
-  document.querySelectorAll('.plat-btn').forEach(b=>{ b.classList.toggle('active',b.textContent.trim()===state.platform); });
-  if(state.surveyAns.platform==='PS4'){a.fov=105;a.cas=80;}
-  else if(state.surveyAns.platform==='PS4 Pro'){a.fov=110;a.cas=90;}
-  else{a.fov=120;a.cas=100;}
-  if(state.surveyAns.playstyle==='cqc'){a.sens=2.0;a.dz_l_max=30;}
-  else if(state.surveyAns.playstyle==='sniper'){a.sens=1.4;a.ads_low=0.70;a.ads_high=0.95;a.curve='Standardowa';}
-  else{a.sens=1.6;a.ads_low=0.80;}
-  if(state.surveyAns.display==='tv_std'){a.dz_l_min=5;a.filter='Filtr 2 (Oba)';}
-  else if(state.surveyAns.display==='monitor'){a.dz_l_min=2;}
-  a.layout=state.surveyAns.controller==='std'?'Taktyczny':'Domyślny';
-  state.cfg=a; state.preset='custom';
-  // Switch to config view
-  switchView('config',document.getElementById('nb-config'));
-  state.surveyStep=0;
-  renderAll();
-}
-
-// ─── STATS ──────────────────────────────────────
-function makeArc(val,max,sz,sw,color){
-  const r=(sz-sw)/2;
-  const circ=2*Math.PI*r;
-  const off=circ*(1-Math.min(val/max,1));
-  return `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" aria-hidden="true">
-    <circle cx="${sz/2}" cy="${sz/2}" r="${r}" stroke="var(--b1)" stroke-width="${sw}" fill="none"/>
-    <circle cx="${sz/2}" cy="${sz/2}" r="${r}" stroke="${color}" stroke-width="${sw}" fill="none"
-      stroke-linecap="square" stroke-dasharray="${circ}" stroke-dashoffset="${off}"
-      transform="rotate(-90 ${sz/2} ${sz/2})"/>
-  </svg>`;
-}
-function makeSegs(val,max,count,color){
-  const filled=Math.round((val/max)*count);
-  return `<div class="seg-bar">${Array.from({length:count}).map((_,i)=>`<div class="seg${i<filled?' f':''}" style="${i<filled?'background:'+color:''}"></div>`).join('')}</div>`;
-}
-function kdColor(kd){ return kd>=2?'var(--g)':kd>=1.5?'var(--warn)':'var(--ink2)'; }
-function winRate(){ return Math.round((state.stats.wins/Math.max(state.stats.matches,1))*100); }
-
-function renderStats(){
-  const s=state.stats;
-  document.getElementById('s-callsign').textContent=s.callsign;
-  document.getElementById('s-rank').textContent=`RANK ${s.rank} // KD ${s.kd.toFixed(2)}`;
-
-  const grid=document.getElementById('stats-grid');
-  grid.innerHTML='';
-  const cards=[
-    {lbl:'K/D Ratio',html:`
-      <div class="stat-big fd" style="color:${kdColor(s.kd)}">${s.kd.toFixed(2)}</div>
-      ${makeSegs(s.kd,3,10,kdColor(s.kd))}
-      <div class="stat-sub fm">TARGET: 2.00 · ${Math.round((s.kd/2)*100)}% osiągnięte</div>
-      <div class="stat-sub fm" style="margin-top:6px;padding:6px 8px;background:var(--void);border:1px solid var(--b1);color:var(--ink3)">
-        ${s.kd<1.5?'↑ Obniż czułość do 1.4–1.5, włącz Aim Assist, wyłącz wibracje':'✓ Dobra forma — utrzymuj present sens'}
-      </div>`},
-    {lbl:'Win Rate',html:`
-      <div class="arc-wrap">
-        ${makeArc(winRate(),100,78,6,'var(--warn)')}
-        <div class="arc-info">
-          <div class="arc-big fd" style="color:var(--warn)">${winRate()}%</div>
-          <div class="arc-sub fm">${s.wins} wygranych</div>
-          <div class="arc-sub fm">${s.matches} meczów total</div>
-          <div class="arc-sub fm">Top ${s.topPct}% lobby</div>
-        </div>
-      </div>`},
-    {lbl:'Śr. obrażenia / mecz',html:`
-      <div class="stat-big fd" style="color:var(--info)">${s.avgDmg.toLocaleString()}</div>
-      ${makeSegs(s.avgDmg,2500,12,'var(--info)')}
-      <div class="stat-sub fm">PRO: 2000+ · ${Math.round((s.avgDmg/2000)*100)}% progu</div>
-      <div class="stat-sub fm" style="margin-top:6px;padding:6px 8px;background:var(--void);border:1px solid var(--b1);color:var(--ink3)">
-        ${s.avgDmg<1000?'↑ FOV 110+, FidelityFX CAS 90, Filtr 2 — lepsza widoczność wrogów':'✓ Dobre obrażenia — grafika i dźwięk OK'}
-      </div>`},
-    {lbl:'Gulag Win %',html:`
-      <div class="arc-wrap">
-        ${makeArc(s.gulagWin,100,78,6,s.gulagWin>=60?'var(--g)':'var(--crit)')}
-        <div class="arc-info">
-          <div class="arc-big fd" style="color:${s.gulagWin>=60?'var(--g)':'var(--crit)'}">${s.gulagWin}%</div>
-          <div class="arc-sub fm">${s.gulagWin>=60?'✓ Dominujesz gulag':'↓ Poprawa konieczna'}</div>
-          <div class="arc-sub fm" style="margin-top:4px;color:var(--ink3)">${s.gulagWin<60?'Sens 1.4–1.6 + Dynamic curve':'Utrzymuj obecne ustawienia'}</div>
-        </div>
-      </div>`},
-    {lbl:'Headshot %',html:`
-      <div class="stat-big fd" style="color:var(--g)">${s.headshotPct}<span style="font-size:22px">%</span></div>
-      ${makeSegs(s.headshotPct,40,10,'var(--g)')}
-      <div class="stat-sub fm">${s.headshotPct<15?'↑ ADS Low = 0.75, zmniejsz FOV do 105–108 dla wyraźniejszych celów':'✓ Dobra precyzja — obecne ADS ustawienia działają'}</div>`},
-    {lbl:'Czas gry',html:`
-      <div class="stat-big fd" style="color:var(--ink)">${s.playtime}<span style="font-size:20px;color:var(--ink3)"> h</span></div>
-      <div class="stat-sub fm">${s.matches} meczów · śr. ${Math.round(s.playtime/Math.max(s.matches,1)*60)} min/mecz</div>
-      <div class="stat-sub fm" style="margin-top:8px;padding:8px 10px;background:var(--void);border:1px solid var(--b1)">
-        <span style="color:var(--g);font-weight:700">CONFIG TIP:</span><br>
-        <span style="color:var(--ink3)">${s.playtime>200?'Veteran — rozważ preset Turniejowy dla edge cases i slide-cancel loop.':'Rozgrzewasz się — preset Zbalansowany to Twój cel na start.'}</span>
-      </div>`},
-  ];
-  cards.forEach(c=>{
-    const el=document.createElement('div');
-    el.className='stat-card card';
-    el.innerHTML=`<span class="ct" aria-hidden="true"></span><span class="cb2" aria-hidden="true"></span>
-      <div class="stat-lbl fm">${c.lbl}</div>${c.html}`;
-    grid.appendChild(el);
-  });
-
-  // Recommendations
-  const recs=[
-    {stat:'K/D',warn:s.kd<1.5,tip:'Niskie K/D — ustaw czułość 1.4–1.6, włącz ADS FOV Affected, wyłącz wibracje.',ok:'K/D ok — celowanie skonfigurowane poprawnie.'},
-    {stat:'Gulag',warn:s.gulagWin<55,tip:'Niski Gulag Win — ADS Low = 0.75, Curve = Dynamic, wyłącz ruch kamery >50%.',ok:'Gulag ok — skuteczna mikrokorekta.'},
-    {stat:'Headshot',warn:s.headshotPct<15,tip:'Mały % headshot — zmniejsz FOV do 105, ADS High = 0.95, włącz środkową kropkę (Żółta).',ok:'Precyzja ok — ADS ustawienia działają prawidłowo.'},
-    {stat:'Damage',warn:s.avgDmg<1000,tip:'Niskie obrażenia — FOV 110+, FidelityFX CAS 90%, Filtr 2, HUD Minimalne.',ok:'Dobre obrażenia — grafika i audio skonfigurowane optymalnie.'},
-  ];
-  document.getElementById('recs-grid').innerHTML=recs.map(r=>`
-    <div class="rec-item ${r.warn?'warn':'ok'}">
-      <svg class="ico" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${r.warn?'var(--crit)':'var(--g)'}" stroke-width="2" style="flex-shrink:0;margin-top:1px" aria-hidden="true">
-        ${r.warn
-          ?'<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
-          :'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>'}
-      </svg>
-      <div>
-        <div class="rec-item-tag fm" style="color:${r.warn?'var(--crit)':'var(--g)'}">${r.stat}</div>
-        <div class="rec-item-txt fm">${r.warn?r.tip:r.ok}</div>
-      </div>
-    </div>`).join('');
-}
-
-// ─── EDIT STATS MODAL ───────────────────────────
-function openEditStats(){
-  const fields=[
-    {k:'callsign',l:'Callsign',t:'text',full:true},
-    {k:'kd',l:'K/D Ratio',t:'number'},{k:'wins',l:'Wygrane',t:'number'},
-    {k:'matches',l:'Mecze',t:'number'},{k:'avgDmg',l:'Śr. obrażenia',t:'number'},
-    {k:'headshotPct',l:'Headshot %',t:'number'},{k:'gulagWin',l:'Gulag Win %',t:'number'},
-    {k:'rank',l:'Ranga',t:'number'},{k:'playtime',l:'Czas gry (h)',t:'number'},
-    {k:'topPct',l:'Top %',t:'number'},
-  ];
-  document.getElementById('modal-fields').innerHTML=fields.map(f=>`
-    <div class="modal-field${f.full?' full':''}">
-      <label for="mf-${f.k}" class="modal-lbl fm">${f.l}</label>
-      <input id="mf-${f.k}" type="${f.t}" value="${state.stats[f.k]}" class="modal-input fm"/>
-    </div>`).join('');
-  document.getElementById('modal').style.display='flex';
-  document.getElementById('mf-callsign').focus();
-}
-function saveStats(){
-  const fields=['callsign','kd','wins','matches','avgDmg','headshotPct','gulagWin','rank','playtime','topPct'];
-  fields.forEach(k=>{
-    const el=document.getElementById('mf-'+k);
-    if(el){ state.stats[k]=k==='callsign'?el.value:parseFloat(el.value)||0; }
-  });
-  closeModal();
-  renderStats();
-}
-function closeModal(){ document.getElementById('modal').style.display='none'; }
-document.getElementById('modal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
-
-// ─── URL IMPORT ─────────────────────────────────
-function checkURLConfig(){
-  try{
-    const p=new URLSearchParams(location.search);
-    const enc=p.get('config');
-    if(enc){
-      const dec=JSON.parse(atob(enc));
-      const val={};
-      Object.keys(INIT).forEach(k=>{ val[k]=dec[k]!==undefined?dec[k]:INIT[k]; });
-      state.cfg=val; state.preset='custom';
-      showImportStatus('ok','✓ Konfiguracja z linku wczytana');
-    }
-  }catch(e){}
-}
-
-// ─── MASTER RENDER ──────────────────────────────
-function renderAll(){
-  renderPresets();
-  renderTelemetry();
-  renderCatsNav();
-  renderSettings();
-  renderTips();
-}
-
-// ─── INIT ───────────────────────────────────────
-checkURLConfig();
-renderAll();
-renderSurvey();
-</script>
+    </script>
 </body>
 </html>
+
