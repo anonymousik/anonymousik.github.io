@@ -1,9 +1,15 @@
 {
-  "name": "webterm-backend",                                                       
-  "version": "1.0.0",
-  "private": true,                                                                 
+  "name": "webterm-backend",
+  "version": "1.1.0",
+  "private": true,
   "main": "server.js",
-  "scripts": { "start": "node server.js" },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "lint:syntax": "node --check server.js"
+  },
   "dependencies": {
     "ws": "^8.17.0",
     "ssh2": "^1.15.0"
