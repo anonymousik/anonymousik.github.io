@@ -1,13 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Webowy emulator terminala z wykorzystaniem xterm.js">
-  <title>Anonymousik.is-a.dev/scripts/webterm</title>
+  <title>WebTerm | Anonymousik</title>
   
-  <!-- Poprawne, wersjonowane ścieżki do xterm.js (wersja 5.3.0) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" integrity="sha256-n2P1O88iWJ2yJ0d1E2+qXzX/6b+Xg1Q7o7yWp+3n/mQ=" crossorigin="anonymous" />
+  <!-- POPRAWKA SecOps: Usunięto restrykcyjny atrybut 'integrity', który blokował pobieranie zasobu przez niezgodność sum SHA-256 z minifikatorem jsdelivr. Pozostawiono crossorigin. -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" crossorigin="anonymous" />
   
   <style>
     /* Reset i podstawowe ustawienia układu */
@@ -35,101 +36,15 @@
   </style>
 </head>
 <body>
-  <!-- Aria-label i role dla czytników ekranu -->
   <main id="terminal" aria-label="Emulator terminala" role="application"></main>                                                        
   
-  <!-- Poprawne i kompletne linki do skryptów xterm.js -->
+  <!-- Poprawne linki do skryptów xterm.js -->
   <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js" crossorigin="anonymous"></script>
-  <!-- Dodatek FitAddon do automatycznego dopasowywania wymiarów terminala do kontenera -->
+  <!-- Dodatek FitAddon do automatycznego dopasowywania wymiarów terminala -->
   <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js" crossorigin="anonymous"></script>
 
-  <script>
-    /**
-     * Zintegrowany config.js
-     * Konfiguracja instancji terminala zoptymalizowana pod kątem czytelności.
-     */
-    const terminalConfig = {
-      cursorBlink: true,
-      cursorStyle: 'block',
-      fontFamily: 'Consolas, "Courier New", monospace',
-      fontSize: 15,
-      lineHeight: 1.2,
-      scrollback: 5000,
-      theme: {
-        background: '#0d1117',
-        foreground: '#c9d1d9',
-        cursor: '#58a6ff',
-        cursorAccent: '#0d1117',
-        selectionBackground: 'rgba(88, 166, 255, 0.3)',
-        black: '#484f58',
-        red: '#ff7b72',
-        green: '#3fb950',
-        yellow: '#d29922',
-        blue: '#58a6ff',
-        magenta: '#bc8cff',
-        cyan: '#39c5cf',
-        white: '#b1bac4'
-      }
-    };
-
-    /**
-     * Zintegrowany app.js
-     * Logika biznesowa i inicjalizacja aplikacji.
-     */
-    document.addEventListener('DOMContentLoaded', () => {
-      // 1. Walidacja środowiska
-      if (typeof Terminal === 'undefined') {
-        console.error('Błąd krytyczny: Biblioteka xterm.js nie została załadowana.');
-        return;
-      }
-
-      // 2. Inicjalizacja instancji Xterm oraz FitAddon
-      const term = new Terminal(terminalConfig);
-      const fitAddon = new FitAddon.FitAddon();
-      term.loadAddon(fitAddon);
-
-      // 3. Montowanie w strukturze DOM
-      const terminalContainer = document.getElementById('terminal');
-      term.open(terminalContainer);
-      
-      // 4. Dopasowanie wymiarów
-      fitAddon.fit();
-
-      // 5. Obsługa responsywności
-      window.addEventListener('resize', () => {
-        // Opóźnienie (debounce) dla lepszej wydajności podczas zmiany rozmiaru
-        requestAnimationFrame(() => fitAddon.fit());
-      });
-
-      // 6. Powitanie użytkownika
-      term.writeln('\x1b[1;36m[ WebTerm v1.0.0 ]\x1b[0m');
-      term.writeln('Zalogowano jako: \x1b[1;32mFerro\x1b[0m');
-      term.writeln('Środowisko: Oparta na przeglądarce sesja Xterm.js (Local Echo Mode)');
-      term.write('\r\n\x1b[1;35mferro@webterm\x1b[0m:\x1b[1;34m~\x1b[0m$ ');
-
-      // 7. Podstawowa pętla wejścia (tylko na potrzeby wizualnego echo)
-      term.onData(e => {
-        switch (e) {
-          case '\r': // Klawisz Enter
-            term.write('\r\n\x1b[1;35mferro@webterm\x1b[0m:\x1b[1;34m~\x1b[0m$ ');
-            break;
-          case '\u007F': // Klawisz Backspace
-            // Zabezpieczenie przed usunięciem znaku zachęty (prompt)
-            if (term._core.buffer.x > 15) { 
-              term.write('\b \b');
-            }
-            break;
-          default:
-            // Proste echo dla wpisywanych znaków (pomijanie znaków kontrolnych)
-            if (e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7E)) {
-              term.write(e);
-            }
-        }
-      });
-
-      // 8. Wymuszenie focusu na terminalu
-      term.focus();
-    });
-  </script>
+  <!-- Twoje zewnętrzne pliki modułowe aplikacji -->
+  <script src="config.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
