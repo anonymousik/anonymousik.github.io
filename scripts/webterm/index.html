@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -6,21 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Webowy emulator terminala z wykorzystaniem xterm.js">
   <title>WebTerm | Anonymousik</title>
-  
-  <!-- POPRAWKA SecOps: Usunięto restrykcyjny atrybut 'integrity', który blokował pobieranie zasobu przez niezgodność sum SHA-256 z minifikatorem jsdelivr. Pozostawiono crossorigin. -->
+
+  <!--
+    Content-Security-Policy: ogranicza skąd strona może ładować skrypty/style
+    i dokąd może łączyć się przez WebSocket. To realna ochrona przed
+    exfiltracją poświadczeń SSH przez wstrzyknięty skrypt (XSS) — nawet jeśli
+    atakujący wstrzyknie <script>, przeglądarka zablokuje połączenie do
+    dowolnego innego hosta niż wymieniony w connect-src.
+    Zaktualizuj connect-src, jeśli zmienisz backend URL w config.js.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'none';
+    script-src 'self' https://cdn.jsdelivr.net;
+    style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
+    connect-src 'self' https://anonymousik-github-io-8mj1.onrender.com wss://anonymousik-github-io-8mj1.onrender.com;
+    img-src 'self';
+    base-uri 'none';
+    form-action 'none';
+  ">
+
+  <!--
+    SRI (integrity): usunięte w poprzedniej wersji z komentarzem o
+    niezgodności SHA-256 — zamiast usuwać ochronę na stałe, wygeneruj
+    poprawny hash lokalnie i wklej go tutaj:
+      curl -s https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css | openssl dgst -sha384 -binary | openssl base64 -A
+    (analogicznie dla obu plików .js poniżej). Bez weryfikacji CI/CD
+    (bash_tool) nie mam dostępu do cdn.jsdelivr.net, więc nie mogę
+    bezpiecznie wygenerować hashy za Ciebie — nie zgaduję ich.
+  -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" crossorigin="anonymous" />
-  
+
   <style>
-    /* Reset i podstawowe ustawienia układu */
     html, body {
       height: 100%;
       margin: 0;
-      background-color: #0d1117; /* Kolor z palety GitHub Dark */
+      background-color: #0d1117;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     }
 
-    /* Kontener terminala z uwzględnieniem dostępności (WCAG) */
     #terminal {
       height: 100%;
       width: 100%;
@@ -28,22 +51,31 @@
       box-sizing: border-box;
     }
 
-    /* Wizualny wskaźnik ostrości (Focus) dla klawiatury */
     .xterm:focus-within {
       outline: 1px solid rgba(88, 166, 255, 0.4);
       outline-offset: 2px;
     }
+
+    noscript {
+      display: flex;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      color: #c9d1d9;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
-  <main id="terminal" aria-label="Emulator terminala" role="application"></main>                                                        
-  
-  <!-- Poprawne linki do skryptów xterm.js -->
+  <noscript>WebTerm wymaga włączonego JavaScript, aby połączyć się z sesją SSH.</noscript>
+  <main id="terminal" aria-label="Emulator terminala" role="application"></main>
+
   <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js" crossorigin="anonymous"></script>
-  <!-- Dodatek FitAddon do automatycznego dopasowywania wymiarów terminala -->
   <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js" crossorigin="anonymous"></script>
 
-  <!-- Twoje zewnętrzne pliki modułowe aplikacji -->
   <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
