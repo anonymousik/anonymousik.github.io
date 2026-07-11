@@ -1,0 +1,9 @@
+{
+  "name": "webterm-backend",                                                       "version": "1.0.0",
+  "private": true,                                                                 "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "ws": "^8.17.0",
+    "ssh2": "^1.15.0"
+  }
+}
