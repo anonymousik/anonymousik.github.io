@@ -25,6 +25,16 @@ const wss = new WebSocketServer({ noServer: true });
 
 server.on("upgrade", (req, socket, head) => {
   const origin = req.headers.origin || "";
+server.on("upgrade", (req, socket, head) => {
+  const origin = req.headers.origin || "";
+  
+  console.log("DEBUG: Incoming Origin Header:", origin);
+  console.log("DEBUG: Allowed Origins List:", ALLOWED_ORIGINS);
+  // -----------------
+  
+  if (!ALLOWED_ORIGINS.includes(origin)) {
+    // ... reszta kodu
+    
   if (origin !== ALLOWED_ORIGIN) {
     socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
     socket.destroy();
