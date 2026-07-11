@@ -1,0 +1,9 @@
+services:                                                                          - type: web                                                                        name: webterm-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: ALLOWED_ORIGIN
+        value: "https://anonymousik.is-a.dev/scripts/webterm"
