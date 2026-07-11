@@ -1,20 +1,30 @@
-# Exported from Render on 2026-07-11T06:33:26Z
+# Render Blueprint — WebTerm backend
+# Docs: https://render.com/docs/blueprint-spec
 version: "1"
 projects:
-- name: My project
-  environments:
-  - name: Production
-    services:
-    - type: web
-      name: anonymousik.github.io
-      runtime: node
-      repo: https://github.com/anonymousik/anonymousik.github.io
-      plan: free
-      envVars:
-      - key: ALLOWED_ORIGIN
-        sync: false
-      region: frankfurt
-      buildCommand: npm install
-      startCommand: node server.js
-      autoDeployTrigger: commit
-      rootDir: scripts/webterm/backend
+  - name: My project
+    environments:
+      - name: Production
+        services:
+          - type: web
+            name: anonymousik.github.io
+            runtime: node
+            repo: https://github.com/anonymousik/anonymousik.github.io
+            plan: free
+            region: frankfurt
+            rootDir: scripts/webterm/backend
+            buildCommand: npm install
+            startCommand: node server.js
+            autoDeployTrigger: commit
+            healthCheckPath: /healthz
+            envVars:
+              - key: ALLOWED_ORIGIN
+                sync: false # set manually in dashboard: https://anonymousik.is-a.dev (no path, no trailing slash)
+              - key: NODE_ENV
+                value: production
+              - key: DEBUG
+                value: "false" # flip to "true" only while diagnosing WS issues — logs Origin headers
+              - key: MAX_CONCURRENT_SESSIONS
+                value: "50"
+              - key: SSH_CONNECT_TIMEOUT_MS
+                value: "15000"
