@@ -1,0 +1,729 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FerroART:LIVE UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Syncopate:wght@400;700&display=swap');
+
+        :root {
+            --neon-cyan: #00FFFF;
+            --neon-magenta: #FF00FF; 
+            --neon-green: #39FF14;
+            --blood-red: #FF0000;
+            --oled-black: #000000;
+            --glass-bg: rgba(5, 11, 20, 0.85);
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background-color: transparent;
+            color: var(--neon-cyan);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Stylizacja brutalistyczna panelu */
+        .brutal-panel {
+            background-color: var(--glass-bg);
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .brutal-btn {
+            background-color: var(--oled-black);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .brutal-btn:hover {
+            background-color: var(--neon-cyan);
+            color: var(--oled-black);
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .brutal-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Animowane tło siatki */
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Skanlinie CRT */
+        .crt-scanlines {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Narożniki ozdobne */
+        .corner-bracket {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--neon-cyan);
+        }
+        .c-tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+        .c-tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+        .c-bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+        .c-br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+        /* Klasyczne animacje deszczu monet i dymów */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 100;
+            animation: fallAndSpin 3s linear forwards;
+        }
+
+        @keyframes fallAndSpin {
+            0% {
+                transform: translateY(-50px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Animacja bicia serca dla alertów */
+        @keyframes pulse-fast {
+            0%, 100% { transform: scale(1) translateX(-50%); }
+            50% { transform: scale(1.05) translateX(-48%); }
+        }
+
+        .pulse-alert {
+            animation: pulse-fast 0.4s ease infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative select-none">
+    <div class="crt-scanlines"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- ──────────────────────────────────────────────────────── -->
+    <!-- PANEL REŻYSERSKI (STEROWNIK DLA STREAMERA)               -->
+    <!-- ──────────────────────────────────────────────────────── -->
+    <div id="admin-panel" class="p-4 bg-[#020617] border-b-2 border-magenta-500 z-50 relative flex flex-col gap-4 text-white">
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-zinc-800 pb-3">
+            <div>
+                <h1 class="text-xl font-bold tracking-widest text-[#FF00FF] font-['Syncopate']">SECFERRO HYPE_COMMAND CENTER</h1>
+                <p class="text-xs text-zinc-400">Pulpit sterujący interakcjami. Idealny pod drugi monitor lub tablet.</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="toggleOBSMode()" class="bg-[#39FF14] text-black font-extrabold px-5 py-2 text-xs uppercase tracking-wider hover:bg-white transition-all">
+                    [ AKTYWUJ TRYB OBS OVERLAY ]
+                </button>
+            </div>
+        </div>
+
+        <!-- Sekcja aktywacji interakcji -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+            
+            <!-- Symulator Donejtów z TTS -->
+            <div class="p-3 bg-black/60 border border-zinc-800 space-y-2">
+                <h3 class="font-bold text-[#FF00FF] uppercase">Symulator Donejta (z TTS)</h3>
+                <div class="space-y-1.5">
+                    <input type="text" id="donor-name" value="Seba_Mordo" placeholder="Nazwa widza" class="w-full bg-zinc-900 p-1.5 border border-zinc-800 text-white focus:outline-none">
+                    <input type="text" id="donation-amount" value="3.00 PLN" placeholder="Kwota" class="w-full bg-zinc-900 p-1.5 border border-zinc-800 text-white focus:outline-none">
+                    <textarea id="donation-msg" rows="2" class="w-full bg-zinc-900 p-1.5 border border-zinc-800 text-white focus:outline-none" placeholder="Wiadomość do odczytania">Krzysztot, co ty tam kombinujesz? Format C robisz czy co? Trzy złote!</textarea>
+                </div>
+                <button onclick="simulateTTSDonation()" class="w-full brutal-btn py-1.5 text-[10px]">Wyślij Donejta</button>
+            </div>
+
+            <!-- Sterowanie Ruletką Kary/Nagrody -->
+            <div class="p-3 bg-black/60 border border-zinc-800 space-y-2">
+                <h3 class="font-bold text-[#FF00FF] uppercase">Ruletka Wyzwań</h3>
+                <p class="text-[10px] text-zinc-500">Kliknij aby zakręcić kołem fortuny na streamie.</p>
+                <button onclick="spinWheel()" class="w-full bg-[#00FFFF] text-black font-bold py-3 uppercase tracking-wider hover:bg-white transition-all">
+                    ZAKRĘĆ KOŁEM (SPIN)
+                </button>
+                <div class="text-[10px] text-zinc-400">
+                    Wylosowano: <span id="last-win-lbl" class="text-[#39FF14] font-bold">BRAK</span>
+                </div>
+            </div>
+
+            <!-- Licznik Rage / Dymów -->
+            <div class="p-3 bg-black/60 border border-zinc-800 space-y-2 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-[#FF00FF] uppercase">Miernik Dymów / Rage</h3>
+                    <p class="text-[10px] text-zinc-500">Zwiększaj licznik przy epickich akcjach na streamie.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="adjustRage(1)" class="flex-grow bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded">+1 RAGE</button>
+                    <button onclick="adjustRage(-1)" class="bg-zinc-800 hover:bg-zinc-700 py-2 px-3 rounded">-1</button>
+                </div>
+            </div>
+
+            <!-- Szybkie Dźwięki i Alerty (Soundboard) -->
+            <div class="p-3 bg-black/60 border border-zinc-800 space-y-2">
+                <h3 class="font-bold text-[#FF00FF] uppercase">Soundboard SecFerro</h3>
+                <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+                    <button onclick="playSynthSound('glitch')" class="bg-zinc-900 hover:bg-zinc-800 p-2 border border-zinc-700">GLITCH FX</button>
+                    <button onclick="playSynthSound('coin')" class="bg-zinc-900 hover:bg-zinc-800 p-2 border border-zinc-700">MONETY</button>
+                    <button onclick="playSynthSound('fail')" class="bg-zinc-900 hover:bg-zinc-800 p-2 border border-zinc-700">PRZEGRANA</button>
+                    <button onclick="playSynthSound('success')" class="bg-zinc-900 hover:bg-zinc-800 p-2 border border-zinc-700">ALARM/ALERT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ──────────────────────────────────────────────────────── -->
+    <!-- WŁAŚCIWA NAKŁADKA OBS OVERLAY (Zoptymalizowana pod 16:9)  -->
+    <!-- ──────────────────────────────────────────────────────── -->
+    <div id="obs-overlay-viewport" class="relative w-[1920px] h-[1080px] mx-auto overflow-hidden flex-grow">
+        
+        <!-- Przycisk powrotu dla trybu interaktywnego w OBS -->
+        <button id="exit-obs-btn" onclick="exitOBSMode()" class="absolute top-4 left-4 z-50 bg-black/90 text-white border-2 border-red-500 p-2 text-xs font-bold pointer-events-auto cursor-pointer" style="display: none;">
+            [ OBS VIEW ACTIVE ] KLIKNIJ ABY PRZYWRÓCIĆ PANEL STEROWANIA
+        </button>
+
+        <!-- 1. POWIADOMIENIE DONEJT / ALERTY (Center of attention) -->
+        <div id="twitch-alert" class="absolute top-[100px] left-1/2 -translate-x-1/2 w-[550px] brutal-panel p-6 flex flex-col gap-3 transition-all duration-500 opacity-0 transform -translate-y-24 z-40">
+            <div class="corner-bracket c-tl"></div>
+            <div class="corner-bracket c-tr"></div>
+            <div class="corner-bracket c-bl"></div>
+            <div class="corner-bracket c-br"></div>
+
+            <div class="flex items-center gap-4">
+                <!-- Ikona pulsującej czaszki/diody -->
+                <div class="w-14 h-14 bg-black text-[#FF00FF] flex items-center justify-center font-bold border-2 border-[#FF00FF] shadow-[0_0_15px_rgba(255,0,255,0.4)]" id="alert-glow">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase font-bold tracking-[3px] text-[#39FF14]">[ NOWA WPŁATA (TTS) ]</span>
+                    <h2 id="alert-sender" class="text-2xl font-bold tracking-tight text-white uppercase mt-0.5">NICKNAME</h2>
+                </div>
+                <div class="ml-auto text-right">
+                    <span id="alert-cash" class="text-xl font-bold text-[#00FFFF] bg-black px-2 py-1 border border-[#00FFFF]">0.00 PLN</span>
+                </div>
+            </div>
+
+            <!-- Dynamiczna Wizualizacja dźwięku TTS (Simulated Waveform) -->
+            <div class="h-6 w-full bg-black/50 border border-zinc-800 flex items-center justify-center gap-0.5 px-2 mt-2">
+                <span class="text-[9px] text-zinc-500 mr-2 uppercase">Audio Feed:</span>
+                <div class="v-bar h-1 w-2 bg-[#39FF14] transition-all duration-100"></div>
+                <div class="v-bar h-2 w-2 bg-[#39FF14] transition-all duration-100"></div>
+                <div class="v-bar h-4 w-2 bg-[#39FF14] transition-all duration-100"></div>
+                <div class="v-bar h-1 w-2 bg-[#39FF14] transition-all duration-100"></div>
+                <div class="v-bar h-3 w-2 bg-[#39FF14] transition-all duration-100"></div>
+                <div class="v-bar h-1 w-2 bg-[#39FF14] transition-all duration-100"></div>
+            </div>
+
+            <div class="bg-black/60 p-3 border-l-4 border-[#FF00FF]">
+                <p id="alert-message" class="text-sm text-zinc-200 italic font-sans font-bold">Wiadomość donejta zostanie wyświetlona tutaj...</p>
+            </div>
+        </div>
+
+        <!-- 2. WIDŻET INTERAKTYWNEJ RULETKI WYKONYWANYCH ZADAŃ -->
+        <div id="wheel-widget" class="absolute top-[80px] left-[80px] w-[340px] brutal-panel p-4 flex flex-col items-center">
+            <div class="corner-bracket c-tl"></div>
+            <div class="corner-bracket c-tr"></div>
+            <div class="corner-bracket c-bl"></div>
+            <div class="corner-bracket c-br"></div>
+
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-center border-b border-white/10 w-full pb-2 mb-3 text-[#FF00FF]">
+                [ SYSTEM_RULETKA_WYZEW_2026 ]
+            </h3>
+            
+            <!-- Wheel Container -->
+            <div class="relative w-[220px] h-[220px]">
+                <canvas id="wheelCanvas" width="220" height="220" class="w-full h-full rounded-full border-2 border-[#00FFFF]"></canvas>
+                <!-- Indicator Arrow -->
+                <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[18px] border-t-red-600 z-10"></div>
+            </div>
+
+            <div class="text-center mt-3">
+                <span class="text-[9px] text-zinc-500 uppercase block">Status losowania:</span>
+                <span id="wheel-status-text" class="text-xs text-white font-bold uppercase tracking-wide">Gotowa do spinu!</span>
+            </div>
+        </div>
+
+        <!-- 3. LICZNIK DYMÓW / RAGE METER (Dynamizuje Stream) -->
+        <div class="absolute bottom-[280px] right-[80px] w-[280px] brutal-panel p-4 text-center">
+            <div class="corner-bracket c-tl"></div>
+            <div class="corner-bracket c-tr"></div>
+            <div class="corner-bracket c-bl"></div>
+            <div class="corner-bracket c-br"></div>
+
+            <span class="text-[9px] text-zinc-500 uppercase tracking-widest">MIERNIK DYMÓW / RAGE</span>
+            <div class="text-5xl font-extrabold text-red-500 my-2 tracking-tighter" id="rage-counter-lbl">00</div>
+            
+            <div class="w-full h-3 border border-zinc-800 bg-black/40 relative overflow-hidden">
+                <div id="rage-progress" class="h-full bg-red-600 transition-all duration-300 w-0"></div>
+            </div>
+            
+            <div class="flex justify-between text-[8px] mt-1.5 text-zinc-500 uppercase">
+                <span>Tryb spokojny</span>
+                <span class="text-red-500 font-bold">POTĘŻNE DYMY</span>
+            </div>
+        </div>
+
+        <!-- 4. PASEK CELU DOTACJI (Meme Donation Goal) -->
+        <div class="absolute bottom-[100px] left-[80px] w-[450px] brutal-panel p-4">
+            <div class="corner-bracket c-tl"></div>
+            <div class="corner-bracket c-tr"></div>
+            <div class="corner-bracket c-bl"></div>
+            <div class="corner-bracket c-br"></div>
+
+            <div class="flex justify-between text-[10px] font-bold mb-2">
+                <span class="tracking-widest text-[#FF00FF]">CEL: NOWE CHŁODZENIE SERWERA</span>
+                <span id="goal-val-lbl">43%</span>
+            </div>
+
+            <div class="w-full h-5 border border-zinc-800 bg-black/40 relative">
+                <!-- Diagonal stripes animated progress -->
+                <div id="goal-progress-fill" class="h-full bg-cyan-400 transition-all duration-500" style="width: 43%; background: repeating-linear-gradient(45deg, var(--neon-cyan), var(--neon-cyan) 10px, #00b3b3 10px, #00b3b3 20px);"></div>
+            </div>
+
+            <div class="flex justify-between text-[9px] mt-2 text-zinc-400">
+                <span>Zebrano: 430 PLN</span>
+                <span>Cel główny: 1000 PLN</span>
+            </div>
+        </div>
+
+        <!-- 5. STREAM CHAT OVERLAY WITH EMOTES (Podgląd jak u top deweloperów) -->
+        <div class="absolute bottom-[100px] right-[80px] w-[380px] h-[160px] flex flex-col justify-end">
+            <div class="text-[9px] font-bold uppercase tracking-widest text-[#39FF14] border-b border-zinc-800 pb-1 mb-2">
+                [ CZAT_STRUMIENIA_AKTYWNY ]
+            </div>
+            <div id="stream-chat-box" class="flex flex-col-reverse gap-2 max-h-[130px] overflow-hidden">
+                <!-- Wiadomości w locie -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ──────────────────────────────────────────────────────── -->
+    <!--            DOLNY PASEK TICKER - ZAWSZE W TLE              -->
+    <!-- ──────────────────────────────────────────────────────── -->
+    <footer class="w-full mt-auto relative z-20 border-t-2 border-[#00FFFF] bg-black">
+        <div class="overflow-hidden white-space-nowrap py-2 text-[11px] font-bold uppercase tracking-wider flex gap-8">
+            <div class="animate-marquee inline-block whitespace-nowrap flex gap-12">
+                <span class="text-red-500 animate-pulse">● SECFERRO BROADCAST ACTIVE</span>
+                <span>BEZ KOMPROMISÓW: ANONYMOUSIK.IS-A.DEV</span>
+                <span class="text-[#39FF14]">OSTATNI DONEJT: SEBA_MORDO - 3.00 PLN</span>
+                <span>RULETKA WYZEW AKTYWNA: ZAKRĘĆ NA STRUMIENIU</span>
+                <span class="text-[#FF00FF]">"FORMAT C: DLA BYLEJAKOŚCI"</span>
+                <!-- Repeat for seamless scroll -->
+                <span class="text-red-500 animate-pulse">● SECFERRO BROADCAST ACTIVE</span>
+                <span>BEZ KOMPROMISÓW: ANONYMOUSIK.IS-A.DEV</span>
+                <span class="text-[#39FF14]">OSTATNI DONEJT: SEBA_MORDO - 3.00 PLN</span>
+                <span>RULETKA WYZEW AKTYWNA: ZAKRĘĆ NA STRUMIENIU</span>
+                <span class="text-[#FF00FF]">"FORMAT C: DLA BYLEJAKOŚCI"</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Style do animacji Marquee -->
+    <style>
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            animation: marquee 25s linear infinite;
+        }
+    </style>
+
+    <script>
+        // Web Audio Context dla dynamicznych pisków, syntez dźwięku retro
+        let audioContext = null;
+
+        function playSynthSound(type) {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const now = audioContext.currentTime;
+
+                if (type === 'coin') {
+                    // Klasyczny 8-bitowy dźwięk monety z gier retro
+                    const osc1 = audioContext.createOscillator();
+                    const osc2 = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+
+                    osc1.type = 'square';
+                    osc2.type = 'square';
+
+                    osc1.frequency.setValueAtTime(987.77, now); // B5
+                    osc1.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+                    osc1.connect(gain);
+                    gain.connect(audioContext.destination);
+
+                    osc1.start(now);
+                    osc1.stop(now + 0.4);
+                } else if (type === 'glitch') {
+                    // Dźwięk brudnego glitchowania systemu
+                    const bufferSize = audioContext.sampleRate * 0.12;
+                    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = Math.random() * 2 - 1;
+                    }
+                    const noise = audioContext.createBufferSource();
+                    noise.buffer = buffer;
+                    
+                    const gain = audioContext.createGain();
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+                    noise.connect(gain);
+                    gain.connect(audioContext.destination);
+                    noise.start(now);
+                } else if (type === 'fail') {
+                    // Niski ton porażki
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.5);
+
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                } else if (type === 'success') {
+                    // Syrena alertu
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.linearRampToValueAtTime(1200, now + 0.3);
+
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                }
+            } catch (err) {
+                console.log("Web Audio blocked by browser policy.");
+            }
+        }
+
+        // ─── KOŁO FORTUNY (RULETKA WYZEWÓW) ────────────────────
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const options = ["FORMAT C:", "10 POMPEK", "MOD CHAT", "ZMIANA POLARYZACJI", "WYPIJ WODĘ", "ROBISZ KOD", "RAGE MODE", "FREE PASS"];
+        const colors = ["#FF00FF", "#00FFFF", "#39FF14", "#050b14", "#FF0000", "#000000", "#FF00FF", "#00FFFF"];
+
+        let startAngle = 0;
+        const arc = Math.PI / (options.length / 2);
+        let spinTimeout = null;
+        let spinAngleStart = 10;
+        let spinTime = 0;
+        let spinTimeTotal = 0;
+
+        function drawRouletteWheel() {
+            ctx.clearRect(0, 0, 220, 220);
+            const r = 110;
+            ctx.strokeStyle = "rgba(0, 255, 255, 0.4)";
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < options.length; i++) {
+                const angle = startAngle + i * arc;
+                ctx.fillStyle = colors[i];
+
+                ctx.beginPath();
+                ctx.arc(r, r, r - 5, angle, angle + arc, false);
+                ctx.lineTo(r, r);
+                ctx.fill();
+                ctx.stroke();
+
+                // Dodawanie tekstu do segmentów
+                ctx.save();
+                ctx.fillStyle = colors[i] === "#000000" || colors[i] === "#050b14" ? "#FFFFFF" : "#000000";
+                ctx.font = "bold 9px Space Mono";
+                ctx.translate(r + Math.cos(angle + arc / 2) * (r - 40), r + Math.sin(angle + arc / 2) * (r - 40));
+                ctx.rotate(angle + arc / 2 + Math.PI / 2);
+                const text = options[i];
+                ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
+                ctx.restore();
+            }
+
+            // Centralny rdzeń SecFerro
+            ctx.beginPath();
+            ctx.arc(r, r, 18, 0, Math.PI * 2);
+            ctx.fillStyle = "#000000";
+            ctx.fill();
+            ctx.strokeStyle = "#00FFFF";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        function spinWheel() {
+            if (spinTimeTotal > 0) return; // Zapobiega podwójnemu zakręceniu
+            playSynthSound('coin');
+            document.getElementById('wheel-status-text').innerText = "SYSTEM LOSUJE...";
+            spinAngleStart = Math.random() * 10 + 10;
+            spinTime = 0;
+            spinTimeTotal = Math.random() * 3000 + 4000;
+            rotateWheel();
+        }
+
+        function rotateWheel() {
+            spinTime += 30;
+            if (spinTime >= spinTimeTotal) {
+                stopRotateWheel();
+                return;
+            }
+            const spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
+            startAngle += (spinAngle * Math.PI / 180);
+            drawRouletteWheel();
+            spinTimeout = setTimeout(rotateWheel, 30);
+        }
+
+        function stopRotateWheel() {
+            clearTimeout(spinTimeout);
+            spinTimeTotal = 0;
+            const degrees = startAngle * 180 / Math.PI + 90;
+            const arcd = arc * 180 / Math.PI;
+            const index = Math.floor((360 - (degrees % 360)) / arcd);
+            ctx.save();
+            const winText = options[index];
+            document.getElementById('wheel-status-text').innerText = `WYLOSOWANO: ${winText}`;
+            document.getElementById('last-win-lbl').innerText = winText;
+            
+            // Reakcja na wylosowanie
+            if (winText === "ZMIANA POLARYZACJI") {
+                playSynthSound('glitch');
+                triggerScreenFlash();
+            } else if (winText === "FORMAT C:") {
+                playSynthSound('fail');
+            } else {
+                playSynthSound('success');
+            }
+            
+            injectChatMessage('SECFERRO_BOT', `Wylosowano w ruletce: ${winText}`, '#FF00FF');
+            ctx.restore();
+        }
+
+        function easeOut(t, b, c, d) {
+            const ts = (t /= d) * t;
+            const tc = ts * t;
+            return b + c * (tc + -3 * ts + 3 * t);
+        }
+
+        drawRouletteWheel();
+
+
+        // ─── OBSŁUGA SYNTEZATORA DŹWIĘKU I TTS (DONEJTY) ───────────
+        let ttsActive = false;
+
+        function simulateTTSDonation() {
+            const name = document.getElementById('donor-name').value;
+            const amount = document.getElementById('donation-amount').value;
+            const msg = document.getElementById('donation-msg').value;
+
+            // Wywołanie wizualne alertu
+            const alertBox = document.getElementById('twitch-alert');
+            const alertSender = document.getElementById('alert-sender');
+            const alertCash = document.getElementById('alert-cash');
+            const alertMessage = document.getElementById('alert-message');
+
+            alertSender.innerText = name;
+            alertCash.innerText = amount;
+            alertMessage.innerText = msg;
+
+            alertBox.classList.remove('opacity-0', '-translate-y-24');
+            alertBox.classList.add('opacity-100', 'translate-y-0', 'pulse-alert');
+
+            // Generator lecących monet i dymu na ekranie
+            spawnCoinShower();
+
+            // Odtworzenie dźwięku wprowadzającego przed TTS
+            playSynthSound('success');
+
+            // Inicjalizacja syntezatora głosu
+            setTimeout(() => {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel(); // Stop any ongoing TTS
+                    
+                    const textToRead = `${name} przysyła ${amount}. Wiadomość: ${msg}`;
+                    const utterance = new SpeechSynthesisUtterance(textToRead);
+                    utterance.lang = 'pl-PL';
+                    
+                    // Szukanie polskiego głosu
+                    const voices = window.speechSynthesis.getVoices();
+                    const plVoice = voices.find(v => v.lang.includes('PL') || v.lang.includes('pl'));
+                    if (plVoice) utterance.voice = plVoice;
+                    
+                    utterance.pitch = 0.95; // Lekkie obniżenie dla bardziej robotycznego/surowego tonu
+                    utterance.rate = 1.05;
+
+                    // Wizualizacja fal dźwiękowych przy mówieniu
+                    const bars = document.querySelectorAll('.v-bar');
+                    let waveInterval;
+
+                    utterance.onstart = () => {
+                        waveInterval = setInterval(() => {
+                            bars.forEach(bar => {
+                                const h = Math.floor(Math.random() * 20) + 4;
+                                bar.style.height = `${h}px`;
+                            });
+                        }, 100);
+                    };
+
+                    utterance.onend = () => {
+                        clearInterval(waveInterval);
+                        bars.forEach(bar => bar.style.height = '4px');
+                        
+                        // Schowaj alert po zakończeniu odczytywania (lub po min. 4 sekundach)
+                        setTimeout(() => {
+                            alertBox.classList.remove('opacity-100', 'translate-y-0', 'pulse-alert');
+                            alertBox.classList.add('opacity-0', '-translate-y-24');
+                        }, 2000);
+                    };
+
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    // Brak wsparcia TTS - chowamy alert ręcznie
+                    setTimeout(() => {
+                        alertBox.classList.remove('opacity-100', 'translate-y-0', 'pulse-alert');
+                        alertBox.classList.add('opacity-0', '-translate-y-24');
+                    }, 5000);
+                }
+            }, 1200);
+
+            injectChatMessage('DONEJT', `${name} przekazał ${amount}: ${msg}`, '#FF00FF');
+        }
+
+        // Fizyczny deszcz monet
+        function spawnCoinShower() {
+            const viewport = document.getElementById('obs-overlay-viewport');
+            for (let i = 0; i < 25; i++) {
+                const coin = document.createElement('div');
+                coin.className = 'particle text-2xl';
+                coin.innerHTML = Math.random() > 0.5 ? '🪙' : '💵';
+                coin.style.left = `${Math.random() * 100}%`;
+                coin.style.animationDelay = `${Math.random() * 0.8}s`;
+                coin.style.fontSize = `${Math.random() * 15 + 15}px`;
+                viewport.appendChild(coin);
+
+                // Usuwamy z DOM po skończeniu animacji
+                setTimeout(() => coin.remove(), 4000);
+            }
+        }
+
+
+        // ─── LICZNIK RAGE / DYMÓW ──────────────────────────────
+        let rageScore = 0;
+        function adjustRage(val) {
+            rageScore = Math.max(0, rageScore + val);
+            
+            // Formatowanie do postaci "00"
+            document.getElementById('rage-counter-lbl').innerText = rageScore.toString().padStart(2, '0');
+            
+            // Wypełnienie paska postępu (max 20 punktów)
+            const pct = Math.min(100, (rageScore / 20) * 100);
+            document.getElementById('rage-progress').style.width = `${pct}%`;
+
+            // Efekt uderzeniowy monety / emotki na ekranie przy podbijaniu rage
+            if (val > 0) {
+                playSynthSound('glitch');
+                const viewport = document.getElementById('obs-overlay-viewport');
+                const emoji = document.createElement('div');
+                emoji.className = 'particle text-5xl font-bold text-red-500';
+                emoji.innerHTML = '🔥';
+                emoji.style.left = `${Math.random() * 40 + 50}%`; // Blisko licznika
+                viewport.appendChild(emoji);
+                setTimeout(() => emoji.remove(), 3000);
+            }
+        }
+
+
+        // ─── DYNAMICZNY CHAT STRUMIENIA ────────────────────────
+        const simulatedUsers = ['Seba_Mordo', 'HypeGamer', 'Inżynier_Audio', 'SecFerro_Fan', 'RageMaster', 'Viewer_03'];
+        const simulatedTexts = [
+            'O cholerka, ale dymy na tym streamie!',
+            'Krzysztot, odpalaj ruletkę jeszcze raz!',
+            'Format C i do przodu!',
+            'Ale czyste to koło fortuny.',
+            'Zróbmy cel na chłodzenie, zimny serwer to szybki serwer.',
+            'Najlepszy polski stream techniczny!'
+        ];
+
+        function injectChatMessage(user, msg, color = '#00FFFF') {
+            const chatBox = document.getElementById('stream-chat-box');
+            
+            if (chatBox.children.length >= 4) {
+                chatBox.removeChild(chatBox.lastChild);
+            }
+
+            const messageElement = document.createElement('div');
+            messageElement.className = 'border-l-2 border-current pl-2 py-0.5 text-[11px] animate-fadeIn';
+            messageElement.style.color = color;
+            messageElement.innerHTML = `<span class="font-bold uppercase">[${user}]</span>: <span class="text-white mix-blend-difference font-sans font-bold">${msg}</span>`;
+            
+            chatBox.prepend(messageElement);
+        }
+
+        setInterval(() => {
+            const rUser = simulatedUsers[Math.floor(Math.random() * simulatedUsers.length)];
+            const rMsg = simulatedTexts[Math.floor(Math.random() * simulatedTexts.length)];
+            const rColor = ['#00FFFF', '#FF00FF', '#39FF14', '#FF0000'][Math.floor(Math.random() * 4)];
+            injectChatMessage(rUser, rMsg, rColor);
+        }, 9000);
+
+
+        // ─── TRYB OBS OVERLAY ──────────────────────────────────
+        let obsModeActive = false;
+        function toggleOBSMode() {
+            obsModeActive = true;
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('exit-obs-btn').style.display = 'block';
+            document.body.style.backgroundColor = 'transparent';
+        }
+
+        function exitOBSMode() {
+            obsModeActive = false;
+            document.getElementById('admin-panel').style.display = 'block';
+            document.getElementById('exit-obs-btn').style.display = 'none';
+            document.body.style.backgroundColor = '';
+        }
+
+        // Błysk ekranu przy resetach polaryzacji
+        function triggerScreenFlash() {
+            const flash = document.getElementById('glitch-flash');
+            if (flash) {
+                flash.style.opacity = '0.9';
+                setTimeout(() => flash.style.opacity = '0', 200);
+            }
+        }
+    </script>
+</body>
+</html>
