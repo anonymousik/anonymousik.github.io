@@ -1,0 +1,641 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FerroLIVE GAMES // Stream Control Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Syncopate:wght@700&display=swap');
+
+        /* Dynamiczne Motywy oparte na CSS Variables */
+        :root[data-theme="dark"] {
+            --bg-color: #000000;
+            --panel-bg: #050b14;
+            --border-color: #00FFFF;
+            --border-style: 1px solid #00FFFF;
+            --shadow-style: 0 0 15px rgba(0, 255, 255, 0.2);
+            --accent-color: #FF00FF;
+            --accent-glow: 0 0 15px rgba(255, 0, 255, 0.4);
+            --text-color: #00FFFF;
+            --text-sub: #ffffff;
+            --btn-hover: #00FFFF;
+            --btn-hover-text: #000000;
+            --grid-color: rgba(0, 255, 255, 0.05);
+            --canvas-bg: #02050a;
+        }
+
+        :root[data-theme="light"] {
+            --bg-color: #FFFFFF;
+            --panel-bg: #FFFFFF;
+            --border-color: #000000;
+            --border-style: 3px solid #000000;
+            --shadow-style: 8px 8px 0px #000000;
+            --accent-color: #FF0000;
+            --accent-glow: none;
+            --text-color: #000000;
+            --text-sub: #000000;
+            --btn-hover: #000000;
+            --btn-hover-text: #FFFFFF;
+            --grid-color: rgba(0, 0, 0, 0.07);
+            --canvas-bg: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 25px 25px;
+        }
+
+        .theme-panel {
+            background-color: var(--panel-bg);
+            border: var(--border-style);
+            box-shadow: var(--shadow-style);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .theme-btn {
+            background-color: transparent;
+            border: var(--border-style);
+            color: var(--text-color);
+            font-weight: bold;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-style);
+        }
+
+        .theme-btn:hover {
+            background-color: var(--btn-hover);
+            color: var(--btn-hover-text);
+            box-shadow: var(--accent-glow);
+        }
+
+        .theme-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Glitch Overlay */
+        #glitch-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            mix-blend-mode: difference;
+        }
+
+        /* Scanline Overlay effect */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.08) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); }
+    </style>
+</head>
+<body class="p-4 md:p-8 flex flex-col min-h-screen">
+    <div class="scanlines"></div>
+    <div id="glitch-overlay"></div>
+
+    <!-- HEADER SYSTEM -->
+    <header class="theme-panel p-4 mb-6 flex flex-col md:flex-row justify-between items-center bg-black/40 backdrop-blur-md">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-red-600 flex items-center justify-center font-bold text-black border-2 border-black" id="logo-block">
+                FL
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold tracking-widest uppercase font-['Syncopate']" style="color: var(--text-color)">
+                    FerroLIVE_GAMES
+                </h1>
+                <p class="text-[10px] uppercase opacity-70">STREAM CONTROL UNIT // SECTOR 03</p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-4 mt-4 md:mt-0 items-center justify-center">
+            <div class="text-[10px] font-bold uppercase border-r border-dashed border-white/20 pr-4">
+                <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-ping mr-2"></span>
+                LIVE STATE: <span class="text-white bg-red-600 px-1 py-0.5">BROADCASTING</span>
+            </div>
+            <div class="text-[10px] font-bold uppercase border-r border-dashed border-white/20 pr-4">
+                VIEWERS: <span id="viewer-count" class="text-white">4,289</span>
+            </div>
+            <div class="text-[10px] font-bold uppercase pr-2">
+                UPTIME: <span id="uptime-timer" class="text-white">01:42:09</span>
+            </div>
+            <!-- POLARITY SHIFT BUTTON -->
+            <button onclick="triggerPolarityShift()" class="theme-btn px-4 py-1.5 text-xs tracking-wider">
+                [ POLARITY SHIFT ]
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD SYSTEM -->
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow items-stretch">
+        
+        <!-- COLUMN LEFT: INTERACTIVE LIVE STREAM (Canvas Game) -->
+        <section class="lg:col-span-8 flex flex-col gap-4">
+            <div class="theme-panel p-2 flex-grow flex flex-col bg-black/40 backdrop-blur-md relative">
+                <!-- Header of the Player -->
+                <div class="flex justify-between items-center p-2 border-b border-white/10 mb-2">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-red-500 animate-pulse">● SIGNAL: STREAM_PREVIEW</span>
+                    <span class="text-[10px] font-bold text-gray-400" id="game-state-label">GAME: SECFERRO DEFEND v1.1</span>
+                </div>
+
+                <!-- Canvas Game Area -->
+                <div class="relative flex-grow min-h-[350px] md:min-h-[480px] bg-black border border-white/5 flex items-center justify-center overflow-hidden">
+                    <canvas id="gameCanvas" class="w-full h-full cursor-crosshair" style="background-color: var(--canvas-bg)"></canvas>
+                    
+                    <!-- HUD overlay on Canvas -->
+                    <div class="absolute bottom-4 left-4 p-2 bg-black/80 border border-white/10 text-[10px] space-y-1">
+                        <div>SCORE: <span id="game-score" class="text-green-400 font-bold">0000</span></div>
+                        <div>CORE INTEGRITY: <span id="game-health" class="text-red-400 font-bold">100%</span></div>
+                        <div>SHIELDS: <span id="game-shield" class="text-cyan-400 font-bold">ACTIVE</span></div>
+                    </div>
+                    <div class="absolute top-4 right-4 flex gap-2">
+                        <button onclick="toggleAutopilot()" id="autopilot-btn" class="bg-black/80 border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black px-2 py-1 text-[9px] uppercase font-bold transition-all">
+                            Autopilot: ON
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Stream Options Bar -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
+                    <button class="theme-btn py-2 text-xs" onclick="setStreamFeed('game')">GAMEPLAY SOURCE</button>
+                    <button class="theme-btn py-2 text-xs" onclick="setStreamFeed('camera')">FACECAM INPUT</button>
+                    <button class="theme-btn py-2 text-xs" onclick="setStreamFeed('audit')">AUDITING TERMINAL</button>
+                    <button class="theme-btn py-2 text-xs text-red-500 border-red-500" onclick="triggerGlitch()">TRIGGER GLITCH</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- COLUMN RIGHT: CHAT & FEEDBACK -->
+        <section class="lg:col-span-4 flex flex-col gap-6">
+            <div class="theme-panel p-4 flex flex-col flex-grow bg-black/40 backdrop-blur-md">
+                <div class="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
+                    <h2 class="text-sm font-bold uppercase tracking-wider">REACTION_FEED</h2>
+                    <span class="text-[9px] bg-cyan-500/20 text-cyan-400 px-2 py-0.5 font-bold">CONNECTED</span>
+                </div>
+
+                <!-- Chat Box -->
+                <div id="live-chat-box" class="flex-grow overflow-y-auto space-y-3 pr-2 text-xs mb-4 min-h-[300px]">
+                    <!-- Instantiated by JS -->
+                </div>
+
+                <!-- Message input -->
+                <form onsubmit="sendCustomChatMessage(event)" class="flex gap-2">
+                    <input type="text" id="chat-input-field" placeholder="Wpisz komendę lub wiadomość..." class="flex-grow bg-black/60 border border-white/10 p-3 text-xs outline-none focus:border-cyan-400" style="color: var(--text-color)">
+                    <button type="submit" class="theme-btn px-4 py-2 text-xs">WYŚLIJ</button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- METRICS & DECK FOOTER SYSTEM -->
+    <footer class="grid grid-cols-1 md:grid-cols-12 gap-6 mt-6">
+        
+        <!-- AUDIO DECK (FerroART Synthesizer Node) -->
+        <section class="md:col-span-6 theme-panel p-4 bg-black/40 backdrop-blur-md">
+            <h2 class="text-xs font-bold uppercase mb-4 tracking-widest border-b border-white/10 pb-2">FERRO_AUDIO_MIXER</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between text-[10px] mb-1">
+                        <span>AUDIO_ENGINE (FerroART synth)</span>
+                        <span id="synth-freq-lbl">440Hz</span>
+                    </div>
+                    <input type="range" min="100" max="1500" value="440" id="audio-synth" class="w-full accent-cyan-400 cursor-pointer bg-neutral-800" oninput="updateAudioSynth(this.value)">
+                </div>
+                <div>
+                    <div class="flex justify-between text-[10px] mb-1">
+                        <span>LIVE GAMEPLAY AUDIO</span>
+                        <span>80%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="80" class="w-full accent-cyan-400 cursor-pointer bg-neutral-800">
+                </div>
+                <div>
+                    <div class="flex justify-between text-[10px] mb-1">
+                        <span>STREAMER VOICE GATE</span>
+                        <span>92%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="92" class="w-full accent-cyan-400 cursor-pointer bg-neutral-800">
+                </div>
+            </div>
+        </section>
+
+        <!-- NETWORK METRICS & LIVE FPS TELEMETRY -->
+        <section class="md:col-span-6 theme-panel p-4 bg-black/40 backdrop-blur-md flex flex-col justify-between">
+            <div>
+                <h2 class="text-xs font-bold uppercase mb-4 tracking-widest border-b border-white/10 pb-2">NETWORK_TELEMETRY</h2>
+                <div class="grid grid-cols-3 gap-2 text-center mb-4">
+                    <div class="p-2 border border-white/5 bg-black/20">
+                        <div class="text-[9px] opacity-60">BITRATE</div>
+                        <div class="text-sm font-bold text-green-400" id="telemetry-bitrate">6542 kb/s</div>
+                    </div>
+                    <div class="p-2 border border-white/5 bg-black/20">
+                        <div class="text-[9px] opacity-60">ENCODER FPS</div>
+                        <div class="text-sm font-bold" id="telemetry-fps">60.0</div>
+                    </div>
+                    <div class="p-2 border border-white/5 bg-black/20">
+                        <div class="text-[9px] opacity-60">LOSS RATE</div>
+                        <div class="text-sm font-bold text-red-500">0.00%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tiny canvas live monitor -->
+            <div class="h-16 w-full border border-white/5 relative bg-black/40">
+                <canvas id="telemetryChart" class="w-full h-full"></canvas>
+            </div>
+        </section>
+
+    </footer>
+
+    <!-- Script Segment -->
+    <script>
+        // Start System Theme
+        let currentTheme = 'dark';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        // Web Audio Synthesizer Context
+        let audioCtx = null;
+        let oscillator = null;
+        let gainNode = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                oscillator = audioCtx.createOscillator();
+                gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 440;
+                gainNode.gain.value = 0.05; // safe volume
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+            }
+        }
+
+        function updateAudioSynth(freq) {
+            initAudio();
+            if (audioCtx && oscillator) {
+                oscillator.frequency.value = freq;
+                document.getElementById('synth-freq-lbl').innerText = freq + "Hz";
+            }
+        }
+
+        // POLARITY SWITCHING (Light / Dark mode Shift with screen flash)
+        function triggerPolarityShift() {
+            initAudio();
+            triggerGlitch();
+            
+            setTimeout(() => {
+                currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                addChatMessage('SYSTEM', `ZMIANA POLARYZACJI: ${currentTheme.toUpperCase()}`, '#FF0000');
+            }, 150);
+        }
+
+        // Glitch FX Trigger
+        function triggerGlitch() {
+            const overlay = document.getElementById('glitch-overlay');
+            overlay.style.opacity = '1';
+            
+            // Audio crackle simulation using Synth Node if active
+            if (audioCtx) {
+                const now = audioCtx.currentTime;
+                const tempGain = gainNode.gain.value;
+                gainNode.gain.setValueAtTime(tempGain, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.3, now + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            }
+
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+            }, 150);
+        }
+
+        // Change stream feeds
+        let streamMode = 'game'; // game, camera, audit
+        function setStreamFeed(mode) {
+            streamMode = mode;
+            document.getElementById('game-state-label').innerText = `SOURCE: ${mode.toUpperCase()}_FEED`;
+            addChatMessage('SYSTEM', `Wejście wideo zmienione na: ${mode.toUpperCase()}`, '#00FFFF');
+        }
+
+        // Mini Canvas Telemetry Chart
+        const telCanvas = document.getElementById('telemetryChart');
+        const telCtx = telCanvas.getContext('2d');
+        let telemetryData = Array(50).fill(40);
+
+        function updateTelemetry() {
+            // Add new data point, shift array
+            const lastVal = telemetryData[telemetryData.length - 1];
+            const newVal = Math.max(10, Math.min(60, lastVal + (Math.random() - 0.5) * 8));
+            telemetryData.push(newVal);
+            telemetryData.shift();
+
+            // Clear & Draw
+            telCtx.clearRect(0, 0, telCanvas.width, telCanvas.height);
+            telCtx.strokeStyle = currentTheme === 'dark' ? '#00FFFF' : '#000000';
+            telCtx.lineWidth = 2;
+            telCtx.beginPath();
+            
+            const step = telCanvas.width / (telemetryData.length - 1);
+            for (let i = 0; i < telemetryData.length; i++) {
+                const x = i * step;
+                const y = telCanvas.height - (telemetryData[i] / 60) * telCanvas.height;
+                if (i === 0) telCtx.moveTo(x, y);
+                else telCtx.lineTo(x, y);
+            }
+            telCtx.stroke();
+
+            // FPS/Bitrate numeric updates
+            document.getElementById('telemetry-bitrate').innerText = `${Math.floor(6200 + Math.random() * 400)} kb/s`;
+            document.getElementById('telemetry-fps').innerText = (59.8 + Math.random() * 0.4).toFixed(1);
+        }
+        setInterval(updateTelemetry, 200);
+
+        // Resize Telemetry Canvas
+        function resizeTelemetryCanvas() {
+            telCanvas.width = telCanvas.parentElement.clientWidth;
+            telCanvas.height = telCanvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeTelemetryCanvas);
+        resizeTelemetryCanvas();
+
+
+        // ─── CANVAS GAME SIMULATION: SECFERRO DEFEND ──────────────────
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeGameCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeGameCanvas);
+        resizeGameCanvas();
+
+        let gameScore = 0;
+        let gameHealth = 100;
+        let autopilot = true;
+        let particles = [];
+        let defenders = [];
+        let coreX, coreY;
+
+        function toggleAutopilot() {
+            autopilot = !autopilot;
+            const btn = document.getElementById('autopilot-btn');
+            if (autopilot) {
+                btn.innerText = "Autopilot: ON";
+                btn.style.borderColor = "#eab308";
+                btn.style.color = "#eab308";
+            } else {
+                btn.innerText = "Autopilot: OFF";
+                btn.style.borderColor = "#ef4444";
+                btn.style.color = "#ef4444";
+            }
+        }
+
+        // Spawn dangerous packets/particles
+        function spawnPacket() {
+            if (streamMode !== 'game') return;
+            const edge = Math.floor(Math.random() * 4);
+            let x, y;
+            if (edge === 0) { x = Math.random() * canvas.width; y = 0; }
+            else if (edge === 1) { x = canvas.width; y = Math.random() * canvas.height; }
+            else if (edge === 2) { x = Math.random() * canvas.width; y = canvas.height; }
+            else { x = 0; y = Math.random() * canvas.height; }
+
+            const speed = 1.5 + Math.random() * 2.5;
+            const angle = Math.atan2(coreY - y, coreX - x);
+
+            particles.push({
+                x: x,
+                y: y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                size: 4 + Math.random() * 6,
+                color: '#FF0000'
+            });
+        }
+        setInterval(spawnPacket, 400);
+
+        // Click to shoot EMP shockwaves (If autopilot off)
+        canvas.addEventListener('click', (e) => {
+            if (autopilot) return;
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            
+            // Trigger blast wave
+            defenders.push({
+                x: clickX,
+                y: clickY,
+                radius: 5,
+                maxRadius: 60,
+                growth: 4
+            });
+        });
+
+        // Loop Game
+        function gameLoop() {
+            coreX = canvas.width / 2;
+            coreY = canvas.height / 2;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (streamMode === 'game') {
+                // Draw secure center node
+                ctx.beginPath();
+                ctx.arc(coreX, coreY, 20, 0, Math.PI * 2);
+                ctx.fillStyle = currentTheme === 'dark' ? '#00FFFF' : '#000000';
+                ctx.fill();
+                ctx.strokeStyle = '#FF00FF';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Autopilot AI Defending
+                if (autopilot && particles.length > 0) {
+                    particles.forEach((p, idx) => {
+                        if (Math.random() < 0.05) { // 5% chance to auto-neutralize
+                            defenders.push({
+                                x: p.x,
+                                y: p.y,
+                                radius: 1,
+                                maxRadius: 30,
+                                growth: 6
+                            });
+                            particles.splice(idx, 1);
+                            gameScore += 100;
+                            document.getElementById('game-score').innerText = gameScore.toString().padStart(4, '0');
+                        }
+                    });
+                }
+
+                // Update & Draw threats
+                particles.forEach((p, index) => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    // Draw threat element
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = '#FF0000';
+                    ctx.fill();
+
+                    // Collision with Core
+                    const distToCore = Math.hypot(coreX - p.x, coreY - p.y);
+                    if (distToCore < 20 + p.size) {
+                        particles.splice(index, 1);
+                        gameHealth = Math.max(0, gameHealth - 10);
+                        document.getElementById('game-health').innerText = gameHealth + "%";
+                        if (gameHealth === 0) {
+                            addChatMessage('SYS_ALERT', 'CORE BREAKDOWN. SYSTEM REBOOT...', '#FF0000');
+                            gameHealth = 100;
+                            gameScore = 0;
+                        }
+                    }
+                });
+
+                // Update & Draw defense blast waves
+                defenders.forEach((d, index) => {
+                    d.radius += d.growth;
+                    
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#00FFFF';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Eliminate particles caught in blast
+                    particles.forEach((p, pIdx) => {
+                        const dist = Math.hypot(d.x - p.x, d.y - p.y);
+                        if (dist < d.radius + p.size) {
+                            particles.splice(pIdx, 1);
+                            gameScore += 150;
+                            document.getElementById('game-score').innerText = gameScore.toString().padStart(4, '0');
+                        }
+                    });
+
+                    if (d.radius >= d.maxRadius) {
+                        defenders.splice(index, 1);
+                    }
+                });
+            } 
+            else if (streamMode === 'camera') {
+                // Interactive Camera Feed Viewport (Simulation)
+                ctx.fillStyle = '#0a0a0a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 16px Fira Code';
+                ctx.textAlign = 'center';
+                ctx.fillText("[ CAMERA FEED RAW - OK ]", canvas.width / 2, canvas.height / 2 - 20);
+                
+                // Draw simple camera focus brackets
+                ctx.strokeStyle = '#00FFFF';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+            } 
+            else if (streamMode === 'audit') {
+                // Auditing Terminal simulation scrolling text
+                ctx.fillStyle = '#050505';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#39FF14';
+                ctx.font = '12px Fira Code';
+                ctx.textAlign = 'left';
+                
+                const consoleLogs = [
+                    ">> secferro-audit-engine --port 443",
+                    "[ OK ] Scan completed. No open vectors detected.",
+                    "[ INFO ] Syncing with anonymousik.is-a.dev...",
+                    "[ SECURE ] Tunnel active. AES_256_GCM active.",
+                    ">> status --all",
+                    "CPU Temp: 42C | System: nominal."
+                ];
+                
+                for(let i = 0; i < consoleLogs.length; i++) {
+                    ctx.fillText(consoleLogs[i], 20, 40 + (i * 24));
+                }
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+        requestAnimationFrame(gameLoop);
+
+
+        // ─── CHAT AND VIEWERS SIMULATION ──────────────────────────────
+        const simulatedUsers = ['Krzysztof_Admin', 'Neo_Dev_99', 'SecFan', 'Audio_Geek', 'X_Gamer', 'BitrateWatcher', 'FerroWarrior'];
+        const simulatedMessages = [
+            'Niesamowity bas w tym FerroART!',
+            'Polaryzacja interfejsu wygląda obłędnie!',
+            'Ten autopilot ratuje mi życie.',
+            'Czy są jakieś podatności w tym module?',
+            'Zabezpieczcie port 22 natychmiast.',
+            'Format c: dla bylejakości! 🔥',
+            'Udostępnisz skrypty po streamie?'
+        ];
+
+        function addChatMessage(user, msg, color = '#00FFFF') {
+            const box = document.getElementById('live-chat-box');
+            const item = document.createElement('div');
+            item.className = 'border-l-2 border-white/10 pl-2 py-1';
+            item.innerHTML = `<span class="font-bold uppercase tracking-wider" style="color: ${color}">[${user}]</span>: <span class="text-white">${msg}</span>`;
+            box.appendChild(item);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        // Random simulated viewer incoming
+        setInterval(() => {
+            const rUser = simulatedUsers[Math.floor(Math.random() * simulatedUsers.length)];
+            const rMsg = simulatedMessages[Math.floor(Math.random() * simulatedMessages.length)];
+            const rColor = ['#00FFFF', '#FF00FF', '#39FF14', '#eab308'][Math.floor(Math.random()*4)];
+            addChatMessage(rUser, rMsg, rColor);
+            
+            // Adjust mock viewer counts slightly
+            const count = document.getElementById('viewer-count');
+            let current = parseInt(count.innerText.replace(',', ''));
+            current += Math.floor((Math.random() - 0.5) * 15);
+            count.innerText = current.toLocaleString();
+        }, 6000);
+
+        // Initial logs
+        setTimeout(() => addChatMessage('SYSTEM', 'Inicjalizacja pulpitu reżyserskiego...', '#FF00FF'), 500);
+        setTimeout(() => addChatMessage('Krzysztof_Admin', 'System gotowy do audytu na żywo!', '#39FF14'), 1200);
+
+        function sendCustomChatMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input-field');
+            if (input.value.trim() === "") return;
+            addChatMessage('ANONYMOUSIK', input.value, '#FF00FF');
+            input.value = "";
+        }
+
+        // System clock uptime simulation
+        let seconds = 6129;
+        function updateUptime() {
+            seconds++;
+            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            document.getElementById('uptime-timer').innerText = `${h}:${m}:${s}`;
+        }
+        setInterval(updateUptime, 1000);
+    </script>
+</body>
+</html>
