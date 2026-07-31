@@ -1,180 +1,190 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'none'; font-src 'self' data:; base-uri 'none'; form-action 'none';">
-  
-  <meta name="description" content="SECFERRO Live WebTerm - Mobile Optimized SecOps Terminal">
-  <meta name="theme-color" content="#0d1117">
-  <title>anonymousik.is-a.dev | Live WebTerm</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="WebTerm Static — SecFerro Division na GitHub Pages.">
+  <title>WebTerm Static | ƑERRට</title>
+
+  <!-- Restrykcyjna polityka CSP dostosowana dla GitHub Pages i CDN -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'none';
+    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+    style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+    img-src 'self' data:;
+    font-src 'self' data:;
+    connect-src 'self' wss:; 
+    base-uri 'none';
+  ">
+
+  <!-- Zależności Xterm.js z autoryzowanego CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-webgl@0.16.0/lib/xterm-addon-webgl.js" crossorigin="anonymous"></script>
 
   <style>
     :root {
-      --bg-color: #0d1117;
-      --border-color: #30363d;
-      --accent-green: #4ade80;
-      --text-main: #c9d1d9;
+      --ferro-bg: #06090a; --ferro-bg-panel: #0b0f0e; --ferro-border: #1c2b22;
+      --ferro-green: #33d17a; --ferro-green-dim: #1f7a48; --ferro-gold: #d4a017;
+      --ferro-fg: #c9d1d9; --ferro-fg-dim: #6e7a76;
+      --ferro-font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--ferro-bg); color: var(--ferro-fg); font-family: var(--ferro-font-mono); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    .ferro-nav { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 20px; border-bottom: 1px solid var(--ferro-border); }
+    .ferro-nav__brand { text-decoration: none; display: flex; gap: 10px; align-items: baseline; }
+    .ferro-nav__logo { font-weight: 700; font-size: 1.15rem; color: var(--ferro-fg); }
+    .ferro-nav__site { font-size: 0.7rem; letter-spacing: 0.15em; color: var(--ferro-fg-dim); text-transform: uppercase; }
+    
+    .ferro-badges { display: flex; justify-content: center; gap: 10px; margin: 12px 0; }
+    .badge { padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; letter-spacing: 0.05em; border: 1px solid; }
+    .badge-gold { color: var(--ferro-gold); border-color: var(--ferro-gold); }
+    .badge-green { color: var(--ferro-green); border-color: var(--ferro-green-dim); }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    header {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #010409;
-    }
-
-    h1 {
-      font-size: 1rem;
-      font-weight: bold;
-    }
-
-    .status-badge {
-      font-size: 0.7rem;
-      color: var(--accent-green);
-      border: 1px solid var(--border-color);
-      padding: 0.2rem 0.4rem;
-      background: rgba(74, 222, 128, 0.05);
-    }
-
-    #terminal-container {
-      flex: 1;
-      width: 100%;
-      padding: 8px;
-      background-color: var(--bg-color);
-      overflow: hidden;
-      cursor: text; /* Wskazuje pole interaktywne dla urządzeń dotykowych */
-    }
-
-    .xterm-viewport::-webkit-scrollbar { width: 6px; }
-    .xterm-viewport::-webkit-scrollbar-thumb { background: var(--border-color); }
+    #terminal-wrap { flex: 1; padding: 12px; max-width: 1024px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; }
+    .ferro-window { border: 1px solid var(--ferro-border); border-radius: 6px; background: var(--ferro-bg-panel); display: flex; flex-direction: column; flex: 1; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .ferro-window__titlebar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--ferro-border); font-size: 0.8rem; color: var(--ferro-fg-dim); background: #030505; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ff5f57; } .dot-yellow { background: #d4a017; } .dot-green { background: #33d17a; }
+    #terminal { flex: 1; padding: 12px; }
   </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
 </head>
 <body>
 
-  <header>
-    <h1>anonymousik<span style="color: var(--accent-green);">.is-a.dev</span></h1>
-    <div class="status-badge">[MOBILE-READY SHELL]</div>
-  </header>
+  <nav class="ferro-nav">
+    <a href="#" class="ferro-nav__brand">
+      <span class="ferro-nav__logo">ƑERRට</span>
+      <span class="ferro-nav__site">GITHUB PAGES NODE</span>
+    </a>
+  </nav>
 
-  <div id="terminal-container"></div>
+  <div class="ferro-badges">
+    <span class="badge badge-gold" id="auth-status">AUTH: LOCAL_PENDING</span>
+    <span class="badge badge-green">ENV: STATIC_PAGES</span>
+  </div>
+
+  <div id="terminal-wrap">
+    <div class="ferro-window">
+      <div class="ferro-window__titlebar">
+        <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+        <span id="terminal-title">public-shell@anonymousik:~</span>
+      </div>
+      <main id="terminal"></main>
+    </div>
+  </div>
 
   <script>
     'use strict';
 
     document.addEventListener('DOMContentLoaded', () => {
+      // 1. Inicjalizacja emulatora
       const term = new Terminal({
-        cursorBlink: true,
-        cursorStyle: 'block',
-        fontSize: 14,
-        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-        theme: {
-          background: '#0d1117',
-          foreground: '#c9d1d9',
-          cursor: '#4ade80',
-          selectionBackground: 'rgba(74, 222, 128, 0.3)',
-          black: '#0d1117',
-          brightBlack: '#8b949e',
-          red: '#f87171',
-          brightRed: '#fca5a5',
-          green: '#4ade80',
-          brightGreen: '#86efac',
-          yellow: '#facc15',
-          brightYellow: '#fde047',
-          blue: '#60a5fa',
-          brightBlue: '#93c5fd',
-          magenta: '#c084fc',
-          cyan: '#38bdf8',
-          white: '#c9d1d9',
-          brightWhite: '#f8fafc'
-        }
+        fontFamily: 'var(--ferro-font-mono)', fontSize: 15, cursorBlink: true,
+        theme: { background: '#0b0f0e', foreground: '#c9d1d9', cursor: '#33d17a' }
       });
-
       const fitAddon = new FitAddon.FitAddon();
       term.loadAddon(fitAddon);
+      term.open(document.getElementById('terminal'));
+      
+      try { term.loadAddon(new WebglAddon.WebglAddon()); } 
+      catch (e) { console.warn("[SecOps] Fallback do DOM."); }
 
-      const container = document.getElementById('terminal-container');
-      term.open(container);
       fitAddon.fit();
+      window.addEventListener('resize', () => requestAnimationFrame(() => fitAddon.fit()));
 
-      window.addEventListener('resize', () => {
-        fitAddon.fit();
-      });
+      // 2. Lokalna maszyna stanów w przeglądarce (zastępuje backend)
+      let state = 'LOGIN_USER';
+      let inputBuffer = '';
+      let username = '';
 
-      container.addEventListener('click', () => {
-        term.focus();
-      });
+      const MOTD = `\r\n\x1b[1;36m██████╗████L█╗██\x1b[0m\r\n\x1b[1;36m██╔══╝║██╔═╝██╔ \x1b[1;33mF E R R O\x1b[0m\r\n\x1b[1;36m█████╗║██╗██║║═════════════════════╗\x1b[0m\r\n\x1b[1;36m╚══██║█╔══  ██║║\x1b[1;31m>>> D I V I S I O N\x1b[0m\r\n\x1b[1;36m█████║║████ ╚███╗════════════════════════\x1b[0m\r\n\x1b[1;36m╚════╝╚═══╝ ╚══╝ ╚════╝ ╚════╝    ╚════╝\x1b[0m\r\n`;
 
-      term.writeln('\x1b[1;32m[+] Środowisko WebTerm (Mobile Fixed) aktywne.\x1b[0m');
-      term.writeln('Wpisz \x1b[1;36mhelp\x1b[0m, aby wyświetlić listę poleceń.\x1b[0m');
-      term.write('\r\n\x1b[1;32mSECFERRO@anonymousik\x1b[0m:\x1b[1;34m~\x1b[0m$ ');
+      const promptUser = () => term.write('\r\nanonymousik login: ');
+      const promptPass = () => term.write('Password: ');
+      const promptShell = () => term.write(`\r\n\x1b[1;32msecferro\x1b[0m@\x1b[1;34manonymousik\x1b[0m:~\$ `);
 
-      let currentCommand = '';
+      term.writeln('Ubuntu 24.04.1 LTS anonymousik-secops tty1 (Static Proxy)\r\n');
+      promptUser();
+
       term.onData(data => {
-        const code = data.charCodeAt(0);
+        if (state === 'LOCKED') return; // Zablokowane podczas animacji
 
-        if (code === 13) {
+        const charCode = data.charCodeAt(0);
+        
+        // Obsługa klawisza Enter
+        if (charCode === 13) { 
           term.write('\r\n');
-          processCommand(currentCommand.trim());
-          currentCommand = '';
-          term.write('\x1b[1;32mSECFERRO@anonymousik\x1b[0m:\x1b[1;34m~\x1b[0m$ ');
-        } else if (code === 127 || code === 8) {
-          if (currentCommand.length > 0) {
-            currentCommand = currentCommand.slice(0, -1);
-            term.write('\b \b');
+          if (state === 'LOGIN_USER') {
+            username = inputBuffer.trim();
+            inputBuffer = '';
+            state = 'LOGIN_PASS';
+            promptPass();
+          } else if (state === 'LOGIN_PASS') {
+            const password = inputBuffer.trim();
+            inputBuffer = '';
+            
+            if (username === 'newuser' && password === 'secferro2026') {
+              state = 'LOCKED';
+              runProvisioning();
+            } else {
+              term.writeln('\x1b[31mLogin incorrect\x1b[0m\r\n');
+              state = 'LOGIN_USER';
+              promptUser();
+            }
+          } else if (state === 'SHELL_ACTIVE') {
+            handleShellCommand(inputBuffer.trim());
+            inputBuffer = '';
           }
-        } else if (code < 32) {
-          return;
-        } else {
-          currentCommand += data;
-          term.write(data);
+        } 
+        // Obsługa Backspace
+        else if (charCode === 127) { 
+          if (inputBuffer.length > 0) {
+            inputBuffer = inputBuffer.slice(0, -1);
+            if (state !== 'LOGIN_PASS') term.write('\b \b');
+          }
+        } 
+        // Rejestracja znaków
+        else {
+          inputBuffer += data;
+          if (state !== 'LOGIN_PASS') term.write(data);
         }
       });
 
-      function processCommand(cmd) {
-        const lowerCmd = cmd.toLowerCase();
+      // 3. Symulacja asynchronicznego środowiska
+      function runProvisioning() {
+        term.write(MOTD);
+        term.writeln(`\r\n\x1b[1;32m[+] Autoryzacja statyczna potwierdzona.\x1b[0m\r\n`);
         
-        if (lowerCmd === 'help') {
-          term.writeln('Dostępne polecenia systemowe:');
-          term.writeln('  \x1b[1;36mwhoami\x1b[0m     - Tożsamość sesji');
-          term.writeln('  \x1b[1;36muname -a\x1b[0m   - Informacje o jądrze');
-          term.writeln('  \x1b[1;36mprojects\x1b[0m   - Lista projektów');
-          term.writeln('  \x1b[1;36mclear\x1b[0m      - Wyczyść ekran terminala');
-        } else if (lowerCmd === 'whoami') {
-          term.writeln('Ferro (Krzysztof) - Ekspert SecOps & Reverse Engineering');
-        } else if (lowerCmd === 'uname -a' || lowerCmd === 'uname') {
-          term.writeln('Linux anonymousik-secops 6.8.0-arch1-1 #1 SMP PREEMPT SecOps x86_64 GNU/Linux');
-        } else if (lowerCmd === 'projects') {
-          term.writeln(' -> WebTerm SSH [Node.js / SecOps]');
-          term.writeln(' -> HackLab Scripts [Python / Bash / ADB]');
-        } else if (lowerCmd === 'clear') {
-          term.clear();
-        } else if (cmd !== '') {
-          term.writeln(`\x1b[1;31mbash: polecenie nieznane: ${cmd}\x1b[0m`);
-        }
+        const steps = [
+          "Wirtualizacja pamięci w przeglądarce...",
+          "Ładowanie profilu: source ~/.sf_core...",
+          "Inicjalizacja pseudo-powłoki JavaScript..."
+        ];
+
+        let i = 0;
+        const interval = setInterval(() => {
+          if (i < steps.length) {
+            term.writeln(`\x1b[38;5;240m[*] ${steps[i]}\x1b[0m`);
+            i++;
+          } else {
+            clearInterval(interval);
+            document.getElementById('auth-status').textContent = 'AUTH: VERIFIED_JS';
+            document.getElementById('terminal-title').textContent = 'secferro@anonymousik:~';
+            state = 'SHELL_ACTIVE';
+            term.write('\x1b[2J\x1b[H'); // Wyczyść ekran
+            term.writeln('\x1b[1;33m[!] UWAGA: Sesja działa w trybie statycznym (GH Pages).\x1b[0m');
+            promptShell();
+          }
+        }, 800);
       }
 
-      setTimeout(() => {
-        term.focus();
-      }, 150);
+      function handleShellCommand(cmd) {
+        if (cmd === 'clear') { term.write('\x1b[2J\x1b[H'); promptShell(); return; }
+        if (cmd) term.writeln(`bash: ${cmd}: command not found (Brak połączenia z backendem WSS)`);
+        promptShell();
+      }
     });
   </script>
 </body>
