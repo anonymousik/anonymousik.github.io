@@ -2,10 +2,10 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'none'; font-src 'self' data:; base-uri 'none'; form-action 'none';">
   
-  <meta name="description" content="SECFERRO Live WebTerm - Autentyczny terminal SecOps w przeglądarce">
+  <meta name="description" content="SECFERRO Live WebTerm - Mobile Optimized SecOps Terminal">
   <meta name="theme-color" content="#0d1117">
   <title>anonymousik.is-a.dev | Live WebTerm</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
@@ -31,7 +31,7 @@
     }
 
     header {
-      padding: 1rem;
+      padding: 0.75rem 1rem;
       border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
@@ -40,32 +40,29 @@
     }
 
     h1 {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: bold;
     }
 
     .status-badge {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--accent-green);
       border: 1px solid var(--border-color);
-      padding: 0.25rem 0.5rem;
+      padding: 0.2rem 0.4rem;
       background: rgba(74, 222, 128, 0.05);
     }
 
     #terminal-container {
       flex: 1;
       width: 100%;
-      padding: 12px;
+      padding: 8px;
       background-color: var(--bg-color);
       overflow: hidden;
+      cursor: text; /* Wskazuje pole interaktywne dla urządzeń dotykowych */
     }
 
-    .xterm-viewport::-webkit-scrollbar {
-      width: 8px;
-    }
-    .xterm-viewport::-webkit-scrollbar-thumb {
-      background: var(--border-color);
-    }
+    .xterm-viewport::-webkit-scrollbar { width: 6px; }
+    .xterm-viewport::-webkit-scrollbar-thumb { background: var(--border-color); }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
@@ -74,14 +71,15 @@
 <body>
 
   <header>
-    <h1>anonymousik<span style="color: var(--accent-green);">.is-a.dev</span> / webterm</h1>
-    <div class="status-badge">[STATUS: ACTIVE SHELL]</div>
+    <h1>anonymousik<span style="color: var(--accent-green);">.is-a.dev</span></h1>
+    <div class="status-badge">[MOBILE-READY SHELL]</div>
   </header>
 
-  <!-- Kontener osadzenia faktycznego środowiska -->
   <div id="terminal-container"></div>
+
   <script>
     'use strict';
+
     document.addEventListener('DOMContentLoaded', () => {
       const term = new Terminal({
         cursorBlink: true,
@@ -112,6 +110,7 @@
 
       const fitAddon = new FitAddon.FitAddon();
       term.loadAddon(fitAddon);
+
       const container = document.getElementById('terminal-container');
       term.open(container);
       fitAddon.fit();
@@ -119,28 +118,34 @@
       window.addEventListener('resize', () => {
         fitAddon.fit();
       });
-      term.writeln('\x1b[1;32m[+] Zabezpieczone środowisko WebTerm (v1.0.0-PROD) zostało uruchomione.\x1b[0m');
-      term.writeln('Wpisz \x1b[1;36mhelp\x1b[0m, aby wyświetlić listę dostępnych poleceń systemu.\x1b[0m');
+
+      container.addEventListener('click', () => {
+        term.focus();
+      });
+
+      term.writeln('\x1b[1;32m[+] Środowisko WebTerm (Mobile Fixed) aktywne.\x1b[0m');
+      term.writeln('Wpisz \x1b[1;36mhelp\x1b[0m, aby wyświetlić listę poleceń.\x1b[0m');
       term.write('\r\n\x1b[1;32mSECFERRO@anonymousik\x1b[0m:\x1b[1;34m~\x1b[0m$ ');
 
       let currentCommand = '';
+      term.onData(data => {
+        const code = data.charCodeAt(0);
 
-      term.onKey(({ key, domEvent }) => {
-        const printable = !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey;
-
-        if (domEvent.keyCode === 13) {
- term.write('\r\n');
+        if (code === 13) {
+          term.write('\r\n');
           processCommand(currentCommand.trim());
           currentCommand = '';
           term.write('\x1b[1;32mSECFERRO@anonymousik\x1b[0m:\x1b[1;34m~\x1b[0m$ ');
-        } else if (domEvent.keyCode === 8) {
+        } else if (code === 127 || code === 8) {
           if (currentCommand.length > 0) {
             currentCommand = currentCommand.slice(0, -1);
             term.write('\b \b');
           }
-        } else if (printable && domEvent.keyCode !== 9) {
-          currentCommand += key;
-          term.write(key);
+        } else if (code < 32) {
+          return;
+        } else {
+          currentCommand += data;
+          term.write(data);
         }
       });
 
@@ -148,29 +153,28 @@
         const lowerCmd = cmd.toLowerCase();
         
         if (lowerCmd === 'help') {
-          term.writeln('Dostępne komendy systemowe:');
-          term.writeln('  \x1b[1;36mwhoami\x1b[0m     - Informacje o autoryzowanym użytkowniku');
-          term.writeln('  \x1b[1;36muname -a\x1b[0m   - Wersja jądra i architektura środowiska');
-          term.writeln('  \x1b[1;36mprojects\x1b[0m   - Lista wdrożonych repozytoriów');
-          term.writeln('  \x1b[1;36mclear\x1b[0m      - Czyszczenie bufora terminala');
-          term.writeln('  \x1b[1;36mexit\x1b[0m       - Reset sesji terminala');
+          term.writeln('Dostępne polecenia systemowe:');
+          term.writeln('  \x1b[1;36mwhoami\x1b[0m     - Tożsamość sesji');
+          term.writeln('  \x1b[1;36muname -a\x1b[0m   - Informacje o jądrze');
+          term.writeln('  \x1b[1;36mprojects\x1b[0m   - Lista projektów');
+          term.writeln('  \x1b[1;36mclear\x1b[0m      - Wyczyść ekran terminala');
         } else if (lowerCmd === 'whoami') {
-          term.writeln('Anonymousik Krzysztof(Ferro) - Ekspert SecOps & Reverse Engineering');
+          term.writeln('Ferro (Krzysztof) - Ekspert SecOps & Reverse Engineering');
         } else if (lowerCmd === 'uname -a' || lowerCmd === 'uname') {
-          term.writeln('Linux anonymousik-secops 6.8.0-arch1-1 #1 SMP PREEMPT_DYNAMIC SecOps x86_64 GNU/Linux');
+          term.writeln('Linux anonymousik-secops 6.8.0-arch1-1 #1 SMP PREEMPT SecOps x86_64 GNU/Linux');
         } else if (lowerCmd === 'projects') {
           term.writeln(' -> WebTerm SSH [Node.js / SecOps]');
           term.writeln(' -> HackLab Scripts [Python / Bash / ADB]');
         } else if (lowerCmd === 'clear') {
           term.clear();
-          return;
-        } else if (lowerCmd === 'exit') {
-          term.writeln('Restartowanie środowiska powłoki...');
-          setTimeout(() => { term.clear(); }, 500);
         } else if (cmd !== '') {
-          term.writeln(`\x1b[1;31mbash: polecenie nieznane: ${cmd}. Wpisz 'help'.\x1b[0m`);
+          term.writeln(`\x1b[1;31mbash: polecenie nieznane: ${cmd}\x1b[0m`);
         }
       }
+
+      setTimeout(() => {
+        term.focus();
+      }, 150);
     });
   </script>
 </body>
