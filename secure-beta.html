@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; font-src 'none'; base-uri 'none'; form-action 'none';">
+  
+  <meta name="description" content="SECFERRO Interactive Portfolio - Reverse Engineering, SecOps, Fullstack">
+  <meta name="theme-color" content="#0d1117">
+  <title>anonymousik.is-a.dev | SecOps & RE</title>
+  <style>
+
+    :root {
+      --bg-color: #0d1117;
+      --text-main: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent-green: #4ade80;
+      --accent-blue: #60a5fa;
+      --accent-red: #f87171;
+      --border-color: #30363d;
+      --bg-panel: rgba(0, 0, 0, 0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      /* SecOps: Użycie wyłącznie systemowych czcionek (Anti-Fingerprinting) */
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background-color: var(--accent-green); color: var(--bg-color); }
+
+    .container {
+      max-w-width: 1024px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    @media (min-width: 768px) { .container { padding: 2rem 3rem; } }
+
+    /* --- Typography & Utilities --- */
+    .text-green { color: var(--accent-green); }
+    .text-blue { color: var(--accent-blue); }
+    .text-red { color: var(--accent-red); }
+    .text-muted { color: var(--text-muted); }
+    .font-bold { font-weight: bold; }
+    .tracking-widest { letter-spacing: 0.1em; }
+    .uppercase { text-transform: uppercase; }
+    
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-4 { gap: 1rem; }
+    .mt-4 { margin-top: 1rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .p-4 { padding: 1rem; }
+    
+    .border { border: 1px solid var(--border-color); }
+    .border-b { border-bottom: 1px solid var(--border-color); }
+    .border-l-2 { border-left: 2px solid var(--border-color); }
+
+    /* --- Nawigacja & WCAG --- */
+    .nav-menu {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    @media (min-width: 768px) { .nav-menu { margin-top: 0; } }
+
+    .touch-btn {
+      /* WCAG: Minimalny obszar dotyku 44x44px */
+      min-height: 44px;
+      min-width: 44px;
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease-in-out;
+    }
+    
+    .touch-btn:hover {
+      color: var(--text-main);
+      border-color: #58a6ff;
+    }
+    
+    .touch-btn:focus-visible {
+      outline: 2px solid var(--accent-green);
+      outline-offset: 2px;
+    }
+
+    .touch-btn.active {
+      background-color: var(--accent-green);
+      color: var(--bg-color);
+      border-color: var(--accent-green);
+      box-shadow: 0 0 10px rgba(74, 222, 128, 0.2);
+    }
+
+    /* --- Komponenty sekcji --- */
+    .panel {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      padding: 1rem;
+      transition: border-color 0.2s;
+    }
+    .panel:hover { border-color: var(--accent-green); }
+    
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+
+    /* Bezpieczne linki */
+    a.secure-link {
+      color: var(--text-main);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      transition: color 0.2s;
+    }
+    a.secure-link:hover { color: var(--accent-red); }
+
+    /* --- Animacje --- */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade {
+      animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .cursor-blink {
+      display: inline-block;
+      width: 0.6rem;
+      height: 1.2rem;
+      background-color: var(--text-muted);
+      animation: pulse 1s infinite;
+      vertical-align: middle;
+    }
+
+    /* Ukrywanie sekcji */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <noscript>
+    <div style="padding: 20px; border: 1px solid #f87171; color: #f87171; text-align: center; margin: 20px;">
+      [SYSTEM HALTED] Wymagane środowisko JavaScript do inicjalizacji terminala.
+    </div>
+  </noscript>
+
+  <div id="app" class="container">
+    
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-6 mb-6 mt-4">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold flex items-center gap-2">
+          anonymousik<span class="text-green">.is-a.dev</span>
+        </h1>
+        <p class="text-muted mt-2 text-sm">
+          [<span class="text-green">O</span>] End-to-End Local Rendering | Zero-Third-Party
+        </p>
+      </div>
+      
+      <nav class="nav-menu" aria-label="Nawigacja systemu">
+        <button class="touch-btn active" data-target="sec-whoami" aria-pressed="true">
+          [ Whoami ]
+        </button>
+        <button class="touch-btn" data-target="sec-projects" aria-pressed="false">
+          [ Projects ]
+        </button>
+        <button class="touch-btn" data-target="sec-contact" aria-pressed="false">
+          [ Contact ]
+        </button>
+      </nav>
+    </header>
+
+    <main id="terminal-workspace" aria-live="polite" style="min-height: 400px;">
+      
+      <div id="boot-sequence" class="flex items-center gap-2 text-green font-bold animate-pulse">
+        <div style="width: 12px; height: 20px; background-color: var(--accent-green);"></div>
+        <span>Inicjalizacja zaszyfrowanego środowiska...</span>
+      </div>
+
+      <div id="main-content" class="hidden animate-fade">
+        
+        <!-- Sekcja WHOAMI -->
+        <section id="sec-whoami" class="content-section">
+          <div class="mb-2">
+            <span class="text-green font-bold">SECFERRO@anonymousik</span><span class="text-muted">:</span><span class="text-blue font-bold">~</span><span class="text-muted">$</span>
+            <span class="text-main ml-2">cat /etc/passwd | grep secferro</span>
+          </div>
+          <div class="border-l-2 pl-4 py-2 text-muted mb-6">
+            <p class="mb-4 text-main"><strong>Ferro (Krzysztof)</strong> - Ekspert ds. Inżynierii Oprogramowania, SecOps i Reverse Engineering.</p>
+            <p class="mb-4 text-sm">Specjalizuję się w projektowaniu środowisk o zerowym zaufaniu (Zero-Trust), bezpiecznej architekturze systemów Linux oraz audytach bezpieczeństwa. Tworzę rozwiązania pozbawione kompromisów.</p>
+            <div class="grid-2 text-sm mt-4">
+              <div class="flex items-center gap-2"><span class="text-blue">[*]</span> Architektura Systemowa (Linux)</div>
+              <div class="flex items-center gap-2"><span class="text-blue">[*]</span> SecOps & Cyberbezpieczeństwo</div>
+              <div class="flex items-center gap-2"><span class="text-blue">[*]</span> Czysty Kod (SOLID, KISS)</div>
+              <div class="flex items-center gap-2"><span class="text-blue">[*]</span> Reverse Engineering</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sekcja PROJECTS -->
+        <section id="sec-projects" class="content-section hidden">
+          <div class="mb-2">
+            <span class="text-green font-bold">SECFERRO@anonymousik</span><span class="text-muted">:</span><span class="text-blue font-bold">~/projects</span><span class="text-muted">$</span>
+            <span class="text-main ml-2">ls -la --security-context</span>
+          </div>
+          <div class="border-l-2 pl-4 py-2 mb-6">
+            <div class="grid-2">
+              <div class="panel">
+                <h3 class="text-green font-bold mb-2">[DIR] WebTerm SSH</h3>
+                <p class="text-muted text-sm mb-4">Zabezpieczony emulator terminala z mostem WebSocket. Wbudowana ochrona przed SSRF i autoryzacja bez wycieku stanu.</p>
+                <div class="text-muted text-xs tracking-widest">[ Node.js ] [ SecOps ]</div>
+              </div>
+              <div class="panel" style="border-color: var(--border-color);">
+                <h3 class="text-blue font-bold mb-2">[DIR] HackLab Scripts</h3>
+                <p class="text-muted text-sm mb-4">Zestaw autorskich narzędzi do diagnostyki sieci i inżynierii wstecznej dla systemów opartych na jądrze Linux.</p>
+                <div class="text-muted text-xs tracking-widest">[ Python ] [ Bash ] [ ADB ]</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sekcja CONTACT -->
+        <section id="sec-contact" class="content-section hidden">
+          <div class="mb-2">
+            <span class="text-green font-bold">SECFERRO@anonymousik</span><span class="text-muted">:</span><span class="text-blue font-bold">~/contact</span><span class="text-muted">$</span>
+            <span class="text-main ml-2">gpg --export -a secferro</span>
+          </div>
+          <div class="border-l-2 pl-4 py-2 mb-6">
+            <div class="panel" style="background: rgba(0,0,0,0.4);">
+              <div class="text-green font-bold mb-4 tracking-widest">>> SECURE_CHANNEL_READY</div>
+              <p class="text-muted text-sm mb-6">Do przesyłania danych wrażliwych używaj wyłącznie szyfrowania PGP. Brak obecności w sieciach społecznościowych profilujących użytkowników.</p>
+              
+              <!-- Rel="noopener noreferrer" zapobiega atakom window.opener i wyciekom nagłówka Referer -->
+              <a href="https://youtube.com/@FerroART" target="_blank" rel="noopener noreferrer" class="secure-link font-bold text-sm">
+                <span class="text-muted mr-2">>></span> YouTube: @FerroART4
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <div class="flex items-center mt-4">
+          <span class="text-green font-bold">SECFERRO@anonymousik</span><span class="text-muted">:</span><span class="text-blue font-bold">~</span><span class="text-muted">$</span>
+          <span class="cursor-blink ml-2"></span>
+        </div>
+
+      </div>
+    </main>
+
+    <footer class="mt-8 border-t pt-4 text-muted text-xs flex flex-col md:flex-row justify-between items-center gap-4">
+      <p>OS: Arch/Linux (Simulated) | Wersja: 1.1.0-SEC-NATIVE</p>
+      <p>Zabezpieczono zgodnie z OWASP.</p> ANONYMOUSIK.IS-A.DEV | SECFERRO-DIVISION ® ALL RIGHTS RESERVED! 
+    </footer>
+
+  </div>
+
+  <script>
+    'use strict';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const bootSequence = document.getElementById('boot-sequence');
+      const mainContent = document.getElementById('main-content');
+      const buttons = document.querySelectorAll('.touch-btn');
+      const sections = document.querySelectorAll('.content-section');
+
+      setTimeout(() => {
+        bootSequence.classList.add('hidden');
+        mainContent.classList.remove('hidden');
+      }, 700);
+
+      buttons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          const targetId = button.getAttribute('data-target');
+
+          buttons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+          });
+          button.classList.add('active');
+          button.setAttribute('aria-pressed', 'true');
+
+          sections.forEach(section => {
+            if (section.id === targetId) {
+              section.classList.remove('hidden');
+              // Wymuszenie restartu animacji CSS poprzez re-flow
+              section.classList.remove('animate-fade');
+              void section.offsetWidth; 
+              section.classList.add('animate-fade');
+            } else {
+              section.classList.add('hidden');
+            }
+          });
+        });
+      });
+      
+     
+      window.addEventListener('error', (event) => {
+        console.error('[CRITICAL] Błąd środowiska wykonawczego JS:', event.message);
+        event.preventDefault();
+      });
+    });
+  </script>
+</body>
+</html>
