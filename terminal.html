@@ -5,51 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Terminal dywizji SecFerro prosto z przeglądarki!">
   <title>Anonymousik.is-a.dev/terminal | SecFerro</title>
-
-  <meta http-equiv="Content-Security-Policy" content="
-    default-src 'none';
-    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
-    style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
-    img-src 'self' data:;
-    font-src 'self' data:;
-    connect-src 'self' wss:; 
-    base-uri 'none';
-  ">
-
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' data:; connect-src 'self' wss:; base-uri 'none';">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" crossorigin="anonymous" />
   <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/xterm-addon-webgl@0.16.0/lib/xterm-addon-webgl.js" crossorigin="anonymous"></script>
-
   <style>
-    /* ==========================================================================
-       SECFERRO BRANDING & STANDARDIZED TYPOGRAPHY
-       ========================================================================== */
     :root {
       --ferro-bg: #050505; 
       --ferro-bg-panel: #0a0a0a; 
       --ferro-border: #1f2922;
-      --ferro-green: #00ff66; /* Bardziej wyrazisty "hacker green" */
+      --ferro-green: #00ff66;
       --ferro-green-dim: #008f39; 
       --ferro-gold: #ffcc00;
       --ferro-fg: #e0e0e0; 
       --ferro-fg-dim: #888888;
-      /* Zoptymalizowany, standardowy stos czcionek dla maksymalnej czytelności */
       --ferro-font-mono: Consolas, 'Courier New', 'Liberation Mono', 'Ubuntu Mono', monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--ferro-bg); color: var(--ferro-fg); font-family: var(--ferro-font-mono); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    
     .ferro-nav { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 20px; border-bottom: 1px solid var(--ferro-border); background: #000000; }
     .ferro-nav__brand { text-decoration: none; display: flex; gap: 10px; align-items: baseline; }
     .ferro-nav__logo { font-weight: 700; font-size: 1.2rem; color: var(--ferro-green); letter-spacing: 1px; }
     .ferro-nav__site { font-size: 0.75rem; letter-spacing: 0.1em; color: var(--ferro-fg-dim); text-transform: lowercase; }
-    
     .ferro-badges { display: flex; justify-content: center; gap: 10px; margin: 12px 0; }
     .badge { padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; border: 1px solid; }
     .badge-gold { color: var(--ferro-gold); border-color: var(--ferro-gold); background: rgba(255, 204, 0, 0.1); }
     .badge-green { color: var(--ferro-green); border-color: var(--ferro-green-dim); background: rgba(0, 255, 102, 0.05); }
-
     #terminal-wrap { flex: 1; padding: 12px; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; }
     .ferro-window { border: 1px solid var(--ferro-border); border-radius: 4px; background: var(--ferro-bg-panel); display: flex; flex-direction: column; flex: 1; overflow: hidden; box-shadow: 0 4px 20px rgba(0,255,102,0.05); }
     .ferro-window__titlebar { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-bottom: 1px solid var(--ferro-border); font-size: 0.85rem; color: var(--ferro-fg-dim); background: #000000; }
@@ -59,19 +41,16 @@
   </style>
 </head>
 <body>
-
   <nav class="ferro-nav">
     <a href="https://anonymousik.is-a.dev/terminal" class="ferro-nav__brand">
       <span class="ferro-nav__logo">SecFerro</span>
       <span class="ferro-nav__site">anonymousik.is-a.dev/terminal</span>
     </a>
   </nav>
-
   <div class="ferro-badges">
-    <span class="badge badge-gold" id="auth-status">SYS: LOCKED</span>
+    <span class="badge badge-gold" id="auth-status">SYS: AUTO_PROVISION</span>
     <span class="badge badge-green">NODE: WEB_PROXY</span>
   </div>
-
   <div id="terminal-wrap">
     <div class="ferro-window">
       <div class="ferro-window__titlebar">
@@ -81,15 +60,12 @@
       <main id="terminal"></main>
     </div>
   </div>
-
   <script>
     'use strict';
-
     document.addEventListener('DOMContentLoaded', () => {
-      // --- 1. Inicjalizacja Xterm.js z poprawioną czytelnością ---
       const term = new Terminal({
         fontFamily: 'var(--ferro-font-mono)', 
-        fontSize: 16, // Zwiększony rozmiar bazowy
+        fontSize: 16,
         fontWeight: 'normal',
         fontWeightBold: 'bold',
         cursorBlink: true,
@@ -101,18 +77,18 @@
           blue: '#39c5ff', magenta: '#a371f7', cyan: '#39c5ff', white: '#ffffff'
         }
       });
+      
       const fitAddon = new FitAddon.FitAddon();
       term.loadAddon(fitAddon);
       term.open(document.getElementById('terminal'));
       
       try { term.loadAddon(new WebglAddon.WebglAddon()); } 
-      catch (e) { console.warn("[SecOps] Fallback do DOM renderowania."); }
+      catch (e) {}
 
       fitAddon.fit();
       window.addEventListener('resize', () => requestAnimationFrame(() => fitAddon.fit()));
 
-      // --- 2. Virtual File System (VFS) ---
-      const HOME_DIR = '/data/data/com.termux/files/home';
+      let HOME_DIR = '/data/data/com.termux/files/home';
       let currentPath = HOME_DIR;
       let userContext = 'public';
 
@@ -123,7 +99,8 @@
               'files': {
                 'home': {
                   '.sf_core': 'alias ls="ls --color=auto"\nexport ZDOTDIR=~/.sf_core',
-                  'readme.txt': 'To jest terminal dywizji SecFerro działający w przeglądarce.'
+                  'readme.txt': 'System operacyjny w trybie tylko do odczytu. Wymagana autoryzacja konta.',
+                  'users': {}
                 },
                 'usr': { 'bin': { 'node': 'binary', 'npm': 'binary' } }
               }
@@ -161,7 +138,6 @@
         return current;
       }
 
-      // --- 3. Silnik Interpretera ---
       function processCommand(cmdLine) {
         const args = cmdLine.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
         if (args.length === 0) return;
@@ -192,46 +168,44 @@
         }
       }
 
-      // --- 4. Logika Logowania ---
-      let state = 'LOGIN_USER';
+      let state = 'AUTO_LOGIN';
       let inputBuffer = '';
-      let username = '';
+      let newCustomUser = '';
+      let newCustomPass = '';
 
       const MOTD = `\r\n\x1b[1;32m███████╗███████╗ ██████╗███████╗███████╗██████╗ ██████╗  ██████╗ \r\n██╔════╝██╔════╝██╔════╝██╔════╝██╔════╝██╔══██╗██╔══██╗██╔═══██╗\r\n███████╗█████╗  ██║     █████╗  █████╗  ██████╔╝██████╔╝██║   ██║\r\n╚════██║██╔══╝  ██║     ██╔══╝  ██╔══╝  ██╔══██╗██╔══██╗██║   ██║\r\n███████║███████╗╚██████╗██║     ███████╗██║  ██║██║  ██║╚██████╔╝\r\n╚══════╝╚══════╝ ╚═════╝╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ \x1b[0m\r\n`;
 
-      const promptUser = () => term.write('\r\n\x1b[1;37msecferro.is-a.dev login:\x1b[0m ');
-      const promptPass = () => term.write('\x1b[1;37mPassword:\x1b[0m ');
       const promptShell = () => {
         const displayPath = currentPath === HOME_DIR ? '~' : currentPath.split('/').pop();
-        term.write(`\r\n\x1b[1;32m[SECFERRO]\x1b[0m \x1b[1;34m${displayPath}\x1b[0m \$ `);
+        term.write(`\r\n\x1b[1;32m[${userContext.toUpperCase()}]\x1b[0m \x1b[1;34m${displayPath}\x1b[0m \$ `);
       };
 
-      term.writeln('\x1b[1;32mTerminal dywizji SecFerro prosto z przeglądarki!\x1b[0m\r\nUbuntu 24.04.1 LTS anonymousik-secops tty1\r\n');
-      promptUser();
+      const delay = ms => new Promise(res => setTimeout(res, ms));
+
+      async function typeText(text, speed = 50) {
+        for (let i = 0; i < text.length; i++) {
+          term.write(text[i]);
+          await delay(speed + (Math.random() * 50));
+        }
+      }
 
       term.onKey(e => {
-        if (state === 'LOCKED') return;
+        if (state === 'LOCKED' || state === 'AUTO_LOGIN') return;
         const ev = e.domEvent;
         const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
 
         if (ev.keyCode === 13) {
           term.write('\r\n');
-          if (state === 'LOGIN_USER') {
-            username = inputBuffer.trim();
+          if (state === 'CREATE_USER') {
+            newCustomUser = inputBuffer.trim() || 'guest';
             inputBuffer = '';
-            state = 'LOGIN_PASS';
-            promptPass();
-          } else if (state === 'LOGIN_PASS') {
-            const password = inputBuffer.trim();
+            state = 'CREATE_PASS';
+            term.write('\x1b[1;37mUtwórz bezpieczne hasło:\x1b[0m ');
+          } else if (state === 'CREATE_PASS') {
+            newCustomPass = inputBuffer.trim();
             inputBuffer = '';
-            if (username === 'newuser' && password === 'secferro2026') {
-              state = 'LOCKED';
-              runProvisioning();
-            } else {
-              term.writeln('\x1b[31mDostęp zabroniony. Logowanie nieprawidłowe.\x1b[0m\r\n');
-              state = 'LOGIN_USER';
-              promptUser();
-            }
+            state = 'LOCKED';
+            finalizeAccountCreation();
           } else if (state === 'SHELL_ACTIVE') {
             processCommand(inputBuffer.trim());
             inputBuffer = '';
@@ -241,44 +215,82 @@
         else if (ev.keyCode === 8) {
           if (inputBuffer.length > 0) {
             inputBuffer = inputBuffer.slice(0, -1);
-            if (state !== 'LOGIN_PASS') term.write('\b \b');
+            if (state !== 'CREATE_PASS') term.write('\b \b');
           }
         } 
         else if (printable && e.key.length === 1) {
           inputBuffer += e.key;
-          if (state !== 'LOGIN_PASS') term.write(e.key);
+          if (state !== 'CREATE_PASS') term.write(e.key);
         }
       });
 
-      // --- 5. Animacja Provisioningu ---
-      async function runProvisioning() {
-        term.write(MOTD);
-        term.writeln(`\r\n\x1b[1;32m[+] Autoryzacja potwierdzona dla obszaru SecFerro.\x1b[0m`);
+      async function startAutomatedSequence() {
+        term.writeln('\x1b[1;32mTerminal dywizji SecFerro prosto z przeglądarki!\x1b[0m\r\nUbuntu 24.04.1 LTS anonymousik-secops tty1\r\n');
+        term.write('\r\n\x1b[1;37msecferro.is-a.dev login:\x1b[0m ');
         
-        const delay = ms => new Promise(res => setTimeout(res, ms));
+        await delay(1000);
+        await typeText('newuser');
+        await delay(300);
+        term.write('\r\n\x1b[1;37mPassword:\x1b[0m ');
+        
+        await delay(1200);
+        term.write('\r\n');
+        
+        term.write(MOTD);
+        term.writeln(`\r\n\x1b[1;32m[+] Autoryzacja systemowa konta 'newuser' udana.\x1b[0m`);
+        
         const steps = [
-          "Nawiązywanie bezpiecznego połączenia VFS...",
-          "Ładowanie profilu: anonymousik.is-a.dev...",
-          "Inicjalizacja środowiska przeglądarkowego..."
+          "Inicjalizacja przewodnika konfiguracyjnego...",
+          "Weryfikacja instancji SecFerro VFS...",
+          "Przygotowanie instalatora profilu personalnego..."
         ];
 
         for (const step of steps) {
-          await delay(500);
+          await delay(600);
           term.writeln(`\x1b[38;5;240m[*] ${step}\x1b[0m`);
         }
         
-        await delay(400);
-        userContext = 'secferro';
+        await delay(800);
+        term.write('\x1b[2J\x1b[H');
+        term.writeln('\x1b[1;33m>>> KREATOR PROFILU OSOBISTEGO SECFERRO <<<\x1b[0m\r\n');
+        term.writeln('Zostałeś poprawnie zautoryzowany w węźle głównym.');
+        term.writeln('Proszę skonfigurować swój unikalny identyfikator środowiska.\r\n');
+        
+        state = 'CREATE_USER';
+        term.write('\x1b[1;37mPodaj nową nazwę użytkownika:\x1b[0m ');
+      }
+
+      async function finalizeAccountCreation() {
+        term.writeln(`\r\n\x1b[38;5;240m[*] Rejestrowanie profilu we wbudowanym VFS dla: ${newCustomUser}...\x1b[0m`);
+        await delay(700);
+        
+        const userHomePath = `/data/data/com.termux/files/home/users/${newCustomUser}`;
+        fileSystem.data.data['com.termux'].files.home.users[newCustomUser] = {
+          '.profile': 'echo "Środowisko SecFerro gotowe."',
+          'welcome.txt': `Konto prywatne użytkownika ${newCustomUser} zostało pomyślnie wygenerowane.`
+        };
+        
+        HOME_DIR = userHomePath;
+        currentPath = HOME_DIR;
+        userContext = newCustomUser;
+        
+        term.writeln(`\x1b[38;5;240m[*] Generowanie kluczy środowiskowych i uprawnień przestrzeni...\x1b[0m`);
+        await delay(800);
+        term.writeln(`\x1b[1;32m[+] Profil ${newCustomUser} został aktywowany!\x1b[0m`);
+        await delay(1000);
+
         document.getElementById('auth-status').textContent = 'SYS: ONLINE';
         document.getElementById('auth-status').classList.remove('badge-gold');
         document.getElementById('auth-status').classList.add('badge-green');
         
         state = 'SHELL_ACTIVE';
         term.write('\x1b[2J\x1b[H'); 
-        term.writeln('\x1b[1;32mWelcome to Anonymousik.is-a.dev/terminal\x1b[0m');
-        term.writeln('\x1b[38;5;240mTerminal dywizji SecFerro prosto z przeglądarki!\x1b[0m');
+        term.writeln(`\x1b[1;32mWelcome to Anonymousik.is-a.dev/terminal\x1b[0m`);
+        term.writeln(`\x1b[38;5;240mZalogowano jako: ${userContext}\x1b[0m`);
         promptShell();
       }
+
+      startAutomatedSequence();
     });
   </script>
 </body>
