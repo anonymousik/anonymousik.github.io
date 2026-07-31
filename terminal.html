@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="WebTerm Static — SecFerro Division na GitHub Pages (Termux Edition).">
-  <title>WebTerm Static | ƑERRට</title>
+  <meta name="description" content="Terminal dywizji SecFerro prosto z przeglądarki!">
+  <title>Anonymousik.is-a.dev/terminal | SecFerro</title>
 
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'none';
@@ -22,52 +22,61 @@
   <script src="https://cdn.jsdelivr.net/npm/xterm-addon-webgl@0.16.0/lib/xterm-addon-webgl.js" crossorigin="anonymous"></script>
 
   <style>
+    /* ==========================================================================
+       SECFERRO BRANDING & STANDARDIZED TYPOGRAPHY
+       ========================================================================== */
     :root {
-      --ferro-bg: #06090a; --ferro-bg-panel: #0b0f0e; --ferro-border: #1c2b22;
-      --ferro-green: #33d17a; --ferro-green-dim: #1f7a48; --ferro-gold: #d4a017;
-      --ferro-fg: #c9d1d9; --ferro-fg-dim: #6e7a76;
-      --ferro-font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+      --ferro-bg: #050505; 
+      --ferro-bg-panel: #0a0a0a; 
+      --ferro-border: #1f2922;
+      --ferro-green: #00ff66; /* Bardziej wyrazisty "hacker green" */
+      --ferro-green-dim: #008f39; 
+      --ferro-gold: #ffcc00;
+      --ferro-fg: #e0e0e0; 
+      --ferro-fg-dim: #888888;
+      /* Zoptymalizowany, standardowy stos czcionek dla maksymalnej czytelności */
+      --ferro-font-mono: Consolas, 'Courier New', 'Liberation Mono', 'Ubuntu Mono', monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--ferro-bg); color: var(--ferro-fg); font-family: var(--ferro-font-mono); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
     
-    .ferro-nav { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 20px; border-bottom: 1px solid var(--ferro-border); }
+    .ferro-nav { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 20px; border-bottom: 1px solid var(--ferro-border); background: #000000; }
     .ferro-nav__brand { text-decoration: none; display: flex; gap: 10px; align-items: baseline; }
-    .ferro-nav__logo { font-weight: 700; font-size: 1.15rem; color: var(--ferro-fg); }
-    .ferro-nav__site { font-size: 0.7rem; letter-spacing: 0.15em; color: var(--ferro-fg-dim); text-transform: uppercase; }
+    .ferro-nav__logo { font-weight: 700; font-size: 1.2rem; color: var(--ferro-green); letter-spacing: 1px; }
+    .ferro-nav__site { font-size: 0.75rem; letter-spacing: 0.1em; color: var(--ferro-fg-dim); text-transform: lowercase; }
     
     .ferro-badges { display: flex; justify-content: center; gap: 10px; margin: 12px 0; }
-    .badge { padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; letter-spacing: 0.05em; border: 1px solid; }
-    .badge-gold { color: var(--ferro-gold); border-color: var(--ferro-gold); }
-    .badge-green { color: var(--ferro-green); border-color: var(--ferro-green-dim); }
+    .badge { padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; border: 1px solid; }
+    .badge-gold { color: var(--ferro-gold); border-color: var(--ferro-gold); background: rgba(255, 204, 0, 0.1); }
+    .badge-green { color: var(--ferro-green); border-color: var(--ferro-green-dim); background: rgba(0, 255, 102, 0.05); }
 
-    #terminal-wrap { flex: 1; padding: 12px; max-width: 1024px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; }
-    .ferro-window { border: 1px solid var(--ferro-border); border-radius: 6px; background: var(--ferro-bg-panel); display: flex; flex-direction: column; flex: 1; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .ferro-window__titlebar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--ferro-border); font-size: 0.8rem; color: var(--ferro-fg-dim); background: #030505; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot-red { background: #ff5f57; } .dot-yellow { background: #d4a017; } .dot-green { background: #33d17a; }
+    #terminal-wrap { flex: 1; padding: 12px; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; }
+    .ferro-window { border: 1px solid var(--ferro-border); border-radius: 4px; background: var(--ferro-bg-panel); display: flex; flex-direction: column; flex: 1; overflow: hidden; box-shadow: 0 4px 20px rgba(0,255,102,0.05); }
+    .ferro-window__titlebar { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-bottom: 1px solid var(--ferro-border); font-size: 0.85rem; color: var(--ferro-fg-dim); background: #000000; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red { background: #ff5f57; } .dot-yellow { background: #ffcc00; } .dot-green { background: #00ff66; }
     #terminal { flex: 1; padding: 12px; }
   </style>
 </head>
 <body>
 
   <nav class="ferro-nav">
-    <a href="#" class="ferro-nav__brand">
-      <span class="ferro-nav__logo">ƑERRට</span>
-      <span class="ferro-nav__site">TERMUX VFS NODE</span>
+    <a href="https://anonymousik.is-a.dev/terminal" class="ferro-nav__brand">
+      <span class="ferro-nav__logo">SecFerro</span>
+      <span class="ferro-nav__site">anonymousik.is-a.dev/terminal</span>
     </a>
   </nav>
 
   <div class="ferro-badges">
-    <span class="badge badge-gold" id="auth-status">AUTH: LOCAL_PENDING</span>
-    <span class="badge badge-green">ENV: STATIC_PAGES_VFS</span>
+    <span class="badge badge-gold" id="auth-status">SYS: LOCKED</span>
+    <span class="badge badge-green">NODE: WEB_PROXY</span>
   </div>
 
   <div id="terminal-wrap">
     <div class="ferro-window">
       <div class="ferro-window__titlebar">
         <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
-        <span id="terminal-title">public-shell@anonymousik:~</span>
+        <span id="terminal-title">Terminal dywizji SecFerro prosto z przeglądarki!</span>
       </div>
       <main id="terminal"></main>
     </div>
@@ -77,10 +86,20 @@
     'use strict';
 
     document.addEventListener('DOMContentLoaded', () => {
-      // --- 1. Inicjalizacja Xterm.js ---
+      // --- 1. Inicjalizacja Xterm.js z poprawioną czytelnością ---
       const term = new Terminal({
-        fontFamily: 'var(--ferro-font-mono)', fontSize: 15, cursorBlink: true,
-        theme: { background: '#0b0f0e', foreground: '#c9d1d9', cursor: '#33d17a' }
+        fontFamily: 'var(--ferro-font-mono)', 
+        fontSize: 16, // Zwiększony rozmiar bazowy
+        fontWeight: 'normal',
+        fontWeightBold: 'bold',
+        cursorBlink: true,
+        theme: { 
+          background: '#0a0a0a', 
+          foreground: '#e0e0e0', 
+          cursor: '#00ff66',
+          black: '#000000', red: '#ff5f57', green: '#00ff66', yellow: '#ffcc00',
+          blue: '#39c5ff', magenta: '#a371f7', cyan: '#39c5ff', white: '#ffffff'
+        }
       });
       const fitAddon = new FitAddon.FitAddon();
       term.loadAddon(fitAddon);
@@ -92,12 +111,11 @@
       fitAddon.fit();
       window.addEventListener('resize', () => requestAnimationFrame(() => fitAddon.fit()));
 
-      // --- 2. Virtual File System (VFS) i struktura Termuxa ---
+      // --- 2. Virtual File System (VFS) ---
       const HOME_DIR = '/data/data/com.termux/files/home';
       let currentPath = HOME_DIR;
       let userContext = 'public';
 
-      // Symulacja struktury katalogów i plików (drzewo JSON)
       const fileSystem = {
         'data': {
           'data': {
@@ -105,38 +123,24 @@
               'files': {
                 'home': {
                   '.sf_core': 'alias ls="ls --color=auto"\nexport ZDOTDIR=~/.sf_core',
-                  'downloads': {
-                    'WWWTerminal': {
-                      'terminal-server_v004.js': 'console.log("Terminal Server v004 Online");'
-                    }
-                  }
+                  'readme.txt': 'To jest terminal dywizji SecFerro działający w przeglądarce.'
                 },
-                'usr': {
-                  'bin': {
-                    'node': 'binary',
-                    'npm': 'binary',
-                    'python': 'binary'
-                  }
-                }
+                'usr': { 'bin': { 'node': 'binary', 'npm': 'binary' } }
               }
             }
           }
         }
       };
 
-      // --- 3. Funkcje Pomocnicze VFS ---
       function resolvePath(targetPath) {
         if (!targetPath) return currentPath;
         if (targetPath === '~') return HOME_DIR;
         let pathParts = currentPath.split('/').filter(Boolean);
-        
-        if (targetPath.startsWith('/')) {
-          pathParts = [];
-        } else if (targetPath.startsWith('~/')) {
+        if (targetPath.startsWith('/')) pathParts = [];
+        else if (targetPath.startsWith('~/')) {
           pathParts = HOME_DIR.split('/').filter(Boolean);
           targetPath = targetPath.substring(2);
         }
-
         const targetParts = targetPath.split('/').filter(Boolean);
         for (const part of targetParts) {
           if (part === '.') continue;
@@ -157,100 +161,52 @@
         return current;
       }
 
-      // --- 4. Silnik Interpretera (Shell Engine) ---
+      // --- 3. Silnik Interpretera ---
       function processCommand(cmdLine) {
         const args = cmdLine.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
         if (args.length === 0) return;
         const cmd = args.shift().toLowerCase();
 
         switch (cmd) {
-          case 'clear':
-            term.write('\x1b[2J\x1b[H');
-            break;
-            
-          case 'pwd':
-            term.writeln(currentPath);
-            break;
-
-          case 'whoami':
-            term.writeln(userContext);
-            break;
-
-          case 'uname':
-            term.writeln(args.includes('-a') ? 'Linux localhost 5.4.254-qgki-g11b1ffb570a8 aarch64 Android' : 'Linux');
-            break;
-
+          case 'clear': term.write('\x1b[2J\x1b[H'); break;
+          case 'pwd': term.writeln(currentPath); break;
+          case 'whoami': term.writeln(userContext); break;
+          case 'uname': term.writeln(args.includes('-a') ? 'Linux secferro-web 5.4.254 aarch64 Android' : 'Linux'); break;
           case 'cd':
             const newPath = resolvePath(args[0] || '~');
             const node = getVfsNode(newPath);
-            if (node && typeof node === 'object' && !node._content) {
-              currentPath = newPath;
-            } else {
-              term.writeln(`bash: cd: ${args[0]}: No such file or directory`);
-            }
+            if (node && typeof node === 'object' && !node._content) currentPath = newPath;
+            else term.writeln(`bash: cd: ${args[0]}: No such file or directory`);
             break;
-
           case 'ls':
             const lsNode = getVfsNode(currentPath);
-            if (lsNode && typeof lsNode === 'object') {
-              const files = Object.keys(lsNode).join('  ');
-              term.writeln(`\x1b[1;36m${files}\x1b[0m`);
-            }
+            if (lsNode && typeof lsNode === 'object') term.writeln(`\x1b[1;36m${Object.keys(lsNode).join('  ')}\x1b[0m`);
             break;
-
           case 'cat':
-            if (!args[0]) {
-              term.writeln('cat: missing operand');
-              break;
-            }
-            const catPath = resolvePath(args[0]);
-            const catNode = getVfsNode(catPath);
-            if (catNode && typeof catNode === 'string') {
-              term.writeln(catNode);
-            } else {
-              term.writeln(`cat: ${args[0]}: No such file or directory`);
-            }
+            if (!args[0]) { term.writeln('cat: missing operand'); break; }
+            const catNode = getVfsNode(resolvePath(args[0]));
+            if (catNode && typeof catNode === 'string') term.writeln(catNode);
+            else term.writeln(`cat: ${args[0]}: No such file or directory`);
             break;
-            
-          case 'pkg':
-          case 'apt':
-            if (args[0] === 'install') {
-              term.writeln(`\x1b[33m[*] Konfigurowanie pakietów: ${args.slice(1).join(', ')}\x1b[0m`);
-              term.writeln('Wybieranie wcześniej nierozpakowanego pakietu...');
-              setTimeout(() => term.writeln('Rozpakowywanie... \x1b[32m[Zakończono]\x1b[0m'), 500);
-            } else if (args[0] === 'update') {
-              term.writeln('Hit:1 https://termux.net stable InRelease');
-              term.writeln('Reading package lists... Done');
-            } else {
-              term.writeln('Użycie: pkg install <pakiet> | pkg update');
-            }
-            break;
-
-          case 'node':
-          case 'npm':
-            term.writeln(`\x1b[31m[!] Środowisko statyczne:\x1b[0m V8/Node.js nie jest uruchomione w piaskownicy (Browser Only).`);
-            break;
-
-          default:
-            term.writeln(`bash: ${cmd}: command not found`);
+          default: term.writeln(`bash: ${cmd}: command not found`);
         }
       }
 
-      // --- 5. Niezawodny Handler Logowania (State Machine) ---
+      // --- 4. Logika Logowania ---
       let state = 'LOGIN_USER';
       let inputBuffer = '';
       let username = '';
 
-      const MOTD = `\r\n\x1b[1;36m██████╗████L█╗██\x1b[0m\r\n\x1b[1;36m██╔══╝║██╔═╝██╔ \x1b[1;33mF E R R O\x1b[0m\r\n\x1b[1;36m█████╗║██╗██║║═════════════════════╗\x1b[0m\r\n\x1b[1;36m╚══██║█╔══  ██║║\x1b[1;31m>>> D I V I S I O N\x1b[0m\r\n\x1b[1;36m█████║║████ ╚███╗════════════════════════\x1b[0m\r\n\x1b[1;36m╚════╝╚═══╝ ╚══╝ ╚════╝ ╚════╝    ╚════╝\x1b[0m\r\n`;
+      const MOTD = `\r\n\x1b[1;32m███████╗███████╗ ██████╗███████╗███████╗██████╗ ██████╗  ██████╗ \r\n██╔════╝██╔════╝██╔════╝██╔════╝██╔════╝██╔══██╗██╔══██╗██╔═══██╗\r\n███████╗█████╗  ██║     █████╗  █████╗  ██████╔╝██████╔╝██║   ██║\r\n╚════██║██╔══╝  ██║     ██╔══╝  ██╔══╝  ██╔══██╗██╔══██╗██║   ██║\r\n███████║███████╗╚██████╗██║     ███████╗██║  ██║██║  ██║╚██████╔╝\r\n╚══════╝╚══════╝ ╚═════╝╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ \x1b[0m\r\n`;
 
-      const promptUser = () => term.write('\r\nanonymousik login: ');
-      const promptPass = () => term.write('Password: ');
+      const promptUser = () => term.write('\r\n\x1b[1;37msecferro.is-a.dev login:\x1b[0m ');
+      const promptPass = () => term.write('\x1b[1;37mPassword:\x1b[0m ');
       const promptShell = () => {
         const displayPath = currentPath === HOME_DIR ? '~' : currentPath.split('/').pop();
         term.write(`\r\n\x1b[1;32m[SECFERRO]\x1b[0m \x1b[1;34m${displayPath}\x1b[0m \$ `);
       };
 
-      term.writeln('Ubuntu 24.04.1 LTS anonymousik-secops tty1 (Static Proxy)\r\n');
+      term.writeln('\x1b[1;32mTerminal dywizji SecFerro prosto z przeglądarki!\x1b[0m\r\nUbuntu 24.04.1 LTS anonymousik-secops tty1\r\n');
       promptUser();
 
       term.onKey(e => {
@@ -258,9 +214,8 @@
         const ev = e.domEvent;
         const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
 
-        if (ev.keyCode === 13) { // Enter
+        if (ev.keyCode === 13) {
           term.write('\r\n');
-          
           if (state === 'LOGIN_USER') {
             username = inputBuffer.trim();
             inputBuffer = '';
@@ -273,59 +228,55 @@
               state = 'LOCKED';
               runProvisioning();
             } else {
-              term.writeln('\x1b[31mLogin incorrect\x1b[0m\r\n');
+              term.writeln('\x1b[31mDostęp zabroniony. Logowanie nieprawidłowe.\x1b[0m\r\n');
               state = 'LOGIN_USER';
               promptUser();
             }
           } else if (state === 'SHELL_ACTIVE') {
             processCommand(inputBuffer.trim());
             inputBuffer = '';
-            if (state === 'SHELL_ACTIVE') promptShell();
+            promptShell();
           }
         } 
-        else if (ev.keyCode === 8) { // Backspace
+        else if (ev.keyCode === 8) {
           if (inputBuffer.length > 0) {
             inputBuffer = inputBuffer.slice(0, -1);
-            if (state !== 'LOGIN_PASS') {
-              term.write('\b \b');
-            }
+            if (state !== 'LOGIN_PASS') term.write('\b \b');
           }
         } 
         else if (printable && e.key.length === 1) {
           inputBuffer += e.key;
-          if (state !== 'LOGIN_PASS') {
-            term.write(e.key);
-          }
+          if (state !== 'LOGIN_PASS') term.write(e.key);
         }
       });
 
-      // --- 6. Symulacja Provisioningu (Niezawodna Animacja Promise-based) ---
+      // --- 5. Animacja Provisioningu ---
       async function runProvisioning() {
         term.write(MOTD);
-        term.writeln(`\r\n\x1b[1;32m[+] Autoryzacja potwierdzona.\x1b[0m`);
+        term.writeln(`\r\n\x1b[1;32m[+] Autoryzacja potwierdzona dla obszaru SecFerro.\x1b[0m`);
         
         const delay = ms => new Promise(res => setTimeout(res, ms));
         const steps = [
-          "Inicjalizacja Wirtualnego Systemu Plików (VFS)...",
-          "Klonowanie struktury /data/data/com.termux/...",
-          "Ładowanie profilu: source ~/.sf_core...",
-          "Zestawianie silnika bash (w pamięci)..."
+          "Nawiązywanie bezpiecznego połączenia VFS...",
+          "Ładowanie profilu: anonymousik.is-a.dev...",
+          "Inicjalizacja środowiska przeglądarkowego..."
         ];
 
         for (const step of steps) {
-          await delay(600);
+          await delay(500);
           term.writeln(`\x1b[38;5;240m[*] ${step}\x1b[0m`);
         }
         
-        await delay(500);
+        await delay(400);
         userContext = 'secferro';
-        document.getElementById('auth-status').textContent = 'AUTH: VFS_ACTIVE';
-        document.getElementById('terminal-title').textContent = 'secferro@termux:~';
+        document.getElementById('auth-status').textContent = 'SYS: ONLINE';
+        document.getElementById('auth-status').classList.remove('badge-gold');
+        document.getElementById('auth-status').classList.add('badge-green');
         
         state = 'SHELL_ACTIVE';
         term.write('\x1b[2J\x1b[H'); 
-        term.writeln('\x1b[1;33mWelcome to Termux (Static VFS Edition)\x1b[0m');
-        term.writeln('Architektura oparta na symulacji pamięci in-browser.');
+        term.writeln('\x1b[1;32mWelcome to Anonymousik.is-a.dev/terminal\x1b[0m');
+        term.writeln('\x1b[38;5;240mTerminal dywizji SecFerro prosto z przeglądarki!\x1b[0m');
         promptShell();
       }
     });
