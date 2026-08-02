@@ -149,7 +149,7 @@ class ProductionScraper {
                 }
             };
 
-            const outDir = path.join(__dirname, '../public');
+            const outDir = path.join(__dirname, '../scripts');
             if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
             const outPath = path.join(outDir, 'stats.json');
