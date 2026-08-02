@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
   schedule:
-    - cron: '0 * * * *' # Automatyczne odświeżanie statystyk co 1 godzinę
+    - cron: '0 * * * *' # Synchronizacja statystyk co 1 godzinę
   workflow_dispatch:
 
 permissions:
@@ -17,16 +17,16 @@ jobs:
       - name: Pobieranie gałęzi głównej
         uses: actions/checkout@v3
 
-      - name: Konfiguracja środowiska Node.js
+      - name: Konfiguracja środowiska Node.js (Wsparcie dla v20+)
         uses: actions/setup-node@v3
         with:
           node-version: 20.x
           cache: 'npm'
 
-      - name: Instalacja zależności systemu
+      - name: Instalacja zależności systemowych i NPM
         run: npm ci
 
-      - name: Pobranie środowiska przeglądarki Chromium
+      - name: Instalacja silnika Playwright Chromium
         run: npx playwright install chromium --with-deps
 
       - name: Wykonanie skryptu zbierania statystyk (Scraper)
