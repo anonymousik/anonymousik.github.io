@@ -1,110 +1,56 @@
-<!-- Glitch & Terminal Aesthetic Profile -->
-<div align="center">
-<img src="https://www.google.com/search?q=https://capsule-render.vercel.app/api%3Ftype%3Dwaving%26color%3D0:00FF41,100:000000%26height%3D150%26section%3Dheader%26text%3D%C6%91ERR%E0%B6%A7%26fontSize%3D60%26fontAlignY%3D40%26desc%3DTHE%2520CREATIVE%2520ENGINEER%26descAlignY%3D65%26descSize%3D20%26fontColor%3Dffffff" width="100%" />
-</div>
-<div align="center">
+<div align="center"> <img src="https://capsule-render.vercel.app/api?type=waving&color=0:050505,100:FF003C&height=120&section=header&text=FERROART&fontSize=65&fontAlignY=40&desc=THE%20CREATIVE%20ENGINEER&descAlignY=70&descSize=14&fontColor=ffffff&stroke=FF003C&strokeWidth=1&animation=twinkling" width="100%" /> </div>
 
+<div align="center"> <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=16&pause=1500&color=00FF41&center=true&vCenter=true&width=600&lines=>_+SYSTEM.INIT();>_+FULL-STACK+ARCHITECTURE;>_+CYBERSECURITY+%26+HARDENING;>_+AUDIO-VISUAL+ENGINEERING;>_+EST.+199X+(PAJĄCZEK+ERA)" alt="Terminal Init" /> </div>
 
-<code>ARCHITECTING SYSTEMS • VISUALIZING SOUND • DECODING REALITY</code>
+<div align="center"> <b>anonymousik</b> ⸻ <a href="https://anonymousik.is-a.dev">anonymousik.is-a.dev</a> ⸻ <code>kontakt@nieznanynikomu.github.io</code> </div>
 
+<div align="center"> <img src="https://img.shields.io/badge/FRONT--END-050505?style=flat-square&logo=javascript&logoColor=00FF41&border=00FF41"> <img src="https://img.shields.io/badge/BACK--END-050505?style=flat-square&logo=nodedotjs&logoColor=00FF41"> <img src="https://img.shields.io/badge/PYTHON-050505?style=flat-square&logo=python&logoColor=00FF41"> <img src="https://img.shields.io/badge/ANDROID-050505?style=flat-square&logo=android&logoColor=00FF41"> <img src="https://img.shields.io/badge/LINUX-050505?style=flat-square&logo=linux&logoColor=00E5FF"> <a href="https://anonymousik.is-a.dev/docs/privacy"><img src="https://img.shields.io/badge/SECFERRO_PROTECTED_//_POLITYKA_PRYWATNOŚCI-050505?style=flat-square&logo=shield&logoColor=FF003C" alt="Privacy"></a> </div>
 
+👁️‍🗨️ THE MANIFESTO
+Buduję systemy, których nie złamiesz, brzmienia, których nie zapomnisz.
 
-<p align="center">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/AUTH-ROOT_VERIFIED-D4AF37%3Fstyle%3Dfor-the-badge%26logo%3Dlinux%26logoColor%3Dblack" alt="Root">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/ENV-PRODUCTION-00FF41%3Fstyle%3Dfor-the-badge%26logo%3Dterminal%26logoColor%3Dblack" alt="Env">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/VIBE-GLITCH_GOLD-black%3Fstyle%3Dfor-the-badge" alt="Vibe">
-</p>
-</div>
-🌑 [01] SYSTEM IDENTITY / CORE LOGIC
-> "Inżynieria to sztuka panowania nad chaosem. Sztuka to chaos ujęty w ramy inżynierii."
-> 
-Jestem hybrydowym twórcą operującym na styku Cyber-Security, Systems Engineering oraz Audiovisual Arts. Moje podejście opiera się na bezkompromisowej optymalizacji – zarówno w kodzie binarnym, jak i w fali dźwiękowej. Nie naprawiam systemów; redefiniuję ich granice.
-📂 [02] DEPLOYED PROJECTS (KLIKNIJ, ABY ROZWINĄĆ)
-<details>
-<summary><b>🛠️ ADB-QUANTUM // SYSTEM HARDENING</b></summary>
+Hybrydowy twórca operujący jako Anonymousik, Nieznany Nikomu oraz FerroART. Moje korzenie sięgają surowego kodu HTML z ery Pajączka, ewoluując do dzisiejszych nowoczesnych, pełnowymiarowych architektur Full-Stack. Łączę inżynierię oprogramowania (Front-End/Back-End), zaawansowane cyberbezpieczeństwo i bezkompromisowy sound design w jeden spójny ekosystem.
 
+🛡️ DYWIZJA 01: SECFERRO (CODE & ARCHITECTURE)
+Zabezpieczony węzeł operacyjny. 
+Od logiki serwerowej po systemy wbudowane.
 
-<blockquote>
-<b>Status:</b> 🟢 Operacyjny / Publiczny 
+<details> 
+<summary>
+<b>💻 Full-Stack Web Development</b>
+</summary>
 
-<b>Stack:</b> <code>Bash</code>, <code>Python</code>, <code>ADB Bridge</code>
-</blockquote>
-Zaawansowane środowisko do optymalizacji i audytu urządzeń mobilnych oraz Smart TV. Projekt narodził się z frustracji nad zaśmieconymi systemami fabrycznymi.
- * Funkcje: Głęboki debloating, optymalizacja pamięci RAM na poziomie jądra, automatyzacja wdrożeń masowych.
- * Cel: Przywrócenie kontroli użytkownikowi nad jego własnym sprzętem.
+Cel: Projektowanie wysoce wydajnych i zabezpieczonych aplikacji webowych.
+Zakres: Skalowalny Back-End (API, Bazy Danych) zintegrowany z nowoczesnym, responsywnym Front-Endem (UX/UI). </details>
+<details> <summary><b>⚙️ ADB-Quantum (System Hardening)</b></summary>
 
+Cel: Głęboka optymalizacja urządzeń mobilnych (Xiaomi/XiaomerroOS) i Smart TV.
+Działanie: Skrypty powłoki (Bash/Python) do audytu, debloatingu i zarządzania pamięcią RAM na poziomie kernela. </details>
+<details> <summary><b>🤖 Dukat-Maker (AI & Automation)</b></summary>
 
-</details>
-<details>
-<summary><b>💽 BAŃKA 404 // AUDIO-VISUAL FORENSICS</b></summary>
+Cel: Wstrzykiwanie zaawansowanej logiki w procesy sieciowe.
+Działanie: Ekosystem Node.js automatyzujący interakcje, powiadomienia i przetwarzanie danych. </details>
 
+🎛️ DYWIZJA 02: FERROART (AUDIO-VISUAL STUDIO)
+Kreatywna manifestacja fali i obrazu. Precision meets cultural impact.
 
-<blockquote>
-<b>Status:</b> 🟣 W toku (R&D) 
+ ⸻ FERROART LABEL // CREATIVE MUSIC PRODUCTION STUDIO ⸻
+ ꪊꈤӄꈤꪮwꈤ Tꪮ Ⱥꈤʏꪮꈤҽ  |  🅽ɨɛʐռǟռʏ.🅽ɨӄօʍʊ  |  EST. 2015
+<details> <summary><b>💽 Bańka 404 (Audio-Visual Forensics)</b></summary>
 
-<b>Stack:</b> <code>Ableton</code>, <code>FFmpeg</code>, <code>Premiere Pro</code>, <code>OSINT</code>
-</blockquote>
-Projekt artystyczny, który przesuwa granice narracji. Wykorzystuję techniki śledcze (OSINT) do budowania tekstów i struktur wizualnych.
- * Estetyka: Glitch Art, Vaporization, High-Contrast Cyber.
- * Misja: Manifest cyfrowej alienacji ubrany w technicznie doskonały sound design.
+Koncepcja: Projekt artystyczny z nurtu Glitch / High-Contrast Cyber.
+Narzędzia: OSINT, Ableton. Manifest cyfrowej alienacji ubrany w techniczny sound design. </details>
 
+🌐 NETWORK & DEPLOYMENT
+Architektura połączeń wyjściowych. Wybierz odpowiedni protokół:
 
-</details>
-<details>
-<summary><b>🤖 DUKAT-MAKER // AI AUTOMATION</b></summary>
+📺 WIZJA (BROADCAST)	📻 FONIA (AUDIO)	🔋 ZASILANIE (UPLINK)
+▹ YouTube Main ▹ YouTube Shorts ▹ Twitch (Live) ▹ TikTok ▹ Cheelee ▹ Facebook	▹ BandLab HQ ▹ YouTube Music ▹ Spotify [SOON] ▹ Apple Music [SOON] ▹ Tidal [SOON] ▹ Amazon [SOON]	▹ Tipo.LIVE ▹ Ko-fi ▹ BuyMeACoffee ▹ Suppi.pl ▹ Patronite
 
-
-<blockquote>
-<b>Status:</b> 🟡 Aktywny Asystent 
-
-<b>Stack:</b> <code>Node.js</code>, <code>NLP</code>, <code>Cloud Infrastructure</code>
-</blockquote>
-Autorski bot i ekosystem automatyzujący interakcje. To nie jest zwykły czatbot – to instancja zarządzająca procesami, od powiadomień systemowych po interakcję z Twoją społecznością.
-
-
-</details>
-<details>
-<summary><b>🧥 SECFERRO // FASHION-TECH INTERFACE</b></summary>
-
-
-<blockquote>
-<b>Status:</b> 🔵 Projekt Koncepcyjny 
-
-<b>Stack:</b> <code>Hardware</code>, <code>Wearables</code>, <code>Branding</code>
-</blockquote>
-Eksperymentalna marka streetwearowa dla świata IT. Odzież zaprojektowana z myślą o prywatności (materiały blokujące sygnały) i estetyce "Urban Techwear".
-
-
-</details>
-📊 [03] TECH STACK & FREQUENCIES
-SYSTEM RESOURCES:
-[████████████████████] 100% - CYBER-SECURITY (AUDIT/HARDENING)
-[██████████████████▒▒]  90% - AUDIO ENGINEERING (MIX/MASTER)
-[████████████████▒▒▒▒]  80% - DEVOPS & INFRASTRUCTURE
-[████████████████████] 100% - CREATIVE PROBLEM SOLVING
-
-🌐 [04] NETWORK INTERFACES / SZYBKIE LINKI
-<div align="center">
-| ⚡ TERMINAL (DEV) | 🔊 FREQUENCIES (ART) | 📩 UPLINK (CONTACT) |
-|---|---|---|
-| GitHub Source | YouTube Main | Secure Email |
-| Gist Repository | TikTok Vibes | TIPo Live Support |
-| Private Dev Env | BandLab HQ | Buy Me A Cookie 🍪 |
-</div>
-📜 [05] FINAL DISCLAMER / LOGS
-u0_a583@localhost:~$ tail -n 3 /var/log/ferroart.log
-[2024-02-21] CRITICAL: Estetyka przekracza dopuszczalne normy.
-[2024-02-21] SUCCESS: System identity fully integrated.
-[2024-02-21] STATUS: Scanning for next optimization...
-
-
-
-<div align="center">
-<b>© ALL RIGHTS RESERVED. ƑERRටⱥའͳ</b>
-<code>ENCRYPTED SESSION // NO BACKDOORS FOUND
-</code>
-<small>
-#ferroart #cybersec #creativeengineer #glitch #automation #iosint #mixing #mastering
-
-</small>
-</div>
+📜 SYSTEM LOG
+u0_a583@secferro:~$ systemctl status ferroart.service
+● ferroart.service - Hybrid Creative Engine
+   Loaded: loaded (/etc/systemd/system/ferroart.service; enabled)
+   Active: active (running) since 199X
+   Status: "SecFerro Shield Active. Audio nodes synchronized."
+<div align="center"> <small><b>© FERROART ® 2015-2026 | ALL RIGHTS RESERVED</b> ENCRYPTED SESSION // NO BACKDOORS FOUND</small> </div>
