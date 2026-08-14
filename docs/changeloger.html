@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="pl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecFERRO DevLog Generator — GitHub Pages Edition</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            950: '#030712',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- React & ReactDOM CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel Standalone (dla uruchamiania JSX na GH Pages) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-slate-950 min-h-screen">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // Domyślne wartości źródłowe
+        const DEFAULT_REPO = "anonymousik/neurosync-ai-private";
+        const DEFAULT_BRANCH = "master";
+        const REPO_URL = `https://github.com/${DEFAULT_REPO}`;
+
+        // Przykładowe logi zmian z wersji v3.0.0
+        const SAMPLE_RAW_LOGS = `[FIX-01] Dodano guard na Bash 4.0+ dla declare -A
+[FIX-02] Przywrócono set -Eeuo pipefail z precyzyjnymi wyjątkami inline
+[FIX-03] Security: Usunięto eval w _retry() - wyeliminowano wstrzykiwanie poleceń
+[FIX-05] Przepisano _secret_scan() - skanowanie tokenów Slack xox*, GitHub OAuth gho_ i secret=
+[FIX-06] Przepisano parser INI w _load_conf() - pełna obsługa znaków = w argumentach URL
+[FIX-10] Dodano cross-platform _sha256sum() fallback chain dla macOS i BSD
+[FIX-13] Przepisano generator workflow YAML: validate -> build -> notify, JDK 21, SDK 34
+[FIX-14] Dodano _resolve_artifact_name() - inteligentne mapowanie variant -> nazwa artefaktu
+[FIX-16] Dodano timeout guard na gh run watch (MAX_WAIT_MIN)
+[FIX-17] Dodano _preflight_env() i _preflight_git() dla sprawdzania wolnego miejsca i sieci
+BREAKING CHANGE: ARTIFACT_NAMES zmieniono na ARTIFACT_PREFIX-{variant}`;
+
+        function App() {
+            // Stany aplikacji
+            const [repoInput, setRepoInput] = useState(DEFAULT_REPO);
+            const [branchInput, setBranchInput] = useState(DEFAULT_BRANCH);
+            const [patToken, setPatToken] = useState("");
+            const [rawCommitsText, setRawCommitsText] = useState(SAMPLE_RAW_LOGS);
+            const [isLoading, setIsLoading] = useState(false);
+            const [fetchError, setFetchError] = useState(null);
+            
+            // Stany konfiguracji changeloga
+            const [version, setVersion] = useState("v3.0.0");
+            const [releaseCodename, setReleaseCodename] = useState("FERRO IRONCLAD");
+            const [releaseDate, setReleaseDate] = useState("2026-05-05");
+            const [selectedPlatform, setSelectedPlatform] = useState("messenger"); // messenger | discord | github | telegram
+            const [copied, setCopied] = useState(false);
+            const [activeTab, setActiveTab] = useState("generator"); // generator | diff | repo_info
+            const [showRefFile, setShowRefFile] = useState("v3"); // v2 | v3
+
+            // Statystyki
+            const [stats, setStats] = useState({ files: 12, insertions: 473, deletions: 29 });
+
+            // Inicjalizacja Lucide Icons po załadowaniu
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            });
+
+            // Pobieranie commitów z GitHub REST API
+            const fetchGitHubCommits = async () => {
+                setIsLoading(true);
+                setFetchError(null);
+                try {
+                    const headers = {};
+                    if (patToken.trim()) {
+                        headers['Authorization'] = `token ${patToken.trim()}`;
+                    }
+
+                    const response = await fetch(
+                        `https://api.github.com/repos/${repoInput}/commits?sha=${branchInput}&per_page=15`,
+                        { headers }
+                    );
+
+                    if (!response.ok) {
+                        if (response.status === 403) {
+                            throw new Error("Przekroczono limit zapytań GitHub API (Rate Limit). Wprowadź GitHub Personal Access Token (PAT).");
+                        }
+                        if (response.status === 404) {
+                            throw new Error("Repozytorium lub gałąź nie istnieje (sprawdź, czy repozytorium prywatne wymaga tokenu PAT).");
+                        }
+                        throw new Error(`Błąd GitHub API: ${response.status} ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    const commitMessages = data.map(item => item.commit.message).join("\n");
+                    if (commitMessages) {
+                        setRawCommitsText(commitMessages);
+                    }
+                } catch (err) {
+                    setFetchError(err.message || "Nie udało się pobrać commitów.");
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            // Parsowanie surowego tekstu na strukturyzowane kategorie
+            const parsedData = useMemo(() => {
+                const lines = rawCommitsText.split('\n').filter(l => l.trim().length > 0);
+                
+                const categories = {
+                    security: [],
+                    fixes: [],
+                    features: [],
+                    breaking: [],
+                    improvements: []
+                };
+
+                lines.forEach(line => {
+                    const lower = line.toLowerCase();
+                    if (lower.includes('sec-') || lower.includes('security') || lower.includes('[fix-03]') || lower.includes('[fix-05]')) {
+                        categories.security.push(line);
+                    } else if (lower.includes('breaking') || lower.includes('breaking change')) {
+                        categories.breaking.push(line);
+                    } else if (lower.includes('[fix-') || lower.includes('fix:') || lower.includes('bug') || lower.includes('naprawiono')) {
+                        categories.fixes.push(line);
+                    } else if (lower.includes('feat:') || lower.includes('dodano') || lower.includes('nowe') || lower.includes('[fix-13]') || lower.includes('[fix-17]')) {
+                        categories.features.push(line);
+                    } else {
+                        categories.improvements.push(line);
+                    }
+                });
+
+                return categories;
+            }, [rawCommitsText]);
+
+            // Generowanie końcowego tekstu w zależności od wybranej platformy
+            const generatedChangelog = useMemo(() => {
+                const sourceLink = `https://github.com/${repoInput}`;
+
+                if (selectedPlatform === 'messenger') {
+                    return `.--.--.--.--.--.--.--.--.--.--.--.--.--.--.-
+   [  S E C  -  F E R R O   ]
+             (  D E V - L O G )
+-.--.--.--.--.--.--.--.--.--.--.--.--.--.--.
+
+🚀 [${version}] — ${releaseDate} · ${releaseCodename}
+Wydanie naprawcze i modernizacyjne. Wszystkie wykryte błędy krytyczne, portabilnościowe i logiczne zostały pomyślnie rozwiązane.
+
+🛡️ BEZPIECZEŃSTWO & SECRET-SCAN:
+${parsedData.security.length > 0 ? parsedData.security.map(i => `• ${i}`).join('\n') : '• Brak zarejestrowanych luk bezpieczeństwa w tym wydaniu.'}
+
+🐛 NAPRAWIONE BŁĘDY & [FIX-XX]:
+${parsedData.fixes.length > 0 ? parsedData.fixes.map(i => `• ${i}`).join('\n') : '• Optymalizacje rutynowe i stabilizacyjne.'}
+
+✨ NOWE FUNKCJE & PODSYSTEMY:
+${parsedData.features.length > 0 ? parsedData.features.map(i => `• ${i}`).join('\n') : '• Usprawnienia algorytmów wewnętrznych.'}
+
+${parsedData.breaking.length > 0 ? `⚠️ ZMIANY ŁAMIĄCE (BREAKING CHANGES):\n${parsedData.breaking.map(i => `• ${i}`).join('\n')}\n` : ''}📉 STATYSTYKI CI/CD:
+• Zmiany: ${stats.files} plików | +${stats.insertions} / -${stats.deletions} linii kodu.
+
+🔗 ŹRÓDŁOWE REPOZYTORIUM:
+${sourceLink}
+
+.--.--.--.--.--.--.--.--.--.--.--.--.--.--.-
+📡 Wysłano z węzła: [FERRO//ANON] — SecFERRO Division
+#SecFERRO #SCU #DevLog #Release #TermuxDev`;
+                }
+
+                if (selectedPlatform === 'discord') {
+                    return `\`\`\`diff
++ [CHANGELOG] SCU ${version} — ${releaseCodename} (${releaseDate})
++ Repozytorium: ${sourceLink}
+\`\`\`
+
+### 🛡️ **Bezpieczeństwo & Security**
+${parsedData.security.map(i => `* \`${i}\``).join('\n') || '* Brak błędów bezpieczeństwa'}
+
+### 🐛 **Naprawione Usterki [FIX-XX]**
+${parsedData.fixes.map(i => `* ${i}`).join('\n') || '* Drobne poprawki wydajnościowe'}
+
+### ✨ **Nowości & Features**
+${parsedData.features.map(i => `* **${i}**`).join('\n') || '* Poprawki wewnętrzne'}
+
+${parsedData.breaking.length > 0 ? `### ⚠️ **Breaking Changes**\n${parsedData.breaking.map(i => `> ❌ ${i}`).join('\n')}\n` : ''}
+> 📊 **Diff Summary**: ${stats.files} zmodyfikowanych plików, +${stats.insertions} insercji, -${stats.deletions} usunięć.
+> 🔗 **Adres źródłowy**: <${sourceLink}>`;
+                }
+
+                if (selectedPlatform === 'github') {
+                    return `# 🚀 SCU ${version} — ${releaseCodename} (${releaseDate})
+
+Oficjalny raport wydania dla silnika **Smart Compile Ultimate (SCU)**.
+
+## 🔗 Odnośnik do Repozytorium
+- **Kod źródłowy**: [${repoInput}](${sourceLink})
+- **Gałąź główna**: \`${branchInput}\`
+
+---
+
+## 🛡️ Aktualizacje Bezpieczeństwa
+${parsedData.security.map(i => `- ${i}`).join('\n') || '- Brak krytycznych zastrzeżeń.'}
+
+## 🐛 Naprawione Błędy i Refaktoryzacja
+${parsedData.fixes.map(i => `- ${i}`).join('\n') || '- Ogólne poprawki stabilności.'}
+
+## ✨ Nowe Funkcje i Usprawnienia Workflow
+${parsedData.features.map(i => `- ${i}`).join('\n') || '- Optymalizacje wewnętrznego potoku CI/CD.'}
+
+${parsedData.breaking.length > 0 ? `## ⚠️ Zmiany Łamiące (Breaking Changes)\n${parsedData.breaking.map(i => `- **KRYTYCZNE**: ${i}`).join('\n')}\n` : ''}
+---
+### 📈 Metryki Systemowe
+| Parametr | Wartość |
+| :--- | :--- |
+| **Zmienione Pliki** | \`${stats.files}\` |
+| **Dodany Kod** | \`+${stats.insertions}\` |
+| **Usunięty Kod** | \`-${stats.deletions}\` |
+| **Środowisko Budowania** | Termux / Android CI |
+`;
+                }
+
+                // Telegram / Social TL;DR
+                return `📢 **[SCU RELEASE ${version}]** — ${releaseCodename}
+
+🔥 Najnowsza wersja silnika **Smart Compile Ultimate** została oficjalnie wydana!
+
+✨ **Najważniejsze zmiany:**
+${parsedData.features.slice(0, 3).map(i => `▫️ ${i}`).join('\n')}
+${parsedData.fixes.slice(0, 3).map(i => `🛠️ ${i}`).join('\n')}
+
+🔒 **Bezpieczeństwo:** Usunięto podatności eval/command-injection oraz rozszerzono skaner sekretów.
+
+🌐 **Pełny kod w repozytorium:**
+${sourceLink}
+
+#SecFERRO #DevOps #Android #Automation`;
+            }, [selectedPlatform, version, releaseCodename, releaseDate, parsedData, repoInput, branchInput, stats]);
+
+            // Bezpieczne kopiowanie do schowka
+            const copyToClipboard = () => {
+                const textArea = document.createElement("textarea");
+                textArea.value = generatedChangelog;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2500);
+                } catch (err) {
+                    console.error('Błąd kopiowania:', err);
+                }
+                document.body.removeChild(textArea);
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    
+                    {/* NAGŁÓWEK GŁÓWNY */}
+                    <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 ring-1 ring-cyan-400/30">
+                                    <i data-lucide="terminal" className="w-5 h-5 text-slate-950 font-bold"></i>
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2">
+                                        <h1 className="font-bold text-base sm:text-lg text-slate-100 tracking-tight">SecFERRO DevLog Generator</h1>
+                                        <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-mono">GH-Pages Edition</span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-400">Generator Changelogów dla Termux & GitHub Actions CI/CD</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center space-x-3">
+                                <a 
+                                    href={REPO_URL}
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 transition border border-slate-700"
+                                >
+                                    <i data-lucide="github" className="w-4 h-4 text-cyan-400"></i>
+                                    <span className="hidden sm:inline font-mono">{DEFAULT_REPO}</span>
+                                    <i data-lucide="external-link" className="w-3 h-3 text-slate-400"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* TREŚĆ APLIKACJI */}
+                    <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        
+                        {/* PANEL LEWY: OPCJE & KONTROLA (5 kolumn) */}
+                        <div className="lg:col-span-5 space-y-5">
+                            
+                            {/* PRZEŁĄCZNIK ZAKŁADEK */}
+                            <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-medium">
+                                <button
+                                    onClick={() => setActiveTab("generator")}
+                                    className={`flex-1 py-2 rounded-lg flex items-center justify-center space-x-1.5 transition ${
+                                        activeTab === "generator" 
+                                            ? "bg-cyan-500 text-slate-950 font-bold shadow" 
+                                            : "text-slate-400 hover:text-slate-200"
+                                    }`}
+                                >
+                                    <i data-lucide="sparkles" className="w-3.5 h-3.5"></i>
+                                    <span>Generator</span>
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("diff")}
+                                    className={`flex-1 py-2 rounded-lg flex items-center justify-center space-x-1.5 transition ${
+                                        activeTab === "diff" 
+                                            ? "bg-cyan-500 text-slate-950 font-bold shadow" 
+                                            : "text-slate-400 hover:text-slate-200"
+                                    }`}
+                                >
+                                    <i data-lucide="file-code" className="w-3.5 h-3.5"></i>
+                                    <span>Pliki SCU (v2 vs v3)</span>
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("repo_info")}
+                                    className={`flex-1 py-2 rounded-lg flex items-center justify-center space-x-1.5 transition ${
+                                        activeTab === "repo_info" 
+                                            ? "bg-cyan-500 text-slate-950 font-bold shadow" 
+                                            : "text-slate-400 hover:text-slate-200"
+                                    }`}
+                                >
+                                    <i data-lucide="info" className="w-3.5 h-3.5"></i>
+                                    <span>Źródło GH</span>
+                                </button>
+                            </div>
+
+                            {activeTab === "generator" && (
+                                <>
+                                    {/* KONFIGURACJA GITHUB REST API */}
+                                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4 shadow-xl">
+                                        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                                            <div className="flex items-center space-x-2">
+                                                <i data-lucide="git-commit" className="w-4 h-4 text-cyan-400"></i>
+                                                <h2 className="text-sm font-semibold text-slate-200">GitHub API Import</h2>
+                                            </div>
+                                            <span className="text-[10px] text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800 font-mono">REST v3</span>
+                                        </div>
+
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <div className="col-span-2 space-y-1">
+                                                <label className="text-[11px] text-slate-400 font-medium">Repozytorium</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={repoInput}
+                                                    onChange={(e) => setRepoInput(e.target.value)}
+                                                    placeholder="owner/repo"
+                                                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[11px] text-slate-400 font-medium">Gałąź</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={branchInput}
+                                                    onChange={(e) => setBranchInput(e.target.value)}
+                                                    placeholder="master"
+                                                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <div className="flex items-center justify-between">
+                                                <label className="text-[11px] text-slate-400 font-medium">GitHub Token PAT (Opcjonalny dla prywatnych repo)</label>
+                                            </div>
+                                            <input 
+                                                type="password" 
+                                                value={patToken}
+                                                onChange={(e) => setPatToken(e.target.value)}
+                                                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                                            />
+                                        </div>
+
+                                        <button
+                                            onClick={fetchGitHubCommits}
+                                            disabled={isLoading}
+                                            className="w-full py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs flex items-center justify-center space-x-2 border border-slate-700 transition disabled:opacity-50"
+                                        >
+                                            <i data-lucide="refresh-cw" className={`w-3.5 h-3.5 text-cyan-400 ${isLoading ? "animate-spin" : ""}`}></i>
+                                            <span>{isLoading ? "Pobieranie..." : "Pobierz commity z GitHub API"}</span>
+                                        </button>
+
+                                        {fetchError && (
+                                            <div className="p-2.5 bg-rose-950/40 border border-rose-800/60 rounded-lg flex items-start space-x-2 text-rose-300 text-xs">
+                                                <i data-lucide="alert-triangle" className="w-4 h-4 shrink-0 mt-0.5"></i>
+                                                <span>{fetchError}</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* KONFIGURACJA METADANYCH */}
+                                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4 shadow-xl">
+                                        <div className="flex items-center space-x-2 border-b border-slate-800 pb-3">
+                                            <i data-lucide="layers" className="w-4 h-4 text-cyan-400"></i>
+                                            <h2 className="text-sm font-semibold text-slate-200">Metadane Wydania SCU</h2>
+                                        </div>
+
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <div className="space-y-1">
+                                                <label className="text-[11px] text-slate-400 font-medium">Wersja</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={version}
+                                                    onChange={(e) => setVersion(e.target.value)}
+                                                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[11px] text-slate-400 font-medium">Nazwa Kodowa</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={releaseCodename}
+                                                    onChange={(e) => setReleaseCodename(e.target.value)}
+                                                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[11px] text-slate-400 font-medium">Data</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={releaseDate}
+                                                    onChange={(e) => setReleaseDate(e.target.value)}
+                                                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <div className="flex items-center justify-between">
+                                                <label className="text-[11px] text-slate-400 font-medium">Wpisy / Commity</label>
+                                                <span className="text-[10px] text-slate-500">Tagi [FIX-XX], Conv. Commits</span>
+                                            </div>
+                                            <textarea
+                                                rows={6}
+                                                value={rawCommitsText}
+                                                onChange={(e) => setRawCommitsText(e.target.value)}
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs text-slate-300 font-mono focus:outline-none focus:border-cyan-500 resize-none leading-relaxed"
+                                                placeholder="Wklej logi zmian..."
+                                            />
+                                        </div>
+
+                                        {/* LICZNIKI STATYSTYK */}
+                                        <div className="grid grid-cols-3 gap-2 pt-1 border-t border-slate-800/80">
+                                            <div className="bg-slate-950 p-2 rounded-lg border border-slate-800/60 text-center">
+                                                <span className="text-[10px] text-slate-500 block">Pliki</span>
+                                                <input 
+                                                    type="number" 
+                                                    value={stats.files} 
+                                                    onChange={(e) => setStats({...stats, files: parseInt(e.target.value) || 0})}
+                                                    className="w-full bg-transparent text-center font-mono text-xs text-slate-200 focus:outline-none"
+                                                />
+                                            </div>
+                                            <div className="bg-slate-950 p-2 rounded-lg border border-slate-800/60 text-center">
+                                                <span className="text-[10px] text-emerald-500 block">+ Insercje</span>
+                                                <input 
+                                                    type="number" 
+                                                    value={stats.insertions} 
+                                                    onChange={(e) => setStats({...stats, insertions: parseInt(e.target.value) || 0})}
+                                                    className="w-full bg-transparent text-center font-mono text-xs text-emerald-400 focus:outline-none"
+                                                />
+                                            </div>
+                                            <div className="bg-slate-950 p-2 rounded-lg border border-slate-800/60 text-center">
+                                                <span className="text-[10px] text-rose-500 block">- Usunięcia</span>
+                                                <input 
+                                                    type="number" 
+                                                    value={stats.deletions} 
+                                                    onChange={(e) => setStats({...stats, deletions: parseInt(e.target.value) || 0})}
+                                                    className="w-full bg-transparent text-center font-mono text-xs text-rose-400 focus:outline-none"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+
+                            {activeTab === "diff" && (
+                                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4 shadow-xl">
+                                    <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                                        <div className="flex items-center space-x-2">
+                                            <i data-lucide="code-2" className="w-4 h-4 text-cyan-400"></i>
+                                            <h2 className="text-sm font-semibold text-slate-200">Podgląd Pliku Referencyjnego SCU</h2>
+                                        </div>
+                                        <div className="flex space-x-1 bg-slate-950 p-1 rounded-lg border border-slate-800 text-[11px]">
+                                            <button 
+                                                onClick={() => setShowRefFile("v2")} 
+                                                className={`px-2 py-0.5 rounded ${showRefFile === "v2" ? "bg-slate-800 text-cyan-400" : "text-slate-500"}`}
+                                            >
+                                                v2.0 (Oryginał)
+                                            </button>
+                                            <button 
+                                                onClick={() => setShowRefFile("v3")} 
+                                                className={`px-2 py-0.5 rounded ${showRefFile === "v3" ? "bg-slate-800 text-cyan-400" : "text-slate-500"}`}
+                                            >
+                                                v3.0 (Zaktualizowany)
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {showRefFile === "v2" ? (
+                                        <div className="space-y-2">
+                                            <p className="text-xs text-slate-400">Fragment oryginalnego skryptu <code className="text-cyan-400">smart_compile_ultimate.sh</code> (v2.0):</p>
+                                            <pre className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-300 overflow-x-auto h-80 leading-relaxed">
+{`#!/usr/bin/env bash
+# ╔══════════════════════════════════════════════════════════════════════╗
+# ║  SMART COMPILE ULTIMATE  v2.0                                       ║
+# ║  SecFERRO Division ◈ FerroART ◈ anonymousik.is-a.dev               ║
+# ╚══════════════════════════════════════════════════════════════════════╝
+
+# NOWE W v2.0:
+#  • Pełny parser argumentów CLI
+#  • Config-file (INI) z auto-generacją
+#  • Lock-file — blokada współbieżnych instancji
+
+LOCK_FILE="\${LOCK_DIR}/scu.lock"
+_acquire_lock() {
+  if [[ -f "$LOCK_FILE" ]]; then
+    old_pid=$(cat "$LOCK_FILE")
+  fi
+}`}
+                                            </pre>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            <p className="text-xs text-slate-400">Zaktualizowana wersja <code className="text-cyan-400">v3.0.0 FERRO IRONCLAD</code> ze sprostowanymi wszystkimi poprawkami:</p>
+                                            <pre className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px] font-mono text-emerald-400/90 overflow-x-auto h-80 leading-relaxed">
+{`#!/usr/bin/env bash
+# [FIX-01] Guard Bash 4.0+
+if (( BASH_VERSINFO[0] < 4 )); then
+  echo "[FATAL] SCU wymaga Bash >= 4.0" >&2; exit 1
+fi
+
+set -Eeuo pipefail # [FIX-02] Włączono fail-fast
+
+# [FIX-03] Bezpieczne wykonywanie bez eval
+_retry() {
+  local retries=$1; shift
+  "$@" || return 1
+}
+
+# [FIX-10] Cross-platform SHA256 checksum
+_sha256sum() {
+  if command -v sha256sum &>/dev/null; then sha256sum "$@"
+  elif command -v shasum &>/dev/null; then shasum -a 256 "$@"
+  else openssl dgst -sha256 "$@"; fi
+}`}
+                                            </pre>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {activeTab === "repo_info" && (
+                                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4 shadow-xl">
+                                    <div className="flex items-center space-x-2 border-b border-slate-800 pb-3">
+                                        <i data-lucide="shield-check" className="w-4 h-4 text-cyan-400"></i>
+                                        <h2 className="text-sm font-semibold text-slate-200">Status Repozytorium Source</h2>
+                                    </div>
+
+                                    <div className="space-y-3 text-xs text-slate-300">
+                                        <p>Strona jest przygotowana do bezpośredniego hostowania na <strong>GitHub Pages</strong>.</p>
+                                        
+                                        <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                                            <div className="flex justify-between items-center text-[11px]">
+                                                <span className="text-slate-400">Główne Repozytorium:</span>
+                                                <span className="font-mono text-cyan-400 font-semibold">{repoInput}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center text-[11px]">
+                                                <span className="text-slate-400">Domyślna Gałąź:</span>
+                                                <span className="font-mono text-slate-200">{branchInput}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center text-[11px]">
+                                                <span className="text-slate-400">URL Źródłowe:</span>
+                                                <a href={REPO_URL} target="_blank" rel="noreferrer" className="text-cyan-400 underline font-mono truncate max-w-[180px]">
+                                                    {REPO_URL}
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-3 bg-cyan-950/30 border border-cyan-800/50 rounded-xl space-y-1">
+                                            <h4 className="font-semibold text-cyan-300 flex items-center space-x-1.5">
+                                                <i data-lucide="check-circle-2" className="w-3.5 h-3.5"></i>
+                                                <span>Jak wdrożyć na GitHub Pages?</span>
+                                            </h4>
+                                            <ol className="list-decimal list-inside text-[11px] text-slate-400 space-y-1 pt-1">
+                                                <li>Utwórz plik <code className="text-cyan-300">index.html</code> w swoim repozytorium.</li>
+                                                <li>Przejdź do Settings → Pages w GitHubie.</li>
+                                                <li>Wybierz źródło: Branch <code className="text-cyan-300">main</code> / Folder <code className="text-cyan-300">root</code>.</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+
+                        {/* PANEL PRAWY: GENERATOR FORMATÓW PLATFORM (7 kolumn) */}
+                        <div className="lg:col-span-7 flex flex-col space-y-4">
+                            
+                            {/* SELEKTOR PLATFORMY */}
+                            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-2 flex items-center justify-between space-x-2 shadow-xl">
+                                <button
+                                    onClick={() => setSelectedPlatform('messenger')}
+                                    className={`flex-1 py-2 px-3 rounded-xl flex items-center justify-center space-x-2 text-xs font-semibold transition ${
+                                        selectedPlatform === 'messenger' 
+                                            ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md shadow-cyan-500/10' 
+                                            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                                    }`}
+                                >
+                                    <i data-lucide="message-square" className="w-3.5 h-3.5"></i>
+                                    <span>Messenger</span>
+                                </button>
+
+                                <button
+                                    onClick={() => setSelectedPlatform('discord')}
+                                    className={`flex-1 py-2 px-3 rounded-xl flex items-center justify-center space-x-2 text-xs font-semibold transition ${
+                                        selectedPlatform === 'discord' 
+                                            ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-slate-950 shadow-md shadow-indigo-500/10' 
+                                            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                                    }`}
+                                >
+                                    <i data-lucide="send" className="w-3.5 h-3.5"></i>
+                                    <span>Discord / Slack</span>
+                                </button>
+
+                                <button
+                                    onClick={() => setSelectedPlatform('github')}
+                                    className={`flex-1 py-2 px-3 rounded-xl flex items-center justify-center space-x-2 text-xs font-semibold transition ${
+                                        selectedPlatform === 'github' 
+                                            ? 'bg-slate-800 text-cyan-400 border border-cyan-500/30' 
+                                            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                                    }`}
+                                >
+                                    <i data-lucide="github" className="w-3.5 h-3.5"></i>
+                                    <span>GitHub Release</span>
+                                </button>
+                            </div>
+
+                            {/* OKNO TEKSTOWE I AKCJA KOPIOWANIA */}
+                            <div className="bg-slate-900 border border-slate-800 rounded-2xl flex-1 flex flex-col shadow-2xl overflow-hidden relative min-h-[480px]">
+                                
+                                <div className="px-4 py-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80"></div>
+                                        <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
+                                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></div>
+                                        <span className="text-xs font-mono text-slate-400 ml-2">
+                                            {selectedPlatform === 'messenger' && "format_messenger_secferro.txt"}
+                                            {selectedPlatform === 'discord' && "format_discord_markdown.md"}
+                                            {selectedPlatform === 'github' && "RELEASE_NOTES.md"}
+                                        </span>
+                                    </div>
+
+                                    <button
+                                        onClick={copyToClipboard}
+                                        className={`px-4 py-1.5 rounded-xl font-semibold text-xs flex items-center space-x-1.5 transition shadow-lg ${
+                                            copied 
+                                                ? "bg-emerald-500 text-slate-950" 
+                                                : "bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-cyan-500/20"
+                                        }`}
+                                    >
+                                        {copied ? (
+                                            <>
+                                                <i data-lucide="check" className="w-4 h-4"></i>
+                                                <span>Skopiowano!</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i data-lucide="copy" className="w-4 h-4"></i>
+                                                <span>Kopiuj Changelog</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+
+                                <div className="p-4 flex-1 bg-slate-950/90 font-mono text-xs leading-relaxed text-slate-200 overflow-y-auto whitespace-pre-wrap select-all border-b border-slate-800/50">
+                                    {generatedChangelog}
+                                </div>
+
+                                <div className="px-4 py-2.5 bg-slate-900 text-[11px] text-slate-400 flex items-center justify-between border-t border-slate-800">
+                                    <div className="flex items-center space-x-3">
+                                        <span className="flex items-center space-x-1">
+                                            <span className="w-2 h-2 rounded-full bg-cyan-400 inline-block"></span>
+                                            <span>Wersja: <strong>{version}</strong></span>
+                                        </span>
+                                        <span>•</span>
+                                        <span>Poprawki: <strong>{parsedData.security.length + parsedData.fixes.length}</strong></span>
+                                    </div>
+                                    <span className="text-slate-500 font-mono">Gotowe do wklejenia na żywo</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </main>
+
+                    {/* STOPKA STRONY */}
+                    <footer className="border-t border-slate-800/80 bg-slate-900/40 py-3 mt-auto">
+                        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+                            SecFERRO Division ◈ FerroART ◈ GitHub Pages Edition
+                        </div>
+                    </footer>
+
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
