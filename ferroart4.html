@@ -1,0 +1,660 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FERROART // Season 4 — Coming Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030307;
+            --surface: rgba(15, 15, 25, 0.75);
+            --surface-hover: rgba(25, 25, 40, 0.85);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #00ff88;
+            --accent-glow: rgba(0, 255, 136, 0.15);
+            --cyan: #00f0ff;
+            --text: #f0f0f5;
+            --muted: #7d7d96;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .bg-artwork {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('http://googleusercontent.com/file_content/3');
+            background-size: cover;
+            background-position: center;
+            z-index: -3;
+            filter: brightness(0.25) contrast(1.1);
+            transition: transform 0.1s ease-out;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(3, 3, 7, 0.7) 0%, rgba(3, 3, 7, 0.96) 100%);
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/></svg>');
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 600px;
+            padding: 50px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 2;
+        }
+
+        /* Dokładnie odwzorowany status z załączonego zrzutu */
+        .status-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--muted);
+            letter-spacing: 2px;
+            padding: 8px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(12px);
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 1; }
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6.5vw, 4.2rem);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            text-transform: uppercase;
+            line-height: 1.1;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ffffff 40%, var(--muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 2.5px;
+            margin-bottom: 35px;
+            text-transform: uppercase;
+        }
+
+        /* Odtwarzacz audio w dokładyym stylu z referencji */
+        .audio-player-card {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        .track-title {
+            color: var(--text);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .track-meta {
+            color: var(--muted);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .play-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .play-btn:hover {
+            background: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .waveform {
+            flex-grow: 1;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+        }
+
+        .wave-bar {
+            flex-grow: 1;
+            background: rgba(255, 255, 255, 0.15);
+            height: 8px;
+            border-radius: 4px;
+            transition: height 0.1s ease;
+        }
+
+        .wave-bar.active {
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        /* Licznik czasu z identycznego układu */
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 35px;
+        }
+
+        .time-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 16px 8px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .time-box span {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .time-box label {
+            font-size: 0.6rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Przyciski akcji z referencji */
+        .links-grid {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn span {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            background: var(--surface-hover);
+            color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .btn:hover svg {
+            opacity: 1;
+            transform: translate(2px, -2px);
+        }
+
+        .btn.primary {
+            background: var(--text);
+            color: var(--bg);
+            font-weight: 800;
+            border-color: var(--text);
+        }
+
+        .btn.primary:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            box-shadow: 0 10px 40px var(--accent-glow);
+        }
+
+        .gyro-btn {
+            margin-top: 25px;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 0.75rem;
+            text-decoration: underline;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+
+        .gyro-btn:hover {
+            color: var(--text);
+        }
+
+        /* Profesjonalna stopka w stylu liderów branży */
+        footer.pro-footer {
+            width: 100%;
+            background: rgba(3, 3, 7, 0.98);
+            border-top: 1px solid var(--border);
+            padding: 50px 20px 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .footer-grid {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+
+        .footer-col h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .footer-col a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--text);
+        }
+
+        .footer-bottom {
+            width: 100%;
+            max-width: 900px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-bottom-links a {
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-bottom-links a:hover {
+            color: var(--accent);
+        }
+
+        @media(max-width: 600px) {
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                justify-content: center;
+            }
+            .footer-bottom-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-artwork" id="bgArtwork"></div>
+    <div class="bg-overlay"></div>
+    <div class="noise-overlay"></div>
+
+    <div class="main-wrapper">
+        <div class="status-pill">
+            <div class="live-dot"></div>
+            <span>FERROART // SYSTEM 04.INIT</span>
+        </div>
+
+        <h1>SEZON 4 <span>NADCHODZI</span></h1>
+        <div class="tagline">&gt; TRANSMISSION_ACTIVE: 2026</div>
+
+        <!-- Odtwarzacz audio (z załączonym plikiem MP3) -->
+        <div class="audio-player-card">
+            <div class="player-info">
+                <span class="track-title">FERROART — NA - BAŃKA 404</span>
+                <span class="track-meta" id="trackTime">0:00 / 0:00</span>
+            </div>
+            <div class="player-controls">
+                <button class="play-btn" id="playBtn" onclick="togglePlay()" aria-label="Odtwórz teaser">
+                    <svg id="playIcon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
+                <div class="waveform" onclick="seekAudio(event)">
+                    <div class="wave-bar" style="height: 12px;"></div>
+                    <div class="wave-bar" style="height: 24px;"></div>
+                    <div class="wave-bar" style="height: 18px;"></div>
+                    <div class="wave-bar" style="height: 30px;"></div>
+                    <div class="wave-bar" style="height: 22px;"></div>
+                    <div class="wave-bar" style="height: 14px;"></div>
+                    <div class="wave-bar" style="height: 26px;"></div>
+                    <div class="wave-bar" style="height: 10px;"></div>
+                    <div class="wave-bar" style="height: 20px;"></div>
+                    <div class="wave-bar" style="height: 32px;"></div>
+                    <div class="wave-bar" style="height: 16px;"></div>
+                    <div class="wave-bar" style="height: 24px;"></div>
+                </div>
+            </div>
+            <audio id="promoAudio" src="http://googleusercontent.com/file_content/1" preload="metadata"></audio>
+        </div>
+
+        <!-- Licznik czasu z układu referencyjnego -->
+        <div class="countdown">
+            <div class="time-box">
+                <span id="days">00</span>
+                <label>DNI</label>
+            </div>
+            <div class="time-box">
+                <span id="hours">00</span>
+                <label>GODZIN</label>
+            </div>
+            <div class="time-box">
+                <span id="mins">00</span>
+                <label>MINUT</label>
+            </div>
+            <div class="time-box">
+                <span id="secs">00</span>
+                <label>SEKUND</label>
+            </div>
+        </div>
+
+        <!-- Główne odnośniki z referencji -->
+        <div class="links-grid">
+            <a href="https://www.youtube.com/@ferroart?sub_confirmation=1" class="btn primary" target="_blank">
+                <span>Subskrybuj YouTube</span>
+                <svg viewBox="0 0 24 24"><path d="M5 18L18 5M18 5H9M18 5V14"/></svg>
+            </a>
+            <a href="https://open.spotify.com/artist/FerroART" class="btn" target="_blank">
+                <span>Posłuchaj na Spotify</span>
+                <svg viewBox="0 0 24 24"><path d="M5 18L18 5M18 5H9M18 5V14"/></svg>
+            </a>
+            <a href="https://twitch.tv/ferroarty" class="btn" target="_blank">
+                <span>Sprawdź Twitch</span>
+                <svg viewBox="0 0 24 24"><path d="M5 18L18 5M18 5H9M18 5V14"/></svg>
+            </a>
+        </div>
+
+        <button class="gyro-btn" id="gyroBtn" onclick="initGyro()">[ Aktywuj czujniki ruchu / żyroskop ]</button>
+    </div>
+
+    <!-- Profesjonalna stopka bez emojich w stylu gigantów tech -->
+    <footer class="pro-footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>Streaming</h4>
+                <ul>
+                    <li><a href="https://music.apple.com/artist/FerroART" target="_blank">Apple Music</a></li>
+                    <li><a href="https://tidal.com/artist/FerroART" target="_blank">Tidal</a></li>
+                    <li><a href="https://music.amazon.com/FerroART" target="_blank">Amazon Music</a></li>
+                    <li><a href="https://music.youtube.com/@ferroart" target="_blank">YouTube Music</a></li>
+                    <li><a href="https://soundcloud.com/FerroART" target="_blank">SoundCloud</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Social Media</h4>
+                <ul>
+                    <li><a href="https://www.youtube.com/@ferroart-shorts?sub_confirmation=1" target="_blank">YouTube Shorts</a></li>
+                    <li><a href="https://www.tiktok.com/@ferroarty" target="_blank">TikTok</a></li>
+                    <li><a href="https://instagram.com/FerroART" target="_blank">Instagram</a></li>
+                    <li><a href="https://x.com/FerroART" target="_blank">X (Twitter)</a></li>
+                    <li><a href="https://facebook.com/ferroarty" target="_blank">Facebook</a></li>
+                    <li><a href="https://app.getlee.co/users/662316b7141b6c9573c53f3b" target="_blank">Cheelee</a></li>
+                    <li><a href="https://bandlab.com/ferroart" target="_blank">BandLab</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Wsparcie</h4>
+                <ul>
+                    <li><a href="https://tipo.live/p/nieznany-nikomu" target="_blank">Tipo</a></li>
+                    <li><a href="https://suppi.pl/ferroart" target="_blank">Suppi.PL</a></li>
+                    <li><a href="https://patronite.pl/ferroart" target="_blank">Patronite</a></li>
+                    <li><a href="https://buymeacoffee.com/anonymousx6f" target="_blank">Buy Me a Coffee</a></li>
+                    <li><a href="https://ko-fi.com/ferroart" target="_blank">Ko-fi</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>FERROART LABEL & STUDIO &bull; 2015–2026</div>
+            <div class="footer-bottom-links">
+                <a href="https://Anonymousik.is-a.dev/docs/privacy" target="_blank">Polityka prywatności</a>
+                <a href="#">Wszystkie prawa zastrzeżone</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Odliczanie czasu
+        const targetDate = new Date("2026-10-01T00:00:00").getTime();
+        function updateTimer() {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+            if (diff > 0) {
+                document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                document.getElementById('hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById('mins').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                document.getElementById('secs').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+            }
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Odtwarzacz audio z załączonym plikiem
+        const audio = document.getElementById('promoAudio');
+        const playBtn = document.getElementById('playBtn');
+        const playIcon = document.getElementById('playIcon');
+        const trackTime = document.getElementById('trackTime');
+        const waveBars = document.querySelectorAll('.wave-bar');
+
+        audio.addEventListener('loadedmetadata', () => {
+            trackTime.innerText = `0:00 / ${formatTime(audio.duration)}`;
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            const current = audio.currentTime;
+            const duration = audio.duration || 0;
+            trackTime.innerText = `${formatTime(current)} / ${formatTime(duration)}`;
+            
+            const progress = duration ? (current / duration) : 0;
+            waveBars.forEach((bar, index) => {
+                if (index < progress * waveBars.length) {
+                    bar.classList.add('active');
+                } else {
+                    bar.classList.remove('active');
+                }
+            });
+        });
+
+        audio.addEventListener('ended', () => {
+            playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+        });
+
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+                playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+            } else {
+                audio.pause();
+                playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            }
+        }
+
+        function seekAudio(e) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const percent = clickX / rect.width;
+            if (audio.duration) {
+                audio.currentTime = percent * audio.duration;
+            }
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // Paralaksa i żyroskop
+        const bgArtwork = document.getElementById('bgArtwork');
+
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 30;
+            const y = (e.clientY / window.innerHeight - 0.5) * 30;
+            bgArtwork.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
+        });
+
+        function initGyro() {
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission().then(response => {
+                    if (response === 'granted') {
+                        window.addEventListener('deviceorientation', handleOrientation);
+                        document.getElementById('gyroBtn').style.display = 'none';
+                    }
+                }).catch(console.error);
+            } else {
+                window.addEventListener('deviceorientation', handleOrientation);
+                document.getElementById('gyroBtn').style.display = 'none';
+            }
+        }
+
+        function handleOrientation(e) {
+            const tiltX = e.gamma ? e.gamma * 1.2 : 0;
+            const tiltY = e.beta ? (e.beta - 45) * 1.2 : 0;
+            bgArtwork.style.transform = `translate(${tiltX}px, ${tiltY}px) scale(1.05)`;
+        }
+    </script>
+</body>
+</html>
