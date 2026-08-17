@@ -1,659 +1,862 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FERROART // Season 4 — Coming Soon</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>FERROART — Season 4: Coming Soon | Creative Music & Production Studio</title>
+    
+    <!-- Preconnect & Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <style>
         :root {
-            --bg: #030307;
-            --surface: rgba(15, 15, 25, 0.75);
-            --surface-hover: rgba(25, 25, 40, 0.85);
-            --border: rgba(255, 255, 255, 0.08);
-            --accent: #00ff88;
-            --accent-glow: rgba(0, 255, 136, 0.15);
-            --cyan: #00f0ff;
-            --text: #f0f0f5;
-            --muted: #7d7d96;
+            --bg-deep: #020204;
+            --card-bg: rgba(10, 10, 15, 0.85);
+            --accent-primary: #1ed760; /* Zielony akcent nawiązujący do nowego stylu widma */
+            --accent-glow: rgba(30, 215, 96, 0.25);
+            --spotify-green: #1ed760;
+            --text-main: #f1f5f9;
+            --text-muted: #64748b;
+            --border-glass: rgba(255, 255, 255, 0.06);
+            --border-active: rgba(30, 215, 96, 0.4);
+            --shadow-glass: 0 15px 35px rgba(0, 0, 0, 0.6);
+            --transition-smooth: all 0.25s ease;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-font-smoothing: antialiased;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             align-items: center;
             position: relative;
         }
 
-        .bg-artwork {
+        /* Tło konstelacyjne / Gyro */
+        .gyro-background {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('http://googleusercontent.com/file_content/3');
-            background-size: cover;
-            background-position: center;
-            z-index: -3;
-            filter: brightness(0.25) contrast(1.1);
-            transition: transform 0.1s ease-out;
-        }
-
-        .bg-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(3, 3, 7, 0.7) 0%, rgba(3, 3, 7, 0.96) 100%);
+            top: -150px; left: -150px; right: -150px; bottom: -150px;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(30, 215, 96, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(5, 5, 8, 0.98) 0%, var(--bg-deep) 100%);
             z-index: -2;
+            transition: transform 0.15s cubic-bezier(0.1, 1, 0.2, 1);
             pointer-events: none;
+            will-change: transform;
         }
 
-        .noise-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/></svg>');
-            z-index: -1;
-            pointer-events: none;
+        /* Konstelacja cząsteczek — warstwa nad gradientem, reaguje na mysz i żyroskop (tilt) */
+        #bg-particles {
+            position: fixed; inset: 0; width: 100%; height: 100%;
+            z-index: -2; pointer-events: none; opacity: 0.55;
         }
 
-        .main-wrapper {
+        .grid-overlay {
+            position: fixed; inset: 0;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1; pointer-events: none;
+        }
+
+        .container {
             width: 100%;
             max-width: 600px;
-            padding: 50px 20px;
+            padding: 40px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             z-index: 2;
+            flex: 1;
         }
 
-        /* Dokładnie odwzorowany status z załączonego zrzutu */
-        .status-pill {
+        /* SYSTEM STATUS BADGE */
+        .system-badge {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--muted);
+            font-size: 0.7rem;
             letter-spacing: 2px;
-            padding: 8px 16px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 100px;
+            color: var(--spotify-green);
+            background: rgba(30, 215, 96, 0.08);
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(30, 215, 96, 0.25);
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(12px);
+            gap: 8px;
+            margin-bottom: 24px;
         }
 
-        .live-dot {
-            width: 6px;
-            height: 6px;
-            background-color: var(--accent);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent);
-            animation: pulse 2s infinite;
+        .status-dot-mini {
+            width: 6px; height: 6px; background: var(--spotify-green); border-radius: 50%;
+            box-shadow: 0 0 8px var(--spotify-green); animation: pulse 1.5s infinite;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.4; }
-            100% { transform: scale(0.95); opacity: 1; }
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         h1 {
-            font-size: clamp(2.5rem, 6.5vw, 4.2rem);
+            font-size: clamp(2.2rem, 6vw, 3rem);
             font-weight: 800;
-            letter-spacing: -1.5px;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
             text-transform: uppercase;
-            line-height: 1.1;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #ffffff 40%, var(--muted) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
-        h1 span {
-            background: linear-gradient(135deg, var(--accent), var(--cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        h1 span { color: var(--spotify-green); }
 
         .tagline {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--accent);
-            letter-spacing: 2.5px;
-            margin-bottom: 35px;
-            text-transform: uppercase;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
         }
 
-        /* Odtwarzacz audio w dokładyym stylu z referencji */
-        .audio-player-card {
+        /* AUDIO PLAYER & WIDMO (Styl z załącznika) */
+        .audio-player-box {
             width: 100%;
-            background: var(--surface);
-            border: 1px solid var(--border);
+            background: var(--card-bg);
+            border: 1px solid var(--border-active);
             border-radius: 16px;
             padding: 20px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(20px);
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-glass);
+            backdrop-filter: blur(16px);
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            gap: 16px;
         }
 
-        .player-info {
+        .player-info-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
         }
 
-        .track-title {
-            color: var(--text);
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
+        .player-title { color: var(--text-main); font-weight: 700; }
 
-        .track-meta {
-            color: var(--muted);
-        }
-
-        .player-controls {
+        .player-controls-row {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
         }
 
         .play-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--text);
-            color: var(--bg);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s, background 0.2s;
+            width: 46px; height: 46px; border-radius: 50%; background: var(--spotify-green);
+            border: none; color: #000; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: transform 0.2s; box-shadow: 0 0 15px var(--accent-glow);
             flex-shrink: 0;
         }
+        .play-btn:hover { transform: scale(1.05); }
+        .play-btn:active { transform: scale(0.96); }
 
-        .play-btn:hover {
-            background: var(--accent);
-            transform: scale(1.05);
+        /* WIDMO / WIZUALIZER — canvas, dynamicznie generowane (Web Audio API + tryb ambient) */
+        .eq-wrap {
+            flex: 1;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
         }
+        #eqCanvas { width: 100%; height: 100%; display: block; }
 
-        .waveform {
-            flex-grow: 1;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            gap: 3px;
+        .mute-btn {
+            width: 34px; height: 34px; border-radius: 50%; background: transparent;
+            border: 1px solid var(--border-glass); color: var(--text-muted); font-size: 1rem;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: var(--transition-smooth); flex-shrink: 0;
+        }
+        .mute-btn:hover { border-color: var(--spotify-green); color: var(--spotify-green); }
+
+        /* PASEK POSTĘPU / SEEK */
+        .player-progress {
+            position: relative;
+            width: 100%; height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
             cursor: pointer;
+            touch-action: none;
         }
-
-        .wave-bar {
-            flex-grow: 1;
-            background: rgba(255, 255, 255, 0.15);
-            height: 8px;
-            border-radius: 4px;
-            transition: height 0.1s ease;
+        .progress-fill {
+            position: absolute; top: 0; left: 0; height: 100%;
+            width: 0%; background: var(--spotify-green);
+            border-radius: 3px; box-shadow: 0 0 8px var(--accent-glow);
         }
-
-        .wave-bar.active {
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent);
+        .progress-handle {
+            position: absolute; top: 50%; left: 0%;
+            width: 13px; height: 13px; border-radius: 50%;
+            background: var(--text-main); border: 2px solid var(--spotify-green);
+            transform: translate(-50%, -50%); box-shadow: 0 0 6px rgba(0,0,0,0.5);
+            transition: transform 0.15s;
         }
+        .player-progress:hover .progress-handle { transform: translate(-50%, -50%) scale(1.2); }
 
-        /* Licznik czasu z identycznego układu */
-        .countdown {
+        /* COUNTDOWN TIMER */
+        .countdown-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            gap: 10px;
             width: 100%;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
-        .time-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 16px 8px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
+        .count-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 16px 10px;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow-glass);
         }
 
-        .time-box span {
-            display: block;
-            font-size: 1.8rem;
+        .count-val {
+            font-size: 1.6rem;
             font-weight: 800;
             font-family: 'JetBrains Mono', monospace;
-            color: #fff;
+            color: var(--text-main);
             margin-bottom: 4px;
         }
 
-        .time-box label {
-            font-size: 0.6rem;
-            color: var(--muted);
+        .count-lbl {
+            font-size: 0.65rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        /* Przyciski akcji z referencji */
-        .links-grid {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 16px 20px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: var(--text);
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-decoration: none;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .btn span {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .btn svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-            opacity: 0.7;
-            transition: opacity 0.2s, transform 0.2s;
-        }
-
-        .btn:hover {
-            border-color: var(--accent);
-            background: var(--surface-hover);
-            color: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px var(--accent-glow);
-        }
-
-        .btn:hover svg {
-            opacity: 1;
-            transform: translate(2px, -2px);
-        }
-
-        .btn.primary {
-            background: var(--text);
-            color: var(--bg);
-            font-weight: 800;
-            border-color: var(--text);
-        }
-
-        .btn.primary:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #000;
-            box-shadow: 0 10px 40px var(--accent-glow);
-        }
-
-        .gyro-btn {
-            margin-top: 25px;
-            background: none;
-            border: none;
-            color: var(--muted);
-            font-size: 0.75rem;
-            text-decoration: underline;
-            cursor: pointer;
-            font-family: 'JetBrains Mono', monospace;
             letter-spacing: 1px;
-            transition: color 0.2s;
         }
 
-        .gyro-btn:hover {
-            color: var(--text);
+        /* TERMINAL O MNIE */
+        .bio-terminal {
+            width: 100%; background: rgba(5,5,8,0.9); border: 1px solid var(--border-glass);
+            border-radius: 14px; overflow: hidden; font-family: 'JetBrains Mono', monospace;
+            text-align: left; margin-bottom: 30px; box-shadow: var(--shadow-glass);
+        }
+        .terminal-header {
+            background: rgba(255,255,255,0.03); padding: 8px 16px; display: flex; gap: 6px;
+            border-bottom: 1px solid var(--border-glass); align-items: center; font-size: 0.72rem; color: var(--text-muted);
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .terminal-body { padding: 16px; font-size: 0.8rem; line-height: 1.6; color: var(--text-muted); }
+        .term-accent { color: var(--spotify-green); }
+
+        /* ACCORDION DYSKOGRAFIA */
+        .accordion-wrapper { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+        .season-card { background: var(--card-bg); border: 1px solid var(--border-glass); border-radius: 12px; overflow: hidden; }
+        .season-btn {
+            width: 100%; padding: 16px 18px; background: transparent; border: none;
+            display: flex; justify-content: space-between; align-items: center;
+            color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; text-align: left;
+        }
+        .season-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; }
+        .season-card.active .season-content { grid-template-rows: 1fr; }
+        .season-card.active .season-btn { border-bottom: 1px solid var(--border-glass); color: var(--spotify-green); }
+        .season-inner { overflow: hidden; }
+        .season-details { padding: 16px; background: rgba(0,0,0,0.3); font-size: 0.82rem; text-align: left; color: var(--text-muted); }
+        .tracklist { list-style: none; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+        .tracklist li { padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.04); }
+
+        /* NAGŁÓWKI SEKCJI */
+        .section-title {
+            width: 100%; text-align: left; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 2px; margin: 25px 0 10px 4px;
         }
 
-        /* Profesjonalna stopka w stylu liderów branży */
-        footer.pro-footer {
-            width: 100%;
-            background: rgba(3, 3, 7, 0.98);
-            border-top: 1px solid var(--border);
-            padding: 50px 20px 30px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 10;
+        /* SIATKI LINKÓW I CTA */
+        .links-grid { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .link-btn {
+            display: flex; align-items: center; justify-content: space-between; width: 100%;
+            padding: 15px 18px; background: var(--card-bg); border: 1px solid var(--border-glass);
+            border-radius: 12px; color: var(--text-main); text-decoration: none; font-weight: 600;
+            font-size: 0.88rem; transition: var(--transition-smooth); backdrop-filter: blur(12px);
+        }
+        .link-btn:hover {
+            border-color: var(--spotify-green); background: rgba(30, 215, 96, 0.08);
+            transform: translateY(-2px); box-shadow: 0 8px 25px var(--accent-glow);
+        }
+        .link-left { display: flex; align-items: center; gap: 12px; }
+        .link-badge { font-size: 0.68rem; font-family: 'JetBrains Mono', monospace; background: rgba(255, 255, 255, 0.05); padding: 3px 8px; border-radius: 6px; color: var(--text-muted); }
+
+        /* STREAMING GRID */
+        .streaming-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 20px; }
+        .stream-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px;
+            background: var(--card-bg); border: 1px solid var(--border-glass); border-radius: 12px;
+            color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 0.84rem; transition: var(--transition-smooth);
+        }
+        .stream-btn:hover { border-color: var(--spotify-green); background: rgba(30, 215, 96, 0.06); }
+
+        /* SKLEP / MERCH GRID */
+        .merch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; margin-bottom: 20px; }
+        .merch-card {
+            background: var(--card-bg); border: 1px solid var(--border-glass); border-radius: 12px;
+            padding: 14px 10px; text-align: center; display: flex; flex-direction: column; gap: 8px; backdrop-filter: blur(12px);
+        }
+        .merch-title { font-weight: 700; font-size: 0.82rem; color: var(--text-main); }
+        .btn-buy {
+            background: rgba(30,215,96,0.1); border: 1px solid rgba(30,215,96,0.3); color: var(--spotify-green);
+            padding: 6px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.72rem;
+            font-family: 'JetBrains Mono', monospace; display: block;
+        }
+        .btn-buy:hover { background: var(--spotify-green); color: #000; }
+
+        .gyro-toggle {
+            background: none; border: none; color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-decoration: underline;
+            cursor: pointer; margin: 15px 0 25px 0; letter-spacing: 1px;
         }
 
-        .footer-grid {
-            width: 100%;
-            max-width: 900px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-            text-align: left;
+        /* GOOGLE DEVELOPER FOOTER */
+        .google-dev-footer {
+            width: 100%; background: rgba(3, 3, 5, 0.98); border-top: 1px solid var(--border-glass);
+            padding: 40px 20px 24px 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+            color: var(--text-muted); display: flex; flex-direction: column; align-items: center; z-index: 2;
         }
-
-        .footer-col h4 {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--accent);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 15px;
+        .footer-content {
+            width: 100%; max-width: 900px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 30px; text-align: left; margin-bottom: 35px;
         }
-
-        .footer-col ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .footer-col a {
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 0.2s;
-        }
-
-        .footer-col a:hover {
-            color: var(--text);
-        }
-
+        .footer-col h4 { color: var(--text-main); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; font-weight: 700; }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .footer-col a { color: var(--text-muted); text-decoration: none; transition: color 0.2s ease; }
+        .footer-col a:hover { color: var(--spotify-green); }
         .footer-bottom {
-            width: 100%;
-            max-width: 900px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            color: var(--muted);
-            font-family: 'JetBrains Mono', monospace;
-            letter-spacing: 1px;
-            flex-wrap: wrap;
-            gap: 15px;
+            width: 100%; max-width: 900px; border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px;
         }
-
-        .footer-bottom-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .footer-bottom-links a {
-            color: var(--muted);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .footer-bottom-links a:hover {
-            color: var(--accent);
+        .footer-brand-info span { color: var(--text-main); font-weight: 700; }
+        .footer-status {
+            display: flex; align-items: center; gap: 8px; background: rgba(30, 215, 96, 0.08);
+            border: 1px solid rgba(30, 215, 96, 0.2); padding: 6px 14px; border-radius: 20px;
+            color: var(--spotify-green); font-size: 0.68rem;
         }
 
         @media(max-width: 600px) {
-            .footer-bottom {
-                flex-direction: column;
-                text-align: center;
-                justify-content: center;
-            }
-            .footer-bottom-links {
-                justify-content: center;
-            }
+            .merch-grid { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-artwork" id="bgArtwork"></div>
-    <div class="bg-overlay"></div>
-    <div class="noise-overlay"></div>
+    <div class="gyro-background" id="gyroBg"></div>
+    <canvas id="bg-particles"></canvas>
+    <div class="grid-overlay"></div>
 
-    <div class="main-wrapper">
-        <div class="status-pill">
-            <div class="live-dot"></div>
-            <span>FERROART // SYSTEM 04.INIT</span>
+    <div class="container">
+        
+        <!-- Status -->
+        <div class="system-badge">
+            <div class="status-dot-mini"></div>
+            FERROART // SYSTEM 04.INIT
         </div>
 
         <h1>SEZON 4 <span>NADCHODZI</span></h1>
-        <div class="tagline">&gt; TRANSMISSION_ACTIVE: 2026</div>
+        <div class="tagline">
+            > TRANSMISSION_ACTIVE: 2026<br>
+            <span>JESTEŚ GOTOWY NA ZASTRZYK</span> MUZYKI FERROART?
+        </div>
 
-        <!-- Odtwarzacz audio (z załączonym plikiem MP3) -->
-        <div class="audio-player-card">
-            <div class="player-info">
-                <span class="track-title">FERROART — NA - BAŃKA 404</span>
-                <span class="track-meta" id="trackTime">0:00 / 0:00</span>
+        <!-- AUDIO PLAYER — modern FerroART player: real Web Audio spectrum + seek + czas -->
+        <div class="audio-player-box">
+            <audio id="playerAudio" preload="none" src="./audio/ferroart-na-banka-404.wav"></audio>
+
+            <div class="player-info-row">
+              <span class="player-title">FERROART — RABBIT DIMENSION</span>
+                <span id="audioTimer">0:00 / 0:00</span>
             </div>
-            <div class="player-controls">
-                <button class="play-btn" id="playBtn" onclick="togglePlay()" aria-label="Odtwórz teaser">
-                    <svg id="playIcon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
+            <div class="player-controls-row">
+                <button class="play-btn" id="playBtn" onclick="togglePlay()"><i class="ph-fill ph-play" id="playIcon"></i></button>
+                <div class="eq-wrap"><canvas id="eqCanvas"></canvas></div>
+                <button class="mute-btn" id="muteBtn" onclick="toggleMute()"><i class="ph-fill ph-speaker-high" id="muteIcon"></i></button>
+            </div>
+            <div class="player-progress" id="progressTrack">
+                <div class="progress-fill" id="progressFill"></div>
+                <div class="progress-handle" id="progressHandle"></div>
+            </div>
+        </div>
+
+        <!-- COUNTDOWN TIMER -->
+        <div class="countdown-grid">
+            <div class="count-card">
+                <div class="count-val" id="daysVal">45</div>
+                <div class="count-lbl">Dni</div>
+            </div>
+            <div class="count-card">
+                <div class="count-val" id="hoursVal">01</div>
+                <div class="count-lbl">Godzin</div>
+            </div>
+            <div class="count-card">
+                <div class="count-val" id="minsVal">43</div>
+                <div class="count-lbl">Minut</div>
+            </div>
+            <div class="count-card">
+                <div class="count-val" id="secsVal">23</div>
+                <div class="count-lbl">Sekund</div>
+            </div>
+        </div>
+
+        <!-- CTA SUBSKRYPCJE -->
+        <div class="links-grid">
+            <a href="https://www.youtube.com/@FerroART4?sub_confirmation=1" class="link-btn" target="_blank" rel="noopener noreferrer" style="border-color: rgba(255, 0, 0, 0.4);">
+                <div class="link-left"><span style="font-size: 1.2rem;">▶️</span><span>Subskrybuj YouTube (Główny Alarm)</span></div>
+                <span class="link-badge" style="color: #ff4d4d;">Włącz</span>
+            </a>
+            <a href="https://open.spotify.com/artist/FerroART" class="link-btn" target="_blank" rel="noopener noreferrer" style="border-color: rgba(30, 215, 96, 0.4);">
+                <div class="link-left"><span style="font-size: 1.2rem;">🟢</span><span>Posłuchaj na Spotify</span></div>
+                <span class="link-badge" style="color: var(--spotify-green);">Śledź</span>
+            </a>
+            <a href="https://twitch.tv/ferroarty" class="link-btn" target="_blank" rel="noopener noreferrer" style="border-color: rgba(145, 70, 255, 0.4);">
+                <div class="link-left"><span style="font-size: 1.2rem;">🎮</span><span>Sprawdź Twitch</span></div>
+                <span class="link-badge" style="color: #bf94ff;">Live</span>
+            </a>
+        </div>
+
+        <!-- BIO TERMINAL -->
+        <div class="section-title">⚡ Identyfikacja Twórcy</div>
+        <div class="bio-terminal">
+            <div class="terminal-header">
+                <div class="dot" style="background:#ff5f56;"></div>
+                <div class="dot" style="background:#ffbd2e;"></div>
+                <div class="dot" style="background:#27c93f;"></div>
+                <span style="margin-left: 6px;">root@ferroart-studio:~# whoami</span>
+            </div>
+            <div class="terminal-body">
+                > Krzysztof "Ferro" // <span class="term-accent">The Creative Engineer</span> (EST. 1994).<br>
+                > Architektura Linux & SecOps w służbie muzyki elektronicznej.<br>
+                > Status S4: Szyfrowanie gotowe.
+            </div>
+        </div>
+
+        <!-- DYSKOGRAFIA SEZONÓW -->
+        <div class="section-title">🎧 Rejestr Sezonów (Dyskografia)</div>
+        <div class="accordion-wrapper">
+            <div class="season-card">
+                <button class="season-btn" onclick="toggleSeason(this)">
+                    <span>SEZON 4: The Creative Engineer [IN-DEV]</span>
+                    <i class="ph ph-caret-down"></i>
                 </button>
-                <div class="waveform" onclick="seekAudio(event)">
-                    <div class="wave-bar" style="height: 12px;"></div>
-                    <div class="wave-bar" style="height: 24px;"></div>
-                    <div class="wave-bar" style="height: 18px;"></div>
-                    <div class="wave-bar" style="height: 30px;"></div>
-                    <div class="wave-bar" style="height: 22px;"></div>
-                    <div class="wave-bar" style="height: 14px;"></div>
-                    <div class="wave-bar" style="height: 26px;"></div>
-                    <div class="wave-bar" style="height: 10px;"></div>
-                    <div class="wave-bar" style="height: 20px;"></div>
-                    <div class="wave-bar" style="height: 32px;"></div>
-                    <div class="wave-bar" style="height: 16px;"></div>
-                    <div class="wave-bar" style="height: 24px;"></div>
+                <div class="season-content">
+                    <div class="season-inner">
+                        <div class="season-details">
+                            Zaszyfrowana zapowiedź. Premiera wkrótce.<br>
+                            <div style="position: relative; padding-top: 56.25%; background: #000; border-radius: 8px; overflow:hidden; margin-top: 10px;">
+                                <iframe src="https://www.youtube-nocookie.com/embed/jfKfPfyJRdk?autoplay=0&controls=1&modestbranding=1" style="position: absolute; top:0; left:0; width:100%; height:100%; border:none;" title="Teaser" allowfullscreen loading="lazy"></iframe>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <audio id="promoAudio" src="http://googleusercontent.com/file_content/1" preload="metadata"></audio>
+            <div class="season-card">
+                <button class="season-btn" onclick="toggleSeason(this)">
+                    <span>SEZON 3: Baza Danych / The Breach</span>
+                    <i class="ph ph-caret-down"></i>
+                </button>
+                <div class="season-content">
+                    <div class="season-inner">
+                        <div class="season-details">
+                            Przełamanie schematów brzmieniowych.
+                            <ul class="tracklist">
+                                <li>01. Init_Sequence</li>
+                                <li>02. Cyber_Pulse</li>
+                                <li>03. The_Breach</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="season-card">
+                <button class="season-btn" onclick="toggleSeason(this)">
+                    <span>SEZON 2 & 1: Archiwum Genesis</span>
+                    <i class="ph ph-caret-down"></i>
+                </button>
+                <div class="season-content">
+                    <div class="season-inner">
+                        <div class="season-details">Katalog historyczny (2015–2024). Dostępny w streamingu.</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Licznik czasu z układu referencyjnego -->
-        <div class="countdown">
-            <div class="time-box">
-                <span id="days">00</span>
-                <label>DNI</label>
+        <!-- STREAMING GRID -->
+        <div class="section-title">🌐 Streaming & Katalog</div>
+        <div class="streaming-grid">
+            <a href="https://open.spotify.com/artist/FerroART" class="stream-btn" target="_blank" rel="noopener noreferrer">🟢 Spotify</a>
+            <a href="https://music.apple.com/artist/FerroART" class="stream-btn" target="_blank" rel="noopener noreferrer">🍎 Apple Music</a>
+            <a href="https://tidal.com/artist/FerroART" class="stream-btn" target="_blank" rel="noopener noreferrer">🌊 Tidal</a>
+            <a href="https://music.amazon.com/FerroART" class="stream-btn" target="_blank" rel="noopener noreferrer">📦 Amazon Music</a>
+            <a href="https://music.youtube.com/@FerroART4" class="stream-btn" target="_blank" rel="noopener noreferrer">🎵 YT Music</a>
+            <a href="https://soundcloud.com/FerroART" class="stream-btn" target="_blank" rel="noopener noreferrer">☁️ SoundCloud</a>
+        </div>
+
+        <!-- SKLEP & WSPARCIE (Supply Depot) -->
+        <div class="section-title">☕ Supply Depot & Wsparcie</div>
+        <div class="merch-grid">
+            <div class="merch-card">
+                <div class="merch-title">Legion Merch</div>
+                <a href="https://tipo.live/p/nieznany-nikomu" class="btn-buy" target="_blank">Sklep TIPO</a>
             </div>
-            <div class="time-box">
-                <span id="hours">00</span>
-                <label>GODZIN</label>
+            <div class="merch-card">
+                <div class="merch-title">Zasil Serwery</div>
+                <a href="https://suppi.pl/ferroart" class="btn-buy" target="_blank">Suppi.PL</a>
             </div>
-            <div class="time-box">
-                <span id="mins">00</span>
-                <label>MINUT</label>
-            </div>
-            <div class="time-box">
-                <span id="secs">00</span>
-                <label>SEKUND</label>
+            <div class="merch-card">
+                <div class="merch-title">Klub Patronite</div>
+                <a href="https://patronite.pl/ferroart" class="btn-buy" target="_blank">Dołącz</a>
             </div>
         </div>
 
-        <!-- Główne odnośniki z referencji -->
-        <div class="links-grid">
-            <a href="https://www.youtube.com/@ferroart?sub_confirmation=1" class="btn primary" target="_blank">
-                <span>Subskrybuj YouTube</span>
-                <svg viewBox="0 0 24 24"><path d="M5 18L18 5M18 5H9M18 5V14"/></svg>
-            </a>
-            <a href="https://open.spotify.com/artist/FerroART" class="btn" target="_blank">
-                <span>Posłuchaj na Spotify</span>
-                <svg viewBox="0 0 24 24"><path d="M5 18L18 5M18 5H9M18 5V14"/></svg>
-            </a>
-            <a href="https://twitch.tv/ferroarty" class="btn" target="_blank">
-                <span>Sprawdź Twitch</span>
-                <svg viewBox="0 0 24 24"><path d="M5 18L18 5M18 5H9M18 5V14"/></svg>
-            </a>
-        </div>
-
-        <button class="gyro-btn" id="gyroBtn" onclick="initGyro()">[ Aktywuj czujniki ruchu / żyroskop ]</button>
+        <button class="gyro-toggle" id="gyroBtn" onclick="initGyro()">[ Aktywuj czujniki ruchu / żyroskop ]</button>
     </div>
 
-    <!-- Profesjonalna stopka bez emojich w stylu gigantów tech -->
-    <footer class="pro-footer">
-        <div class="footer-grid">
+    <!-- STOPKA -->
+    <footer class="google-dev-footer">
+        <div class="footer-content">
             <div class="footer-col">
-                <h4>Streaming</h4>
+                <h4>Media & Stream</h4>
                 <ul>
+                    <li><a href="https://open.spotify.com/artist/FerroART" target="_blank">Spotify Catalog</a></li>
                     <li><a href="https://music.apple.com/artist/FerroART" target="_blank">Apple Music</a></li>
-                    <li><a href="https://tidal.com/artist/FerroART" target="_blank">Tidal</a></li>
-                    <li><a href="https://music.amazon.com/FerroART" target="_blank">Amazon Music</a></li>
-                    <li><a href="https://music.youtube.com/@ferroart" target="_blank">YouTube Music</a></li>
-                    <li><a href="https://soundcloud.com/FerroART" target="_blank">SoundCloud</a></li>
+                    <li><a href="https://tidal.com/artist/FerroART" target="_blank">Tidal Music</a></li>
+                    <li><a href="https://soundcloud.com/FerroART" target="_blank">SoundCloud Hub</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Social Media</h4>
+                <h4>Społeczność & Live</h4>
                 <ul>
-                    <li><a href="https://www.youtube.com/@ferroart-shorts?sub_confirmation=1" target="_blank">YouTube Shorts</a></li>
-                    <li><a href="https://www.tiktok.com/@ferroarty" target="_blank">TikTok</a></li>
-                    <li><a href="https://instagram.com/FerroART" target="_blank">Instagram</a></li>
-                    <li><a href="https://x.com/FerroART" target="_blank">X (Twitter)</a></li>
-                    <li><a href="https://facebook.com/ferroarty" target="_blank">Facebook</a></li>
-                    <li><a href="https://app.getlee.co/users/662316b7141b6c9573c53f3b" target="_blank">Cheelee</a></li>
-                    <li><a href="https://bandlab.com/ferroart" target="_blank">BandLab</a></li>
+                    <li><a href="https://www.youtube.com/@FerroART4?sub_confirmation=1" target="_blank">YouTube Studio</a></li>
+                    <li><a href="https://twitch.tv/ferroarty" target="_blank">Twitch Stream</a></li>
+                    <li><a href="https://www.tiktok.com/@ferroarty" target="_blank">TikTok Shorts</a></li>
+                    <li><a href="https://instagram.com/FerroART" target="_blank">Instagram Profile</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Wsparcie</h4>
+                <h4>Wsparcie projektu</h4>
                 <ul>
-                    <li><a href="https://tipo.live/p/nieznany-nikomu" target="_blank">Tipo</a></li>
-                    <li><a href="https://suppi.pl/ferroart" target="_blank">Suppi.PL</a></li>
-                    <li><a href="https://patronite.pl/ferroart" target="_blank">Patronite</a></li>
-                    <li><a href="https://buymeacoffee.com/anonymousx6f" target="_blank">Buy Me a Coffee</a></li>
-                    <li><a href="https://ko-fi.com/ferroart" target="_blank">Ko-fi</a></li>
+                    <li><a href="https://tipo.live/p/nieznany-nikomu" target="_blank">TIPO Donacje</a></li>
+                    <li><a href="https://suppi.pl/ferroart" target="_blank">Suppi Platform</a></li>
+                    <li><a href="https://patronite.pl/ferroart" target="_blank">Patronite Club</a></li>
+                    <li><a href="https://ko-fi.com/ferroart" target="_blank">Ko-fi / Coffee</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal & Docs</h4>
+                <ul>
+                    <li><a href="https://Anonymousik.is-a.dev/docs/privacy" target="_blank">Polityka Prywatności</a></li>
+                    <li><a href="https://x.com/FerroART" target="_blank">X / Twitter Updates</a></li>
+                    <li><a href="https://bandlab.com/ferroart" target="_blank">BandLab Workspace</a></li>
                 </ul>
             </div>
         </div>
+        
         <div class="footer-bottom">
-            <div>FERROART LABEL & STUDIO &bull; 2015–2026</div>
-            <div class="footer-bottom-links">
-                <a href="https://Anonymousik.is-a.dev/docs/privacy" target="_blank">Polityka prywatności</a>
-                <a href="#">Wszystkie prawa zastrzeżone</a>
+            <div class="footer-brand-info">
+                <div><span>FERROART ® 2015–2026</span> • Unknown to anyone</div>
+                <div style="font-size: 0.68rem; color: var(--text-muted);">🅽ɨɛʐռǟռʏ.🅽ɨӄօʍʊ // 1994</div>
+            </div>
+            <div class="footer-status">
+                <div class="status-dot-mini"></div>
+                <span>Season 4 Development: Encrypted & Secure</span>
             </div>
         </div>
     </footer>
 
     <script>
-        // Odliczanie czasu
-        const targetDate = new Date("2026-10-01T00:00:00").getTime();
-        function updateTimer() {
-            const now = new Date().getTime();
-            const diff = targetDate - now;
-            if (diff > 0) {
-                document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
-                document.getElementById('hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
-                document.getElementById('mins').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-                document.getElementById('secs').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
-            }
+        /* ============================================================
+           1. TŁO: GRADIENT PARALLAX (GYRO) + KONSTELACJA CZĄSTECZEK
+           Jeden spójny system reagujący na mysz (desktop) i żyroskop (mobile)
+        ============================================================ */
+        const gyroBg = document.getElementById('gyroBg');
+        const pCanvas = document.getElementById('bg-particles');
+        const pCtx = pCanvas.getContext('2d');
+        const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--spotify-green').trim() || '#1ed760';
+        const pointer = { x: null, y: null };
+
+        function shiftBackground(x, y, pointerX, pointerY) {
+            gyroBg.style.transform = `translate(${x}px, ${y}px)`;
+            pointer.x = pointerX;
+            pointer.y = pointerY;
         }
-        setInterval(updateTimer, 1000);
-        updateTimer();
-
-        // Odtwarzacz audio z załączonym plikiem
-        const audio = document.getElementById('promoAudio');
-        const playBtn = document.getElementById('playBtn');
-        const playIcon = document.getElementById('playIcon');
-        const trackTime = document.getElementById('trackTime');
-        const waveBars = document.querySelectorAll('.wave-bar');
-
-        audio.addEventListener('loadedmetadata', () => {
-            trackTime.innerText = `0:00 / ${formatTime(audio.duration)}`;
-        });
-
-        audio.addEventListener('timeupdate', () => {
-            const current = audio.currentTime;
-            const duration = audio.duration || 0;
-            trackTime.innerText = `${formatTime(current)} / ${formatTime(duration)}`;
-            
-            const progress = duration ? (current / duration) : 0;
-            waveBars.forEach((bar, index) => {
-                if (index < progress * waveBars.length) {
-                    bar.classList.add('active');
-                } else {
-                    bar.classList.remove('active');
-                }
-            });
-        });
-
-        audio.addEventListener('ended', () => {
-            playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-        });
-
-        function togglePlay() {
-            if (audio.paused) {
-                audio.play();
-                playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-            } else {
-                audio.pause();
-                playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-            }
-        }
-
-        function seekAudio(e) {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const percent = clickX / rect.width;
-            if (audio.duration) {
-                audio.currentTime = percent * audio.duration;
-            }
-        }
-
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-
-        // Paralaksa i żyroskop
-        const bgArtwork = document.getElementById('bgArtwork');
 
         window.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth - 0.5) * 30;
-            const y = (e.clientY / window.innerHeight - 0.5) * 30;
-            bgArtwork.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
-        });
+            const x = (e.clientX / window.innerWidth - 0.5) * 35;
+            const y = (e.clientY / window.innerHeight - 0.5) * 35;
+            shiftBackground(x, y, e.clientX, e.clientY);
+        }, { passive: true });
+        window.addEventListener('mouseout', () => { pointer.x = null; pointer.y = null; });
+
+        function handleOrientation(e) {
+            const tiltX = e.gamma ? e.gamma * 1.8 : 0;
+            const tiltY = e.beta ? (e.beta - 45) * 1.8 : 0;
+            const px = window.innerWidth / 2 + tiltX * 4;
+            const py = window.innerHeight / 2 + tiltY * 4;
+            shiftBackground(tiltX, tiltY, px, py);
+        }
 
         function initGyro() {
-            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-                DeviceOrientationEvent.requestPermission().then(response => {
-                    if (response === 'granted') {
-                        window.addEventListener('deviceorientation', handleOrientation);
-                        document.getElementById('gyroBtn').style.display = 'none';
-                    }
-                }).catch(console.error);
-            } else {
-                window.addEventListener('deviceorientation', handleOrientation);
-                document.getElementById('gyroBtn').style.display = 'none';
+            // iOS 13+: wymaga jawnej zgody z gestu użytkownika (tap przycisku)
+            DeviceOrientationEvent.requestPermission().then(response => {
+                if (response === 'granted') {
+                    window.addEventListener('deviceorientation', handleOrientation);
+                    document.getElementById('gyroBtn').style.display = 'none';
+                }
+            }).catch(console.error);
+        }
+
+        const gyroBtn = document.getElementById('gyroBtn');
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            gyroBtn.style.display = 'inline-block'; // iOS — czeka na tap użytkownika
+        } else if (typeof DeviceOrientationEvent !== 'undefined') {
+            gyroBtn.style.display = 'none';
+            window.addEventListener('deviceorientation', handleOrientation); // Android — auto-start, bez promptu
+        } else {
+            gyroBtn.style.display = 'none'; // brak czujnika ruchu (desktop)
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * pCanvas.width;
+                this.y = Math.random() * pCanvas.height;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.size = Math.random() * 1.8 + 0.8;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if (this.x < 0 || this.x > pCanvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > pCanvas.height) this.vy *= -1;
+            }
+            draw() {
+                pCtx.beginPath();
+                pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                pCtx.fillStyle = `${accentColor}99`;
+                pCtx.fill();
             }
         }
 
-        function handleOrientation(e) {
-            const tiltX = e.gamma ? e.gamma * 1.2 : 0;
-            const tiltY = e.beta ? (e.beta - 45) * 1.2 : 0;
-            bgArtwork.style.transform = `translate(${tiltX}px, ${tiltY}px) scale(1.05)`;
+        let particles = [];
+        function initParticles() {
+            const count = Math.min(Math.floor((pCanvas.width * pCanvas.height) / 16000), 90);
+            particles = Array.from({ length: count }, () => new Particle());
+        }
+        function resizeParticles() {
+            pCanvas.width = window.innerWidth;
+            pCanvas.height = window.innerHeight;
+            initParticles();
+        }
+        window.addEventListener('resize', resizeParticles);
+
+        function drawConstellation() {
+            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
+                    if (dist < 110) {
+                        const alpha = Math.floor((1 - dist / 110) * 40).toString(16).padStart(2, '0');
+                        pCtx.strokeStyle = `${accentColor}${alpha}`;
+                        pCtx.lineWidth = 0.6;
+                        pCtx.beginPath();
+                        pCtx.moveTo(particles[i].x, particles[i].y);
+                        pCtx.lineTo(particles[j].x, particles[j].y);
+                        pCtx.stroke();
+                    }
+                }
+                if (pointer.x !== null) {
+                    const mDist = Math.hypot(particles[i].x - pointer.x, particles[i].y - pointer.y);
+                    if (mDist < 150) {
+                        pCtx.strokeStyle = `rgba(255,255,255,${(1 - mDist / 150) * 0.5})`;
+                        pCtx.lineWidth = 0.8;
+                        pCtx.beginPath();
+                        pCtx.moveTo(particles[i].x, particles[i].y);
+                        pCtx.lineTo(pointer.x, pointer.y);
+                        pCtx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(drawConstellation);
+        }
+
+        resizeParticles();
+        drawConstellation();
+
+        /* ============================================================
+           2. MODERN PLAYER — realne widmo Web Audio API + seek + czas
+           Bez hostowanego pliku audio player wchodzi w tryb podglądowy
+           (symulowane widmo + orientacyjny zegar), by strona nigdy nie
+           wyglądała na zepsutą przed premierą.
+        ============================================================ */
+        const audioEl = document.getElementById('playerAudio');
+        const playBtn = document.getElementById('playBtn');
+        const playIcon = document.getElementById('playIcon');
+        const muteBtn = document.getElementById('muteBtn');
+        const muteIcon = document.getElementById('muteIcon');
+        const audioTimer = document.getElementById('audioTimer');
+        const progressTrack = document.getElementById('progressTrack');
+        const progressFill = document.getElementById('progressFill');
+        const progressHandle = document.getElementById('progressHandle');
+        const eqCanvas = document.getElementById('eqCanvas');
+        const eqCtx = eqCanvas.getContext('2d');
+
+        let audioCtx, analyser, freqData;
+        let audioReady = false;   // true, gdy realny plik audio faktycznie się załadował
+        let isPlaying = false;
+        let simTime = 0;          // zegar trybu podglądowego
+        const SIM_DURATION = 213; // 3:33 — orientacyjny czas podglądu
+
+        const EQ_BARS = 28;
+        const eqHeights = new Array(EQ_BARS).fill(4);
+
+        function resizeEq() {
+            const rect = eqCanvas.parentElement.getBoundingClientRect();
+            eqCanvas.width = rect.width * devicePixelRatio;
+            eqCanvas.height = rect.height * devicePixelRatio;
+        }
+        window.addEventListener('resize', resizeEq);
+        setTimeout(resizeEq, 50);
+
+        function setupAnalyser() {
+            if (audioCtx) return;
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 128;
+            analyser.smoothingTimeConstant = 0.8;
+            freqData = new Uint8Array(analyser.frequencyBinCount);
+            const sourceNode = audioCtx.createMediaElementSource(audioEl);
+            sourceNode.connect(analyser);
+            analyser.connect(audioCtx.destination);
+        }
+
+        function formatTime(sec) {
+            if (!isFinite(sec) || sec < 0) sec = 0;
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function updateProgress(current, duration) {
+            const pct = duration > 0 ? (current / duration) * 100 : 0;
+            progressFill.style.width = pct + '%';
+            progressHandle.style.left = pct + '%';
+            audioTimer.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+        }
+
+        audioEl.addEventListener('canplay', () => { audioReady = true; });
+        audioEl.addEventListener('error', () => { audioReady = false; });
+        audioEl.addEventListener('timeupdate', () => {
+            if (audioReady) updateProgress(audioEl.currentTime, audioEl.duration || 0);
+        });
+        audioEl.addEventListener('ended', stopPlayback);
+
+        function startPlayback() {
+            isPlaying = true;
+            playIcon.className = 'ph-fill ph-pause';
+            playBtn.style.boxShadow = '0 0 20px var(--spotify-green)';
+        }
+
+        function stopPlayback() {
+            isPlaying = false;
+            playIcon.className = 'ph-fill ph-play';
+            playBtn.style.boxShadow = '0 0 15px var(--accent-glow)';
+            if (audioReady) audioEl.pause();
+        }
+
+        function togglePlay() {
+            if (isPlaying) { stopPlayback(); return; }
+            setupAnalyser();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const playPromise = audioEl.play();
+            if (playPromise && playPromise.catch) {
+                playPromise.then(() => { audioReady = true; startPlayback(); })
+                           .catch(() => { audioReady = false; startPlayback(); }); // brak źródła -> tryb podglądowy
+            } else {
+                startPlayback();
+            }
+        }
+
+        function toggleMute() {
+            audioEl.muted = !audioEl.muted;
+            muteIcon.className = audioEl.muted ? 'ph-fill ph-speaker-x' : 'ph-fill ph-speaker-high';
+        }
+
+        // Seek — klik i przeciąganie po pasku postępu (mysz + dotyk, Pointer Events)
+        let seeking = false;
+        function seekTo(clientX) {
+            const rect = progressTrack.getBoundingClientRect();
+            const pct = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1);
+            if (audioReady && audioEl.duration) {
+                audioEl.currentTime = pct * audioEl.duration;
+            } else {
+                simTime = pct * SIM_DURATION;
+                updateProgress(simTime, SIM_DURATION);
+            }
+        }
+        progressTrack.addEventListener('pointerdown', (e) => { seeking = true; seekTo(e.clientX); });
+        window.addEventListener('pointermove', (e) => { if (seeking) seekTo(e.clientX); });
+        window.addEventListener('pointerup', () => { seeking = false; });
+
+        // Symulowany zegar trybu podglądowego (gdy nie ma jeszcze hostowanego pliku)
+        setInterval(() => {
+            if (isPlaying && !audioReady) {
+                simTime = (simTime + 1) % SIM_DURATION;
+                updateProgress(simTime, SIM_DURATION);
+            }
+        }, 1000);
+
+        // Pętla renderująca widmo: realne dane FFT podczas odtwarzania, w innym razie ambient
+        function renderEq() {
+            const w = eqCanvas.width, h = eqCanvas.height;
+            eqCtx.clearRect(0, 0, w, h);
+            const barW = w / EQ_BARS;
+            const liveFFT = isPlaying && audioReady && analyser;
+            if (liveFFT) analyser.getByteFrequencyData(freqData);
+
+            for (let i = 0; i < EQ_BARS; i++) {
+                let target;
+                if (liveFFT) {
+                    const binIndex = Math.floor((i / EQ_BARS) * freqData.length);
+                    target = (freqData[binIndex] / 255) * h;
+                } else if (isPlaying) {
+                    target = (Math.sin(Date.now() / 160 + i) * 0.4 + 0.55) * h * (0.4 + Math.random() * 0.3);
+                } else {
+                    target = (Math.sin(Date.now() / 900 + i * 0.5) * 0.5 + 0.5) * h * 0.12 + h * 0.04;
+                }
+                eqHeights[i] += (target - eqHeights[i]) * 0.35;
+                if (eqHeights[i] < 2) eqHeights[i] = 2;
+
+                const x = i * barW;
+                const y = h - eqHeights[i];
+                const grad = eqCtx.createLinearGradient(0, h, 0, 0);
+                grad.addColorStop(0, accentColor);
+                grad.addColorStop(1, 'rgba(30, 215, 96, 0.15)');
+                eqCtx.fillStyle = grad;
+                eqCtx.fillRect(x + barW * 0.15, y, barW * 0.7, eqHeights[i]);
+            }
+            requestAnimationFrame(renderEq);
+        }
+        renderEq();
+
+        /* ============================================================
+           3. AKORDEON DYSKOGRAFII
+        ============================================================ */
+        function toggleSeason(button) {
+            const card = button.parentElement;
+            card.classList.toggle('active');
         }
     </script>
 </body>
