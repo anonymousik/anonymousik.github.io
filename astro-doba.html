@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nowoczesna wizualizacja asymetrii wschodów i zachodów słońca. Zaprojektowane przez Anonymousik.is-a.dev">
+    <title>Astrodynamika Doby | Anonymousik</title>
+    
+    <!-- Zewnętrzne zależności (CDN) -->
+    <!-- Tailwind CSS (Play CDN for rapid prototyping/static HTML) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js do renderowania wykresu na obiekcie Canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Konfiguracja Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dev: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9', // Cyjan/Niebieski akcent
+                            800: '#075985',
+                            900: '#0f172a', // Ciemny slate - główne tło
+                            950: '#020617', // Ekstremalnie ciemny
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dev-950 text-slate-300 font-sans antialiased selection:bg-dev-500 selection:text-white min-h-screen flex flex-col">
+    <!-- Kontener Główny (rośnie, by zepchnąć stopkę w dół) -->
+    <main class="flex-grow p-4 sm:p-6 md:p-12 relative overflow-hidden">
+        
+        <!-- Tło dekoracyjne (Subtelny glow) -->
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-dev-500/10 blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] rounded-full bg-dev-800/20 blur-[100px] pointer-events-none"></div>
+
+        <div class="max-w-5xl mx-auto space-y-8 md:space-y-12 relative z-10">
+            
+            <!-- Sekcja Nagłówka z semantycznym HTML5 -->
+            <header class="text-center space-y-4 pt-4">
+                <div class="flex justify-center items-center space-x-3 text-dev-400 mb-2" aria-hidden="true">
+                    <!-- SVG Słońca -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2"></path><path d="M12 20v2"></path>
+                        <path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path>
+                        <path d="M2 12h2"></path><path d="M20 12h2"></path>
+                        <path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>
+                    </svg>
+                    <!-- SVG Księżyca -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
+                    Wizualizacja Asymetrii Zmian Doby
+                </h1>
+                <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                    Analiza astronomiczna uwzględniająca przesunięcie południa słonecznego. Ukazuje naprzemienne efekty zaokrąglania minut.
+                </p>
+            </header>
+
+            <!-- Sekcja Analizy i Wykresu (Canvas) -->
+            <section class="bg-dev-900/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-800 overflow-hidden relative" aria-labelledby="chart-title">
+                <!-- Dekoracyjna linia u góry karty -->
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-dev-800 via-dev-400 to-dev-800 opacity-70"></div>
+                
+                <div class="p-6 md:p-8 bg-transparent">
+                    <h2 id="chart-title" class="text-2xl font-semibold mb-2 text-white">Trend skracania dnia</h2>
+                    <p class="text-slate-400 text-sm md:text-base">
+                        Model ukazuje rzeczywisty ubytek długości dnia z uwzględnieniem fizycznego skracania (3,5 min) oraz zaokrąglenia kalendarzowego.
+                    </p>
+                </div>
+                <div class="px-4 pb-6 md:px-6 w-full relative h-80 sm:h-96">
+                    <canvas id="sunChart" role="img" aria-label="Liniowy wykres obrazujący spadek minut dnia w czasie."></canvas>
+                </div>
+            </section>
+
+            <!-- Sekcja Tabelaryczna -->
+            <section aria-labelledby="data-table-heading">
+                <h2 id="data-table-heading" class="text-2xl font-bold mb-6 text-white">Tabela Danych Obserwacyjnych</h2>
+                <div class="overflow-x-auto rounded-2xl shadow-xl border border-slate-800 bg-dev-900/40 backdrop-blur-sm">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead class="bg-slate-900/80 border-b border-slate-700">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 font-semibold text-slate-300 uppercase tracking-wider text-sm">Dzień</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-slate-300 uppercase tracking-wider text-sm">Wschód (kalendarz)</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-slate-300 uppercase tracking-wider text-sm">Zachód (kalendarz)</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-slate-300 uppercase tracking-wider text-sm">Czas Dnia</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-slate-300 uppercase tracking-wider text-sm">Ubytek</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-slate-800/50">
+                            <!-- Dane wstrzykiwane przez JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ROZBUDOWANA STOPKA (AUTHORSHIP) -->
+    <footer class="bg-dev-900 border-t border-slate-800 relative z-20">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                
+                <!-- Kolumna 1: Branding -->
+                <div class="text-center md:text-left space-y-3">
+                    <div class="flex items-center justify-center md:justify-start space-x-2">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-dev-400 to-dev-800 flex items-center justify-center text-white font-bold font-mono text-xl shadow-lg shadow-dev-500/20">
+                            A
+                        </div>
+                        <span class="text-xl font-bold font-mono text-white tracking-tight">Anonymousik<span class="text-dev-400">.is-a.dev</span></span>
+                    </div>
+                    <p class="text-slate-400 text-sm max-w-xs mx-auto md:mx-0">
+                        Inżynieria Oprogramowania, Architektura Systemowa i SecOps. Budujemy niezawodne rozwiązania.
+                    </p>
+                </div>
+
+                <!-- Kolumna 2: Szybkie linki (Dla FerroART) -->
+                <div class="text-center space-y-4">
+                    <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Społeczność & Projekty</h3>
+                    <div class="flex justify-center space-x-5">
+                        <!-- GitHub Icon -->
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors duration-300" aria-label="GitHub">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <!-- YouTube Icon (FerroART) -->
+                        <a href="https://youtube.com/@FerroART4" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-red-500 transition-colors duration-300" title="Kanał FerroART" aria-label="YouTube">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.504 2.504 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.417-4.814a2.507 2.507 0 0 1 1.768-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15V9l5.194 3Z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <!-- Terminal Icon -->
+                        <a href="#" class="text-slate-400 hover:text-green-400 transition-colors duration-300" aria-label="Terminal">
+                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Kolumna 3: Status / AI / Copyright -->
+                <div class="text-center md:text-right space-y-2 font-mono text-xs text-slate-500">
+                    <div class="flex items-center justify-center md:justify-end space-x-2">
+                        <span class="flex h-2 w-2 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-dev-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-dev-500"></span>
+                        </span>
+                        <span>System Online &middot; Zoptymalizowano pod kątem wydajności</span>
+                    </div>
+                    <p>&copy; 2026 Anonymousik. Wszelkie prawa zastrzeżone.</p>
+                    <p class="text-slate-600 mt-1">Zaprojektowane przy wsparciu inżynieryjnym. #SecFerro DIVISION | SCRIPTS</p>
+                </div>
+            </div>
+            
+        </div>
+    </footer>
+
+    <!-- Skrypt aplikacyjny -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Definicja Danych 
+            const astrodynamicsData = [
+                { day: 'Dzień 1', sunrise: '06:00', sunset: '18:00', duration: '12h 00m', lengthMin: 720, delta: '-' },
+                { day: 'Dzień 2', sunrise: '06:01', sunset: '17:58', duration: '11h 57m', lengthMin: 717, delta: '- 3 min' },
+                { day: 'Dzień 3', sunrise: '06:03', sunset: '17:56', duration: '11h 53m', lengthMin: 713, delta: '- 4 min' },
+                { day: 'Dzień 4', sunrise: '06:04', sunset: '17:54', duration: '11h 50m', lengthMin: 710, delta: '- 3 min' },
+                { day: 'Dzień 5', sunrise: '06:06', sunset: '17:52', duration: '11h 46m', lengthMin: 706, delta: '- 4 min' },
+            ];
+
+            // Renderowanie Tabeli
+            const tableBody = document.getElementById('tableBody');
+            astrodynamicsData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/50 transition-colors duration-150'; // Dostosowane do ciemnego motywu
+                
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-medium text-slate-200">${row.day}</td>
+                    <td class="px-6 py-4 text-slate-400">${row.sunrise}</td>
+                    <td class="px-6 py-4 text-slate-400">${row.sunset}</td>
+                    <td class="px-6 py-4 text-dev-400 font-bold">${row.duration} <span class="text-xs text-slate-500 font-normal">(${row.lengthMin}m)</span></td>
+                    <td class="px-6 py-4 text-red-400 font-medium">${row.delta}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            // Konfiguracja i inicjalizacja Chart.js (Dostosowana do ciemnego motywu)
+            const ctx = document.getElementById('sunChart').getContext('2d');
+            
+            const labels = astrodynamicsData.map(d => d.day);
+            const dataPoints = astrodynamicsData.map(d => d.lengthMin);
+
+            Chart.defaults.font.family = 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+            Chart.defaults.color = '#94a3b8'; // text-slate-400
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Długość dnia (minuty)',
+                        data: dataPoints,
+                        borderColor: '#38bdf8', // dev-400
+                        backgroundColor: 'rgba(56, 189, 248, 0.1)', // gradient fill w dev-400
+                        borderWidth: 3,
+                        pointBackgroundColor: '#0f172a', // dev-900 (tło)
+                        pointBorderColor: '#38bdf8', // dev-400
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: '#38bdf8',
+                        pointHoverBorderColor: '#fff',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: { weight: 'bold' },
+                                color: '#e2e8f0' // text-slate-200
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)', // dev-900 z przezroczystością
+                            titleFont: { size: 14, family: 'ui-monospace, monospace' }, // Monospace dla tooltipu (tech vibe)
+                            bodyFont: { size: 14 },
+                            padding: 12,
+                            borderColor: '#334155', // slate-700
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Czas trwania: ${context.parsed.y} minut`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 700,
+                            max: 725,
+                            grid: {
+                                color: '#334155', // slate-700
+                                drawBorder: false,
+                            },
+                            title: {
+                                display: true,
+                                text: 'Minuty',
+                                font: { weight: 'bold' },
+                                color: '#94a3b8'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false,
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                }
+            });
+        });
+    </script>
+</body>
+</html>
