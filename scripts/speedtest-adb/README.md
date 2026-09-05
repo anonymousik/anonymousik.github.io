@@ -1,5 +1,5 @@
 speedtest-adb
-
+<img width="1920" height="1079" alt="1000554048" src="https://github.com/user-attachments/assets/f8497119-4711-4558-89ef-8399effa9377" />
 **Wersja:** 1.2.0
 **Autor:** Anonymousik
 
