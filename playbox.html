@@ -1,0 +1,1395 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLAYBOX ULTIMATE Nowy panel PlayNetBox (Concept dev-preview Anonymousik.is-a.dev)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        play: {
+                            purple: '#4b1d7a',
+                            violet: '#6c43bf',
+                            lightBg: '#f4f5f7',
+                            cardBg: '#ffffff',
+                            success: '#10b981',
+                            danger: '#ef4444',
+                            warning: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #f4f5f7; }
+        
+        /* Custom UI Elements */
+        .toggle-checkbox:checked { right: 0; border-color: #6c43bf; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #6c43bf; }
+        .toggle-checkbox { right: 0; z-index: 1; border-color: #e5e7eb; transition: all 0.3s; }
+        .toggle-label { width: 3rem; height: 1.5rem; background-color: #d1d5db; border-radius: 9999px; transition: all 0.3s; }
+        .toggle-dot { top: 0.125rem; left: 0.125rem; width: 1.25rem; height: 1.25rem; background-color: white; border-radius: 50%; transition: all 0.3s; }
+        .toggle-checkbox:checked ~ .toggle-dot { transform: translateX(1.5rem); }
+
+        /* Animations */
+        .fade-in { animation: fadeIn 0.25s ease-out forwards; }
+        .slide-up { animation: slideUp 0.3s ease-out forwards; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col overflow-hidden selection:bg-purple-200">
+
+    <!-- EKRAN LOGOWANIA -->
+    <div id="login-screen" class="fixed inset-0 bg-play-purple z-[100] flex flex-col items-center justify-center p-4">
+        <div class="absolute top-6 right-8 text-white/80 text-sm flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
+            <span>POLSKI</span> <i data-lucide="chevron-down" class="w-4 h-4"></i>
+        </div>
+
+        <div class="text-white text-6xl font-black tracking-widest mb-12 select-none drop-shadow-xl flex items-center gap-2">
+            PLAY<span class="text-xl bg-white text-play-purple px-2 py-1 rounded font-bold tracking-normal align-top mt-1">BOX</span>
+        </div>
+
+        <div class="w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-play-violet to-purple-400"></div>
+            
+            <div class="mb-8 text-center mt-2">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Logowanie do panelu</h2>
+                <p class="text-gray-500 text-sm">Wprowadź hasło administratora, aby uzyskać dostęp do ustawień routera.</p>
+            </div>
+
+            <form onsubmit="event.preventDefault(); login();" class="space-y-5">
+                <div class="relative">
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">HASŁO ADMINISTRATORA</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-3.5 top-3.5 w-5 h-5 text-gray-400"></i>
+                        <input type="password" id="login-password" 
+                            class="w-full bg-gray-50 border border-gray-200 text-gray-900 py-3 pl-11 pr-10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-play-violet focus:border-transparent transition-all shadow-sm" required />
+                        <button type="button" onclick="togglePassword('login-password', 'eye-icon')" class="absolute right-3.5 top-3.5 text-gray-400 hover:text-play-violet transition-colors">
+                            <i data-lucide="eye" id="eye-icon" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-1.5 text-gray-500">
+                        <input type="checkbox" id="remember" class="rounded text-play-violet focus:ring-play-violet w-4 h-4" />
+                        <label for="remember">Zapamiętaj mnie</label>
+                    </div>
+                    <a href="#" class="text-play-violet font-medium hover:underline">Zapomniałeś hasła?</a>
+                </div>
+
+                <button type="submit" class="w-full bg-play-purple hover:bg-play-violet text-white py-3.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-purple-900/20 mt-4">
+                    ZALOGUJ SIĘ
+                </button>
+            </form>
+            
+            <div class="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center text-[10px] text-gray-400 font-mono">
+                <span>Wersja GUI: v2.1.0_PRO</span>
+                <span>HW: AR5341_V3</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- GŁÓWNA APLIKACJA -->
+    <div id="app-container" class="hidden h-screen flex-col">
+        
+        <!-- NAGŁÓWEK -->
+        <header class="bg-play-purple text-white h-16 flex items-center justify-between px-4 sm:px-6 z-50 shadow-md shrink-0">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="p-2 hover:bg-white/10 rounded-lg transition-colors lg:hidden">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('/#/home/status?home')">
+                    <span class="text-2xl font-black tracking-widest select-none">PLAY</span>
+                    <span class="bg-yellow-400 text-play-purple font-bold text-[10px] px-1.5 py-0.5 rounded tracking-normal">BOX</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 sm:gap-6 text-sm font-medium">
+                <div class="hidden md:flex items-center gap-4 mr-4 text-xs">
+                    <div class="flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-full">
+                        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                        <span class="text-white/90">Internet połączony</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-full">
+                        <i data-lucide="cpu" class="w-3.5 h-3.5 text-gray-300"></i>
+                        <span class="text-white/90 font-mono" id="header-cpu">4%</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-1 cursor-pointer hover:text-gray-200 transition-colors">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline text-xs">PL</span>
+                </div>
+                <button onclick="logout()" class="flex items-center gap-1.5 bg-white text-play-purple hover:bg-gray-100 px-4 py-1.5 rounded-full transition-colors shadow-sm text-xs font-bold">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">WYLOGUJ</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- KONTENER GŁÓWNY -->
+        <div class="flex flex-1 overflow-hidden relative">
+            
+            <!-- OVERLAY DLA MOBILE -->
+            <div id="sidebar-overlay" onclick="toggleSidebar()" class="absolute inset-0 bg-black/50 z-40 hidden lg:hidden transition-opacity"></div>
+            
+            <!-- BOCZNE MENU (SIDEBAR) -->
+            <aside id="sidebar" class="absolute lg:relative top-0 left-0 w-72 bg-white h-full z-40 shadow-[4px_0_24px_rgba(0,0,0,0.05)] transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out border-r border-gray-200 flex flex-col justify-between shrink-0">
+                <div class="py-6 overflow-y-auto h-full">
+                    <div class="px-6 pb-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Główne Menu</div>
+                    <nav id="sidebar-nav" class="space-y-1 px-3">
+                        <!-- Generowane dynamicznie -->
+                    </nav>
+                </div>
+                <div class="p-5 bg-gray-50/80 border-t border-gray-100 text-xs text-gray-500">
+                    <div class="flex items-center gap-2 mb-1 text-gray-700 font-semibold">
+                        <i data-lucide="info" class="w-4 h-4 text-play-violet"></i> System Info
+                    </div>
+                    <div class="grid grid-cols-2 gap-1 text-[10px] font-mono mt-2">
+                        <span>Model:</span> <span class="text-right text-gray-800">AR5341</span>
+                        <span>Uptime:</span> <span class="text-right text-gray-800" id="sidebar-uptime">3d 14h 22m</span>
+                        <span>IP LAN:</span> <span class="text-right text-gray-800">192.168.1.1</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- TREŚĆ GŁÓWNA -->
+            <main class="flex-1 bg-play-lightBg h-full overflow-y-auto relative scroll-smooth">
+                <div class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+                    <!-- Tytuł widoku i subzakładki -->
+                    <div class="mb-6 slide-up">
+                        <h1 id="view-title" class="text-2xl font-bold text-gray-900 mb-4">Strona Główna</h1>
+                        <div class="border-b border-gray-200 overflow-x-auto no-scrollbar">
+                            <div id="subtabs-container" class="flex flex-nowrap md:flex-wrap gap-1 -mb-px min-w-max"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Kontener zawartości -->
+                    <div id="view-content" class="pb-12"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- POWADOMIENIA TOAST -->
+        <div id="toast" class="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300 z-[110] pointer-events-none border border-gray-700">
+            <i data-lucide="check-circle" id="toast-icon" class="w-5 h-5 text-play-success"></i>
+            <span id="toast-msg" class="text-sm font-medium">Zapisano ustawienia.</span>
+        </div>
+
+        <!-- MODAL (Uniwersalny) -->
+        <div id="modal-backdrop" class="fixed inset-0 bg-black/60 z-[120] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+            <div id="modal-content" class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-transform scale-95 opacity-0 overflow-hidden max-h-screen overflow-y-auto">
+                <!-- Renderowane dynamicznie -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SILNIK APLIKACJI I DANE -->
+    <script>
+        // --- STAN APLIKACJI (MOCK DATA) ---
+        const state = {
+            auth: false,
+            currentPath: '/#/home/status',
+            currentQuery: '?home',
+            data: {
+                sys: { uptime: '3d 14h 22m', cpu: 4, ram: 42, ip: '192.168.1.1', mac: '98:39:10:D8:D6:84' },
+                wan: { ip: '89.64.12.233', mask: '255.255.255.0', gw: '89.64.12.1', dns1: '8.8.8.8', dns2: '1.1.1.1', mac: '98:39:10:D8:D6:85', rx: '14.5 GB', tx: '2.1 GB', uptime: '3d 14h 20m' },
+                lan: { ip: '192.168.1.1', mask: '255.255.255.0', dhcpEnabled: true, dhcpStart: '192.168.1.2', dhcpEnd: '192.168.1.253', leaseTime: '86400' },
+                ipv6: { enabled: true, mode: 'SLAAC/DHCPv6', prefix: '2a02:a310:8143:5500::/64' },
+                wifi24: { enabled: true, ssid: 'PLAY_Swiatlowod_D6B4', pwd: 'superhaslowifi', security: 'WPA2/WPA3-SAE Mixed', channel: 'Auto', power: '100%' },
+                wifi5: { enabled: true, ssid: 'PLAY_Swiatlowod_D6B4_5G', pwd: 'superhaslowifi', security: 'WPA2/WPA3-SAE Mixed', channel: 'Auto (44)', power: '100%' },
+                guest: { enabled: false, ssid: 'PLAY_Guest', pwd: '', isolation: true },
+                portForwards: [
+                    { id: 1, name: 'Xbox Live', ip: '192.168.1.15', proto: 'TCP/UDP', extPort: '3074', intPort: '3074' },
+                    { id: 2, name: 'Web Server', ip: '192.168.1.50', proto: 'TCP', extPort: '80', intPort: '80' }
+                ],
+                staticLeases: [
+                    { id: 1, name: 'PC-Gamer', mac: 'AA:BB:CC:DD:EE:11', ip: '192.168.1.15' },
+                    { id: 2, name: 'SmartTV', mac: '11:22:33:44:55:66', ip: '192.168.1.100' }
+                ],
+                dmz: { enabled: false, ip: '' },
+                upnp: { enabled: true, leases: [{proto: 'UDP', extPort: 54321, intPort: 54321, ip: '192.168.1.15', desc: 'Teredo'}] },
+                macFilters: [
+                    { id: 1, name: 'Sasiad', mac: 'FE:DC:BA:98:76:54' }
+                ],
+                macPolicy: 'Odrzuć',
+                ipFilters: [
+                    { id: 1, name: 'Blokada Telnet', srcIp: 'Any', dstIp: '192.168.1.1', proto: 'TCP', port: '23', action: 'Odrzuć' }
+                ],
+                parental: [
+                    { id: 1, name: 'Telefon Dziecka', mac: '12:34:56:78:90:AB', days: 'Pon-Pt', time: '22:00-06:00' }
+                ],
+                ddns: { enabled: false, provider: 'dyndns.org', domain: '', user: '' },
+                vpn: { serverEnabled: false, proto: 'WireGuard', port: '51820' },
+                routing: [{ id: 1, net: '10.0.0.0', mask: '255.0.0.0', gw: '192.168.1.254', iface: 'LAN' }],
+                meshEnabled: true,
+                firewallLevel: 'Średni'
+            }
+        };
+
+        // --- STRUKTURA NAWIGACJI ---
+        const navigationStructure = [
+            {
+                path: '/#/home/status', label: 'Status i Informacje', icon: 'activity',
+                tabs: [ { query: '?home', label: 'Dashboard' }, { query: '?wan', label: 'Internet (WAN)' }, { query: '?lan', label: 'Urządzenia (LAN)' }, { query: '?stats', label: 'Statystyki' } ]
+            },
+            {
+                path: '/#/home/network', label: 'Sieć Lokalna', icon: 'network',
+                tabs: [ { query: '?lan', label: 'Ustawienia LAN' }, { query: '?dhcp', label: 'Serwer DHCP' }, { query: '?ipv6', label: 'IPv6' } ]
+            },
+            {
+                path: '/#/home/wifi', label: 'Wi-Fi & EasyMesh', icon: 'wifi',
+                tabs: [ { query: '?config', label: 'Sieć Główna' }, { query: '?guest', label: 'Sieć dla Gości' }, { query: '?mesh', label: 'EasyMesh / WPS' } ]
+            },
+            {
+                path: '/#/home/nat', label: 'Przekierowania (NAT)', icon: 'arrow-up-right-from-circle',
+                tabs: [ { query: '?forward', label: 'Przekierowanie Portów' }, { query: '?dmz', label: 'Strefa DMZ' }, { query: '?upnp', label: 'UPnP' } ]
+            },
+            {
+                path: '/#/home/security', label: 'Zabezpieczenia', icon: 'shield-check',
+                tabs: [ { query: '?firewall', label: 'Zapora (Firewall)' }, { query: '?filter-mac', label: 'Filtrowanie MAC' }, { query: '?filter-ip', label: 'Filtrowanie IP' }, { query: '?parental', label: 'Kontrola Rodzicielska' } ]
+            },
+            {
+                path: '/#/home/advanced', label: 'Zaawansowane', icon: 'sliders',
+                tabs: [ { query: '?ddns', label: 'Dynamiczny DNS' }, { query: '?vpn', label: 'Serwer VPN' }, { query: '?routing', label: 'Routing Statyczny' } ]
+            },
+            {
+                path: '/#/home/administration', label: 'Administracja Systemem', icon: 'settings',
+                tabs: [ { query: '?password', label: 'Zmiana Hasła' }, { query: '?backup', label: 'Kopia Zapasowa' }, { query: '?firmware', label: 'Aktualizacja' }, { query: '?reboot', label: 'Restart' }, { query: '?logs', label: 'Logi Systemowe' } ]
+            }
+        ];
+
+        // --- INICJALIZACJA ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderSidebar();
+            window.addEventListener('hashchange', parseRouteAndRender);
+            
+            if (!window.location.hash) {
+                window.location.hash = '/#/home/status?home';
+            } else {
+                parseRouteAndRender();
+            }
+            
+            setInterval(() => {
+                if(state.auth) {
+                    const cpu = Math.floor(Math.random() * 8) + 2;
+                    document.getElementById('header-cpu').innerText = cpu + '%';
+                }
+            }, 3000);
+        });
+
+        // --- LOGIKA BAZOWA ---
+        function login() {
+            const pwd = document.getElementById('login-password').value;
+            if(pwd.length > 0) {
+                state.auth = true;
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                document.getElementById('app-container').classList.add('flex');
+                showToast('Zalogowano pomyślnie. Witaj w panelu PLAY BOX.');
+                parseRouteAndRender();
+            }
+        }
+
+        function logout() {
+            state.auth = false;
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('flex');
+            document.getElementById('login-password').value = '';
+            window.location.hash = '';
+        }
+
+        function togglePassword(inputId, iconId) {
+            const pwd = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if(pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                pwd.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function navigateTo(hash) {
+            window.location.hash = hash;
+            if(window.innerWidth < 1024 && !document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            
+            document.getElementById('toast-msg').innerText = msg;
+            
+            if (isError) {
+                icon.setAttribute('data-lucide', 'alert-circle');
+                icon.classList.replace('text-play-success', 'text-play-danger');
+                toast.classList.add('border-play-danger');
+            } else {
+                icon.setAttribute('data-lucide', 'check-circle');
+                icon.classList.replace('text-play-danger', 'text-play-success');
+                toast.classList.remove('border-play-danger');
+            }
+            lucide.createIcons();
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 4000);
+        }
+
+        function renderSidebar() {
+            const nav = document.getElementById('sidebar-nav');
+            nav.innerHTML = navigationStructure.map(item => `
+                <a href="${item.path}${item.tabs[0].query}" 
+                   class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-play-purple/5 hover:text-play-purple transition-all relative group"
+                   data-base="${item.path}">
+                    <div class="absolute left-0 w-1 h-0 bg-play-violet rounded-r-full transition-all group-hover:h-1/2 indicator"></div>
+                    <i data-lucide="${item.icon}" class="w-5 h-5 text-gray-400 group-hover:text-play-violet transition-colors nav-icon"></i> 
+                    ${item.label}
+                </a>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function parseRouteAndRender() {
+            if (!state.auth) return;
+
+            let rawHash = window.location.hash || '/#/home/status?home';
+            if (rawHash.startsWith('#')) rawHash = rawHash.substring(1);
+            if (!rawHash.startsWith('/')) rawHash = '/' + rawHash;
+
+            const [base, query = ''] = rawHash.split('?');
+            state.currentPath = base;
+            state.currentQuery = query ? '?' + query : '';
+
+            const routeConfig = navigationStructure.find(r => r.path === base) || navigationStructure[0];
+            const activeQuery = state.currentQuery || routeConfig.tabs[0].query;
+
+            document.getElementById('view-title').innerText = routeConfig.label;
+
+            // Highlight Sidebar
+            document.querySelectorAll('.sidebar-item').forEach(el => {
+                const indicator = el.querySelector('.indicator');
+                const icon = el.querySelector('.nav-icon');
+                if (el.getAttribute('data-base') === base) {
+                    el.classList.add('bg-play-purple/5', 'text-play-purple');
+                    el.classList.remove('text-gray-600');
+                    indicator.classList.replace('h-0', 'h-2/3');
+                    indicator.classList.replace('group-hover:h-1/2', 'h-2/3');
+                    icon.classList.add('text-play-violet');
+                    icon.classList.remove('text-gray-400');
+                } else {
+                    el.classList.remove('bg-play-purple/5', 'text-play-purple');
+                    el.classList.add('text-gray-600');
+                    indicator.classList.replace('h-2/3', 'h-0');
+                    indicator.classList.add('group-hover:h-1/2');
+                    icon.classList.remove('text-play-violet');
+                    icon.classList.add('text-gray-400');
+                }
+            });
+
+            // Render Subtabs
+            const subtabsContainer = document.getElementById('subtabs-container');
+            subtabsContainer.innerHTML = routeConfig.tabs.map(tab => {
+                const isActive = tab.query === activeQuery;
+                return `
+                    <button onclick="navigateTo('${base}${tab.query}')" 
+                        class="px-5 py-3 text-sm font-medium transition-all border-b-2 whitespace-nowrap ${
+                            isActive 
+                            ? 'border-play-violet text-play-purple' 
+                            : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'
+                        }">
+                        ${tab.label}
+                    </button>
+                `;
+            }).join('');
+
+            const container = document.getElementById('view-content');
+            container.classList.remove('fade-in');
+            container.innerHTML = `<div class="flex justify-center items-center py-20"><i data-lucide="loader-2" class="w-8 h-8 text-play-violet animate-spin"></i></div>`;
+            lucide.createIcons();
+
+            setTimeout(() => {
+                renderViewContent(base, activeQuery);
+                container.classList.add('fade-in');
+                lucide.createIcons();
+            }, 100); 
+        }
+
+        // --- GENERATORY KOMPONENTÓW UI ---
+        const UI = {
+            card: (title, content, icon = null) => `
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                    ${title ? `
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2 bg-gray-50/50">
+                        ${icon ? `<i data-lucide="${icon}" class="w-5 h-5 text-play-violet"></i>` : ''}
+                        <h3 class="font-bold text-gray-800 text-sm tracking-wide uppercase">${title}</h3>
+                    </div>` : ''}
+                    <div class="p-6">
+                        ${content}
+                    </div>
+                </div>
+            `,
+            inputRow: (label, id, val, type="text", readonly=false, hint="", extraClass="") => `
+                <div class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-50 last:border-0 group hover:bg-gray-50/50 rounded px-2 transition-colors">
+                    <div class="sm:w-1/3 text-sm text-gray-600 font-medium mb-1 sm:mb-0 flex items-center gap-1">
+                        ${label} ${hint ? `<i data-lucide="help-circle" class="w-3.5 h-3.5 text-gray-400 cursor-help" title="${hint}"></i>` : ''}
+                    </div>
+                    <div class="sm:w-2/3">
+                        <input type="${type}" id="${id}" value="${val}" ${readonly ? 'readonly disabled' : ''} 
+                            class="w-full sm:max-w-md bg-gray-50 border border-gray-200 text-gray-800 text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-play-violet focus:border-transparent transition-all disabled:opacity-60 disabled:cursor-not-allowed ${extraClass}" />
+                    </div>
+                </div>
+            `,
+            selectRow: (label, id, options, selected, hint="") => `
+                <div class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-50 last:border-0 group hover:bg-gray-50/50 rounded px-2 transition-colors">
+                    <div class="sm:w-1/3 text-sm text-gray-600 font-medium mb-1 sm:mb-0 flex items-center gap-1">
+                        ${label} ${hint ? `<i data-lucide="help-circle" class="w-3.5 h-3.5 text-gray-400 cursor-help" title="${hint}"></i>` : ''}
+                    </div>
+                    <div class="sm:w-2/3 relative sm:max-w-md">
+                        <select id="${id}" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm px-3 py-2 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-play-violet transition-all cursor-pointer">
+                            ${options.map(opt => `<option value="${opt}" ${opt === selected ? 'selected' : ''}>${opt}</option>`).join('')}
+                        </select>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+            `,
+            toggleRow: (label, id, isChecked, hint="") => `
+                <div class="flex flex-row items-center justify-between sm:justify-start py-3 border-b border-gray-50 last:border-0 group hover:bg-gray-50/50 rounded px-2 transition-colors">
+                    <div class="sm:w-1/3 text-sm text-gray-600 font-medium flex items-center gap-1">
+                        ${label} ${hint ? `<i data-lucide="help-circle" class="w-3.5 h-3.5 text-gray-400 cursor-help" title="${hint}"></i>` : ''}
+                    </div>
+                    <div class="sm:w-2/3 flex items-center">
+                        <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in cursor-pointer">
+                            <input type="checkbox" id="${id}" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" ${isChecked ? 'checked' : ''}/>
+                            <label for="${id}" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label>
+                        </div>
+                        <span class="text-xs font-semibold text-gray-500" id="${id}-label">${isChecked ? 'Włączone' : 'Wyłączone'}</span>
+                    </div>
+                </div>
+            `,
+            buttonPrimary: (text, icon, onclick="showToast('Zapisano pomyślnie.')") => `
+                <button onclick="${onclick}" class="bg-play-violet hover:bg-play-purple text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-md shadow-purple-900/10 flex items-center gap-2">
+                    ${icon ? `<i data-lucide="${icon}" class="w-4 h-4"></i>` : ''} ${text}
+                </button>
+            `,
+            emptyState: (text, icon) => `
+                <div class="flex flex-col items-center justify-center py-10 text-gray-400">
+                    <i data-lucide="${icon}" class="w-12 h-12 mb-3 opacity-50"></i>
+                    <p class="text-sm">${text}</p>
+                </div>
+            `
+        };
+
+        document.addEventListener('change', function(e) {
+            if(e.target && e.target.classList.contains('toggle-checkbox')) {
+                const label = document.getElementById(e.target.id + '-label');
+                if(label) label.innerText = e.target.checked ? 'Włączone' : 'Wyłączone';
+            }
+        });
+
+        // --- RENDERERY WIDOKÓW ---
+        function renderStatus(query) {
+            if (query === '?home') {
+                return `
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Mapa Sieci -->
+                        <div class="lg:col-span-3 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 min-h-[300px] relative overflow-hidden">
+                            <div class="absolute inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#6c43bf 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+                            <div class="flex flex-col items-center z-10 cursor-pointer group" onclick="navigateTo('/#/home/status?wan')">
+                                <div class="w-20 h-20 rounded-full bg-blue-50 border-4 border-blue-100 flex items-center justify-center shadow-lg relative group-hover:scale-105 transition-transform">
+                                    <i data-lucide="globe" class="w-10 h-10 text-blue-500"></i>
+                                    <div class="absolute -bottom-2 -right-2 bg-green-500 text-white rounded-full p-1 border-2 border-white"><i data-lucide="check" class="w-3 h-3"></i></div>
+                                </div>
+                                <h3 class="mt-4 font-bold text-gray-800">Internet</h3>
+                                <p class="text-xs text-green-600 font-semibold">GPON Connected</p>
+                            </div>
+                            
+                            <div class="hidden md:flex h-1 w-24 bg-gradient-to-r from-blue-300 to-purple-300 relative rounded">
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-purple-400 animate-ping"></div>
+                            </div>
+
+                            <div class="flex flex-col items-center z-10 cursor-pointer group" onclick="navigateTo('/#/home/status?home')">
+                                <div class="w-24 h-24 rounded-2xl bg-play-purple border-4 border-purple-200 flex items-center justify-center shadow-xl shadow-purple-900/20 text-white relative group-hover:scale-105 transition-transform">
+                                    <i data-lucide="router" class="w-12 h-12"></i>
+                                </div>
+                                <h3 class="mt-4 font-bold text-gray-800 text-lg">PLAY BOX</h3>
+                                <p class="text-xs text-gray-500 font-mono">${state.data.sys.ip}</p>
+                            </div>
+
+                            <div class="hidden md:flex h-1 w-24 bg-gray-200 relative rounded">
+                                <div class="absolute w-full h-full bg-gradient-to-r from-purple-300 to-green-300 opacity-50"></div>
+                            </div>
+
+                            <div class="flex flex-col items-center z-10 cursor-pointer group" onclick="navigateTo('/#/home/status?lan')">
+                                <div class="w-20 h-20 rounded-full bg-green-50 border-4 border-green-100 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform group-hover:bg-green-100">
+                                    <i data-lucide="smartphone" class="w-8 h-8 text-green-500 absolute -ml-4"></i>
+                                    <i data-lucide="laptop" class="w-10 h-10 text-green-600 ml-4"></i>
+                                    <div class="absolute -top-2 -right-2 bg-play-violet text-white text-[10px] font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white shadow">8</div>
+                                </div>
+                                <h3 class="mt-4 font-bold text-gray-800">Urządzenia</h3>
+                                <p class="text-xs text-gray-500">W sieci LAN/WLAN</p>
+                            </div>
+                        </div>
+
+                        ${UI.card('Informacje o Urządzeniu', `
+                            <div class="space-y-3">
+                                <div class="flex justify-between border-b border-gray-50 pb-2"><span class="text-gray-500 text-sm">Model</span><span class="font-semibold text-sm text-gray-800">PLAY BOX AR5341</span></div>
+                                <div class="flex justify-between border-b border-gray-50 pb-2"><span class="text-gray-500 text-sm">Wersja Firmware</span><span class="font-mono text-sm text-gray-800">v2.1.0_PRO_b12</span></div>
+                                <div class="flex justify-between border-b border-gray-50 pb-2"><span class="text-gray-500 text-sm">Uptime</span><span class="font-mono text-sm text-gray-800">${state.data.sys.uptime}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500 text-sm">Adres MAC</span><span class="font-mono text-sm text-gray-800">${state.data.sys.mac}</span></div>
+                            </div>
+                        `, 'info')}
+
+                        ${UI.card('Status Wi-Fi', `
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                                    <i data-lucide="wifi" class="w-6 h-6 text-play-violet"></i>
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-center"><span class="font-bold text-sm text-gray-800">2.4 GHz</span><span class="w-2 h-2 rounded-full ${state.data.wifi24.enabled ? 'bg-green-500' : 'bg-red-500'}"></span></div>
+                                        <div class="text-xs text-gray-500 font-mono mt-0.5 truncate w-32" title="${state.data.wifi24.ssid}">${state.data.wifi24.ssid}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                                    <i data-lucide="wifi" class="w-6 h-6 text-play-violet"></i>
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-center"><span class="font-bold text-sm text-gray-800">5.0 GHz</span><span class="w-2 h-2 rounded-full ${state.data.wifi5.enabled ? 'bg-green-500' : 'bg-red-500'}"></span></div>
+                                        <div class="text-xs text-gray-500 font-mono mt-0.5 truncate w-32" title="${state.data.wifi5.ssid}">${state.data.wifi5.ssid}</div>
+                                    </div>
+                                </div>
+                                <div class="pt-2">
+                                    <button onclick="navigateTo('/#/home/wifi?config')" class="w-full text-center text-xs font-bold text-play-violet hover:text-play-purple">PRZEJDŹ DO USTAWIEŃ &rarr;</button>
+                                </div>
+                            </div>
+                        `, 'radio')}
+
+                        ${UI.card('Zasoby Systemowe', `
+                            <div class="space-y-5">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1.5"><span class="text-gray-600 font-medium">Procesor (CPU)</span><span class="font-bold text-gray-800" id="dash-cpu">${state.data.sys.cpu}%</span></div>
+                                    <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                                        <div class="bg-blue-500 h-2.5 rounded-full transition-all duration-500" style="width: ${state.data.sys.cpu}%" id="dash-cpu-bar"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1.5"><span class="text-gray-600 font-medium">Pamięć (RAM)</span><span class="font-bold text-gray-800">${state.data.sys.ram}%</span></div>
+                                    <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                                        <div class="bg-play-violet h-2.5 rounded-full transition-all duration-500" style="width: ${state.data.sys.ram}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `, 'cpu')}
+                    </div>
+                `;
+            } else if (query === '?wan') {
+                return UI.card('Informacje o połączeniu z Internetem (WAN)', `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Konfiguracja IPv4</h4>
+                            <div class="space-y-3">
+                                ${UI.inputRow('Adres IP WAN', 'wan-ip', state.data.wan.ip, 'text', true, '', 'font-mono bg-transparent border-none px-0')}
+                                ${UI.inputRow('Maska Podsieci', 'wan-mask', state.data.wan.mask, 'text', true, '', 'font-mono bg-transparent border-none px-0')}
+                                ${UI.inputRow('Brama Domyślna', 'wan-gw', state.data.wan.gw, 'text', true, '', 'font-mono bg-transparent border-none px-0')}
+                                ${UI.inputRow('Główny DNS', 'wan-dns1', state.data.wan.dns1, 'text', true, '', 'font-mono bg-transparent border-none px-0')}
+                                ${UI.inputRow('Zapasowy DNS', 'wan-dns2', state.data.wan.dns2, 'text', true, '', 'font-mono bg-transparent border-none px-0')}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Statystyki Łącza</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                                    <span class="text-sm font-medium text-green-800">Status</span>
+                                    <span class="text-sm font-bold text-green-600 flex items-center gap-1"><i data-lucide="check" class="w-4 h-4"></i> Połączono</span>
+                                </div>
+                                ${UI.inputRow('Adres MAC WAN', 'wan-mac', state.data.wan.mac, 'text', true, '', 'font-mono bg-transparent border-none px-0')}
+                                ${UI.inputRow('Czas połączenia', 'wan-uptime', state.data.wan.uptime, 'text', true, '', 'bg-transparent border-none px-0')}
+                                ${UI.inputRow('Pobrane dane (RX)', 'wan-rx', state.data.wan.rx, 'text', true, '', 'font-mono font-bold text-play-violet bg-transparent border-none px-0')}
+                                ${UI.inputRow('Wysłane dane (TX)', 'wan-tx', state.data.wan.tx, 'text', true, '', 'font-mono font-bold text-blue-600 bg-transparent border-none px-0')}
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-gray-100">
+                                <button onclick="showToast('Odnawianie dzierżawy DHCP WAN...')" class="text-sm text-play-violet font-semibold hover:underline flex items-center gap-1"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Odnów IP</button>
+                            </div>
+                        </div>
+                    </div>
+                `, 'globe');
+            } else if (query === '?lan') {
+                return UI.card('Podłączone Urządzenia (Klienci LAN/Wi-Fi)', `
+                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
+                        <table class="w-full text-left border-collapse min-w-[600px]">
+                            <thead>
+                                <tr class="border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider bg-gray-50">
+                                    <th class="p-3 font-semibold rounded-tl-lg">Urządzenie</th>
+                                    <th class="p-3 font-semibold">Adres IP</th>
+                                    <th class="p-3 font-semibold">Adres MAC</th>
+                                    <th class="p-3 font-semibold">Połączenie</th>
+                                    <th class="p-3 font-semibold rounded-tr-lg text-right">Działanie</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-gray-100">
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="p-3 font-medium text-gray-800 flex items-center gap-2"><i data-lucide="laptop" class="w-4 h-4 text-gray-400"></i> DESKTOP-X192</td>
+                                    <td class="p-3 font-mono text-gray-600">192.168.1.15</td>
+                                    <td class="p-3 font-mono text-gray-500 text-xs">AA:BB:CC:DD:EE:11</td>
+                                    <td class="p-3"><span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-semibold border border-blue-100">LAN 1 (1Gbps)</span></td>
+                                    <td class="p-3 text-right"><button class="text-gray-400 hover:text-play-danger" title="Zablokuj"><i data-lucide="ban" class="w-4 h-4"></i></button></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="p-3 font-medium text-gray-800 flex items-center gap-2"><i data-lucide="smartphone" class="w-4 h-4 text-gray-400"></i> iPhone-Jan</td>
+                                    <td class="p-3 font-mono text-gray-600">192.168.1.20</td>
+                                    <td class="p-3 font-mono text-gray-500 text-xs">11:22:33:44:55:66</td>
+                                    <td class="p-3"><span class="px-2 py-1 bg-purple-50 text-play-violet rounded text-xs font-semibold border border-purple-100">Wi-Fi 5GHz</span></td>
+                                    <td class="p-3 text-right"><button class="text-gray-400 hover:text-play-danger" title="Zablokuj"><i data-lucide="ban" class="w-4 h-4"></i></button></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="p-3 font-medium text-gray-800 flex items-center gap-2"><i data-lucide="tv" class="w-4 h-4 text-gray-400"></i> Samsung-SmartTV</td>
+                                    <td class="p-3 font-mono text-gray-600">192.168.1.100</td>
+                                    <td class="p-3 font-mono text-gray-500 text-xs">F1:E2:D3:C4:B5:A6</td>
+                                    <td class="p-3"><span class="px-2 py-1 bg-green-50 text-green-600 rounded text-xs font-semibold border border-green-100">Wi-Fi 2.4GHz</span></td>
+                                    <td class="p-3 text-right"><button class="text-gray-400 hover:text-play-danger" title="Zablokuj"><i data-lucide="ban" class="w-4 h-4"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `, 'users');
+            } else if (query === '?stats') {
+                return UI.card('Monitorowanie Sieci', `
+                    <div class="h-48 bg-gray-900 rounded-xl flex items-end px-2 pb-2 gap-1 overflow-hidden relative">
+                        <div class="absolute top-4 left-4 text-gray-400 text-xs font-mono">Przepustowość WAN (Ostatnie 60s)</div>
+                        ${Array(40).fill(0).map(() => `<div class="w-full bg-play-violet rounded-t-sm opacity-80 hover:opacity-100 transition-opacity" style="height: ${Math.random() * 80 + 10}%"></div>`).join('')}
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-6">
+                        <div class="p-4 border border-gray-200 rounded-xl">
+                            <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Aktualne Pobieranie</p>
+                            <p class="text-2xl font-bold text-gray-800">142 <span class="text-sm font-normal text-gray-500">Mbps</span></p>
+                        </div>
+                        <div class="p-4 border border-gray-200 rounded-xl">
+                            <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Aktualne Wysyłanie</p>
+                            <p class="text-2xl font-bold text-gray-800">24 <span class="text-sm font-normal text-gray-500">Mbps</span></p>
+                        </div>
+                    </div>
+                `, 'bar-chart-2');
+            }
+        }
+
+        function renderNetwork(query) {
+            if (query === '?lan') {
+                return UI.card('Konfiguracja Sieci Lokalnej (LAN IPv4)', `
+                    <form onsubmit="event.preventDefault(); showToast('Zapisano ustawienia LAN. Nastąpi restart usług sieciowych.');">
+                        <div class="space-y-2 mb-6">
+                            ${UI.inputRow('Adres IP Routera', 'lan-ip', state.data.lan.ip, 'text', false, 'Domyślna brama dla urządzeń w sieci LAN')}
+                            ${UI.inputRow('Maska podsieci', 'lan-mask', state.data.lan.mask)}
+                            ${UI.inputRow('Nazwa Domeny (LAN)', 'lan-domain', 'lan')}
+                        </div>
+                        <div class="pt-4 border-t border-gray-100">
+                            ${UI.buttonPrimary('Zastosuj Ustawienia', 'save')}
+                        </div>
+                    </form>
+                `, 'network');
+            } else if (query === '?dhcp') {
+                const staticLeaseRows = state.data.staticLeases.map(l => `
+                    <tr class="border-b border-gray-50 hover:bg-gray-50">
+                        <td class="p-2">${l.name}</td>
+                        <td class="p-2 font-mono text-xs">${l.mac}</td>
+                        <td class="p-2 font-mono">${l.ip}</td>
+                        <td class="p-2 text-right">
+                            <button class="text-gray-400 hover:text-play-danger p-1" onclick="showToast('Usunięto wpis')"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                return `
+                    ${UI.card('Serwer DHCP', `
+                        <form onsubmit="event.preventDefault(); showToast('Zapisano ustawienia DHCP');">
+                            <div class="space-y-2 mb-6">
+                                ${UI.toggleRow('Włącz Serwer DHCP', 'dhcp-enabled', state.data.lan.dhcpEnabled)}
+                                ${UI.inputRow('Początkowy Adres IP', 'dhcp-start', state.data.lan.dhcpStart)}
+                                ${UI.inputRow('Końcowy Adres IP', 'dhcp-end', state.data.lan.dhcpEnd)}
+                                ${UI.selectRow('Czas dzierżawy', 'dhcp-lease', ['3600 (1h)', '7200 (2h)', '86400 (24h)', 'Nieskończony'], '86400 (24h)')}
+                            </div>
+                            <div class="pt-4 border-t border-gray-100">
+                                ${UI.buttonPrimary('Zapisz DHCP', 'save')}
+                            </div>
+                        </form>
+                    `, 'server')}
+
+                    ${UI.card('Statyczne przypisywanie adresów IP', `
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-sm text-gray-500">Przypisz stały adres IP dla wybranych urządzeń na podstawie ich adresu MAC.</p>
+                            <button onclick="openModal('Dodaj Rezerwację IP', getGenericForm(['Nazwa', 'MAC', 'IP']))" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Dodaj wpis</button>
+                        </div>
+                        <div class="overflow-x-auto border border-gray-200 rounded-xl">
+                            <table class="w-full text-left text-sm min-w-[500px]">
+                                <thead class="bg-gray-50 text-gray-600 text-xs uppercase">
+                                    <tr>
+                                        <th class="p-3 font-semibold">Nazwa</th>
+                                        <th class="p-3 font-semibold">Adres MAC</th>
+                                        <th class="p-3 font-semibold">Adres IP</th>
+                                        <th class="p-3 font-semibold text-right">Akcja</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${staticLeaseRows || '<tr><td colspan="4" class="p-4 text-center text-gray-400 text-xs">Brak zdefiniowanych rezerwacji</td></tr>'}
+                                </tbody>
+                            </table>
+                        </div>
+                    `, 'lock')}
+                `;
+            } else if (query === '?ipv6') {
+                return UI.card('Konfiguracja IPv6', `
+                    <form onsubmit="event.preventDefault(); showToast('Zapisano ustawienia IPv6');">
+                        <div class="space-y-2 mb-6">
+                            ${UI.toggleRow('Włącz obsługę IPv6', 'ipv6-en', state.data.ipv6.enabled)}
+                            ${UI.selectRow('Tryb konfiguracji WAN', 'ipv6-mode', ['Auto', 'SLAAC/DHCPv6', 'Static'], state.data.ipv6.mode)}
+                            ${UI.inputRow('Uzyskany Prefiks IPv6', 'ipv6-prefix', state.data.ipv6.prefix, 'text', true, '', 'font-mono')}
+                        </div>
+                        <div class="pt-4 border-t border-gray-100">
+                            ${UI.buttonPrimary('Zastosuj Ustawienia', 'save')}
+                        </div>
+                        <div class="mt-4 p-3 bg-blue-50 text-blue-700 text-xs rounded-lg border border-blue-100 flex gap-2">
+                            <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
+                            Konektywność IPv6 jest automatycznie negocjowana z siecią operatora PLAY. Ręczna zmiana parametrów może spowodować utratę dostępu do sieci w standardzie IPv6.
+                        </div>
+                    </form>
+                `, 'globe-2');
+            }
+        }
+
+        function renderWifi(query) {
+            if (query === '?config') {
+                return `
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        ${UI.card('Sieć Główna 2.4 GHz', `
+                            <form onsubmit="event.preventDefault(); showToast('Zapisano Wi-Fi 2.4G');">
+                                <div class="space-y-2 mb-4">
+                                    ${UI.toggleRow('Włącz Wi-Fi 2.4G', 'w24-en', state.data.wifi24.enabled)}
+                                    ${UI.inputRow('Nazwa Sieci (SSID)', 'w24-ssid', state.data.wifi24.ssid)}
+                                    
+                                    <div class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-50">
+                                        <div class="sm:w-1/3 text-sm text-gray-600 font-medium mb-1">Hasło</div>
+                                        <div class="sm:w-2/3 relative sm:max-w-md">
+                                            <input type="password" id="w24-pwd" value="${state.data.wifi24.pwd}" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-play-violet pr-10" />
+                                            <button type="button" onclick="togglePassword('w24-pwd', 'w24-eye')" class="absolute right-3 top-2.5 text-gray-400 hover:text-play-violet"><i data-lucide="eye" id="w24-eye" class="w-4 h-4"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    ${UI.selectRow('Zabezpieczenia', 'w24-sec', ['Brak', 'WPA2-PSK (AES)', 'WPA2/WPA3-SAE Mixed'], state.data.wifi24.security)}
+                                    ${UI.selectRow('Kanał', 'w24-ch', ['Auto', '1', '6', '11'], state.data.wifi24.channel)}
+                                </div>
+                                ${UI.buttonPrimary('Zastosuj 2.4 GHz', '')}
+                            </form>
+                        `, 'wifi')}
+
+                        ${UI.card('Sieć Główna 5.0 GHz', `
+                            <form onsubmit="event.preventDefault(); showToast('Zapisano Wi-Fi 5.0G');">
+                                <div class="space-y-2 mb-4">
+                                    ${UI.toggleRow('Włącz Wi-Fi 5.0G', 'w5-en', state.data.wifi5.enabled)}
+                                    ${UI.inputRow('Nazwa Sieci (SSID)', 'w5-ssid', state.data.wifi5.ssid)}
+                                    
+                                    <div class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-50">
+                                        <div class="sm:w-1/3 text-sm text-gray-600 font-medium mb-1">Hasło</div>
+                                        <div class="sm:w-2/3 relative sm:max-w-md">
+                                            <input type="password" id="w5-pwd" value="${state.data.wifi5.pwd}" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-play-violet pr-10" />
+                                            <button type="button" onclick="togglePassword('w5-pwd', 'w5-eye')" class="absolute right-3 top-2.5 text-gray-400 hover:text-play-violet"><i data-lucide="eye" id="w5-eye" class="w-4 h-4"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    ${UI.selectRow('Zabezpieczenia', 'w5-sec', ['Brak', 'WPA2-PSK (AES)', 'WPA2/WPA3-SAE Mixed'], state.data.wifi5.security)}
+                                    ${UI.selectRow('Kanał', 'w5-ch', ['Auto (44)', '36', '40', '44', '48', '149'], state.data.wifi5.channel)}
+                                </div>
+                                ${UI.buttonPrimary('Zastosuj 5.0 GHz', '')}
+                            </form>
+                        `, 'wifi')}
+                    </div>
+                `;
+            } else if (query === '?guest') {
+                return UI.card('Sieć dla Gości (Guest Network)', `
+                    <form onsubmit="event.preventDefault(); showToast('Zapisano ustawienia sieci dla gości');">
+                        <p class="text-sm text-gray-500 mb-6">Utwórz odrębną sieć bezprzewodową dla gości, zapewniając im dostęp do internetu bez wglądu w Twoją sieć lokalną.</p>
+                        <div class="space-y-2 mb-6 max-w-2xl">
+                            ${UI.toggleRow('Włącz Sieć dla Gości', 'guest-en', state.data.guest.enabled)}
+                            ${UI.inputRow('Nazwa Sieci (SSID)', 'guest-ssid', state.data.guest.ssid)}
+                            <div class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-50">
+                                <div class="sm:w-1/3 text-sm text-gray-600 font-medium mb-1">Hasło</div>
+                                <div class="sm:w-2/3 relative sm:max-w-md">
+                                    <input type="password" id="guest-pwd" value="${state.data.guest.pwd}" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-play-violet pr-10" placeholder="Pozostaw puste dla sieci otwartej"/>
+                                    <button type="button" onclick="togglePassword('guest-pwd', 'guest-eye')" class="absolute right-3 top-2.5 text-gray-400 hover:text-play-violet"><i data-lucide="eye" id="guest-eye" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                            ${UI.toggleRow('Izolacja Gości', 'guest-iso', state.data.guest.isolation, 'Klienci sieci dla gości nie będą widzieć się nawzajem ani urządzeń w sieci głównej (LAN)')}
+                        </div>
+                        ${UI.buttonPrimary('Zapisz Ustawienia', 'save')}
+                    </form>
+                `, 'users');
+            } else if (query === '?mesh') {
+                return UI.card('PLAY EasyMesh & WPS', `
+                    <div class="p-4 bg-purple-50 rounded-xl border border-purple-100 mb-6 flex items-start gap-3">
+                        <i data-lucide="network" class="w-6 h-6 text-play-violet shrink-0 mt-0.5"></i>
+                        <div>
+                            <h4 class="font-bold text-play-purple">EasyMesh Controller</h4>
+                            <p class="text-xs text-gray-600 mt-1">Twój router domyślnie pracuje jako kontroler sieci Mesh. Możesz sparować dodatkowe wzmacniacze sygnału (np. PLAY Booster), używając przycisku WPS.</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="border border-gray-200 rounded-xl p-5">
+                            <h4 class="font-bold text-gray-800 mb-4">Sterowanie Pasmem (Band Steering)</h4>
+                            ${UI.toggleRow('Połącz 2.4G i 5G w jedną nazwę', 'band-steer', true, 'Router automatycznie wybierze optymalne pasmo dla urządzenia')}
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-xl p-5">
+                            <h4 class="font-bold text-gray-800 mb-4">Parowanie urządzeń (WPS)</h4>
+                            <p class="text-sm text-gray-500 mb-4">Naciśnij poniższy przycisk, aby aktywować tryb parowania na 2 minuty. W tym czasie naciśnij WPS na urządzeniu, które chcesz podłączyć.</p>
+                            <button onclick="showToast('Aktywowano proces parowania WPS na 120 sekund.')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-md shadow-blue-900/20 flex items-center gap-2 transition-all">
+                                <i data-lucide="radio" class="w-5 h-5 animate-pulse"></i> Rozpocznij parowanie WPS (PBC)
+                            </button>
+                        </div>
+                    </div>
+                `, 'radio');
+            }
+        }
+
+        function renderNat(query) {
+            if (query === '?forward') {
+                const rows = state.data.portForwards.map(r => `
+                    <tr class="border-b border-gray-50 hover:bg-gray-50">
+                        <td class="p-3 font-medium text-gray-800">${r.name}</td>
+                        <td class="p-3 font-mono text-sm text-gray-600">${r.ip}</td>
+                        <td class="p-3 text-sm">${r.proto}</td>
+                        <td class="p-3 font-mono text-sm text-blue-600">${r.extPort}</td>
+                        <td class="p-3 font-mono text-sm">${r.intPort}</td>
+                        <td class="p-3 text-right">
+                            <button class="text-gray-400 hover:text-play-danger p-1" onclick="showToast('Usunięto regułę')"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                return UI.card('Przekierowanie Portów (Port Forwarding)', `
+                    <div class="flex justify-between items-center mb-4">
+                        <p class="text-sm text-gray-500 max-w-lg">Otwórz porty dla gier, serwerów lub aplikacji, kierując ruch zewnętrzny na konkretne urządzenie w sieci LAN.</p>
+                        <button onclick="openModal('Nowa Reguła NAT', getGenericForm(['Nazwa', 'IP Wewnętrzne', 'Protokół', 'Port Zewnętrzny', 'Port Wewnętrzny']))" class="bg-play-violet text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 hover:bg-play-purple transition-colors shadow-sm"><i data-lucide="plus" class="w-4 h-4"></i> Nowa reguła</button>
+                    </div>
+                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
+                        <table class="w-full text-left min-w-[600px]">
+                            <thead class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-3 font-semibold rounded-tl-xl">Nazwa Reguły</th>
+                                    <th class="p-3 font-semibold">Adres IP Wewn.</th>
+                                    <th class="p-3 font-semibold">Protokół</th>
+                                    <th class="p-3 font-semibold">Port Zewn.</th>
+                                    <th class="p-3 font-semibold">Port Wewn.</th>
+                                    <th class="p-3 font-semibold text-right rounded-tr-xl">Akcja</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                ${rows || '<tr><td colspan="6" class="p-6 text-center text-gray-400 text-sm">Brak zdefiniowanych reguł.</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                `, 'arrow-right-left');
+            } else if (query === '?dmz') {
+                return UI.card('Strefa DMZ (Demilitarized Zone)', `
+                    <form onsubmit="event.preventDefault(); showToast('Zapisano ustawienia DMZ');">
+                        <div class="p-4 bg-orange-50 rounded-xl border border-orange-200 mb-6 flex items-start gap-3">
+                            <i data-lucide="alert-triangle" class="w-6 h-6 text-orange-500 shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="font-bold text-orange-800">Ostrzeżenie bezpieczeństwa</h4>
+                                <p class="text-xs text-orange-700 mt-1">Ustawienie hosta DMZ powoduje całkowite wystawienie podanego adresu IP na ruch z zewnątrz, omijając Zaporę. Stosuj tylko w przypadku ostateczności (np. problematyczna konsola do gier).</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4 mb-6">
+                            ${UI.toggleRow('Włącz DMZ', 'dmz-en', state.data.dmz.enabled)}
+                            ${UI.inputRow('Adres IP Hosta DMZ', 'dmz-ip', state.data.dmz.ip, 'text', false, 'Adres LAN urządzenia wystawianego na zewnątrz')}
+                        </div>
+                        ${UI.buttonPrimary('Zastosuj DMZ', 'shield-alert')}
+                    </form>
+                `, 'target');
+            } else if (query === '?upnp') {
+                 return UI.card('Universal Plug and Play (UPnP)', `
+                    <form onsubmit="event.preventDefault(); showToast('Zapisano UPnP');" class="mb-8">
+                        <p class="text-sm text-gray-500 mb-4">UPnP pozwala urządzeniom w sieci LAN automatycznie otwierać wymagane porty. Znacznie ułatwia to korzystanie z gier sieciowych (Open NAT) oraz komunikatorów.</p>
+                        <div class="space-y-4 mb-6">
+                            ${UI.toggleRow('Włącz UPnP', 'upnp-en', state.data.upnp.enabled)}
+                        </div>
+                        ${UI.buttonPrimary('Zastosuj UPnP', 'save')}
+                    </form>
+                    
+                    <h4 class="font-bold text-gray-800 mb-3 text-sm">Aktywne przekierowania UPnP</h4>
+                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
+                        <table class="w-full text-left text-sm min-w-[500px]">
+                            <thead class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-3 font-semibold">Protokół</th>
+                                    <th class="p-3 font-semibold">Port Zewn.</th>
+                                    <th class="p-3 font-semibold">Adres IP (LAN)</th>
+                                    <th class="p-3 font-semibold">Port Wewn.</th>
+                                    <th class="p-3 font-semibold">Opis (App)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                ${state.data.upnp.leases.map(l => `
+                                    <tr>
+                                        <td class="p-3">${l.proto}</td>
+                                        <td class="p-3 font-mono">${l.extPort}</td>
+                                        <td class="p-3 font-mono text-gray-600">${l.ip}</td>
+                                        <td class="p-3 font-mono">${l.intPort}</td>
+                                        <td class="p-3 text-gray-500 text-xs">${l.desc}</td>
+                                    </tr>
+                                `).join('') || '<tr><td colspan="5" class="p-4 text-center text-gray-400">Brak aktywnych przekierowań UPnP</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                `, 'plug');
+            }
+        }
+
+        function renderSecurity(query) {
+            if (query === '?firewall') {
+                return UI.card('Poziom Zapory (Firewall)', `
+                    <form onsubmit="event.preventDefault(); showToast('Zaktualizowano zaporę');">
+                        <p class="text-sm text-gray-600 mb-6">Wybierz poziom zabezpieczeń chroniący Twoją sieć domową przed atakami z zewnątrz.</p>
+                        <div class="space-y-4 mb-8">
+                            <label class="flex items-start gap-4 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors ${state.data.firewallLevel === 'Wysoki' ? 'border-play-violet bg-purple-50/50' : ''}">
+                                <input type="radio" name="fwLevel" value="Wysoki" class="mt-1 accent-play-violet w-4 h-4" ${state.data.firewallLevel === 'Wysoki' ? 'checked' : ''}>
+                                <div>
+                                    <div class="font-bold text-gray-800">Wysoki</div>
+                                    <div class="text-xs text-gray-500 mt-1">Blokuje cały niepożądany ruch wchodzący. Zalecane dla maksymalnego bezpieczeństwa, ale może sprawiać problemy w grach sieciowych (Strict NAT).</div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start gap-4 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors ${state.data.firewallLevel === 'Średni' ? 'border-play-violet bg-purple-50/50' : ''}">
+                                <input type="radio" name="fwLevel" value="Średni" class="mt-1 accent-play-violet w-4 h-4" ${state.data.firewallLevel === 'Średni' ? 'checked' : ''}>
+                                <div>
+                                    <div class="font-bold text-gray-800 flex items-center gap-2">Średni <span class="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest">Zalecany</span></div>
+                                    <div class="text-xs text-gray-500 mt-1">Podstawowa ochrona. Przepuszcza pakiety dla znanych sesji (Stateful Packet Inspection) i akceptuje UPnP. (NAT typu 2).</div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start gap-4 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors ${state.data.firewallLevel === 'Wyłączony' ? 'border-play-violet bg-purple-50/50' : ''}">
+                                <input type="radio" name="fwLevel" value="Wyłączony" class="mt-1 accent-play-violet w-4 h-4" ${state.data.firewallLevel === 'Wyłączony' ? 'checked' : ''}>
+                                <div>
+                                    <div class="font-bold text-red-600">Wyłączony</div>
+                                    <div class="text-xs text-gray-500 mt-1">Brak ochrony przed atakami z zewnątrz. Stosuj tylko w celach testowych.</div>
+                                </div>
+                            </label>
+                        </div>
+                        ${UI.buttonPrimary('Zastosuj Poziom Zabezpieczeń', 'shield')}
+                    </form>
+                `, 'shield-check');
+            } else if (query === '?filter-mac') {
+                return UI.card('Filtrowanie Adresów MAC', `
+                    <div class="mb-6">
+                        ${UI.selectRow('Domyślna polityka list', 'mac-policy', ['Zezwól (Czarna lista)', 'Odrzuć (Biała lista)'], state.data.macPolicy, 'Zezwól: blokuje wpisane MAC. Odrzuć: dopuszcza tylko wpisane MAC.')}
+                    </div>
+                    <div class="flex justify-between items-center mb-4 border-t border-gray-100 pt-6">
+                        <h4 class="font-bold text-gray-800 text-sm">Reguły filtrowania</h4>
+                        <button onclick="openModal('Dodaj Regułę MAC', getGenericForm(['Nazwa Urządzenia', 'Adres MAC']))" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Dodaj wpis</button>
+                    </div>
+                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
+                        <table class="w-full text-left text-sm min-w-[400px]">
+                            <thead class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-3 font-semibold">Nazwa</th>
+                                    <th class="p-3 font-semibold">Adres MAC</th>
+                                    <th class="p-3 font-semibold text-right">Akcja</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                ${state.data.macFilters.map(f => `
+                                    <tr>
+                                        <td class="p-3">${f.name}</td>
+                                        <td class="p-3 font-mono text-gray-600">${f.mac}</td>
+                                        <td class="p-3 text-right"><button class="text-gray-400 hover:text-play-danger p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                                    </tr>
+                                `).join('') || '<tr><td colspan="3" class="p-4 text-center text-gray-400">Brak reguł</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                `, 'mac'); // Assuming no mac icon, use layout or similar, fallback is fine
+            } else if (query === '?filter-ip') {
+                 return UI.card('Filtrowanie IP i Portów', `
+                    <div class="flex justify-between items-center mb-4">
+                        <p class="text-sm text-gray-500">Blokuj lub przepuszczaj specyficzny ruch sieciowy na podstawie adresów IP i portów.</p>
+                        <button onclick="openModal('Dodaj Regułę IP/Port', getGenericForm(['Nazwa', 'Zrodlowe IP', 'Docelowe IP', 'Protokol (TCP/UDP)', 'Port', 'Akcja (Zezwol/Odrzuc)']))" class="bg-play-violet text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 hover:bg-play-purple transition-colors shadow-sm"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Dodaj regułę</button>
+                    </div>
+                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
+                        <table class="w-full text-left text-sm min-w-[600px]">
+                            <thead class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-3 font-semibold">Nazwa</th>
+                                    <th class="p-3 font-semibold">Źródło</th>
+                                    <th class="p-3 font-semibold">Cel</th>
+                                    <th class="p-3 font-semibold">Proto:Port</th>
+                                    <th class="p-3 font-semibold">Akcja</th>
+                                    <th class="p-3 font-semibold text-right">Usuń</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                ${state.data.ipFilters.map(f => `
+                                    <tr>
+                                        <td class="p-3 font-medium">${f.name}</td>
+                                        <td class="p-3 font-mono text-xs">${f.srcIp}</td>
+                                        <td class="p-3 font-mono text-xs">${f.dstIp}</td>
+                                        <td class="p-3 text-xs">${f.proto}:${f.port}</td>
+                                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold ${f.action === 'Odrzuć' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">${f.action}</span></td>
+                                        <td class="p-3 text-right"><button class="text-gray-400 hover:text-play-danger p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                                    </tr>
+                                `).join('') || '<tr><td colspan="6" class="p-4 text-center text-gray-400">Brak reguł filtrowania IP</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                `, 'filter');
+            } else if (query === '?parental') {
+                 return UI.card('Kontrola Rodzicielska', `
+                    <p class="text-sm text-gray-500 mb-6">Ogranicz dostęp do internetu dla wybranych urządzeń w określonych godzinach i dniach tygodnia.</p>
+                    <div class="flex justify-end mb-4">
+                        <button onclick="openModal('Harmonogram', getGenericForm(['Nazwa Dziecka', 'MAC Urządzenia', 'Dni', 'Godziny (Od-Do)']))" class="bg-play-violet text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 hover:bg-play-purple transition-colors shadow-sm"><i data-lucide="clock" class="w-4 h-4"></i> Dodaj harmonogram</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${state.data.parental.map(p => `
+                            <div class="border border-gray-200 rounded-xl p-4 flex justify-between items-start hover:border-play-violet/50 transition-colors bg-gray-50/30">
+                                <div>
+                                    <div class="font-bold text-gray-800 flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-play-violet"></i> ${p.name}</div>
+                                    <div class="text-xs font-mono text-gray-500 mt-1 mb-3">${p.mac}</div>
+                                    <div class="flex items-center gap-4 text-sm text-gray-600">
+                                        <div class="flex items-center gap-1"><i data-lucide="calendar" class="w-4 h-4 text-gray-400"></i> ${p.days}</div>
+                                        <div class="flex items-center gap-1"><i data-lucide="clock-4" class="w-4 h-4 text-gray-400"></i> ${p.time}</div>
+                                    </div>
+                                    <div class="text-[10px] text-red-500 font-semibold mt-2">AKCJA: BLOKADA INTERNETU</div>
+                                </div>
+                                <button class="text-gray-400 hover:text-play-danger"><i data-lucide="x-circle" class="w-5 h-5"></i></button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `, 'users');
+            }
+        }
+
+        function renderAdvanced(query) {
+            if (query === '?ddns') {
+                return UI.card('Dynamiczny DNS (DDNS)', `
+                    <form onsubmit="event.preventDefault(); showToast('Zapisano ustawienia DDNS');">
+                        <p class="text-sm text-gray-500 mb-6">Skonfiguruj usługę DDNS, aby łączyć się z routerem z zewnątrz za pomocą łatwej do zapamiętania nazwy domenowej, nawet jeśli masz zmienne publiczne IP.</p>
+                        <div class="space-y-2 mb-6">
+                            ${UI.toggleRow('Włącz DDNS', 'ddns-en', state.data.ddns.enabled)}
+                            ${UI.selectRow('Dostawca', 'ddns-prov', ['dyndns.org', 'no-ip.com', 'freedns.afraid.org', 'duckdns.org'], state.data.ddns.provider)}
+                            ${UI.inputRow('Nazwa Domeny', 'ddns-dom', state.data.ddns.domain, 'text', false, 'np. mojadomena.no-ip.org')}
+                            ${UI.inputRow('Nazwa Użytkownika', 'ddns-usr', state.data.ddns.user)}
+                            ${UI.inputRow('Hasło / Token', 'ddns-pwd', '', 'password')}
+                        </div>
+                        <div class="pt-4 border-t border-gray-100 flex items-center gap-4">
+                            ${UI.buttonPrimary('Zastosuj', 'save')}
+                            <span class="text-xs text-gray-400 font-mono">Status: Rozłączony</span>
+                        </div>
+                    </form>
+                `, 'globe');
+            } else if (query === '?vpn') {
+                 return UI.card('Serwer VPN', `
+                    <form onsubmit="event.preventDefault(); showToast('Zapisano ustawienia Serwera VPN');">
+                        <div class="flex items-center gap-4 mb-6 p-4 border border-gray-200 rounded-xl bg-gray-50">
+                            <i data-lucide="shield" class="w-8 h-8 text-play-violet"></i>
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-sm">Wbudowany Serwer VPN</h4>
+                                <p class="text-xs text-gray-500">Uzyskuj bezpieczny dostęp do swojej sieci domowej z dowolnego miejsca na świecie.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4 mb-6">
+                            ${UI.toggleRow('Włącz Serwer VPN', 'vpn-en', state.data.vpn.serverEnabled)}
+                            ${UI.selectRow('Protokół VPN', 'vpn-proto', ['WireGuard', 'OpenVPN'], state.data.vpn.proto)}
+                            ${UI.inputRow('Port Nasłuchiwania', 'vpn-port', state.data.vpn.port, 'number')}
+                        </div>
+                        <div class="pt-4 border-t border-gray-100 mb-6">
+                            ${UI.buttonPrimary('Zapisz konfigurację', 'save')}
+                        </div>
+                        
+                        <div class="border border-dashed border-gray-300 rounded-xl p-6 text-center">
+                            <i data-lucide="file-key-2" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
+                            <h5 class="text-sm font-bold text-gray-700 mb-1">Klienci VPN (Pliki Konfiguracyjne)</h5>
+                            <p class="text-xs text-gray-500 mb-4">Wygeneruj konfigurację dla swoich urządzeń mobilnych lub komputerów.</p>
+                            <button type="button" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg text-xs font-semibold inline-flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Pobierz plik .conf</button>
+                        </div>
+                    </form>
+                `, 'lock');
+            } else if (query === '?routing') {
+                return UI.card('Routing Statyczny', `
+                    <div class="flex justify-between items-center mb-4">
+                        <p class="text-sm text-gray-500">Zdefiniuj statyczne ścieżki routingu dla specyficznych podsieci.</p>
+                        <button onclick="openModal('Nowa Trasa', getGenericForm(['Sieć Docelowa', 'Maska', 'Brama', 'Interfejs']))" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Dodaj trasę</button>
+                    </div>
+                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
+                        <table class="w-full text-left text-sm min-w-[500px]">
+                            <thead class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-3 font-semibold">Sieć Docelowa</th>
+                                    <th class="p-3 font-semibold">Maska</th>
+                                    <th class="p-3 font-semibold">Brama (Gateway)</th>
+                                    <th class="p-3 font-semibold">Interfejs</th>
+                                    <th class="p-3 font-semibold text-right">Usuń</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 font-mono text-xs text-gray-600">
+                                ${state.data.routing.map(r => `
+                                    <tr>
+                                        <td class="p-3">${r.net}</td>
+                                        <td class="p-3">${r.mask}</td>
+                                        <td class="p-3">${r.gw}</td>
+                                        <td class="p-3 font-sans font-semibold">${r.iface}</td>
+                                        <td class="p-3 text-right"><button class="text-gray-400 hover:text-play-danger p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `, 'git-commit');
+            }
+        }
+
+        function renderAdmin(query) {
+            if (query === '?password') {
+                return UI.card('Zmiana Hasła Administratora', `
+                    <form onsubmit="event.preventDefault(); showToast('Hasło zostało zmienione. Przy następnym logowaniu użyj nowego hasła.'); document.getElementById('pw1').value=''; document.getElementById('pw2').value=''; document.getElementById('pw3').value='';">
+                        <div class="max-w-md space-y-4 mb-6">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">STARE HASŁO</label>
+                                <input type="password" id="pw1" class="w-full bg-gray-50 border border-gray-200 text-gray-900 py-2.5 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-play-violet" required />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">NOWE HASŁO</label>
+                                <input type="password" id="pw2" class="w-full bg-gray-50 border border-gray-200 text-gray-900 py-2.5 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-play-violet" required />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">POTWIERDŹ NOWE HASŁO</label>
+                                <input type="password" id="pw3" class="w-full bg-gray-50 border border-gray-200 text-gray-900 py-2.5 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-play-violet" required />
+                            </div>
+                        </div>
+                        ${UI.buttonPrimary('Zmień Hasło', 'key')}
+                    </form>
+                `, 'key');
+            } else if (query === '?backup') {
+                return UI.card('Zarządzanie Konfiguracją', `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border border-gray-200 rounded-xl p-6 flex flex-col items-center text-center">
+                            <i data-lucide="download-cloud" class="w-10 h-10 text-play-violet mb-3"></i>
+                            <h4 class="font-bold text-gray-800 mb-2">Kopia Zapasowa (Backup)</h4>
+                            <p class="text-xs text-gray-500 mb-6 flex-1">Pobierz plik zawierający wszystkie obecne ustawienia routera na dysk komputera.</p>
+                            <button onclick="showToast('Rozpoczęto pobieranie pliku config.bin')" class="w-full bg-play-violet hover:bg-play-purple text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-all">Pobierz Backup</button>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-xl p-6 flex flex-col items-center text-center">
+                            <i data-lucide="upload-cloud" class="w-10 h-10 text-blue-500 mb-3"></i>
+                            <h4 class="font-bold text-gray-800 mb-2">Przywróć Konfigurację</h4>
+                            <p class="text-xs text-gray-500 mb-6 flex-1">Wgraj zapisany wcześniej plik konfiguracyjny, aby przywrócić ustawienia.</p>
+                            <button onclick="document.getElementById('file-upload').click()" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-all">Wybierz plik i wgraj</button>
+                            <input type="file" id="file-upload" class="hidden" accept=".bin" onchange="if(this.files.length) showToast('Wgrywanie konfiguracji...')">
+                        </div>
+                    </div>
+                    <div class="mt-8 p-5 bg-red-50 rounded-xl border border-red-100 flex items-center justify-between flex-wrap gap-4">
+                        <div>
+                            <h4 class="font-bold text-red-700 text-sm">Przywracanie Ustawień Fabrycznych</h4>
+                            <p class="text-xs text-red-600 mt-1">Usunie wszystkie dane i przywróci ustawienia domyślne operatora.</p>
+                        </div>
+                        <button onclick="if(confirm('UWAGA! Skasujesz całą konfigurację. Kontynuować?')) startReboot();" class="bg-white border border-red-200 text-red-600 hover:bg-red-600 hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm">Resetuj Router</button>
+                    </div>
+                `, 'hard-drive');
+            } else if (query === '?firmware') {
+                return UI.card('Aktualizacja Oprogramowania', `
+                    <div class="p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6 text-center">
+                        <i data-lucide="cpu" class="w-12 h-12 text-gray-400 mx-auto mb-3"></i>
+                        <h4 class="font-bold text-gray-800">PLAY BOX AR5341</h4>
+                        <p class="text-sm font-mono text-gray-500 mt-1 mb-6">Wersja Firmware: v2.1.0_PRO_b12</p>
+                        <button onclick="showToast('Brak nowych aktualizacji w systemie TR-069 operatora.')" class="bg-play-violet text-white px-6 py-2.5 rounded-xl font-bold shadow-md shadow-purple-900/10 hover:bg-play-purple transition-colors inline-flex items-center gap-2"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Sprawdź aktualizacje OTA</button>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-800 mb-2">Aktualizacja z pliku lokalnego</h4>
+                        <p class="text-xs text-gray-500 mb-4">Używaj tylko oficjalnego oprogramowania dostarczonego przez PLAY. Przerwanie procesu wgrywania może uszkodzić router.</p>
+                        <div class="flex gap-2">
+                            <input type="file" id="fw-upload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 border border-gray-200 rounded-lg bg-white" accept=".bin">
+                            <button onclick="if(document.getElementById('fw-upload').files.length) showToast('Rozpoczęto flashowanie firmware...'); else showToast('Wybierz plik!', true);" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-700">Wgraj</button>
+                        </div>
+                    </div>
+                `, 'download-cloud');
+            } else if (query === '?reboot') {
+                return UI.card('Restart Urządzenia', `
+                    <div class="flex flex-col items-center justify-center text-center max-w-lg mx-auto py-8">
+                        <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center text-play-danger mb-4 shadow-inner">
+                            <i data-lucide="power" class="w-10 h-10"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Ponowne Uruchomienie</h3>
+                        <p class="text-sm text-gray-500 mb-8">Czy na pewno chcesz zrestartować router? Proces ten potrwa około 2 minut. W tym czasie dostęp do internetu zostanie przerwany.</p>
+                        
+                        <div id="reboot-area" class="w-full">
+                            <button onclick="startReboot()" class="w-full sm:w-auto bg-play-danger hover:bg-red-600 text-white px-8 py-3.5 rounded-xl font-bold shadow-lg shadow-red-900/20 transition-all flex justify-center items-center gap-2 mx-auto">
+                                <i data-lucide="refresh-cw" class="w-5 h-5"></i> Uruchom Ponownie
+                            </button>
+                        </div>
+                    </div>
+                `, 'power');
+            } else if (query === '?logs') {
+                return UI.card('Logi Systemowe', `
+                    <div class="bg-gray-900 rounded-xl p-4 font-mono text-[11px] sm:text-xs text-green-400 h-[28rem] overflow-y-auto shadow-inner leading-relaxed select-all">
+[2026-09-05 02:40:12] [SYSTEM] Router booted successfully. GUI v2.1.0_PRO_b12
+[2026-09-05 02:40:15] [WAN] GPON interface linked up (1000 Mbps Full Duplex)
+[2026-09-05 02:40:18] [DHCPC] Sending DISCOVER on interface wan.
+[2026-09-05 02:40:18] [DHCPC] Received OFFER from 10.0.0.1
+[2026-09-05 02:40:19] [DHCPC] Bound IP 89.64.12.233 / Mask 255.255.255.0
+[2026-09-05 02:40:20] [WLAN] Radio 2.4G init: Channel Auto, TX 100%
+[2026-09-05 02:40:21] [WLAN] Radio 5.0G init: Channel 44, TX 100%
+[2026-09-05 02:41:05] [DHCPS] Lease granted to AA:BB:CC:DD:EE:11 (192.168.1.15)
+[2026-09-05 02:45:33] [DHCPS] Lease granted to 11:22:33:44:55:66 (192.168.1.20)
+[2026-09-05 02:50:11] [TR069] CWMP session successful.
+[2026-09-05 02:53:01] [WEBUI] Admin login from 192.168.1.15 success.
+[2026-09-05 03:00:22] [FIREWALL] Drop TCP packet from 45.33.12.1:443
+[2026-09-05 03:05:14] [WLAN] Auth success MAC: 12:34:56:78:90:AB (WPA3-SAE)
+                    </div>
+                    <div class="mt-4 flex flex-wrap gap-3">
+                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2" onclick="showToast('Pobieranie logów...')"><i data-lucide="download" class="w-4 h-4"></i> Zapisz Logi</button>
+                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 text-play-danger" onclick="showToast('Wyczyszczono bufor systemowy.')"><i data-lucide="trash" class="w-4 h-4"></i> Wyczyść</button>
+                    </div>
+                `, 'terminal');
+            }
+        }
+
+        // GŁÓWNY ROUTER WIDOKÓW
+        function renderViewContent(base, query) {
+            const container = document.getElementById('view-content');
+            
+            if (base === '/#/home/status') container.innerHTML = renderStatus(query);
+            else if (base === '/#/home/network') container.innerHTML = renderNetwork(query);
+            else if (base === '/#/home/wifi') container.innerHTML = renderWifi(query);
+            else if (base === '/#/home/nat') container.innerHTML = renderNat(query);
+            else if (base === '/#/home/security') container.innerHTML = renderSecurity(query);
+            else if (base === '/#/home/advanced') container.innerHTML = renderAdvanced(query);
+            else if (base === '/#/home/administration') container.innerHTML = renderAdmin(query);
+            else container.innerHTML = UI.emptyState('Brak widoku dla tej ścieżki.', 'alert-triangle');
+        }
+
+        // --- FUNKCJE POMOCNICZE / MODALE ---
+        function openModal(title, content) {
+            const b = document.getElementById('modal-backdrop');
+            const c = document.getElementById('modal-content');
+            
+            c.innerHTML = `
+                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl sticky top-0 z-10">
+                    <h3 class="font-bold text-gray-800">${title}</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 p-1 bg-white rounded-md shadow-sm border border-gray-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-6">
+                    ${content}
+                </div>
+            `;
+            lucide.createIcons();
+            
+            b.classList.remove('hidden');
+            setTimeout(() => {
+                b.classList.add('opacity-100');
+                c.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        function closeModal() {
+            const b = document.getElementById('modal-backdrop');
+            const c = document.getElementById('modal-content');
+            
+            b.classList.remove('opacity-100');
+            c.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                b.classList.add('hidden');
+            }, 300);
+        }
+
+        function getGenericForm(fields) {
+            const inputs = fields.map(f => `
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">${f}</label>
+                    <input type="text" class="w-full bg-gray-50 border border-gray-200 text-gray-900 py-2.5 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-play-violet" required />
+                </div>
+            `).join('');
+
+            return `
+                <form onsubmit="event.preventDefault(); closeModal(); showToast('Pomyślnie dodano nowy wpis.');">
+                    <div class="space-y-4 mb-6">
+                        ${inputs}
+                    </div>
+                    <div class="flex gap-3 justify-end pt-4 border-t border-gray-100">
+                        <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors">Anuluj</button>
+                        ${UI.buttonPrimary('Zapisz', '')}
+                    </div>
+                </form>
+            `;
+        }
+
+        function startReboot() {
+            const area = document.getElementById('reboot-area');
+            area.innerHTML = `
+                <div class="w-full max-w-sm mx-auto">
+                    <p class="text-sm font-bold text-gray-700 mb-2" id="reboot-pct">0%</p>
+                    <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-2 shadow-inner">
+                        <div id="reboot-bar" class="h-full bg-play-violet transition-all duration-300 w-0"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 animate-pulse mt-4">Restartowanie routera. Proszę czekać...</p>
+                </div>
+            `;
+            
+            let pct = 0;
+            const int = setInterval(() => {
+                pct += Math.floor(Math.random() * 8) + 2;
+                if(pct > 100) pct = 100;
+                
+                document.getElementById('reboot-bar').style.width = pct + '%';
+                document.getElementById('reboot-pct').innerText = pct + '%';
+                
+                if(pct === 100) {
+                    clearInterval(int);
+                    setTimeout(() => {
+                        logout();
+                        showToast('Urządzenie zostało pomyślnie zrestartowane.');
+                    }, 1000);
+                }
+            }, 300);
+        }
+
+    </script>
+</body>
+</html>
