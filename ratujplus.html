@@ -147,7 +147,7 @@
                 <div class="absolute left-3.5 text-slate-400 text-base pointer-events-none">
                     <i class="fa-solid fa-phone"></i>
                 </div>
-                <input type="tel" id="globalNumber" value="697135237" maxlength="11" oninput="handleNumberInput()" placeholder="np. 697135237" class="w-full bg-slate-100/80 border border-slate-200/90 text-slate-900 text-xl font-bold tracking-wider rounded-2xl pl-10 pr-24 py-3 outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 transition-all font-mono">
+                <input type="tel" id="globalNumber" value="NUMER_PLUS(" maxlength="11" oninput="handleNumberInput()" placeholder="np. NUMER_PLUS(" class="w-full bg-slate-100/80 border border-slate-200/90 text-slate-900 text-xl font-bold tracking-wider rounded-2xl pl-10 pr-24 py-3 outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 transition-all font-mono">
                 
                 <div class="absolute right-2 flex items-center gap-1">
                     <button onclick="clearGlobalNumber()" title="Wyczyść" class="w-8 h-8 rounded-xl bg-slate-200/70 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-xs transition-colors">
@@ -162,7 +162,7 @@
             <!-- Quick Contacts Chips -->
             <div class="flex items-center gap-2 mt-3 overflow-x-auto pb-1 text-xs no-scrollbar">
                 <span class="text-[11px] text-slate-400 font-medium whitespace-nowrap">Szybkie ustawienie:</span>
-                <button onclick="setQuickNumber('697135237')" class="px-2.5 py-1 rounded-xl bg-slate-200/60 hover:bg-emerald-100 hover:text-emerald-800 text-slate-700 font-medium text-[11px] transition-all whitespace-nowrap border border-slate-300/50">
+                <button onclick="setQuickNumber('NUMER_PLUS(')" class="px-2.5 py-1 rounded-xl bg-slate-200/60 hover:bg-emerald-100 hover:text-emerald-800 text-slate-700 font-medium text-[11px] transition-all whitespace-nowrap border border-slate-300/50">
                     Domyślny (697 135 237)
                 </button>
                 <button onclick="setQuickNumber('500123456')" class="px-2.5 py-1 rounded-xl bg-slate-200/60 hover:bg-emerald-100 hover:text-emerald-800 text-slate-700 font-medium text-[11px] transition-all whitespace-nowrap border border-slate-300/50">
@@ -205,7 +205,7 @@
 
                 <!-- Code display & actions -->
                 <div class="bg-slate-100/90 rounded-2xl p-3 border border-slate-200 mb-3 flex items-center justify-between font-mono text-xs text-slate-700">
-                    <span class="truncate mr-2 font-bold text-blue-900" id="ussdContactCode">*139*48697135237#</span>
+                    <span class="truncate mr-2 font-bold text-blue-900" id="ussdContactCode">*139*48NUMER_PLUS(#</span>
                     <button onclick="copyToClipboard(document.getElementById('ussdContactCode').innerText, 'Kod USSD skopiowany!')" class="text-slate-400 hover:text-slate-700 p-1 text-sm transition-colors">
                         <i class="fa-regular fa-copy"></i>
                     </button>
@@ -275,7 +275,7 @@
                 </div>
 
                 <p class="text-xs text-slate-600 mb-3 leading-relaxed">
-                    Przygotuj SMS z prośbą o przelew środków z konta innego abonenta Plus/Mix na numer <span id="teleTargetDisplay" class="font-mono font-bold text-slate-800">697135237</span>.
+                    Przygotuj SMS z prośbą o przelew środków z konta innego abonenta Plus/Mix na numer <span id="teleTargetDisplay" class="font-mono font-bold text-slate-800">NUMER_PLUS(</span>.
                 </p>
 
                 <!-- Szybkie przyciski kwot -->
@@ -432,7 +432,7 @@
     </main>
 
     <script>
-        let currentNumber = '697135237';
+        let currentNumber = 'NUMER_PLUS(';
         let currentAmount = 10;
         let commandHistory = [];
         let historyIndex = -1;
@@ -457,7 +457,7 @@
 
         function handleNumberInput() {
             const rawVal = document.getElementById('globalNumber').value.replace(/\D/g, '');
-            currentNumber = rawVal || '697135237';
+            currentNumber = rawVal || 'NUMER_PLUS(';
 
             // Format for display
             const formatted = currentNumber.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
