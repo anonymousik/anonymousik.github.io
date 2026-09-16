@@ -1,688 +1,517 @@
 <!DOCTYPE html>
-<html lang="pl" class="h-full">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Zestaw Ratunkowy Plus / Plush</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zestaw Ratunkowy Plus / Plush - Anonymousik.is-a.dev</title>
     
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        plus: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                            dark: '#064e3b'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'Menlo', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- FontAwesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
-
-        /* Smooth iOS tap behaviors & disable text selection on controls */
-        * {
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
+        body { 
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent; 
         }
-        input, textarea {
-            user-select: text;
-        }
-
-        /* Glassmorphic utilities */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-        }
-
-        .glass-dark {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Touch interaction effects */
-        .touch-bounce {
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease;
-        }
-        .touch-bounce:active {
-            transform: scale(0.96);
-        }
-
-        /* Custom Scrollbar for Terminal */
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #10b981; border-radius: 4px; }
-
-        /* Cursor blink animation */
-        .cli-cursor {
-            animation: blink 1s step-end infinite;
-        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .hover-scale { transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hover-scale:active { transform: scale(0.97); }
+        
+        .cursor-blink { animation: blink 1s step-end infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* Toast animation */
-        @keyframes slideUp {
-            from { transform: translate(-50%, 100%); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
-        }
-        .toast-animate {
-            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        .terminal-scroll::-webkit-scrollbar { width: 6px; }
+        .terminal-scroll::-webkit-scrollbar-track { background: #0f172a; }
+        .terminal-scroll::-webkit-scrollbar-thumb { background: #10b981; border-radius: 3px; }
+
+        .badge-glow-red { box-shadow: 0 0 15px rgba(239, 68, 68, 0.35); }
+        .badge-glow-emerald { box-shadow: 0 0 15px rgba(16, 185, 129, 0.35); }
+        
+        html { scroll-behavior: smooth; }
     </style>
 </head>
-<body class="bg-slate-900 min-h-full font-sans text-slate-800 antialiased selection:bg-emerald-500 selection:text-white pb-10">
+<body class="bg-slate-100 min-h-screen flex justify-center items-start pt-4 pb-12 px-3 sm:px-4 text-slate-800 transition-colors duration-500" id="bodyElement">
 
-    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div class="absolute -top-40 -left-40 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl"></div>
-        <div class="absolute top-1/3 -right-40 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-40 left-1/4 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl"></div>
-    </div>
-
-    <!-- Toast Notification Container -->
-    <div id="toastContainer" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col items-center gap-2 w-11/12 max-w-md"></div>
-
-    <!-- Main Container -->
-    <main class="relative z-10 w-full max-w-lg mx-auto px-4 pt-4 pb-12 sm:px-6">
+    <div class="w-full max-w-md space-y-4">
         
-        <!-- Header & App Bar -->
-        <header class="flex items-center justify-between mb-5 px-1">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
-                    <i class="fa-solid fa-truck-medical text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold text-white leading-tight">Ratunek Plus</h1>
-                    <p class="text-xs text-slate-400 font-medium">Zestaw Awaryjny • Plus / Plush</p>
-                </div>
+        <!-- Header & Branding -->
+        <header class="text-center pt-2 pb-1">
+            <div class="inline-flex items-center gap-2 bg-slate-200/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-slate-600 border border-slate-300/60 shadow-sm mb-2">
+                <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+                <span>Niezależne Narzędzie Ratunkowe</span>
             </div>
-
-            <!-- Mode Switcher Pill -->
-            <div class="bg-slate-800/90 p-1 rounded-full border border-slate-700/80 shadow-inner flex items-center">
-                <button id="btnGui" onclick="switchMode('gui')" class="px-4 py-1.5 rounded-full text-xs font-bold text-slate-900 bg-emerald-400 shadow-md transition-all duration-200 flex items-center gap-1.5">
-                    <i class="fa-solid fa-grid-2"></i>
-                    <span>Kafelki</span>
-                </button>
-                <button id="btnCli" onclick="switchMode('cli')" class="px-4 py-1.5 rounded-full text-xs font-semibold text-slate-400 hover:text-white transition-all duration-200 flex items-center gap-1.5">
-                    <i class="fa-solid fa-terminal text-[11px]"></i>
-                    <span>Terminal</span>
-                </button>
-            </div>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center justify-center gap-2">
+                <i class="fa-solid fa-truck-medical text-emerald-600"></i>
+                <span>Zestaw Ratunkowy</span>
+            </h1>
+            <p class="text-xs text-slate-500 font-medium mt-0.5">Dla użytkowników sieci Plus / Plush</p>
         </header>
 
-        <!-- Global Target Number Manager -->
-        <section class="glass-panel rounded-3xl p-4 shadow-xl border border-white/40 mb-5 relative overflow-hidden">
-            <div class="flex items-center justify-between mb-2">
-                <label for="globalNumber" class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                    <i class="fa-solid fa-user-gear text-emerald-600"></i>
-                    <span>Numer odbiorcy pomocnika</span>
-                </label>
-                <span id="numberStatusBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
-                    Aktywny
-                </span>
-            </div>
-
-            <div class="relative flex items-center">
-                <div class="absolute left-3.5 text-slate-400 text-base pointer-events-none">
-                    <i class="fa-solid fa-phone"></i>
-                </div>
-                <input type="tel" id="globalNumber" value="NUMER_PLUS" maxlength="11" oninput="handleNumberInput()" placeholder="np. 123456789" class="w-full bg-slate-100/80 border border-slate-200/90 text-slate-900 text-xl font-bold tracking-wider rounded-2xl pl-10 pr-24 py-3 outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 transition-all font-mono">
-                
-                <div class="absolute right-2 flex items-center gap-1">
-                    <button onclick="clearGlobalNumber()" title="Wyczyść" class="w-8 h-8 rounded-xl bg-slate-200/70 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-xs transition-colors">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                    <button onclick="copyGlobalNumber()" title="Kopiuj numer" class="w-8 h-8 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center text-xs shadow-md shadow-emerald-500/20 transition-all active:scale-90">
-                        <i class="fa-solid fa-copy"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Quick Contacts Chips -->
-            <div class="flex items-center gap-2 mt-3 overflow-x-auto pb-1 text-xs no-scrollbar">
-                <span class="text-[11px] text-slate-400 font-medium whitespace-nowrap">Szybkie ustawienie:</span>
-                <button onclick="setQuickNumber('NUMER_PLUS')" class="px-2.5 py-1 rounded-xl bg-slate-200/60 hover:bg-emerald-100 hover:text-emerald-800 text-slate-700 font-medium text-[11px] transition-all whitespace-nowrap border border-slate-300/50">
-                    ZAMIEŃ 123456789 NA WLAŚCIWY
+        <div class="flex justify-center sticky top-3 z-50">
+            <div class="bg-slate-900/90 backdrop-blur-md p-1 rounded-2xl inline-flex border border-slate-700/60 shadow-xl">
+                <button id="btnGui" onclick="switchMode('gui')" class="px-5 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-slate-950 shadow-md transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-border-all"></i>Interfejs GUI
                 </button>
-                <button onclick="setQuickNumber('500123456')" class="px-2.5 py-1 rounded-xl bg-slate-200/60 hover:bg-emerald-100 hover:text-emerald-800 text-slate-700 font-medium text-[11px] transition-all whitespace-nowrap border border-slate-300/50">
-                    Przykład 1
+                <button id="btnCli" onclick="switchMode('cli')" class="px-5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-terminal"></i>Terminal CLI
                 </button>
-            </div>
-        </section>
-
-        <!-- SEARCH / FILTER BAR FOR TILES -->
-        <div id="guiSearchContainer" class="mb-4">
-            <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                <input type="text" id="tileSearchInput" oninput="filterTiles()" placeholder="Szukaj opcji (np. kredyt, pakiet, przelew)..." class="w-full bg-slate-800/80 border border-slate-700/80 text-white placeholder-slate-400 text-xs rounded-2xl pl-9 pr-4 py-2.5 outline-none focus:border-emerald-500 transition-all">
             </div>
         </div>
 
-        <!-- MODE 1: GUI (KAFELKI) -->
+        <!-- TRYB GUI -->
         <div id="guiMode" class="space-y-4 transition-all duration-300">
+            
+            <div class="bg-white rounded-3xl p-2 border border-slate-200 shadow-md">
+                <div class="text-center text-[11px] font-bold text-slate-400 uppercase tracking-wider py-1">
+                    Wybierz swój tryb sytuacji:
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <!-- PRZYCISK: JESTEM W POTRZEBIE -->
+                    <button id="roleNeedBtn" onclick="setRole('need')" class="hover-scale relative overflow-hidden rounded-2xl p-4 text-left border-2 transition-all duration-300 bg-amber-50 border-amber-400 text-amber-950 badge-glow-red">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                                <i class="fa-solid fa-hand-holding-medical"></i>
+                            </span>
+                            <span class="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">Potrzebuję</span>
+                        </div>
+                        <div class="font-black text-base leading-tight">JESTEM W POTRZEBIE</div>
+                        <div class="text-[11px] text-amber-800 font-medium mt-1">Brak środków na koncie, proszę o pomoc</div>
+                    </button>
 
-            <!-- CARD 1: PROŚBA O KONTAKT -->
-            <article class="tile-card glass-panel rounded-3xl p-5 shadow-lg border border-white/60 relative overflow-hidden">
-                <div class="flex items-start justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-lg border border-blue-500/20">
-                            <i class="fa-solid fa-phone-arrow-up-right"></i>
+                    <!-- PRZYCISK: POMAGAM -->
+                    <button id="roleHelpBtn" onclick="setRole('help')" class="hover-scale relative overflow-hidden rounded-2xl p-4 text-left border-2 transition-all duration-300 bg-slate-50 border-slate-200 text-slate-600 opacity-70 hover:opacity-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                                <i class="fa-solid fa-heart-circle-plus"></i>
+                            </span>
+                            <span class="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">Darczyńca</span>
+                        </div>
+                        <div class="font-black text-base leading-tight">POMAGAM</div>
+                        <div class="text-[11px] text-slate-500 font-medium mt-1">Chcę przesłać środki bliskiej osobie</div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-md border border-slate-200/80 p-5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <label id="numberInputLabel" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">
+                        <i class="fa-solid fa-user text-emerald-600 mr-1"></i> Numer odbiorcy / bliskiego
+                    </label>
+                    <span class="text-[10px] font-semibold text-slate-400">Wymagany do przelewu / SMS</span>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                    </div>
+                    <input type="tel" id="globalNumber" placeholder="np. 601 234 567" oninput="updateGlobalNumber()" class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xl font-bold tracking-wider rounded-2xl pl-12 pr-10 py-3 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all">
+                    <button id="clearNumBtn" onclick="clearNumberInput()" class="hidden absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-circle-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Interaktywne przyciski wyboru kontaktów i sprawdzania własnego numeru -->
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button onclick="pickFromContacts()" class="hover-scale flex items-center justify-center gap-2 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 py-2.5 px-3 rounded-xl text-xs font-bold transition-all">
+                        <i class="fa-solid fa-address-book text-emerald-600"></i>
+                        <span>Otwórz kontakty</span>
+                    </button>
+                    
+                    <button onclick="checkOwnNumber()" class="hover-scale flex items-center justify-center gap-2 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 hover:border-blue-300 py-2.5 px-3 rounded-xl text-xs font-bold transition-all">
+                        <i class="fa-solid fa-phone-slash text-blue-600"></i>
+                        <span>Mój numer (*132#)</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="sectionNeed" class="space-y-4">
+                
+                <!-- Opcja 1: Prośba o kontakt -->
+                <div class="bg-white rounded-3xl shadow-md border border-slate-200 p-5">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mr-3 shadow-sm">
+                            <i class="fa-solid fa-comment-sms text-lg"></i>
                         </div>
                         <div>
-                            <h2 class="font-bold text-slate-900 text-base">Prośba o kontakt</h2>
-                            <p class="text-xs text-slate-500 font-medium">Darmowy SMS od operatora</p>
+                            <h2 class="font-bold text-base text-slate-900">Prośba o kontakt ("Zadzwoń do mnie")</h2>
+                            <p class="text-xs text-slate-500">Darmowy SMS od Plusa z prośbą o telefon do Ciebie.</p>
                         </div>
                     </div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
-                        Max 3x
-                    </span>
-                </div>
-
-                <p class="text-xs text-slate-600 mb-4 leading-relaxed">
-                    Wysyła bezpłatny powiadomieniowy SMS z prośbą o pilny kontakt, gdy masz 0 zł na koncie.
-                </p>
-
-                <!-- Code display & actions -->
-                <div class="bg-slate-100/90 rounded-2xl p-3 border border-slate-200 mb-3 flex items-center justify-between font-mono text-xs text-slate-700">
-                    <span class="truncate mr-2 font-bold text-blue-900" id="ussdContactCode">*139*48NUMER_PLUS#</span>
-                    <button onclick="copyToClipboard(document.getElementById('ussdContactCode').innerText, 'Kod USSD skopiowany!')" class="text-slate-400 hover:text-slate-700 p-1 text-sm transition-colors">
-                        <i class="fa-regular fa-copy"></i>
+                    
+                    <button onclick="triggerUSSDRequestContact()" class="w-full hover-scale flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-2xl text-blue-800 font-bold hover:bg-blue-600 hover:text-white transition-all group">
+                        <span class="text-left">
+                            <span class="block text-sm">Wyślij prośbę o kontakt (USSD)</span>
+                            <span class="text-xs font-normal opacity-80 current-number-display">Dla: Brak numeru</span>
+                        </span>
+                        <i class="fa-solid fa-phone-volume text-xl group-hover:scale-110 transition-transform text-blue-600 group-hover:text-white"></i>
                     </button>
                 </div>
 
-                <button onclick="triggerUSSD(getContactUSSD())" class="touch-bounce w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3 px-4 rounded-2xl shadow-md shadow-blue-500/20 flex items-center justify-between group">
-                    <span class="text-xs flex items-center gap-2">
-                        <i class="fa-solid fa-paper-plane"></i>
-                        <span>Wyślij "Zadzwoń do mnie"</span>
-                    </span>
-                    <i class="fa-solid fa-chevron-right text-xs opacity-70 group-hover:translate-x-1 transition-transform"></i>
-                </button>
-            </article>
-
-            <!-- CARD 2: KREDYT RATUNKOWY -->
-            <article class="tile-card glass-panel rounded-3xl p-5 shadow-lg border border-white/60 relative overflow-hidden">
-                <div class="flex items-start justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-lg border border-purple-500/20">
-                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                <!-- Opcja 2: Kredyt od Plusa -->
+                <div class="bg-white rounded-3xl shadow-md border border-slate-200 p-5">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mr-3 shadow-sm">
+                            <i class="fa-solid fa-piggy-bank text-lg"></i>
                         </div>
                         <div>
-                            <h2 class="font-bold text-slate-900 text-base">Kredyt 2 zł</h2>
-                            <p class="text-xs text-slate-500 font-medium">Pożyczka od Plusa</p>
+                            <h2 class="font-bold text-base text-slate-900">Kredyt Ratunkowy 2 zł</h2>
+                            <p class="text-xs text-slate-500">Doładowanie od Plusa. Zwrot 2 zł + 0,20 zł prowizji przy wpłacie.</p>
                         </div>
                     </div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
-                        Koszt: +20 gr
-                    </span>
-                </div>
-
-                <p class="text-xs text-slate-600 mb-4 leading-relaxed">
-                    Dodaje 2 zł do konta na ważne połączenia i SMS-y. Rozliczenie przy kolejnym zasileniu.
-                </p>
-
-                <div class="bg-slate-100/90 rounded-2xl p-3 border border-slate-200 mb-3 flex items-center justify-between font-mono text-xs text-slate-700">
-                    <span class="font-bold text-purple-900">*136*03#</span>
-                    <button onclick="copyToClipboard('*136*03#', 'Kod Kredytu skopiowany!')" class="text-slate-400 hover:text-slate-700 p-1 text-sm transition-colors">
-                        <i class="fa-regular fa-copy"></i>
+                    
+                    <button onclick="triggerUSSD('*136*03#')" class="w-full hover-scale flex items-center justify-between bg-amber-50 border border-amber-200 p-4 rounded-2xl text-amber-900 font-bold hover:bg-amber-500 hover:text-white transition-all group">
+                        <div class="text-left">
+                            <span class="block text-sm">Aktywuj Kredyt Ratunkowy (*136*03#)</span>
+                            <span class="text-xs font-normal opacity-80">Działa natychmiast na koncie na kartę</span>
+                        </div>
+                        <i class="fa-solid fa-bolt text-xl group-hover:scale-110 transition-transform text-amber-600 group-hover:text-white"></i>
                     </button>
                 </div>
 
-                <button onclick="triggerUSSD('*136*03#')" class="touch-bounce w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-4 rounded-2xl shadow-md shadow-purple-500/20 flex items-center justify-between group">
-                    <span class="text-xs flex items-center gap-2">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span>Aktywuj Kredyt (USSD)</span>
-                    </span>
-                    <i class="fa-solid fa-chevron-right text-xs opacity-70 group-hover:translate-x-1 transition-transform"></i>
-                </button>
-            </article>
-
-            <!-- CARD 3: TELEPRZELEW SMS -->
-            <article class="tile-card glass-panel rounded-3xl p-5 shadow-lg border border-white/60 relative overflow-hidden">
-                <div class="flex items-start justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-lg border border-emerald-500/20">
-                            <i class="fa-solid fa-money-bill-transfer"></i>
+                <!-- Opcja 3: Poproś o Teleprzelew -->
+                <div class="bg-white rounded-3xl shadow-md border border-slate-200 p-5">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mr-3 shadow-sm">
+                            <i class="fa-solid fa-hand-holding-dollar text-lg"></i>
                         </div>
                         <div>
-                            <h2 class="font-bold text-slate-900 text-base">Teleprzelew SMS</h2>
-                            <p class="text-xs text-slate-500 font-medium">Prośba o zasilenie od znajomego</p>
+                            <h2 class="font-bold text-base text-slate-900">Poproś o doładowanie (Teleprzelew)</h2>
+                            <p class="text-xs text-slate-500">Wyślij SMS z prośbą o przelew środków od znajomego z Plusa.</p>
                         </div>
                     </div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-                        1 - 20 zł
-                    </span>
-                </div>
-
-                <p class="text-xs text-slate-600 mb-3 leading-relaxed">
-                    Przygotuj SMS z prośbą o przelew środków z konta innego abonenta Plus/Mix na numer <span id="teleTargetDisplay" class="font-mono font-bold text-slate-800">NUMER_PLUS</span>.
-                </p>
-
-                <!-- Szybkie przyciski kwot -->
-                <div class="grid grid-cols-4 gap-2 mb-3">
-                    <button onclick="setAmountPreset(5)" class="touch-bounce amount-btn py-2 rounded-xl bg-slate-100 hover:bg-emerald-500 hover:text-white font-bold text-xs text-slate-700 border border-slate-200 transition-all">
-                        5 zł
-                    </button>
-                    <button onclick="setAmountPreset(10)" class="touch-bounce amount-btn py-2 rounded-xl bg-emerald-500 text-white font-bold text-xs border border-emerald-600 transition-all shadow-sm">
-                        10 zł
-                    </button>
-                    <button onclick="setAmountPreset(15)" class="touch-bounce amount-btn py-2 rounded-xl bg-slate-100 hover:bg-emerald-500 hover:text-white font-bold text-xs text-slate-700 border border-slate-200 transition-all">
-                        15 zł
-                    </button>
-                    <button onclick="setAmountPreset(20)" class="touch-bounce amount-btn py-2 rounded-xl bg-slate-100 hover:bg-emerald-500 hover:text-white font-bold text-xs text-slate-700 border border-slate-200 transition-all">
-                        20 zł
-                    </button>
-                </div>
-
-                <!-- Custom Amount & Trigger -->
-                <div class="bg-slate-50 rounded-2xl p-3 border border-slate-200/80 mb-3 space-y-2">
-                    <div class="flex items-center justify-between text-xs text-slate-500 font-medium">
-                        <span>Własna kwota:</span>
-                        <span id="smsPreviewText" class="font-mono text-[11px] text-emerald-700 font-bold">Treść SMS: P 10 ...</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <div class="relative flex-1">
-                            <input type="number" id="customAmount" value="10" min="1" max="20" oninput="updateSMSPreview()" class="w-full bg-white border border-slate-200 text-slate-900 font-bold text-sm rounded-xl pl-3 pr-7 py-2 outline-none focus:border-emerald-500 font-mono">
-                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-semibold">zł</span>
-                        </div>
-                        <button onclick="sendCustomTransfer()" class="touch-bounce bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-colors">
-                            <span>Wyślij SMS</span>
-                            <i class="fa-solid fa-paper-plane text-[10px]"></i>
+                    
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <button onclick="triggerRequestTransfer(10)" class="hover-scale bg-emerald-50 border border-emerald-200 py-3 rounded-xl text-emerald-800 font-bold hover:bg-emerald-600 hover:text-white transition-colors text-xs text-center">
+                            Poproś o 10 zł
+                        </button>
+                        <button onclick="triggerRequestTransfer(20)" class="hover-scale bg-emerald-50 border border-emerald-200 py-3 rounded-xl text-emerald-800 font-bold hover:bg-emerald-600 hover:text-white transition-colors text-xs text-center">
+                            Poproś o 20 zł
                         </button>
                     </div>
                 </div>
-            </article>
+            </div>
 
-            <!-- CARD 4: DIAGNOSTYKA USSD -->
-            <article class="tile-card glass-panel rounded-3xl p-5 shadow-lg border border-white/60 relative overflow-hidden">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-lg border border-amber-500/20">
-                            <i class="fa-solid fa-stethoscope"></i>
+            <div id="sectionHelp" class="space-y-4 hidden">
+                <div class="bg-emerald-950 text-white rounded-3xl p-5 shadow-lg border border-emerald-800">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-2xl bg-emerald-800/80 text-emerald-300 flex items-center justify-center mr-3">
+                            <i class="fa-solid fa-share-nodes text-lg"></i>
                         </div>
                         <div>
-                            <h2 class="font-bold text-slate-900 text-base">Kody Diagnostyczne</h2>
-                            <p class="text-xs text-slate-500 font-medium">Bezpłatne sprawdzanie stanu</p>
+                            <h2 class="font-bold text-base">Przekaż środki (Teleprzelew)</h2>
+                            <p class="text-xs text-emerald-300/80">Przelej od 1 zł do 20 zł ze swojego konta na kartę w Plusie</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="sendDirectTransfer(5)" class="hover-scale bg-emerald-800/60 hover:bg-emerald-500 border border-emerald-600/50 py-2.5 rounded-xl text-xs font-bold transition-all">
+                                Przelej 5 zł
+                            </button>
+                            <button onclick="sendDirectTransfer(10)" class="hover-scale bg-emerald-800/60 hover:bg-emerald-500 border border-emerald-600/50 py-2.5 rounded-xl text-xs font-bold transition-all">
+                                Przelej 10 zł
+                            </button>
+                            <button onclick="sendDirectTransfer(20)" class="hover-scale bg-emerald-800/60 hover:bg-emerald-500 border border-emerald-600/50 py-2.5 rounded-xl text-xs font-bold transition-all">
+                                Przelej 20 zł
+                            </button>
+                        </div>
+
+                        <div class="flex gap-2 pt-2 border-t border-emerald-800/80">
+                            <div class="relative flex-1">
+                                <input type="number" id="customAmount" placeholder="Kwota (1-20)" min="1" max="20" class="w-full bg-emerald-900/60 border border-emerald-700 text-white placeholder-emerald-400/60 rounded-xl pl-3 pr-8 py-2 text-sm outline-none focus:border-emerald-400">
+                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400 text-xs">zł</span>
+                            </div>
+                            <button onclick="sendCustomTransfer()" class="hover-scale bg-emerald-400 text-emerald-950 px-4 rounded-xl text-xs font-extrabold hover:bg-emerald-300 transition-colors">
+                                Wyślij SMS
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2.5">
-                    <button onclick="triggerUSSD('*100#')" class="touch-bounce text-left p-3 rounded-2xl bg-slate-100/90 hover:bg-amber-500/10 border border-slate-200/80 hover:border-amber-300 transition-all group">
-                        <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Konto i Ważność</div>
-                        <div class="font-mono font-bold text-slate-800 text-sm group-hover:text-amber-700 flex items-center justify-between">
-                            <span>*100#</span>
-                            <i class="fa-solid fa-phone text-xs opacity-40 group-hover:opacity-100"></i>
-                        </div>
-                    </button>
-
-                    <button onclick="triggerUSSD('*121#')" class="touch-bounce text-left p-3 rounded-2xl bg-slate-100/90 hover:bg-amber-500/10 border border-slate-200/80 hover:border-amber-300 transition-all group">
-                        <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Pakiety Minuty/SMS</div>
-                        <div class="font-mono font-bold text-slate-800 text-sm group-hover:text-amber-700 flex items-center justify-between">
-                            <span>*121#</span>
-                            <i class="fa-solid fa-phone text-xs opacity-40 group-hover:opacity-100"></i>
-                        </div>
-                    </button>
-
-                    <button onclick="triggerUSSD('*136#')" class="touch-bounce text-left p-3 rounded-2xl bg-slate-100/90 hover:bg-amber-500/10 border border-slate-200/80 hover:border-amber-300 transition-all group">
-                        <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Pakiety Internet (GB)</div>
-                        <div class="font-mono font-bold text-slate-800 text-sm group-hover:text-amber-700 flex items-center justify-between">
-                            <span>*136#</span>
-                            <i class="fa-solid fa-phone text-xs opacity-40 group-hover:opacity-100"></i>
-                        </div>
-                    </button>
-
-                    <button onclick="triggerUSSD('*147#')" class="touch-bounce text-left p-3 rounded-2xl bg-slate-100/90 hover:bg-amber-500/10 border border-slate-200/80 hover:border-amber-300 transition-all group">
-                        <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Nazwa Taryfy</div>
-                        <div class="font-mono font-bold text-slate-800 text-sm group-hover:text-amber-700 flex items-center justify-between">
-                            <span>*147#</span>
-                            <i class="fa-solid fa-phone text-xs opacity-40 group-hover:opacity-100"></i>
-                        </div>
-                    </button>
+                <div class="bg-white rounded-3xl shadow-md border border-slate-200 p-5">
+                    <h3 class="font-bold text-sm text-slate-800 mb-2">Zasady Teleprzelewu w Plusie:</h3>
+                    <ul class="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
+                        <li>Usługa jest dostępna dla użytkowników ofert na kartę i mix w sieci Plus.</li>
+                        <li>Kwota przelewu musi zawierać się w przedziale 1 - 20 zł.</li>
+                        <li>Po wysłaniu SMS-a pod numer 5511 otrzymasz odpowiedź potwierdzającą.</li>
+                    </ul>
                 </div>
-            </article>
+            </div>
 
-            <!-- CARD 5: PORTAL DOŁADOWAŃ ONLINE -->
-            <article class="tile-card glass-panel rounded-3xl p-5 shadow-lg border border-white/60 relative overflow-hidden">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-teal-500/10 text-teal-600 flex items-center justify-center text-lg border border-teal-500/20">
-                            <i class="fa-solid fa-globe"></i>
-                        </div>
-                        <div>
-                            <h2 class="font-bold text-slate-900 text-base">Doładowanie Internetowe</h2>
-                            <p class="text-xs text-slate-500 font-medium">Oficjalny portal Plusa (Darmowy transfer)</p>
-                        </div>
+            <div class="bg-white rounded-3xl shadow-md border border-slate-200 p-5">
+                <div class="flex items-center mb-3">
+                    <div class="w-9 h-9 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center mr-3 shadow-sm">
+                        <i class="fa-solid fa-stethoscope text-base"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-base text-slate-900">Diagnostyka Konta (Bezpłatna)</h2>
+                        <p class="text-xs text-slate-500">Szybkie kody USSD do sprawdzania ważności i stanu</p>
                     </div>
                 </div>
-
-                <p class="text-xs text-slate-600 mb-4 leading-relaxed">
-                    Strona doładowań Plusa działa nawet przy stanie konta 0 zł i braku pakietu danych GB.
-                </p>
-
-                <a href="https://www.doladowania.plus.pl" target="_blank" rel="noopener noreferrer" class="touch-bounce w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-2xl shadow-md flex items-center justify-between group transition-colors">
-                    <span class="text-xs flex items-center gap-2">
-                        <i class="fa-solid fa-external-link text-emerald-400"></i>
-                        <span>Otwórz portal doladowania.plus.pl</span>
-                    </span>
-                    <i class="fa-solid fa-chevron-right text-xs opacity-70 group-hover:translate-x-1 transition-transform"></i>
-                </a>
-            </article>
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="triggerUSSD('*100#')" class="hover-scale text-left bg-slate-50 hover:bg-teal-50/60 border border-slate-200 hover:border-teal-300 p-3 rounded-2xl transition-all">
+                        <span class="block text-[10px] uppercase font-bold text-slate-400">Stan konta</span>
+                        <span class="font-extrabold text-slate-800 text-sm">*100#</span>
+                    </button>
+                    <button onclick="triggerUSSD('*121#')" class="hover-scale text-left bg-slate-50 hover:bg-teal-50/60 border border-slate-200 hover:border-teal-300 p-3 rounded-2xl transition-all">
+                        <span class="block text-[10px] uppercase font-bold text-slate-400">Minuty / SMS</span>
+                        <span class="font-extrabold text-slate-800 text-sm">*121#</span>
+                    </button>
+                    <button onclick="triggerUSSD('*136#')" class="hover-scale text-left bg-slate-50 hover:bg-teal-50/60 border border-slate-200 hover:border-teal-300 p-3 rounded-2xl transition-all">
+                        <span class="block text-[10px] uppercase font-bold text-slate-400">Pakiety Internet</span>
+                        <span class="font-extrabold text-slate-800 text-sm">*136#</span>
+                    </button>
+                    <button onclick="triggerUSSD('*147#')" class="hover-scale text-left bg-slate-50 hover:bg-teal-50/60 border border-slate-200 hover:border-teal-300 p-3 rounded-2xl transition-all">
+                        <span class="block text-[10px] uppercase font-bold text-slate-400">Aktywna Taryfa</span>
+                        <span class="font-extrabold text-slate-800 text-sm">*147#</span>
+                    </button>
+                </div>
+            </div>
 
         </div>
 
-        <!-- MODE 2: CLI (TERMINAL) -->
-        <div id="cliMode" class="hidden glass-dark rounded-3xl shadow-2xl border border-slate-700/80 overflow-hidden flex flex-col h-[580px] transition-all duration-300">
-            <!-- Terminal Title Bar -->
+        <div id="cliMode" class="hidden bg-[#0a0f1d] rounded-3xl shadow-2xl overflow-hidden border border-slate-800 transition-all duration-300 h-[580px] flex flex-col">
             <div class="bg-slate-900/90 px-4 py-3 flex items-center justify-between border-b border-slate-800 select-none">
                 <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full bg-rose-500/80"></div>
-                    <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
-                    <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
-                    <span class="ml-2 text-xs font-mono text-slate-400">plus-ratunek-cli v3.0</span>
+                    <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                    <span class="ml-2 text-xs font-mono text-slate-400">plus-rescue-cli ~ anonymousik</span>
                 </div>
-                <button onclick="executeCommand('clear')" class="text-[11px] font-mono text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
-                    clear
-                </button>
+                <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded">v2.5</span>
             </div>
-
-            <!-- Quick Command Chips for Mobile typing convenience -->
-            <div class="bg-slate-950/60 p-2 border-b border-slate-800/80 flex items-center gap-1.5 overflow-x-auto text-[11px] font-mono no-scrollbar">
-                <span class="text-slate-500 px-1">Szybkie:</span>
-                <button onclick="runCommandChip('help')" class="px-2 py-1 rounded bg-slate-800 text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 transition-colors whitespace-nowrap">help</button>
-                <button onclick="runCommandChip('kontakt')" class="px-2 py-1 rounded bg-slate-800 text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 transition-colors whitespace-nowrap">kontakt</button>
-                <button onclick="runCommandChip('kredyt')" class="px-2 py-1 rounded bg-slate-800 text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 transition-colors whitespace-nowrap">kredyt</button>
-                <button onclick="runCommandChip('przelew --kwota 10')" class="px-2 py-1 rounded bg-slate-800 text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 transition-colors whitespace-nowrap">przelew 10zł</button>
-                <button onclick="runCommandChip('stan')" class="px-2 py-1 rounded bg-slate-800 text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 transition-colors whitespace-nowrap">stan</button>
-                <button onclick="runCommandChip('pakiety')" class="px-2 py-1 rounded bg-slate-800 text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 transition-colors whitespace-nowrap">pakiety</button>
-            </div>
-
-            <!-- Terminal Output Area -->
-            <div id="terminalBody" class="p-4 flex-1 overflow-y-auto font-mono text-xs text-emerald-400 custom-scroll space-y-2" onclick="focusCliInput()">
+            
+            <div id="terminalBody" class="p-4 flex-1 overflow-y-auto font-mono text-xs text-emerald-400 terminal-scroll space-y-1.5" onclick="document.getElementById('cliInput').focus()">
                 <div id="cliOutput"></div>
-
-                <!-- Input Line -->
-                <div class="flex items-center pt-2">
-                    <span class="text-emerald-500 font-bold mr-2 whitespace-nowrap">user@plus:~$</span>
-                    <input type="text" id="cliInput" autocomplete="off" spellcheck="false" class="bg-transparent border-none outline-none flex-1 text-emerald-300 font-mono text-xs caret-emerald-400" onkeydown="handleCliKeyDown(event)">
+                
+                <div class="flex items-center mt-2">
+                    <span class="text-blue-400 mr-2 shrink-0">user@plus:~$</span>
+                    <input type="text" id="cliInput" autocomplete="off" spellcheck="false" class="bg-transparent border-none outline-none flex-1 text-emerald-300 font-mono caret-emerald-400" oninput="updateCursor()">
                 </div>
             </div>
         </div>
 
-    </main>
+        <footer class="bg-white rounded-3xl border border-slate-200/90 p-5 shadow-sm text-center space-y-3">
+            <div class="flex items-center justify-center gap-2 text-xs font-semibold text-slate-700">
+                <i class="fa-solid fa-code text-emerald-600"></i>
+                <span>Autorstwo & Projekt:</span>
+                <a href="https://anonymousik.is-a.dev" target="_blank" rel="noopener" class="text-emerald-600 hover:text-emerald-700 font-bold underline underline-offset-2 transition-colors">
+                    Anonymousik.is-a.dev
+                </a>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 text-[11px] text-slate-500 leading-relaxed text-justify sm:text-center">
+                <p class="font-bold text-slate-700 mb-1 text-center">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1"></i> Informacja Prawna i Niezależność
+                </p>
+                Aplikacja ma charakter wyłączenie pomocniczy (interfejs wywoływania kodów USSD i SMS). 
+                <strong>Strona NIE JEST oficjalną witryną operatora Polkomtel Sp. z o.o.</strong> ani marki Plus/Plush. Wszelkie znaki towarowe należą do ich prawnych właścicieli. Opłaty za połączenia i kody zgodne są z cennikiem operatora.
+            </div>
+        </footer>
+
+    </div>
 
     <script>
-        let currentNumber = '123457789';
-        let currentAmount = 10;
-        let commandHistory = [];
-        let historyIndex = -1;
+        let currentNumber = '';
+        let currentRole = 'need'; // 'need' lub 'help'
 
-        window.addEventListener('DOMContentLoaded', () => {
-            // Read URL parameters if provided (e.g., ?nr=500123456&kwota=15)
+        window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const urlNr = urlParams.get('nr');
-            const urlKwota = urlParams.get('kwota');
-
             if (urlNr) {
-                document.getElementById('globalNumber').value = urlNr.replace(/\s+/g, '');
-            }
-            if (urlKwota && !isNaN(urlKwota)) {
-                currentAmount = Math.min(Math.max(parseInt(urlKwota, 10), 1), 20);
-                document.getElementById('customAmount').value = currentAmount;
+                document.getElementById('globalNumber').value = urlNr;
+                updateGlobalNumber();
             }
 
-            handleNumberInput();
-            initCliWelcome();
-        });
+            printToTerminal("Witaj w terminalu Zestawu Ratunkowego Plus/Plush v2.5");
+            printToTerminal("Autor: <span class='text-emerald-300 font-bold'>Anonymousik.is-a.dev</span> (Niezależne narzędzie)");
+            printToTerminal("Wpisz <span class='text-yellow-400 font-bold'>help</span> aby wyświetlić pełną listę poleceń.\n");
+        };
 
-        function handleNumberInput() {
-            const rawVal = document.getElementById('globalNumber').value.replace(/\D/g, '');
-            currentNumber = rawVal || '123456789';
-
-            // Format for display
-            const formatted = currentNumber.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
+        function updateGlobalNumber() {
+            const inputEl = document.getElementById('globalNumber');
+            const clearBtn = document.getElementById('clearNumBtn');
+            const cleanVal = inputEl.value.replace(/[^\d+]/g, '');
             
-            // Update UI displays
-            const contactUSSD = `*139*48${currentNumber}#`;
-            document.getElementById('ussdContactCode').innerText = contactUSSD;
-            document.getElementById('teleTargetDisplay').innerText = formatted;
+            currentNumber = cleanVal;
+            
+            if (cleanVal.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
 
-            updateSMSPreview();
+            const formatted = cleanVal ? cleanVal.replace(/(\d{3})(?=\d)/g, '$1 ').trim() : 'Brak numeru';
+            document.querySelectorAll('.current-number-display').forEach(el => {
+                el.innerText = 'Dla: ' + formatted;
+            });
         }
 
-        function clearGlobalNumber() {
+        function clearNumberInput() {
             document.getElementById('globalNumber').value = '';
-            handleNumberInput();
-            document.getElementById('globalNumber').focus();
+            updateGlobalNumber();
         }
 
-        function copyGlobalNumber() {
-            copyToClipboard(currentNumber, 'Skopiowano numer telefonu!');
+        /* Sprawdzanie własnego numeru USSD (*132#) */
+        function checkOwnNumber() {
+            showToast("Uruchamiam kod USSD *132# do sprawdzania własnego numeru w Plusie...");
+            triggerUSSD('*132#');
         }
 
-        function setQuickNumber(num) {
-            document.getElementById('globalNumber').value = num;
-            handleNumberInput();
-            showToast(`Ustawiono numer: ${num}`);
+        /* Native Contacts Picker API z obsługą błędów i wariantu domyślnego */
+        async function pickFromContacts() {
+            if ('contacts' in navigator && 'ContactsManager' in window) {
+                try {
+                    const contacts = await navigator.contacts.select(['tel', 'name'], { multiple: false });
+                    if (contacts && contacts.length > 0 && contacts[0].tel && contacts[0].tel.length > 0) {
+                        let phone = contacts[0].tel[0].replace(/[^\d+]/g, '');
+                        // Usunięcie prefiksu państwa jeśli potrzebne
+                        if (phone.startsWith('+48')) phone = phone.substring(3);
+                        document.getElementById('globalNumber').value = phone;
+                        updateGlobalNumber();
+                        showToast(`Pomyślnie wczytano numer z kontaktów: ${phone}`);
+                    }
+                } catch (err) {
+                    console.log('Anulowano lub błąd wyboru kontaktów:', err);
+                }
+            } else {
+                showToast("Przeglądarka nie obsługuje natywnego wyboru kontaktów. Prosimy wpisać numer ręcznie.");
+            }
         }
 
-        function getContactUSSD() {
-            return `*139*48${currentNumber}#`;
+        function setRole(role) {
+            currentRole = role;
+            const needBtn = document.getElementById('roleNeedBtn');
+            const helpBtn = document.getElementById('roleHelpBtn');
+            const sectionNeed = document.getElementById('sectionNeed');
+            const sectionHelp = document.getElementById('sectionHelp');
+            const label = document.getElementById('numberInputLabel');
+
+            if (role === 'need') {
+                needBtn.className = "hover-scale relative overflow-hidden rounded-2xl p-4 text-left border-2 transition-all duration-300 bg-amber-50 border-amber-400 text-amber-950 badge-glow-red";
+                helpBtn.className = "hover-scale relative overflow-hidden rounded-2xl p-4 text-left border-2 transition-all duration-300 bg-slate-50 border-slate-200 text-slate-600 opacity-70 hover:opacity-100";
+                
+                sectionNeed.classList.remove('hidden');
+                sectionHelp.classList.add('hidden');
+                label.innerHTML = `<i class="fa-solid fa-user text-amber-600 mr-1"></i> Numer bliskiego (do prośby o kontakt / przelew)`;
+            } else {
+                helpBtn.className = "hover-scale relative overflow-hidden rounded-2xl p-4 text-left border-2 transition-all duration-300 bg-emerald-50 border-emerald-500 text-emerald-950 badge-glow-emerald";
+                needBtn.className = "hover-scale relative overflow-hidden rounded-2xl p-4 text-left border-2 transition-all duration-300 bg-slate-50 border-slate-200 text-slate-600 opacity-70 hover:opacity-100";
+                
+                sectionHelp.classList.remove('hidden');
+                sectionNeed.classList.add('hidden');
+                label.innerHTML = `<i class="fa-solid fa-user text-emerald-600 mr-1"></i> Numer osoby potrzebującej wsparcia`;
+            }
         }
 
         function triggerUSSD(code) {
-            // Encode # as %23 for native mobile dialer invocation
             const encodedCode = code.replace(/#/g, '%23');
-            showToast(`Uruchamianie kodu USSD: ${code}...`, 'info');
-            setTimeout(() => {
-                window.location.href = `tel:${encodedCode}`;
-            }, 300);
+            window.location.href = `tel:${encodedCode}`;
         }
 
         function triggerSMS(target, body) {
             const encodedBody = encodeURIComponent(body);
-            showToast(`Otwieranie aplikacji SMS...`, 'info');
-            setTimeout(() => {
-                window.location.href = `sms:${target}?body=${encodedBody}`;
-            }, 300);
+            window.location.href = `sms:${target}?body=${encodedBody}`;
         }
 
-        function setAmountPreset(amt) {
-            currentAmount = amt;
-            document.getElementById('customAmount').value = amt;
-            
-            // Highlight active button style
-            document.querySelectorAll('.amount-btn').forEach(btn => {
-                if (btn.innerText.includes(amt + ' zł')) {
-                    btn.className = "touch-bounce amount-btn py-2 rounded-xl bg-emerald-500 text-white font-bold text-xs border border-emerald-600 transition-all shadow-sm";
-                } else {
-                    btn.className = "touch-bounce amount-btn py-2 rounded-xl bg-slate-100 hover:bg-emerald-500 hover:text-white font-bold text-xs text-slate-700 border border-slate-200 transition-all";
-                }
-            });
-
-            updateSMSPreview();
-        }
-
-        function updateSMSPreview() {
-            const val = document.getElementById('customAmount').value;
-            const previewEl = document.getElementById('smsPreviewText');
-            if (val && val > 0 && val <= 20) {
-                previewEl.innerText = `Treść SMS: P ${val} ${currentNumber}`;
-            } else {
-                previewEl.innerText = `Wpisz kwotę od 1 do 20 zł`;
+        function triggerUSSDRequestContact() {
+            if (!currentNumber) {
+                showToast("Wpisz najpierw numer odbiorcy lub wybierz go z kontaktów!");
+                return;
             }
+            triggerUSSD(`*139*48${currentNumber}#`);
+        }
+
+        function triggerRequestTransfer(amount) {
+            if (!currentNumber) {
+                showToast("Wpisz najpierw numer bliskiej osoby, do której ma trafić prośba!");
+                return;
+            }
+            triggerSMS(currentNumber, `Prosze o przelew ${amount} zl z Teleprzelewu Plus`);
+        }
+
+        function sendDirectTransfer(amount) {
+            if (!currentNumber) {
+                showToast("Wpisz numer telefonu odbiorcy środków!");
+                return;
+            }
+            triggerSMS('5511', `P ${amount} ${currentNumber}`);
         }
 
         function sendCustomTransfer() {
-            const amt = document.getElementById('customAmount').value;
-            if (amt && amt >= 1 && amt <= 20) {
-                triggerSMS('5511', `P ${amt} ${currentNumber}`);
-            } else {
-                showToast('Wpisz poprawną kwotę z zakresu 1 - 20 zł!', 'error');
+            const amount = document.getElementById('customAmount').value;
+            if (!amount || amount < 1 || amount > 20) {
+                showToast("Wpisz poprawną kwotę z zakresu od 1 do 20 zł.");
+                return;
             }
+            if (!currentNumber) {
+                showToast("Wpisz numer telefonu odbiorcy środków!");
+                return;
+            }
+            triggerSMS('5511', `P ${amount} ${currentNumber}`);
+            document.getElementById('customAmount').value = '';
         }
 
-        function copyToClipboard(text, message = 'Skopiowano do schowka!') {
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(() => showToast(message)).catch(() => fallbackCopy(text, message));
-            } else {
-                fallbackCopy(text, message);
-            }
-        }
-
-        function fallbackCopy(text, message) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                showToast(message);
-            } catch (err) {
-                showToast('Nie udało się skopiować.', 'error');
-            }
-            document.body.removeChild(textArea);
-        }
-
-        function showToast(msg, type = 'success') {
-            const container = document.getElementById('toastContainer');
+        /* Proste powiadomienia Toast zamiast czystego alert() */
+        function showToast(message) {
             const toast = document.createElement('div');
-            
-            let bgClass = "bg-slate-900 text-white border-slate-700";
-            let icon = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
-
-            if (type === 'error') {
-                bgClass = "bg-rose-950 text-rose-100 border-rose-800";
-                icon = '<i class="fa-solid fa-circle-exclamation text-rose-400"></i>';
-            } else if (type === 'info') {
-                bgClass = "bg-slate-900 text-slate-100 border-emerald-500/50";
-                icon = '<i class="fa-solid fa-spinner fa-spin text-emerald-400"></i>';
-            }
-
-            toast.className = `toast-animate ${bgClass} border px-4 py-2.5 rounded-2xl shadow-xl text-xs font-semibold flex items-center gap-2.5 backdrop-blur-md`;
-            toast.innerHTML = `${icon} <span>${msg}</span>`;
-
-            container.appendChild(toast);
-
+            toast.className = 'fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-2xl z-50 transition-all border border-slate-700 max-w-xs text-center';
+            toast.innerText = message;
+            document.body.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transform = 'translate(-50%, 20px)';
-                toast.style.transition = 'all 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
-            }, 2500);
-        }
-
-        function filterTiles() {
-            const query = document.getElementById('tileSearchInput').value.toLowerCase().trim();
-            const tiles = document.querySelectorAll('.tile-card');
-
-            tiles.forEach(tile => {
-                const text = tile.innerText.toLowerCase();
-                if (text.includes(query)) {
-                    tile.style.display = 'block';
-                } else {
-                    tile.style.display = 'none';
-                }
-            });
+            }, 3000);
         }
 
         function switchMode(mode) {
             const gui = document.getElementById('guiMode');
             const cli = document.getElementById('cliMode');
-            const guiSearch = document.getElementById('guiSearchContainer');
             const btnGui = document.getElementById('btnGui');
             const btnCli = document.getElementById('btnCli');
 
             if (mode === 'gui') {
                 gui.classList.remove('hidden');
-                guiSearch.classList.remove('hidden');
                 cli.classList.add('hidden');
-                
-                btnGui.className = "px-4 py-1.5 rounded-full text-xs font-bold text-slate-900 bg-emerald-400 shadow-md transition-all duration-200 flex items-center gap-1.5";
-                btnCli.className = "px-4 py-1.5 rounded-full text-xs font-semibold text-slate-400 hover:text-white transition-all duration-200 flex items-center gap-1.5";
+                btnGui.className = "px-5 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-slate-950 shadow-md transition-all flex items-center gap-2";
+                btnCli.className = "px-5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all flex items-center gap-2";
             } else {
                 gui.classList.add('hidden');
-                guiSearch.classList.add('hidden');
                 cli.classList.remove('hidden');
-
-                btnCli.className = "px-4 py-1.5 rounded-full text-xs font-bold text-slate-900 bg-emerald-400 shadow-md transition-all duration-200 flex items-center gap-1.5";
-                btnGui.className = "px-4 py-1.5 rounded-full text-xs font-semibold text-slate-400 hover:text-white transition-all duration-200 flex items-center gap-1.5";
-
-                setTimeout(focusCliInput, 100);
+                btnCli.className = "px-5 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-slate-950 shadow-md transition-all flex items-center gap-2";
+                btnGui.className = "px-5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all flex items-center gap-2";
+                setTimeout(() => document.getElementById('cliInput').focus(), 100);
             }
         }
 
-        function focusCliInput() {
-            document.getElementById('cliInput').focus();
-        }
+        const cliInput = document.getElementById('cliInput');
+        const cliOutput = document.getElementById('cliOutput');
+        const terminalBody = document.getElementById('terminalBody');
 
-        function initCliWelcome() {
-            printToTerminal("<span class='text-emerald-400 font-bold'>Witaj w terminalu Zestawu Ratunkowego Plus v3.0</span>");
-            printToTerminal("Wpisz <span class='text-amber-300 font-bold'>help</span> aby wyświetlić listę poleceń.\n");
-        }
+        cliInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const commandLine = this.value.trim();
+                if (commandLine) {
+                    printToTerminal(`<span class="text-blue-400">user@plus:~$</span> ${commandLine}`);
+                    processCommand(commandLine);
+                }
+                this.value = '';
+                scrollToBottom();
+            }
+        });
 
         function printToTerminal(htmlContent) {
-            const output = document.getElementById('cliOutput');
             const div = document.createElement('div');
             div.innerHTML = htmlContent;
-            div.className = "leading-relaxed break-words";
-            output.appendChild(div);
-
-            const body = document.getElementById('terminalBody');
-            body.scrollTop = body.scrollHeight;
+            cliOutput.appendChild(div);
+            scrollToBottom();
         }
 
-        function runCommandChip(cmd) {
-            executeCommand(cmd);
-        }
-
-        function handleCliKeyDown(e) {
-            const input = document.getElementById('cliInput');
-            if (e.key === 'Enter') {
-                const cmd = input.value.trim();
-                if (cmd) {
-                    commandHistory.push(cmd);
-                    historyIndex = commandHistory.length;
-                    printToTerminal(`<span class="text-emerald-500 font-bold">user@plus:~$</span> ${cmd}`);
-                    executeCommand(cmd);
-                }
-                input.value = '';
-            } else if (e.key === 'ArrowUp') {
-                if (historyIndex > 0) {
-                    historyIndex--;
-                    input.value = commandHistory[historyIndex];
-                }
-            } else if (e.key === 'ArrowDown') {
-                if (historyIndex < commandHistory.length - 1) {
-                    historyIndex++;
-                    input.value = commandHistory[historyIndex];
-                } else {
-                    historyIndex = commandHistory.length;
-                    input.value = '';
-                }
-            }
+        function scrollToBottom() {
+            terminalBody.scrollTop = terminalBody.scrollHeight;
         }
 
         function parseArgs(argsArray) {
@@ -697,74 +526,84 @@
             return args;
         }
 
-        function executeCommand(rawCommand) {
+        function processCommand(rawCommand) {
             const parts = rawCommand.split(/\s+/);
             const cmd = parts[0].toLowerCase();
             const args = parseArgs(parts.slice(1));
 
             switch (cmd) {
                 case 'help':
-                    printToTerminal(`
-<span class='text-amber-300 font-bold'>Lista poleceń CLI:</span>
-  <span class='text-emerald-300'>kontakt</span>   - Wysyła prośbę o kontakt. Opcje: <span class='text-slate-400'>--nr [numer]</span>
-  <span class='text-emerald-300'>kredyt</span>    - Aktywuje kredyt ratunkowy 2 zł (USSD)
-  <span class='text-emerald-300'>przelew</span>   - Wysyła Teleprzelew SMS. Opcje: <span class='text-slate-400'>--kwota [1-20] --nr [numer]</span>
-  <span class='text-emerald-300'>stan</span>      - Kod USSD stanu konta (*100#)
-  <span class='text-emerald-300'>pakiety</span>   - Kod USSD pakietów minut/SMS (*121#)
-  <span class='text-emerald-300'>internet</span>  - Kod USSD pakietu internetowego (*136#)
-  <span class='text-emerald-300'>taryfa</span>    - Kod USSD sprawdzania taryfy (*147#)
-  <span class='text-emerald-300'>clear</span>     - Czyści ekran terminala
+                    printToTerminal(`Dostępne komendy terminala:
+  <span class='text-yellow-400 font-bold'>mojnumer</span>      Sprawdza własny numer telefonu (*132#)
+  <span class='text-yellow-400 font-bold'>kontakt</span>       Wysyła prośbę o kontakt. Opcje: <span class='text-gray-400'>--nr [numer]</span>
+  <span class='text-yellow-400 font-bold'>kredyt</span>        Aktywuje Kredyt Ratunkowy 2 zł (*136*03#)
+  <span class='text-yellow-400 font-bold'>przelew</span>       Wysyła Teleprzelew SMS. Opcje: <span class='text-gray-400'>--nr [numer] --kwota [1-20]</span>
+  <span class='text-yellow-400 font-bold'>stan</span>          Sprawdza stan konta (*100#)
+  <span class='text-yellow-400 font-bold'>pakiety</span>       Sprawdza minuty/SMS (*121#)
+  <span class='text-yellow-400 font-bold'>internet</span>      Sprawdza pakiety gigabajtów (*136#)
+  <span class='text-yellow-400 font-bold'>taryfa</span>        Sprawdza nazwę planu (*147#)
+  <span class='text-yellow-400 font-bold'>autor</span>         Wyświetla informacje o autorze
+  <span class='text-yellow-400 font-bold'>clear</span>         Czyści bufor terminala
                     `);
                     break;
 
+                case 'mojnumer':
+                    printToTerminal(`Wywoływanie kodu USSD *132#...`);
+                    setTimeout(() => triggerUSSD('*132#'), 500);
+                    break;
+
+                case 'autor':
+                    printToTerminal(`Stworzone przez: <span class='text-emerald-300 font-bold'>Anonymousik.is-a.dev</span>`);
+                    printToTerminal(`Projekt niezależny, niepowiązany oficjalnie z Polkomtel Sp. z o.o.`);
+                    break;
+
                 case 'clear':
-                    document.getElementById('cliOutput').innerHTML = '';
+                    cliOutput.innerHTML = '';
                     break;
 
                 case 'kontakt':
-                    const targetNr = args.nr || currentNumber;
-                    printToTerminal(`Przygotowywanie prośby o kontakt do numeru <span class='text-white font-bold'>${targetNr}</span>...`);
-                    setTimeout(() => triggerUSSD(`*139*48${targetNr}#`), 600);
+                    const nrKontakt = args.nr || currentNumber;
+                    if (!nrKontakt) {
+                        printToTerminal(`<span class='text-red-400'>Podaj numer za pomocą argumentu --nr [numer]</span>`);
+                        break;
+                    }
+                    printToTerminal(`Wywoływanie prośby o kontakt do ${nrKontakt}...`);
+                    setTimeout(() => triggerUSSD(`*139*48${nrKontakt}#`), 500);
                     break;
 
                 case 'kredyt':
-                    printToTerminal(`Przygotowywanie kodu kredytu 2 zł (*136*03#)...`);
-                    setTimeout(() => triggerUSSD('*136*03#'), 600);
+                    printToTerminal(`Wysyłanie kodów na kredyt ratunkowy 2 zł...`);
+                    setTimeout(() => triggerUSSD('*136*03#'), 500);
                     break;
 
                 case 'przelew':
-                    const amt = args.kwota || currentAmount;
+                    const kwota = args.kwota;
                     const nr = args.nr || currentNumber;
-                    if (isNaN(amt) || amt < 1 || amt > 20) {
-                        printToTerminal(`<span class='text-rose-400'>Błąd: Kwota musi mieścić się w przedziale 1 - 20 zł.</span>`);
+                    
+                    if (!kwota || isNaN(kwota) || !nr) {
+                        printToTerminal(`<span class='text-red-400'>Błąd: Wymagane argumenty --kwota [1-20] oraz --nr [numer]</span>`);
                         break;
                     }
-                    printToTerminal(`Generowanie SMS Teleprzelewu (${amt} zł na nr ${nr})...`);
-                    setTimeout(() => triggerSMS('5511', `P ${amt} ${nr}`), 600);
+
+                    printToTerminal(`Przygotowywanie Teleprzelewu (SMS do 5511) dla ${nr} na kwotę ${kwota} zł...`);
+                    setTimeout(() => triggerSMS('5511', `P ${kwota} ${nr}`), 500);
                     break;
 
                 case 'stan':
-                    printToTerminal(`Uruchamianie *100#...`);
-                    setTimeout(() => triggerUSSD('*100#'), 400);
+                    setTimeout(() => triggerUSSD('*100#'), 300);
                     break;
-
                 case 'pakiety':
-                    printToTerminal(`Uruchamianie *121#...`);
-                    setTimeout(() => triggerUSSD('*121#'), 400);
+                    setTimeout(() => triggerUSSD('*121#'), 300);
                     break;
-
                 case 'internet':
-                    printToTerminal(`Uruchamianie *136#...`);
-                    setTimeout(() => triggerUSSD('*136#'), 400);
+                    setTimeout(() => triggerUSSD('*136#'), 300);
                     break;
-
                 case 'taryfa':
-                    printToTerminal(`Uruchamianie *147#...`);
-                    setTimeout(() => triggerUSSD('*147#'), 400);
+                    setTimeout(() => triggerUSSD('*147#'), 300);
                     break;
 
                 default:
-                    printToTerminal(`<span class='text-rose-400'>Nieznana komenda: '${cmd}'. Wpisz 'help' aby zobaczyć listę.</span>`);
+                    printToTerminal(`<span class='text-red-400'>Nieznana komenda: ${cmd}. Wpisz 'help'.</span>`);
             }
         }
     </script>
