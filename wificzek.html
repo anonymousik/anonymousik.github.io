@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0712">
+    <title>Rezydencja Wiedźmy Airad 🔮</title>
+    
+    <!-- Nowoczesne standardy bezpieczeństwa i prywatności -->
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:; media-src 'self';">
+    
+    <!-- Biblioteki: Generator QR, CryptoJS (Szyfrowanie AES-256), Ikony FontAwesome oraz czcionki -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0712;
+            --card-bg: rgba(22, 15, 36, 0.7);
+            --card-border: rgba(147, 51, 234, 0.2);
+            --accent-glow: rgba(147, 51, 234, 0.4);
+            --text-main: #f3e8ff;
+            --text-muted: #a78bfa;
+            --magic-purple: #a855f7;
+            --magic-gold: #fbbf24;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(88, 28, 135, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(59, 7, 100, 0.2) 0%, transparent 45%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px 0 20px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Wielki, kinowy nagłówek */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff;
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Nowoczesny układ wielkich kafelków (Bento Grid) */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            width: 100%;
+            max-width: 900px;
+            flex-grow: 1; 
+        }
+
+        /* Główny, gigantyczny kafel z kodem QR */
+        .tile-main {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(30, 16, 54, 0.8), rgba(15, 7, 32, 0.9));
+            border: 2px solid var(--magic-purple);
+            box-shadow: 0 0 30px rgba(147, 51, 234, 0.25);
+        }
+
+        /* Uniwersalny styl wielkiego kafelka */
+        .tile {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            padding: 32px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .tile:hover {
+            transform: translateY(-5px);
+            border-color: var(--magic-purple);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        /* Wnętrze głównego kafelka Wi-Fi */
+        .wifi-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .qr-wrapper {
+            background-color: #fff;
+            padding: 16px;
+            border-radius: 24px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s;
+        }
+        .qr-wrapper:hover { transform: scale(1.03); }
+        #qr-canvas { 
+            display: block; 
+            width: 170px;
+            height: 170px;
+            max-width: 100%;
+            border-radius: 4px;
+        }
+
+        .wifi-details {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .wifi-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .credential-box {
+            background: rgba(0,0,0,0.3);
+            padding: 14px 18px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .credential-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .credential-value { font-size: 16px; font-weight: 600; color: #fff; margin-top: 2px; }
+
+        /* Przyciski i interakcje */
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 8px;
+            border-radius: 50px;
+            transition: all 0.2s;
+        }
+        .icon-btn:hover { color: var(--magic-purple); background: rgba(255,255,255,0.05); }
+
+        /* Mniejsze kafelki funkcyjne */
+        .tile-icon {
+            font-size: 2.2rem;
+            color: var(--magic-purple);
+            margin-bottom: 20px;
+        }
+        .tile h2 { font-size: 1.3rem; margin: 0 0 10px 0; color: #fff; font-weight: 700; }
+        .tile p.desc { color: var(--text-muted); font-size: 0.95rem; margin: 0 0 20px 0; line-height: 1.5; }
+
+        .tile-link {
+            align-self: flex-start;
+            color: var(--magic-gold);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .tile-link:hover { text-decoration: underline; }
+
+        /* NOWY PROFIL "NIEZNANY NIKOMU" (Kafel 4) */
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .admin-avatar {
+            width: 140px;
+            height: auto;
+            border-radius: 20px;
+            /* Magiczny blend-mode usuwający czarne tło i wtapiający obraz w fiolet */
+            mix-blend-mode: screen; 
+            filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.4));
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .admin-profile:hover .admin-avatar {
+            transform: scale(1.08) translateY(-5px);
+            filter: drop-shadow(0 0 30px rgba(168, 85, 247, 0.8));
+        }
+
+        /* Błąd braku danych z URL */
+        .error-overlay {
+            grid-column: span 2;
+            text-align: center;
+            padding: 40px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 20px;
+            display: none;
+        }
+
+        /* Powiadomienie Toast */
+        .toast {
+            position: fixed;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--magic-purple), #7c3aed);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(147, 51, 234, 0.5);
+            z-index: 1000;
+        }
+        .toast.show { bottom: 40px; }
+
+        /* Style dla szyfrowania E2EE */
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .auth-icon {
+            font-size: 3rem;
+            color: #ef4444;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+        .auth-icon.unlocked {
+            color: #10b981;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .magic-input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            width: 100%;
+            max-width: 320px;
+            margin-bottom: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .magic-input:focus {
+            outline: none;
+            border-color: var(--magic-purple);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .magic-btn {
+            background: linear-gradient(135deg, var(--magic-purple), #7c3aed);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+        .magic-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--accent-glow);
+        }
+
+        .admin-panel {
+            grid-column: span 2;
+            background: rgba(20, 10, 30, 0.8);
+            border: 2px dashed var(--magic-gold);
+            padding: 24px;
+            border-radius: 20px;
+            display: none;
+            text-align: center;
+        }
+        .admin-panel input { margin: 5px; }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(-6px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* Profesjonalna stopka autorska */
+        .site-footer {
+            margin-top: 40px;
+            padding: 30px 20px 20px;
+            width: 100%;
+            text-align: center;
+            border-top: 1px solid rgba(147, 51, 234, 0.1);
+            background: linear-gradient(to top, rgba(11, 7, 18, 0.9), transparent);
+        }
+        .site-footer p {
+            margin: 0;
+            color: rgba(167, 139, 250, 0.6); 
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .site-footer a {
+            color: var(--magic-purple);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .site-footer a:hover {
+            color: var(--magic-gold);
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+
+        /* Adaptacja do mniejszych ekranów mobilnych */
+        @media (max-width: 680px) {
+            .grid-container { grid-template-columns: 1fr; }
+            .tile-main { grid-column: span 1; }
+            .wifi-content { flex-direction: column; text-align: center; }
+            .wifi-details { width: 100%; }
+            header h1 { font-size: 2rem; }
+            
+            /* Dostosowanie mobilne profilu admina */
+            .admin-profile { flex-direction: column; text-align: center; gap: 15px; }
+            .admin-avatar { width: 180px; }
+            .tile-link { align-self: center !important; }
+            
+            .site-footer p { font-size: 0.65rem; gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Witamy w Rezydencji Wiedźmy Airad</h1>
+        <p>Wkrocz do magicznego azylu. Zanim rzucisz zaklęcie, połącz się z naszą siecią.</p>
+    </header>
+
+    <main class="grid-container">
+        
+        <!-- Panel Administratora (Kreator E2EE) ukryty domyślnie -->
+        <div id="admin-panel" class="admin-panel">
+            <h2 style="color: var(--magic-gold);"><i class="fa-solid fa-user-secret"></i> Krypta Twórcy (Generator E2EE)</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Wygeneruj bezpieczny link z szyfrowaniem AES-256. Podany tu klucz (PIN) nie będzie zawarty w linku URL. Będziesz musiał podać go gościom osobno.</p>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 15px;">
+                <input type="text" id="gen-ssid" class="magic-input" placeholder="Nazwa Wi-Fi (SSID)">
+                <input type="text" id="gen-pass" class="magic-input" placeholder="Hasło Wi-Fi">
+                <input type="password" id="gen-key" class="magic-input" placeholder="Klucz Odszyfrowujący (np. 1234)">
+            </div>
+            <button class="magic-btn" onclick="generateEncryptedLink()" style="margin-top: 10px;"><i class="fa-solid fa-link"></i> Stwórz Magiczny Link</button>
+            <textarea id="gen-result" class="magic-input" style="width: 100%; max-width: 100%; margin-top: 15px; display: none; height: 80px;" readonly></textarea>
+        </div>
+
+        <!-- Komunikat awaryjny gdy link nie ma parametrów -->
+        <div id="error-box" class="error-overlay">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; color: #ef4444; margin-bottom: 10px;"></i>
+            <h3>Magiczne zwierciadło milczy...</h3>
+            <p>Brak zaszyfrowanych parametrów sieci w adresie URL.</p>
+            <button class="magic-btn" onclick="showAdminPanel()" style="margin-top: 15px; font-size: 0.8rem;"><i class="fa-solid fa-key"></i> Wygeneruj zaszyfrowaną sieć</button>
+        </div>
+
+        <!-- KAFLISKO 1 (GŁÓWNE): POŁĄCZ Z SIECIĄ -->
+        <div class="tile tile-main" id="wifi-tile">
+            
+            <!-- Ekran logowania E2EE (odblokowania AES) -->
+            <div id="auth-screen" class="auth-container" style="display: none;">
+                <i id="lock-icon" class="fa-solid fa-lock auth-icon"></i>
+                <h2>Pieczęć Ochronna (AES-256)</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Dane sieci zostały zaszyfrowane w standardzie wojskowym. Wpisz hasło ochronne nadane przez Gospodarza.</p>
+                <input type="password" id="decrypt-key" class="magic-input" placeholder="Wprowadź klucz...">
+                <button class="magic-btn" onclick="attemptDecryption()">Złam Pieczęć</button>
+                <p id="decrypt-error" style="color: #ef4444; margin-top: 10px; display: none; font-size: 0.9rem;">Niewłaściwe zaklęcie! Spróbuj ponownie.</p>
+            </div>
+
+            <!-- Wnętrze głównego kafelka Wi-Fi (ukryte do czasu autoryzacji) -->
+            <div class="wifi-content" id="wifi-content-screen" style="display: none;">
+                <div class="qr-wrapper">
+                    <canvas id="qr-canvas"></canvas>
+                </div>
+                <div class="wifi-details">
+                    <h2 class="wifi-title"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--magic-gold);"></i> Połącz z Wi-Fi</h2>
+                    
+                    <!-- Nazwa sieci -->
+                    <div class="credential-box">
+                        <div>
+                            <div class="credential-label">Aura sieci (SSID)</div>
+                            <div class="credential-value" id="ssid-val">Wczytywanie...</div>
+                        </div>
+                        <button class="icon-btn" onclick="copyText('ssid')" title="Kopiuj nazwę sieci"><i class="fa-regular fa-copy"></i></button>
+                    </div>
+
+                    <!-- Hasło -->
+                    <div class="credential-box">
+                        <div>
+                            <div class="credential-label">Słowo klucz (Hasło)</div>
+                            <div class="credential-value" id="pass-val">••••••••</div>
+                        </div>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="icon-btn" onclick="togglePassword()" id="eye-btn" title="Odkryj hasło"><i class="fa-regular fa-eye"></i></button>
+                            <button class="icon-btn" onclick="copyText('pass')" title="Kopiuj hasło"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KAFEL 2: REGULAMIN UŻYCIA -->
+        <div class="tile">
+            <i class="fa-solid fa-scroll tile-icon"></i>
+            <h2>Regulamin użycia</h2>
+            <p class="desc">Nasza sieć służy do przeglądania zaklęć, a nie klątw. Zakazane jest pobieranie czarnej magii i przeciążanie pasma demonami streamingu.</p>
+            <a class="tile-link" onclick="openModal('regulamin')">Przeczytaj księgę zasad <i class="fa-solid fa-arrow-right" style="margin-left: 4px;"></i></a>
+        </div>
+
+        <!-- KAFEL 3: POLITYKA PRYWATNOŚCI -->
+        <div class="tile">
+            <i class="fa-solid fa-shield-halved tile-icon"></i>
+            <h2>Polityka prywatności</h2>
+            <p class="desc">Cenimy sekrety Twoich logowań. Żadne magiczne stworzenie ani chochlik nie zbiera ani nie przekazuje dalej Twoich cyfrowych śladów.</p>
+            <a class="tile-link" onclick="openModal('prywatnosc')">Ochrona sekretów <i class="fa-solid fa-arrow-right" style="margin-left: 4px;"></i></a>
+        </div>
+
+        <!-- KAFEL 4: AUTORYZOWANY PAN DOMU (TERAZ Z TWOJĄ GRAFIKĄ!) -->
+        <div class="tile" style="grid-column: span 2;">
+            <div class="admin-profile">
+                <!-- Zdjęcie wczytywane z Twojego pliku, tryb blendowania automatycznie wycina czarne tło -->
+                <img src="1000567764.png" alt="Nieznany Nikomu" class="admin-avatar">
+                
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <h2>Autoryzowany Pan Domu</h2>
+                    <p class="desc">Masz problem z siecią lub zaklęcie nie działa? Skontaktuj się bezpośrednio ze Strażnikiem Rezydencji - <strong>Nieznanym Nikomu</strong>, aby odświeżyć zaklęcie rutera.</p>
+                    <a href="tel:+48111222333" class="tile-link">Wezwij Strażnika <i class="fa-solid fa-phone" style="margin-left: 4px;"></i></a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Stopka autorska -->
+    <footer class="site-footer">
+        <p>
+            &copy; AN<span style="font-family: Arial, sans-serif;">༽ට</span>NYMOUSIK 
+            &nbsp;&bull;&nbsp; ALL RIGHTS RESERVED &nbsp;&bull;&nbsp; 
+            <a href="https://anonymousik.is-a.dev" target="_blank" rel="noopener noreferrer">ANONYMOUSIK.IS-A.DEV</a>
+        </p>
+    </footer>
+
+    <!-- Powiadomienie (Toast) -->
+    <div id="toast-notify" class="toast">Zaklęcie skopiowane!</div>
+
+    <script>
+        let decryptedSSID = "";
+        let decryptedPASS = "";
+        let isPassVisible = false;
+        let encryptedPayload = ""; 
+
+        function initApp() {
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            encryptedPayload = hashParams.get('enc');
+            
+            const legacyData = hashParams.get('data');
+            
+            if (encryptedPayload) {
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('wifi-content-screen').style.display = 'none';
+                document.getElementById('error-box').style.display = 'none';
+                
+                document.getElementById('decrypt-key').addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') attemptDecryption();
+                });
+            } else if (legacyData) {
+                try {
+                    const decodedString = decodeURIComponent(escape(atob(legacyData)));
+                    processDecryptedString(decodedString);
+                } catch (e) {
+                    showError();
+                }
+            } else {
+                showError();
+            }
+        }
+
+        function showError() {
+            document.getElementById('wifi-tile').style.display = 'none';
+            document.getElementById('error-box').style.display = 'block';
+        }
+
+        function showAdminPanel() {
+            document.getElementById('error-box').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+        }
+
+        function generateEncryptedLink() {
+            const ssid = document.getElementById('gen-ssid').value;
+            const pass = document.getElementById('gen-pass').value;
+            const secretKey = document.getElementById('gen-key').value;
+
+            if (!ssid || !secretKey) {
+                alert("SSID oraz Klucz Odszyfrowujący są bezwzględnie wymagane!");
+                return;
+            }
+
+            const plainText = `WIFI:S:${ssid};T:WPA;P:${pass};;`;
+            
+            const ciphertext = CryptoJS.AES.encrypt(plainText, secretKey).toString();
+            
+            const baseUrl = window.location.origin + window.location.pathname;
+            const finalUrl = `${baseUrl}#enc=${encodeURIComponent(ciphertext)}`;
+            
+            const resultBox = document.getElementById('gen-result');
+            resultBox.style.display = 'block';
+            resultBox.value = finalUrl;
+            resultBox.select();
+            
+            alert("Magiczny Link wygenerowany! Klucz zabezpieczający nie został do niego dołączony - musisz przekazać go gościom osobno.");
+        }
+
+        function attemptDecryption() {
+            const secretKey = document.getElementById('decrypt-key').value;
+            const errorMsg = document.getElementById('decrypt-error');
+            
+            if (!secretKey) return;
+
+            try {
+                const bytes = CryptoJS.AES.decrypt(decodeURIComponent(encryptedPayload), secretKey);
+                const originalText = bytes.toString(CryptoJS.enc.Utf8);
+
+                if (!originalText || !originalText.startsWith('WIFI:')) {
+                    throw new Error("Błędny klucz kryptograficzny");
+                }
+
+                document.getElementById('lock-icon').className = "fa-solid fa-lock-open auth-icon unlocked";
+                errorMsg.style.display = 'none';
+                
+                setTimeout(() => {
+                    document.getElementById('auth-screen').style.display = 'none';
+                    document.getElementById('wifi-tile').style.display = 'block';
+                    document.getElementById('wifi-content-screen').style.display = 'flex';
+                    processDecryptedString(originalText);
+                }, 600);
+
+            } catch (e) {
+                errorMsg.style.display = 'block';
+                const lockIcon = document.getElementById('lock-icon');
+                lockIcon.className = "fa-solid fa-lock auth-icon";
+                lockIcon.style.animation = "shake 0.4s ease-in-out";
+                setTimeout(() => lockIcon.style.animation = "", 400);
+            }
+        }
+
+        function processDecryptedString(decodedString) {
+            const parsedSSID = decodedString.match(/S:([^;]+);/);
+            const parsedPASS = decodedString.match(/P:(.*?);/);
+            
+            if (parsedSSID) {
+                decryptedSSID = parsedSSID[1];
+                decryptedPASS = parsedPASS ? parsedPASS[1] : "";
+                document.getElementById('ssid-val').innerText = decryptedSSID;
+                document.getElementById('pass-val').innerText = decryptedPASS || "(Brak)";
+                
+                new QRious({
+                    element: document.getElementById('qr-canvas'),
+                    value: decodedString,
+                    size: 340,
+                    level: 'H',
+                    background: '#ffffff',
+                    foreground: '#0b0712'
+                });
+            } else {
+                showError();
+            }
+        }
+
+        function togglePassword() {
+            const passField = document.getElementById('pass-val');
+            const eyeBtn = document.getElementById('eye-btn');
+            isPassVisible = !isPassVisible;
+            
+            if (isPassVisible) {
+                passField.innerText = decryptedPASS;
+                eyeBtn.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
+            } else {
+                passField.innerText = '••••••••';
+                eyeBtn.innerHTML = '<i class="fa-regular fa-eye"></i>';
+            }
+        }
+
+        function copyText(type) {
+            const textToCopy = type === 'ssid' ? decryptedSSID : decryptedPASS;
+            const message = type === 'ssid' ? "Skopiowano aurę sieci (SSID)!" : "Skopiowano słowo klucz (Hasło)!";
+            
+            const showToast = () => {
+                const toast = document.getElementById('toast-notify');
+                toast.innerText = message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            };
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(showToast).catch(fallbackCopy);
+            } else {
+                fallbackCopy();
+            }
+
+            function fallbackCopy() {
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast();
+                } catch (err) {
+                    console.error('Magia zawiodła podczas kopiowania: ', err);
+                }
+                textArea.remove();
+            }
+        }
+
+        function openModal(topic) {
+            if(topic === 'regulamin') {
+                alert("📜 REGULAMIN REZYDENCJI:\n1. Nie używaj sieci do rzucania uroków.\n2. Nie zapychaj transferu miksturami w 4K.\n3. Szanuj prywatność innych magów w sieci.");
+            } else {
+                alert("🔮 POLITYKA PRYWATNOŚCI:\nOchrona E2EE gwarantuje, że serwer nigdy nie zobaczy Twojego hasła. Nawet jeśli ktoś przejmie link, bez PIN-u nie dostanie się do danych.");
+            }
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
