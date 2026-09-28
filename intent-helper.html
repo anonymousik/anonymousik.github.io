@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="pl" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Settings Intents & Automation Catalog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .toast-enter { transform: translateY(100%) scale(0.95); opacity: 0; }
+        .toast-enter-active { transform: translateY(0) scale(1); opacity: 1; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+        .toast-leave-active { transform: translateY(100%) scale(0.95); opacity: 0; transition: all 0.2s cubic-bezier(0.7, 0, 0.84, 0); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.4); border-radius: 9999px; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased">
+
+    <!-- Nagłówek i Nawigacja -->
+    <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 py-3.5 px-4 sm:px-6 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-indigo-600/20 border border-indigo-500/30 rounded-xl text-indigo-400 text-2xl shadow-inner">
+                    ⚡
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                        Android Intents Catalog
+                        <span class="text-[11px] font-mono bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full">v3.0 Pro</span>
+                    </h1>
+                    <p class="text-xs sm:text-sm text-slate-400">Katalog Intentów, Ekstraktor ADB, Konwerter & Export dla Tasker / MacroDroid</p>
+                </div>
+            </div>
+
+            <!-- Nawigacja Zakładkowa -->
+            <div class="flex flex-wrap items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+                <button id="tab-btn-catalog" onclick="switchTab('catalog')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition bg-indigo-600 text-white shadow">
+                    📚 Baza Intentów
+                </button>
+                <button id="tab-btn-adb" onclick="switchTab('adb')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+                    <span class="text-amber-400">💻</span> Ekstraktor ADB
+                </button>
+                <button id="tab-btn-converter" onclick="switchTab('converter')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+                    <span class="text-emerald-400">🔄</span> Konwerter ADB ↔ URI
+                </button>
+                <button onclick="openBuilderModal()" class="hidden sm:flex bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs px-3 py-1.5 rounded-lg transition items-center gap-1 border border-slate-700">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                    Kreator Intentu
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
+
+        <!-- ZAKŁADKA 1: KATALOG INTENTÓW -->
+        <div id="tab-catalog-view" class="space-y-6">
+            <!-- Komunikat ostrzegawczy OEM -->
+            <div id="oem-warning-box" class="bg-amber-950/40 border border-amber-500/30 rounded-2xl p-4 sm:p-5 text-amber-200/90 text-xs sm:text-sm space-y-2 relative">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl">⚠️</span>
+                    <div class="space-y-1 flex-1">
+                        <h3 class="font-bold text-amber-400 text-sm sm:text-base flex items-center justify-between">
+                            <span>Dlaczego linki OEM (Xiaomi / Realme / Samsung) nie otwierają się z przeglądarki?</span>
+                            <button onclick="toggleWarningBox()" class="text-amber-400 hover:text-amber-200 text-xs font-mono underline ml-2">Ukryj</button>
+                        </h3>
+                        <p class="text-amber-200/80 leading-relaxed text-xs sm:text-sm">
+                            System Android 11+ blokuje wywoływanie prywatnych komponentów OEM (<code class="bg-amber-950/80 px-1 py-0.5 rounded text-amber-300 border border-amber-700/50">component=...</code>) bezpośrednio z Chrome. Do ich wywołania użyj komendy <strong>ADB Shell</strong>, aplikacji <strong>Tasker / MacroDroid / Shizuku</strong> lub skorzystaj z dostarczonego przycisku <strong>🛡️ Alternatywa</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pasek Filtrowania i Wyszukiwania -->
+            <div class="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                    <div class="md:col-span-6 relative">
+                        <input type="text" id="search-input" oninput="applyFilters()" placeholder="Szukaj intentu, nazwy, pakietu, akcji (np. DNS, Xiaomi, Bateria)..." class="w-full bg-slate-900/90 border border-slate-700 text-slate-100 placeholder-slate-500 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                        <svg class="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <select id="platform-filter" onchange="applyFilters()" class="w-full bg-slate-900/90 border border-slate-700 text-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="all">Wszystkie platformy</option>
+                            <option value="generic">Standard Android / AOSP</option>
+                            <option value="tv">Android TV / Google TV</option>
+                            <option value="samsung">Samsung One UI</option>
+                            <option value="xiaomi">Xiaomi / HyperOS / MIUI</option>
+                            <option value="realme">Realme / ColorOS</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <select id="category-filter" onchange="applyFilters()" class="w-full bg-slate-900/90 border border-slate-700 text-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="all">Wszystkie kategorie</option>
+                            <option value="dns">DNS, Sieć & Komunikacja</option>
+                            <option value="personalization">Personalizacja & Ekran</option>
+                            <option value="system">System & Deweloper</option>
+                            <option value="tv_system">Android TV Automation</option>
+                            <option value="battery">Bateria, Zasilanie & Wydajność</option>
+                            <option value="oem">Specyficzne dla Producentów</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Szybkie Tagi / Chip-y -->
+                <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-700/50">
+                    <span class="text-xs font-semibold text-slate-400 mr-1">Szybki filtr:</span>
+                    <button onclick="quickFilter('dns')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 text-xs font-mono transition">🌐 Private DNS</button>
+                    <button onclick="quickFilter('developer')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 text-xs font-mono transition">🛠️ Opcje Programisty</button>
+                    <button onclick="quickFilter('battery')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 text-xs font-mono transition">🔋 Bateria</button>
+                    <button onclick="quickFilter('xiaomi')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 text-xs font-mono transition">📱 Xiaomi / HyperOS</button>
+                    <button onclick="quickFilter('samsung')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 text-xs font-mono transition">🪐 Samsung</button>
+                    <button onclick="resetFilters()" class="px-2.5 py-1 bg-indigo-950 hover:bg-indigo-900 text-indigo-300 rounded-lg border border-indigo-700/50 text-xs font-semibold transition ml-auto">Pokaż wszystkie</button>
+                </div>
+            </div>
+
+            <!-- Kontener z kartami Intentów -->
+            <div id="content-container" class="space-y-8"></div>
+        </div>
+
+        <!-- ZAKŁADKA 2: EKSTRAKTOR & PARSER ADB DUMPSYS -->
+        <div id="tab-adb-view" class="space-y-6 hidden">
+            <!-- Nagłówek Ekstraktora -->
+            <div class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 rounded-2xl p-5 sm:p-6 shadow-2xl space-y-3">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-amber-500/20 border border-amber-500/40 rounded-xl text-amber-400 text-2xl">💻</div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            Instrukcja Wyciągania Intentów ADB Shell
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-400">Odnajdowanie ukrytych Akcji (Intent Actions) oraz Komponentów w systemie Android bez Roota</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generator Poleceń ADB -->
+            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-5 shadow-xl space-y-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700/60 pb-3">
+                    🛠️ Generator Poleceń Badawczych ADB Shell
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Rodzaj zapytania</label>
+                        <select id="adb-cmd-type" onchange="generateAdbExplorerCmd()" class="w-full bg-slate-900 border border-slate-700 text-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-indigo-500">
+                            <option value="pkg_dump">Zrzut całego pakietu (dumpsys package)</option>
+                            <option value="query_action">Wyszukaj aktywności dla podanej Akcji</option>
+                            <option value="intent_resolvers">Wszystkie Resolvery Intentów w systemie</option>
+                            <option value="shortcuts">Zrzut Skrótów Aplikacji (Shortcuts)</option>
+                            <option value="receivers">Zrzut Odbiorników Głównych (Broadcast Receivers)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Nazwa Pakietu</label>
+                        <input type="text" id="adb-pkg-input" oninput="generateAdbExplorerCmd()" placeholder="np. com.miui.securitycenter" value="com.miui.securitycenter" class="w-full bg-slate-900 border border-slate-700 text-slate-200 rounded-xl px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Szukana Akcja</label>
+                        <input type="text" id="adb-action-input" oninput="generateAdbExplorerCmd()" placeholder="np. android.settings.PRIVATE_DNS_SETTINGS" value="android.settings.PRIVATE_DNS_SETTINGS" class="w-full bg-slate-900 border border-slate-700 text-slate-200 rounded-xl px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slate-400 font-semibold flex items-center gap-1.5">
+                            <span class="text-emerald-400">❯</span> Polecenie do wklejenia w ADB Terminal / Shizuku:
+                        </span>
+                        <button onclick="copyExplorerCmd()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-[11px] px-3 py-1 rounded-lg transition shadow flex items-center gap-1">
+                            📋 Kopiuj Komendę
+                        </button>
+                    </div>
+                    <code id="adb-output-cmd" class="block font-mono text-xs text-amber-300 break-all bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+                        adb shell dumpsys package com.miui.securitycenter
+                    </code>
+                </div>
+            </div>
+
+            <!-- Parser Logów Dumpsys -->
+            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-5 shadow-xl space-y-4">
+                <div class="border-b border-slate-700/60 pb-3 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            🧪 Parser Surowych Logów ADB Dumpsys
+                        </h3>
+                        <p class="text-xs text-slate-400">Wklej fragment wyjścia terminala, a parser automatycznie przygotuje gotowe URIs i komendy uruchamiające!</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-semibold text-slate-400">Wklej tekst z ADB Shell:</label>
+                        <button onclick="loadSampleDumpsys()" class="text-xs text-indigo-400 hover:text-indigo-300 underline font-mono">Wczytaj przykładowy log Xiaomi/Samsung</button>
+                    </div>
+                    <textarea id="dumpsys-paste-area" rows="6" placeholder="Wklej tekst wyjścia ADB tutaj..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 custom-scrollbar"></textarea>
+
+                    <div class="flex justify-end gap-2">
+                        <button onclick="clearParser()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium text-xs px-4 py-2 rounded-xl transition">Wyczyszczenie</button>
+                        <button onclick="parseDumpsysText()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5 py-2 rounded-xl transition shadow-lg shadow-emerald-600/20 flex items-center gap-1.5">
+                            ⚡ Analizuj i Wyekstrahuj Intenty
+                        </button>
+                    </div>
+                </div>
+
+                <div id="parsed-results-container" class="space-y-3 hidden pt-2 border-t border-slate-700/60">
+                    <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
+                        <span>Wyryte Akcje i Komponenty:</span>
+                        <span id="parsed-count-badge" class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[10px] px-2 py-0.5 rounded-full font-mono">Znaleziono: 0</span>
+                    </h4>
+                    <div id="parsed-items-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ZAKŁADKA 3: KONWERTER ADB ↔ INTENT URI -->
+        <div id="tab-converter-view" class="space-y-6 hidden">
+            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-5 shadow-xl space-y-5">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        🔄 Dwukierunkowy Konwerter ADB Shell ↔ Intent URI
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">
+                        Przekształcaj komendy `adb shell am start` na uniwersalny format `intent:#Intent;...` i odwrotnie!
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- ADB to URI -->
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-3">
+                        <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">1. ADB Shell Command → Intent URI</h3>
+                        <textarea id="conv-adb-input" rows="3" placeholder="Wklej komendę ADB, np:
+adb shell am start -a android.settings.PRIVATE_DNS_SETTINGS" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 font-mono text-xs text-amber-300 focus:outline-none focus:ring-1 focus:ring-amber-500"></textarea>
+                        <button onclick="convertAdbToUri()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs py-2 rounded-lg transition shadow">
+                            Konwertuj na Intent URI
+                        </button>
+                        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                            <span class="text-[10px] text-slate-500 font-semibold block mb-1">Wynikowy Intent URI:</span>
+                            <code id="conv-uri-result" class="block font-mono text-xs text-emerald-400 break-all select-all">intent:#Intent;end</code>
+                        </div>
+                    </div>
+
+                    <!-- URI to ADB -->
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-3">
+                        <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">2. Intent URI → ADB Shell Command</h3>
+                        <textarea id="conv-uri-input" rows="3" placeholder="Wklej Intent URI, np:
+intent:#Intent;action=android.settings.PRIVATE_DNS_SETTINGS;end" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 font-mono text-xs text-emerald-300 focus:outline-none focus:ring-1 focus:ring-emerald-500"></textarea>
+                        <button onclick="convertUriToAdb()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-2 rounded-lg transition shadow">
+                            Konwertuj na ADB Shell
+                        </button>
+                        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                            <span class="text-[10px] text-slate-500 font-semibold block mb-1">Wynikowa komenda ADB:</span>
+                            <code id="conv-adb-result" class="block font-mono text-xs text-amber-300 break-all select-all">adb shell am start ...</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL 1: KREATOR INTENTÓW -->
+    <div id="builder-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 relative">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    🛠️ Generator Custom Intent URI
+                </h3>
+                <button onclick="closeBuilderModal()" class="text-slate-400 hover:text-white p-1 rounded-lg text-xl">&times;</button>
+            </div>
+
+            <div class="space-y-3 text-sm">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Action (Akcja)</label>
+                    <input type="text" id="custom-action" placeholder="np. android.settings.PRIVATE_DNS_SETTINGS" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 font-mono text-xs text-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Package (Pakiet)</label>
+                        <input type="text" id="custom-package" placeholder="np. com.android.settings" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 font-mono text-xs text-slate-200">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Component (Komponent)</label>
+                        <input type="text" id="custom-component" placeholder="np. com.android.settings/.Settings" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 font-mono text-xs text-slate-200">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Dodatkowe parametry (Extra String)</label>
+                    <input type="text" id="custom-extra" placeholder="np. S.dns_mode=private" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 font-mono text-xs text-slate-200">
+                </div>
+
+                <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+                    <span class="text-xs font-semibold text-slate-400">Wygenerowany Intent URI:</span>
+                    <code id="generated-uri-output" class="block font-mono text-xs text-emerald-400 break-all bg-slate-900 p-2 rounded border border-slate-800">intent:#Intent;end</code>
+                </div>
+            </div>
+
+            <div class="flex gap-2 justify-end pt-2">
+                <button onclick="copyGeneratedUri()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-4 py-2 rounded-lg transition">Kopiuj URI</button>
+                <a id="generated-uri-link" href="#" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs px-4 py-2 rounded-lg transition flex items-center gap-1">Uruchom</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: INSPEKTOR INTENTU -->
+    <div id="inspector-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 id="inspector-title" class="text-base font-bold text-white flex items-center gap-2">
+                    🔍 Inspektor Intentu
+                </h3>
+                <button onclick="closeInspectorModal()" class="text-slate-400 hover:text-white p-1 rounded-lg text-xl">&times;</button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <span class="block text-slate-400 font-medium mb-1">Główny Intent URI:</span>
+                    <code id="inspector-uri" class="block font-mono text-emerald-400 bg-slate-950 p-2.5 rounded-lg border border-slate-800 break-all"></code>
+                </div>
+
+                <div id="inspector-fallback-container">
+                    <span class="block text-slate-400 font-medium mb-1">Alternatywne URI dla Przeglądarki:</span>
+                    <code id="inspector-fallback" class="block font-mono text-indigo-300 bg-slate-950 p-2.5 rounded-lg border border-slate-800 break-all"></code>
+                </div>
+
+                <div>
+                    <span class="block text-slate-400 font-medium mb-1">Komenda ADB Shell:</span>
+                    <div class="flex items-center gap-2">
+                        <code id="inspector-adb" class="flex-1 font-mono text-amber-300 bg-slate-950 p-2.5 rounded-lg border border-slate-800 break-all"></code>
+                        <button onclick="copyInspectorAdb()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs px-3 py-2.5 rounded-lg border border-slate-700 transition">Kopiuj</button>
+                    </div>
+                </div>
+
+                <div id="inspector-note-container" class="p-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-400 leading-relaxed">
+                    <span id="inspector-note"></span>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-2">
+                <button onclick="exportTaskerSnippet()" class="bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 font-medium text-xs px-3 py-2 rounded-lg border border-indigo-500/30 transition flex items-center gap-1">
+                    ⚡ Kopiuj Kod dla Tasker
+                </button>
+                <button onclick="closeInspectorModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs px-4 py-2 rounded-lg transition">Zamknij</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stopka -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-6 px-4 text-center text-xs text-slate-500 mt-auto">
+        <div class="max-w-7xl mx-auto space-y-2">
+            <p>Standardowy format: <code class="text-indigo-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">intent:#Intent;...;end</code> oraz <code class="text-amber-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">adb shell am start</code></p>
+            <p>Zgodność: Tasker, MacroDroid, ADB shell, Shizuku, NFC tags oraz Android 8.0 - 16+.</p>
+        </div>
+    </footer>
+
+    <!-- Kontener Toast -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // Pełna Baza danych Intentów Androida
+        const intentCatalog = [
+            {
+                category: "dns",
+                categoryName: "🌐 DNS, Sieć & Komunikacja",
+                items: [
+                    {
+                        name: "Prywatny DNS (Private DNS)",
+                        platform: "generic",
+                        type: "action",
+                        icon: "🌐",
+                        description: "Otwiera menu ustawień Prywatnego DNS (Cloudflare, NextDNS, AdGuard).",
+                        uri: "intent:#Intent;action=android.settings.PRIVATE_DNS_SETTINGS;end",
+                        fallbackUri: "intent:#Intent;action=android.settings.SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.PRIVATE_DNS_SETTINGS",
+                        note: "Działa natywnie na większości czystych systemów Android 9+"
+                    },
+                    {
+                        name: "Prywatny DNS (Xiaomi / HyperOS)",
+                        platform: "xiaomi",
+                        type: "oem_component",
+                        icon: "📱",
+                        description: "Bezpośredni skrót do sekcji DNS w systemach Xiaomi / HyperOS / MIUI.",
+                        uri: "intent:#Intent;action=android.intent.action.MAIN;component=com.android.settings/com.android.settings.Settings$PrivateDnsSettingsActivity;end",
+                        fallbackUri: "intent:#Intent;action=android.settings.PRIVATE_DNS_SETTINGS;end",
+                        adb: "adb shell am start -n com.android.settings/com.android.settings.Settings\\$PrivateDnsSettingsActivity",
+                        note: "Wymaga uruchomienia z ADB/Taskera, gdyż Xiaomi blokuje bezpośrednie URI w Chrome."
+                    },
+                    {
+                        name: "Prywatny DNS (Samsung One UI)",
+                        platform: "samsung",
+                        type: "oem_component",
+                        icon: "🪐",
+                        description: "Menu Wi-Fi i Połączeń w tym Prywatny DNS dla Samsung Galaxy.",
+                        uri: "intent:#Intent;action=android.intent.action.MAIN;component=com.android.settings/com.android.settings.Settings$MoreConnectivitySettingsActivity;end",
+                        fallbackUri: "intent:#Intent;action=android.settings.PRIVATE_DNS_SETTINGS;end",
+                        adb: "adb shell am start -n com.android.settings/com.android.settings.Settings\\$MoreConnectivitySettingsActivity",
+                        note: "Działa bezpośrednio na smartfonach Samsung One UI."
+                    },
+                    {
+                        name: "Ustawienia Wi-Fi",
+                        platform: "generic",
+                        type: "action",
+                        icon: "📶",
+                        description: "Otwiera listę dostępnych sieci Wi-Fi i zaawansowane parametry połączenia.",
+                        uri: "intent:#Intent;action=android.settings.WIFI_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.WIFI_SETTINGS"
+                    },
+                    {
+                        name: "Ustawienia Bluetooth",
+                        platform: "generic",
+                        type: "action",
+                        icon: "🎧",
+                        description: "Zarządzanie sparowanymi urządzeniami i wyszukiwanie nowych akcesoriów Bluetooth.",
+                        uri: "intent:#Intent;action=android.settings.BLUETOOTH_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.BLUETOOTH_SETTINGS"
+                    },
+                    {
+                        name: "Punkt Dostępny / Tethering",
+                        platform: "generic",
+                        type: "action",
+                        icon: "📡",
+                        description: "Konfiguracja Hotspota Wi-Fi oraz Udostępniania Internetu przez USB/Bluetooth.",
+                        uri: "intent:#Intent;action=android.settings.WIRELESS_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.WIRELESS_SETTINGS"
+                    }
+                ]
+            },
+            {
+                category: "personalization",
+                categoryName: "🎨 Personalizacja & Ekran",
+                items: [
+                    {
+                        name: "Ustawienia Wyświetlacza",
+                        platform: "generic",
+                        type: "action",
+                        icon: "☀️",
+                        description: "Jasność ekranu, wygaszanie, odświeżanie (Hz) oraz Motyw Ciemny.",
+                        uri: "intent:#Intent;action=android.settings.DISPLAY_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.DISPLAY_SETTINGS"
+                    },
+                    {
+                        name: "Tryb Ciemny (Dark Theme)",
+                        platform: "generic",
+                        type: "action",
+                        icon: "🌙",
+                        description: "Szybkie przełączanie jasnego/ciemnego motywu systemowego.",
+                        uri: "intent:#Intent;action=android.settings.DARK_THEME_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.DARK_THEME_SETTINGS"
+                    },
+                    {
+                        name: "Tapety i Styl",
+                        platform: "generic",
+                        type: "action",
+                        icon: "🖼️",
+                        description: "Menu wyboru tapety oraz palety kolorów Material You.",
+                        uri: "intent:#Intent;action=android.settings.WALLPAPER_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.WALLPAPER_SETTINGS"
+                    }
+                ]
+            },
+            {
+                category: "battery",
+                categoryName: "🔋 Bateria & Wydajność",
+                items: [
+                    {
+                        name: "Ustawienia Baterii i Zasilania",
+                        platform: "generic",
+                        type: "action",
+                        icon: "🔋",
+                        description: "Zużycie energii, statystyki aplikacji oraz Oszczędzanie Baterii.",
+                        uri: "intent:#Intent;action=android.settings.BATTERY_SAVER_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.BATTERY_SAVER_SETTINGS"
+                    },
+                    {
+                        name: "Optymalizacja Baterii (Bypass Doze)",
+                        platform: "generic",
+                        type: "action",
+                        icon: "⚡",
+                        description: "Wyłączenie ograniczeń oszczędzania energii dla wybranych aplikacji.",
+                        uri: "intent:#Intent;action=android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS"
+                    },
+                    {
+                        name: "Xiaomi Panel Baterii & Kondycja",
+                        platform: "xiaomi",
+                        type: "oem_component",
+                        icon: "🔋",
+                        description: "Zaawansowane statystyki ładowania, temperatura i kondycja ogniwa Xiaomi.",
+                        uri: "intent:#Intent;action=android.intent.action.MAIN;component=com.miui.securitycenter/com.miui.powercenter.PowerMainHeaderActivity;end",
+                        adb: "adb shell am start -n com.miui.securitycenter/com.miui.powercenter.PowerMainHeaderActivity"
+                    }
+                ]
+            },
+            {
+                category: "system",
+                categoryName: "⚙️ System & Deweloper",
+                items: [
+                    {
+                        name: "Opcje Programisty (Developer Options)",
+                        platform: "generic",
+                        type: "action",
+                        icon: "🛠️",
+                        description: "Ustawienia ADB, debugowanie USB, szybkość animacji, GPU.",
+                        uri: "intent:#Intent;action=android.settings.APPLICATION_DEVELOPMENT_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.APPLICATION_DEVELOPMENT_SETTINGS"
+                    },
+                    {
+                        name: "Zarządzanie Aplikacjami",
+                        platform: "generic",
+                        type: "action",
+                        icon: "📱",
+                        description: "Pełna lista zainstalowanych aplikacji, czyszczenie cache i uprawnienia.",
+                        uri: "intent:#Intent;action=android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS"
+                    },
+                    {
+                        name: "Dostęp do Powiadomień (Notification Access)",
+                        platform: "generic",
+                        type: "action",
+                        icon: "🔔",
+                        description: "Uprawnienie do odczytywania powiadomień dla zegarków, Taskera, itp.",
+                        uri: "intent:#Intent;action=android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
+                    },
+                    {
+                        name: "Rysowanie na wierzchu (Draw Over Apps)",
+                        platform: "generic",
+                        type: "action",
+                        icon: "🪟",
+                        description: "Zarządzanie uprawnieniami wyświetlania okien nad innymi aplikacjami.",
+                        uri: "intent:#Intent;action=android.settings.action.MANAGE_OVERLAY_PERMISSION;end",
+                        adb: "adb shell am start -a android.settings.action.MANAGE_OVERLAY_PERMISSION"
+                    }
+                ]
+            },
+            {
+                category: "tv_system",
+                categoryName: "📺 Android TV Automation",
+                items: [
+                    {
+                        name: "Ustawienia Android TV",
+                        platform: "tv",
+                        type: "action",
+                        icon: "📺",
+                        description: "Główne menu konfiguracyjne dla Google TV / Android TV.",
+                        uri: "intent:#Intent;action=android.settings.TV_INPUT_SETTINGS;end",
+                        adb: "adb shell am start -a android.settings.TV_INPUT_SETTINGS"
+                    },
+                    {
+                        name: "Ekran i Rozdzielczość TV",
+                        platform: "tv",
+                        type: "oem_component",
+                        icon: "🖥️",
+                        description: "Ustawienia rozdzielczości, HDR, 4K i odświeżania na telewizorze.",
+                        uri: "intent:#Intent;action=android.intent.action.MAIN;component=com.google.android.tv.settings/.display.DisplayActivity;end",
+                        adb: "adb shell am start -n com.google.android.tv.settings/.display.DisplayActivity"
+                    }
+                ]
+            },
+            {
+                category: "oem",
+                categoryName: "🏭 Specyficzne dla Producentów (Xiaomi, Samsung, Realme)",
+                items: [
+                    {
+                        name: "Xiaomi Autostart Management",
+                        platform: "xiaomi",
+                        type: "oem_component",
+                        icon: "🚀",
+                        description: "Zarządzanie automatycznym uruchamianiem aplikacji w tle dla HyperOS / MIUI.",
+                        uri: "intent:#Intent;action=android.intent.action.MAIN;component=com.miui.securitycenter/com.miui.permcenter.autostart.AutoStartManagementActivity;end",
+                        adb: "adb shell am start -n com.miui.securitycenter/com.miui.permcenter.autostart.AutoStartManagementActivity"
+                    },
+                    {
+                        name: "Xiaomi CleanMaster (Sprzątanie)",
+                        platform: "xiaomi",
+                        type: "oem_component",
+                        icon: "🧹",
+                        description: "Szybkie czyszczenie pamięci podręcznej i śmieci systemowych w MIUI.",
+                        uri: "intent:#Intent;action=android.intent.action.MAIN;component=com.miui.securitycenter/com.miui.cleanmaster.CleanMainActivity;end",
+                        adb: "adb shell am start -n com.miui.securitycenter/com.miui.cleanmaster.CleanMainActivity"
+                    },
+                    {
+                        name: "Samsung Pamięć RAM & Pielęgnacja",
+                        platform: "samsung",
+                        type: "oem_component",
+                        icon: "⚡",
+                        description: "Czyszczenie RAM oraz optymalizacja urządzenia Samsung Device Care.",
+                        uri: "intent:#Intent;action=android.intent.action.MAIN;component=com.samsung.android.looper/com.samsung.android.sm.ui.ram.RamActivity;end",
+                        adb: "adb shell am start -n com.samsung.android.looper/com.samsung.android.sm.ui.ram.RamActivity"
+                    }
+                ]
+            }
+        ];
+
+        let currentInspectorItem = null;
+
+        // Przełączanie Zakładek
+        function switchTab(tab) {
+            const catalogTab = document.getElementById('tab-catalog-view');
+            const adbTab = document.getElementById('tab-adb-view');
+            const convTab = document.getElementById('tab-converter-view');
+
+            const btnCatalog = document.getElementById('tab-btn-catalog');
+            const btnAdb = document.getElementById('tab-btn-adb');
+            const btnConv = document.getElementById('tab-btn-converter');
+
+            catalogTab.classList.add('hidden');
+            adbTab.classList.add('hidden');
+            convTab.classList.add('hidden');
+
+            btnCatalog.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5";
+            btnAdb.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5";
+            btnConv.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5";
+
+            if (tab === 'catalog') {
+                catalogTab.classList.remove('hidden');
+                btnCatalog.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition bg-indigo-600 text-white shadow";
+            } else if (tab === 'adb') {
+                adbTab.classList.remove('hidden');
+                btnAdb.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition bg-indigo-600 text-white shadow";
+                generateAdbExplorerCmd();
+            } else if (tab === 'converter') {
+                convTab.classList.remove('hidden');
+                btnConv.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition bg-indigo-600 text-white shadow";
+            }
+        }
+
+        // Renderowanie Katalogu
+        function renderCatalog() {
+            const container = document.getElementById('content-container');
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const platformFilter = document.getElementById('platform-filter').value;
+            const categoryFilter = document.getElementById('category-filter').value;
+
+            let html = '';
+            let totalCount = 0;
+
+            intentCatalog.forEach(cat => {
+                if (categoryFilter !== 'all' && cat.category !== categoryFilter) return;
+
+                const filteredItems = cat.items.filter(item => {
+                    const matchPlatform = platformFilter === 'all' || item.platform === platformFilter || item.platform === 'generic';
+                    const matchSearch = !query || 
+                        item.name.toLowerCase().includes(query) || 
+                        item.description.toLowerCase().includes(query) || 
+                        item.uri.toLowerCase().includes(query) ||
+                        item.adb.toLowerCase().includes(query);
+
+                    return matchPlatform && matchSearch;
+                });
+
+                if (filteredItems.length === 0) return;
+
+                totalCount += filteredItems.length;
+
+                html += `
+                    <section class="space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                                ${cat.categoryName}
+                            </h2>
+                            <span class="text-xs font-mono bg-slate-800 text-slate-400 px-2.5 py-0.5 rounded-full border border-slate-700">
+                                ${filteredItems.length}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                `;
+
+                filteredItems.forEach(item => {
+                    const isOem = item.type === 'oem_component';
+                    const statusBadge = isOem 
+                        ? '<span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono">Wymaga ADB/Taskera</span>'
+                        : '<span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded font-mono">Działa w przeglądarce</span>';
+
+                    html += `
+                        <div class="bg-slate-800/50 hover:bg-slate-800 border ${isOem ? 'border-amber-500/30' : 'border-slate-700/60'} rounded-xl p-4 transition duration-200 flex flex-col justify-between space-y-3 shadow-lg">
+                            <div>
+                                <div class="flex items-start justify-between gap-2 mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xl p-1.5 bg-slate-900 rounded-lg border border-slate-800">${item.icon}</span>
+                                        <h3 class="font-semibold text-slate-100 text-sm leading-tight">${item.name}</h3>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2">
+                                    ${statusBadge}
+                                </div>
+
+                                <p class="text-xs text-slate-400 leading-relaxed mb-3">${item.description}</p>
+                                
+                                <div class="space-y-1">
+                                    <span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">Intent URI:</span>
+                                    <code class="block font-mono text-[11px] bg-slate-950 p-2 rounded border border-slate-800/80 text-emerald-400 break-all leading-tight select-all">
+                                        ${item.uri}
+                                    </code>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-slate-700/40 space-y-2 text-xs">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <a href="${item.uri}" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 font-medium py-1.5 px-2.5 rounded-lg border border-indigo-500/30 transition text-center flex items-center justify-center gap-1 text-[11px]">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        Otwórz
+                                    </a>
+
+                                    ${item.fallbackUri ? `
+                                        <a href="${item.fallbackUri}" title="Bezpieczne przejście" class="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 font-medium py-1.5 px-2.5 rounded-lg border border-amber-500/30 transition text-center flex items-center justify-center gap-1 text-[11px]">
+                                            🛡️ Alternatywa
+                                        </a>
+                                    ` : `
+                                        <button onclick="copyToClipboard('${item.uri}')" class="bg-slate-700/50 hover:bg-slate-700 text-slate-200 font-medium py-1.5 px-2.5 rounded-lg border border-slate-600/50 transition flex items-center justify-center gap-1 text-[11px]">
+                                            Kopiuj URI
+                                        </button>
+                                    `}
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="copyAdbCommand('${item.adb}')" class="bg-slate-900 hover:bg-slate-950 text-amber-300 font-mono py-1.5 px-2 rounded-lg border border-slate-700/80 transition flex items-center justify-center gap-1 text-[10px]">
+                                        💻 Kopiuj ADB
+                                    </button>
+                                    <button onclick="openInspector('${item.name}')" class="bg-slate-900 hover:bg-slate-950 text-slate-300 font-mono py-1.5 px-2 rounded-lg border border-slate-700/80 transition flex items-center justify-center gap-1 text-[10px]">
+                                        🔍 Inspektor
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </section>
+                `;
+            });
+
+            if (totalCount === 0) {
+                html = `
+                    <div class="text-center py-16 bg-slate-800/30 border border-slate-800 rounded-2xl p-6 space-y-2">
+                        <span class="text-4xl block">🔍</span>
+                        <h3 class="text-base font-semibold text-slate-200">Brak wyników</h3>
+                        <p class="text-xs text-slate-400">Brak intentów pasujących do kryteriów. Spróbuj zmienić filtry lub wyczyścić zapytanie.</p>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function applyFilters() {
+            renderCatalog();
+        }
+
+        function quickFilter(tag) {
+            document.getElementById('search-input').value = tag;
+            renderCatalog();
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('platform-filter').value = 'all';
+            document.getElementById('category-filter').value = 'all';
+            renderCatalog();
+        }
+
+        function toggleWarningBox() {
+            document.getElementById('oem-warning-box').classList.toggle('hidden');
+        }
+
+        // Generator komend ADB
+        function generateAdbExplorerCmd() {
+            const type = document.getElementById('adb-cmd-type').value;
+            const pkg = document.getElementById('adb-pkg-input').value.trim() || "com.miui.securitycenter";
+            const action = document.getElementById('adb-action-input').value.trim() || "android.settings.SETTINGS";
+            const output = document.getElementById('adb-output-cmd');
+
+            let cmd = "";
+            switch(type) {
+                case 'pkg_dump': cmd = `adb shell dumpsys package ${pkg}`; break;
+                case 'query_action': cmd = `adb shell cmd package query-activities --brief -a ${action}`; break;
+                case 'intent_resolvers': cmd = `adb shell dumpsys package intent-resolvers`; break;
+                case 'shortcuts': cmd = `adb shell dumpsys shortcut | grep -A 10 "${pkg}"`; break;
+                case 'receivers': cmd = `adb shell dumpsys package receivers | grep -A 15 "${pkg}"`; break;
+                default: cmd = `adb shell dumpsys package ${pkg}`;
+            }
+            output.innerText = cmd;
+        }
+
+        function copyExplorerCmd() {
+            copyToClipboard(document.getElementById('adb-output-cmd').innerText);
+        }
+
+        function loadSampleDumpsys() {
+            const sample = `Activity Resolver Table:
+  Non-Data Actions:
+      android.intent.action.MAIN:
+        4a3b12c com.miui.securitycenter/com.miui.permcenter.autostart.AutoStartManagementActivity filter 8b9a10
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.DEFAULT"
+      android.settings.APPLICATION_DETAILS_SETTINGS:
+        1a2b3c4 com.miui.securitycenter/.MainWithMenuActivity filter 9f8e7d
+          Action: "android.settings.APPLICATION_DETAILS_SETTINGS"
+          Category: "android.intent.category.DEFAULT"`;
+            document.getElementById('dumpsys-paste-area').value = sample;
+            parseDumpsysText();
+        }
+
+        function clearParser() {
+            document.getElementById('dumpsys-paste-area').value = '';
+            document.getElementById('parsed-results-container').classList.add('hidden');
+        }
+
+        function parseDumpsysText() {
+            const rawText = document.getElementById('dumpsys-paste-area').value;
+            const container = document.getElementById('parsed-items-list');
+            const resultsBox = document.getElementById('parsed-results-container');
+            const countBadge = document.getElementById('parsed-count-badge');
+
+            if (!rawText.trim()) {
+                showToast("Wklej tekst z wyjścia ADB Dumpsys!", "error");
+                return;
+            }
+
+            const componentRegex = /([a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)+)\/([a-zA-Z0-9_.]*)/g;
+            const extracted = [];
+            let match;
+
+            while ((match = componentRegex.exec(rawText)) !== null) {
+                const fullComponent = `${match[1]}/${match[2]}`;
+                const pkg = match[1];
+
+                const index = match.index;
+                const snippet = rawText.substring(Math.max(0, index - 250), Math.min(rawText.length, index + 250));
+                const actMatch = /Action:\s*"([^"]+)"/.exec(snippet);
+                const foundAction = actMatch ? actMatch[1] : "";
+
+                if (!extracted.some(e => e.component === fullComponent)) {
+                    extracted.push({
+                        component: fullComponent,
+                        action: foundAction,
+                        uri: foundAction 
+                            ? `intent:#Intent;action=${foundAction};component=${fullComponent};end`
+                            : `intent:#Intent;component=${fullComponent};end`,
+                        adb: `adb shell am start -n ${fullComponent}`
+                    });
+                }
+            }
+
+            if (extracted.length === 0) {
+                container.innerHTML = `<div class="col-span-full p-4 bg-slate-900 border border-slate-800 rounded-xl text-center text-xs text-slate-400">Nie znaleziono wzorców komponentów (pkg/activity).</div>`;
+            } else {
+                let html = '';
+                extracted.forEach((item, idx) => {
+                    html += `
+                        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-2 text-xs">
+                            <div class="flex items-start justify-between gap-2">
+                                <span class="font-bold text-emerald-400 font-mono text-[11px] truncate" title="${item.component}">
+                                    ${item.component}
+                                </span>
+                                <span class="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded font-mono">#${idx + 1}</span>
+                            </div>
+                            ${item.action ? `<div class="text-[11px]"><span class="text-slate-500">Akcja:</span> <code class="text-indigo-300 font-mono">${item.action}</code></div>` : ''}
+                            <div class="bg-slate-950 p-2 rounded border border-slate-800">
+                                <code class="block font-mono text-[10px] text-slate-300 break-all">${item.uri}</code>
+                            </div>
+                            <div class="flex gap-2 pt-1">
+                                <a href="${item.uri}" class="flex-1 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 font-medium py-1 px-2 rounded transition text-center text-[10px]">Uruchom</a>
+                                <button onclick="copyToClipboard('${item.uri}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-1 px-2 rounded transition text-[10px]">URI</button>
+                                <button onclick="copyToClipboard('${item.adb}')" class="bg-slate-800 hover:bg-slate-700 text-amber-300 font-medium py-1 px-2 rounded transition text-[10px]">ADB</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            countBadge.innerText = `Znaleziono: ${extracted.length}`;
+            resultsBox.classList.remove('hidden');
+        }
+
+        // Konwerter ADB ↔ URI
+        function convertAdbToUri() {
+            const input = document.getElementById('conv-adb-input').value.trim();
+            if (!input) {
+                showToast("Wklej komendę ADB!", "error");
+                return;
+            }
+
+            let action = "", component = "", pkg = "", data = "";
+            
+            const actMatch = /-a\s+([^\s]+)/.exec(input);
+            if (actMatch) action = actMatch[1];
+
+            const compMatch = /-n\s+([^\s]+)/.exec(input);
+            if (compMatch) component = compMatch[1];
+
+            const pkgMatch = /-p\s+([^\s]+)/.exec(input);
+            if (pkgMatch) pkg = pkgMatch[1];
+
+            const dataMatch = /-d\s+([^\s]+)/.exec(input);
+            if (dataMatch) data = dataMatch[1];
+
+            let uri = "intent:";
+            if (data) uri += data;
+            uri += "#Intent;";
+            if (action) uri += `action=${action};`;
+            if (component) uri += `component=${component};`;
+            if (pkg) uri += `package=${pkg};`;
+            uri += "end";
+
+            document.getElementById('conv-uri-result').innerText = uri;
+            showToast("Przekonwertowano na Intent URI!");
+        }
+
+        function convertUriToAdb() {
+            const input = document.getElementById('conv-uri-input').value.trim();
+            if (!input || !input.startsWith("intent:")) {
+                showToast("Wklej poprawny Intent URI rozpoczynający się od intent:", "error");
+                return;
+            }
+
+            let adb = "adb shell am start";
+
+            const actMatch = /action=([^;]+)/.exec(input);
+            if (actMatch) adb += ` -a ${actMatch[1]}`;
+
+            const compMatch = /component=([^;]+)/.exec(input);
+            if (compMatch) adb += ` -n ${compMatch[1]}`;
+
+            const pkgMatch = /package=([^;]+)/.exec(input);
+            if (pkgMatch) adb += ` -p ${pkgMatch[1]}`;
+
+            document.getElementById('conv-adb-result').innerText = adb;
+            showToast("Przekonwertowano na ADB Shell!");
+        }
+
+        // Inspektor
+        function openInspector(itemName) {
+            let found = null;
+            intentCatalog.forEach(cat => {
+                cat.items.forEach(it => {
+                    if (it.name === itemName) found = it;
+                });
+            });
+
+            if (!found) return;
+
+            currentInspectorItem = found;
+            document.getElementById('inspector-title').innerText = `🔍 Inspektor: ${found.name}`;
+            document.getElementById('inspector-uri').innerText = found.uri;
+            document.getElementById('inspector-adb').innerText = found.adb;
+
+            const fallbackCont = document.getElementById('inspector-fallback-container');
+            if (found.fallbackUri) {
+                fallbackCont.classList.remove('hidden');
+                document.getElementById('inspector-fallback').innerText = found.fallbackUri;
+            } else {
+                fallbackCont.classList.add('hidden');
+            }
+
+            const noteCont = document.getElementById('inspector-note-container');
+            if (found.note) {
+                noteCont.classList.remove('hidden');
+                document.getElementById('inspector-note').innerText = found.note;
+            } else {
+                noteCont.classList.add('hidden');
+            }
+
+            document.getElementById('inspector-modal').classList.remove('hidden');
+        }
+
+        function closeInspectorModal() {
+            document.getElementById('inspector-modal').classList.add('hidden');
+        }
+
+        function copyInspectorAdb() {
+            if (currentInspectorItem && currentInspectorItem.adb) {
+                copyToClipboard(currentInspectorItem.adb);
+            }
+        }
+
+        function exportTaskerSnippet() {
+            if (!currentInspectorItem) return;
+            const snippet = `Send Intent [ Action:${currentInspectorItem.uri} Target:Activity ]`;
+            copyToClipboard(snippet);
+            showToast("Skopiowano formatowanie dla Taskera!");
+        }
+
+        function copyAdbCommand(adbCmd) {
+            copyToClipboard(adbCmd);
+        }
+
+        // Builder
+        function openBuilderModal() {
+            document.getElementById('builder-modal').classList.remove('hidden');
+            ['custom-action', 'custom-package', 'custom-component', 'custom-extra'].forEach(id => {
+                document.getElementById(id).oninput = updateGeneratedUri;
+            });
+            updateGeneratedUri();
+        }
+
+        function closeBuilderModal() {
+            document.getElementById('builder-modal').classList.add('hidden');
+        }
+
+        function updateGeneratedUri() {
+            const action = document.getElementById('custom-action').value.trim();
+            const pkg = document.getElementById('custom-package').value.trim();
+            const component = document.getElementById('custom-component').value.trim();
+            const extra = document.getElementById('custom-extra').value.trim();
+
+            let uri = 'intent:#Intent;';
+            if (action) uri += `action=${action};`;
+            if (pkg) uri += `package=${pkg};`;
+            if (component) uri += `component=${component};`;
+            if (extra) uri += `${extra};`;
+            uri += 'end';
+
+            document.getElementById('generated-uri-output').innerText = uri;
+            document.getElementById('generated-uri-link').href = uri;
+        }
+
+        function copyGeneratedUri() {
+            copyToClipboard(document.getElementById('generated-uri-output').innerText);
+        }
+
+        // Pomocnicze schowka & Toasty
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text)
+                    .then(() => showToast("Skopiowano do schowka!"))
+                    .catch(() => fallbackCopyTextToClipboard(text));
+            } else {
+                fallbackCopyTextToClipboard(text);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                showToast("Skopiowano do schowka!");
+            } catch (err) {
+                showToast("Nie udało się skopiować automatycznie", "error");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === "success" ? "bg-slate-800 border-slate-700" : "bg-red-900/80 border-red-700";
+            const textColor = type === "success" ? "text-emerald-400" : "text-red-200";
+
+            toast.className = `${bgColor} ${textColor} border text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 toast-enter pointer-events-auto`;
+            toast.innerHTML = `
+                <span>${type === 'success' ? '✅' : '❌'}</span>
+                <span class="font-medium text-slate-100">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-enter-active');
+            });
+
+            setTimeout(() => {
+                toast.classList.remove('toast-enter-active');
+                toast.classList.add('toast-leave-active');
+                setTimeout(() => toast.remove(), 250);
+            }, 2500);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCatalog();
+        });
+    </script>
+</body>
+</html>
