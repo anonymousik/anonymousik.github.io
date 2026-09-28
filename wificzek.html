@@ -8,7 +8,7 @@
     
     <!-- Nowoczesne standardy bezpieczeństwa i prywatności -->
     <meta name="robots" content="noindex, nofollow, noarchive">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:; media-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: *; media-src 'self';">
     
     <!-- Biblioteki: Generator QR, CryptoJS (Szyfrowanie AES-256), Ikony FontAwesome oraz czcionki -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
@@ -26,6 +26,7 @@
             --text-muted: #a78bfa;
             --magic-purple: #a855f7;
             --magic-gold: #fbbf24;
+            --action-green: #10b981;
         }
 
         body {
@@ -138,6 +139,8 @@
         .wifi-details {
             flex: 1;
             min-width: 200px;
+            display: flex;
+            flex-direction: column;
         }
 
         .wifi-title {
@@ -198,7 +201,7 @@
         }
         .tile-link:hover { text-decoration: underline; }
 
-        /* NOWY PROFIL "NIEZNANY NIKOMU" (Kafel 4) */
+        /* Profil "NIEZNANY NIKOMU" (Kafel 4) */
         .admin-profile {
             display: flex;
             align-items: center;
@@ -208,7 +211,6 @@
             width: 140px;
             height: auto;
             border-radius: 20px;
-            /* Magiczny blend-mode usuwający czarne tło i wtapiający obraz w fiolet */
             mix-blend-mode: screen; 
             filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.4));
             transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -247,7 +249,7 @@
         }
         .toast.show { bottom: 40px; }
 
-        /* Style dla szyfrowania E2EE */
+        /* Style dla szyfrowania E2EE i przycisków głównych */
         .auth-container {
             display: flex;
             flex-direction: column;
@@ -301,10 +303,35 @@
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         .magic-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px var(--accent-glow);
+        }
+        
+        /* Nowy przycisk Smart Connect */
+        .smart-connect-btn {
+            background: linear-gradient(135deg, var(--action-green), #059669);
+            width: 100%;
+            margin-top: 10px;
+            padding: 14px;
+            font-size: 1.05rem;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+        .smart-connect-btn:hover {
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+        }
+        .smart-helper-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 8px;
+            margin-bottom: 0;
+            opacity: 0.8;
         }
 
         .admin-panel {
@@ -412,18 +439,18 @@
                 <i id="lock-icon" class="fa-solid fa-lock auth-icon"></i>
                 <h2>Pieczęć Ochronna (AES-256)</h2>
                 <p style="color: var(--text-muted); margin-bottom: 20px;">Dane sieci zostały zaszyfrowane w standardzie wojskowym. Wpisz hasło ochronne nadane przez Gospodarza.</p>
-                <input type="password" id="decrypt-key" class="magic-input" placeholder="Wprowadź klucz...">
+                <input type="password" id="decrypt-key" class="magic-input" placeholder="Wprowadź klucz (PIN)...">
                 <button class="magic-btn" onclick="attemptDecryption()">Złam Pieczęć</button>
                 <p id="decrypt-error" style="color: #ef4444; margin-top: 10px; display: none; font-size: 0.9rem;">Niewłaściwe zaklęcie! Spróbuj ponownie.</p>
             </div>
 
-            <!-- Wnętrze głównego kafelka Wi-Fi (ukryte do czasu autoryzacji) -->
+            <!-- Wnętrze głównego kafelka Wi-Fi -->
             <div class="wifi-content" id="wifi-content-screen" style="display: none;">
                 <div class="qr-wrapper">
                     <canvas id="qr-canvas"></canvas>
                 </div>
                 <div class="wifi-details">
-                    <h2 class="wifi-title"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--magic-gold);"></i> Połącz z Wi-Fi</h2>
+                    <h2 class="wifi-title"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--magic-gold);"></i> Odszyfrowano</h2>
                     
                     <!-- Nazwa sieci -->
                     <div class="credential-box">
@@ -435,7 +462,7 @@
                     </div>
 
                     <!-- Hasło -->
-                    <div class="credential-box">
+                    <div class="credential-box" style="margin-bottom: 8px;">
                         <div>
                             <div class="credential-label">Słowo klucz (Hasło)</div>
                             <div class="credential-value" id="pass-val">••••••••</div>
@@ -444,6 +471,14 @@
                             <button class="icon-btn" onclick="togglePassword()" id="eye-btn" title="Odkryj hasło"><i class="fa-regular fa-eye"></i></button>
                             <button class="icon-btn" onclick="copyText('pass')" title="Kopiuj hasło"><i class="fa-regular fa-copy"></i></button>
                         </div>
+                    </div>
+                    
+                    <!-- HYBRYDOWY PRZYCISK POŁĄCZENIA -->
+                    <div style="margin-top: 10px;">
+                        <button class="magic-btn smart-connect-btn" onclick="smartConnect()">
+                            <i class="fa-solid fa-wifi"></i> Skopiuj hasło i połącz
+                        </button>
+                        <p class="smart-helper-text">Prywatność przeglądarki zablokuje automatyczne połączenie. Zostaniesz przeniesiony do ustawień – wybierz sieć i wklej skopiowane hasło.</p>
                     </div>
                 </div>
             </div>
@@ -465,12 +500,10 @@
             <a class="tile-link" onclick="openModal('prywatnosc')">Ochrona sekretów <i class="fa-solid fa-arrow-right" style="margin-left: 4px;"></i></a>
         </div>
 
-        <!-- KAFEL 4: AUTORYZOWANY PAN DOMU (TERAZ Z TWOJĄ GRAFIKĄ!) -->
+        <!-- KAFEL 4: AUTORYZOWANY PAN DOMU -->
         <div class="tile" style="grid-column: span 2;">
             <div class="admin-profile">
-                <!-- Zdjęcie wczytywane z Twojego pliku, tryb blendowania automatycznie wycina czarne tło -->
                 <img src="1000567764.png" alt="Nieznany Nikomu" class="admin-avatar">
-                
                 <div style="flex: 1; display: flex; flex-direction: column;">
                     <h2>Autoryzowany Pan Domu</h2>
                     <p class="desc">Masz problem z siecią lub zaklęcie nie działa? Skontaktuj się bezpośrednio ze Strażnikiem Rezydencji - <strong>Nieznanym Nikomu</strong>, aby odświeżyć zaklęcie rutera.</p>
@@ -500,9 +533,10 @@
         let encryptedPayload = ""; 
 
         function initApp() {
-            const hashParams = new URLSearchParams(window.location.hash.substring(1));
-            encryptedPayload = hashParams.get('enc');
+            // Wsparcie dla nowoczesnego hasha (#)
+            let hashParams = new URLSearchParams(window.location.hash.substring(1));
             
+            encryptedPayload = hashParams.get('enc');
             const legacyData = hashParams.get('data');
             
             if (encryptedPayload) {
@@ -545,10 +579,13 @@
                 return;
             }
 
+            // Standardowy format WIFI dla kodów QR
             const plainText = `WIFI:S:${ssid};T:WPA;P:${pass};;`;
             
+            // Szyfrowanie AES
             const ciphertext = CryptoJS.AES.encrypt(plainText, secretKey).toString();
             
+            // Generowanie URL
             const baseUrl = window.location.origin + window.location.pathname;
             const finalUrl = `${baseUrl}#enc=${encodeURIComponent(ciphertext)}`;
             
@@ -557,7 +594,7 @@
             resultBox.value = finalUrl;
             resultBox.select();
             
-            alert("Magiczny Link wygenerowany! Klucz zabezpieczający nie został do niego dołączony - musisz przekazać go gościom osobno.");
+            alert("Magiczny Link wygenerowany! Klucz (PIN) musisz przekazać gościom osobno.");
         }
 
         function attemptDecryption() {
@@ -567,11 +604,12 @@
             if (!secretKey) return;
 
             try {
+                // Deszyfrowanie
                 const bytes = CryptoJS.AES.decrypt(decodeURIComponent(encryptedPayload), secretKey);
                 const originalText = bytes.toString(CryptoJS.enc.Utf8);
 
                 if (!originalText || !originalText.startsWith('WIFI:')) {
-                    throw new Error("Błędny klucz kryptograficzny");
+                    throw new Error("Błędny klucz");
                 }
 
                 document.getElementById('lock-icon').className = "fa-solid fa-lock-open auth-icon unlocked";
@@ -603,6 +641,7 @@
                 document.getElementById('ssid-val').innerText = decryptedSSID;
                 document.getElementById('pass-val').innerText = decryptedPASS || "(Brak)";
                 
+                // Generowanie ostrego kodu QR (Retina)
                 new QRious({
                     element: document.getElementById('qr-canvas'),
                     value: decodedString,
@@ -630,19 +669,19 @@
             }
         }
 
-        function copyText(type) {
+        // Zoptymalizowana funkcja kopiowania z obsługą trybu "Smart Connect" (silent)
+        function copyText(type, silent = false) {
             const textToCopy = type === 'ssid' ? decryptedSSID : decryptedPASS;
-            const message = type === 'ssid' ? "Skopiowano aurę sieci (SSID)!" : "Skopiowano słowo klucz (Hasło)!";
             
-            const showToast = () => {
-                const toast = document.getElementById('toast-notify');
-                toast.innerText = message;
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2500);
+            const performCopy = () => {
+                if (!silent) {
+                    const message = type === 'ssid' ? "Skopiowano aurę sieci (SSID)!" : "Skopiowano słowo klucz (Hasło)!";
+                    showToast(message);
+                }
             };
 
             if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(textToCopy).then(showToast).catch(fallbackCopy);
+                navigator.clipboard.writeText(textToCopy).then(performCopy).catch(fallbackCopy);
             } else {
                 fallbackCopy();
             }
@@ -657,12 +696,48 @@
                 textArea.select();
                 try {
                     document.execCommand('copy');
-                    showToast();
+                    performCopy();
                 } catch (err) {
                     console.error('Magia zawiodła podczas kopiowania: ', err);
                 }
                 textArea.remove();
             }
+        }
+        
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notify');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // NOWA FUNKCJA: Smart Connect
+        function smartConnect() {
+            // 1. Cicho kopiujemy hasło do schowka
+            copyText('pass', true);
+            
+            // 2. Pokazujemy specjalny komunikat
+            showToast("Hasło skopiowane! Otwieram ustawienia Wi-Fi...");
+            
+            // 3. Po chwili próbujemy otworzyć ustawienia telefonu
+            setTimeout(() => {
+                const ua = navigator.userAgent || navigator.vendor || window.opera;
+                
+                // Wykrywanie Androida
+                if (/android/i.test(ua)) {
+                    // Magiczny Deep Link do ustawień Wi-Fi Androida
+                    window.location.href = "intent:#Intent;action=android.settings.WIFI_SETTINGS;end";
+                } 
+                // Wykrywanie iOS (iPhone/iPad)
+                else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
+                    // Deep link dla urządzeń Apple
+                    window.location.href = "App-Prefs:root=WIFI";
+                } 
+                // Zwykłe przeglądarki (PC/Mac)
+                else {
+                    alert("Hasło znajduje się w Twoim schowku. Przejdź do ustawień Wi-Fi w swoim systemie i połącz się z siecią: " + decryptedSSID);
+                }
+            }, 1500);
         }
 
         function openModal(topic) {
