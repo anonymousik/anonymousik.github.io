@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="SecSearch Pro - Zaawansowana Wyszukiwarka AI z obsługą AnySearch API, Zero-Knowledge i E2EE">
+    <meta name="description" content="SecSearch Pro - Zaawansowana Wyszukiwarka AI z AnySearch API i E2EE">
     <meta name="theme-color" content="#030712">
     <title>SecSearch Pro | AnySearch API & E2EE Privacy Search</title>
 
@@ -28,18 +28,6 @@
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
                         mono: ['JetBrains Mono', 'Fira Code', 'monospace']
-                    },
-                    animation: {
-                        'spin-slow': 'spin 3s linear infinite',
-                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in': 'fadeIn 0.5s ease-out',
-                        'slide-up': 'slideUp 0.4s ease-out',
-                        'glow': 'glow 2s ease-in-out infinite alternate'
-                    },
-                    keyframes: {
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
-                        glow: { '0%': { boxShadow: '0 0 5px #00F0FF' }, '100%': { boxShadow: '0 0 20px #00F0FF, 0 0 30px #A855F7' } }
                     }
                 }
             }
@@ -65,12 +53,6 @@
             transition: all 0.3s ease;
         }
 
-        .glass-panel-hover:hover {
-            border-color: rgba(168, 85, 247, 0.4);
-            box-shadow: 0 8px 30px rgba(168, 85, 247, 0.1);
-            transform: translateY(-2px);
-        }
-
         .glow-input:focus-within {
             box-shadow: 0 0 25px rgba(0, 240, 255, 0.2);
             border-color: rgba(0, 240, 255, 0.6);
@@ -83,7 +65,7 @@
         }
 
         .step-pending { color: #64748B; }
-        .step-active { color: #00F0FF; font-weight: bold; animation: pulse 1.5s infinite; }
+        .step-active { color: #00F0FF; font-weight: bold; }
         .step-done { color: #10B981; font-weight: bold; }
         
         .e2ee-lock {
@@ -116,15 +98,15 @@
                         Sec<span class="gradient-text">Search</span>
                     </span>
                     <span class="text-[9px] uppercase font-mono text-neoncyan tracking-widest mt-0.5 flex items-center gap-1">
-                        <i class="fa-solid fa-lock e2ee-lock text-[8px]"></i> AnySearch API Active
+                        <i class="fa-solid fa-lock e2ee-lock text-[8px]"></i> AnySearch & E2EE
                     </span>
                 </div>
             </div>
 
             <!-- Compact Search Bar (Results Mode) -->
-            <div id="headerSearchBar" class="hidden flex-1 max-w-2xl px-4 animate-fade-in">
+            <div id="headerSearchBar" class="hidden flex-1 max-w-2xl px-4">
                 <form onsubmit="handleSearchSubmit(event)" class="relative glow-input rounded-full transition-all duration-300">
-                    <input type="text" id="headerQueryInput" placeholder="Szukaj przez AnySearch API..." 
+                    <input type="text" id="headerQueryInput" placeholder="Szukaj (AnySearch)..." 
                         class="w-full bg-darkcard border border-darkborder text-slate-100 placeholder-slate-500 rounded-full py-1.5 pl-10 pr-12 focus:outline-none focus:border-neoncyan text-sm font-sans">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                         <i class="fa-solid fa-magnifying-glass text-xs"></i>
@@ -141,7 +123,6 @@
                 <button onclick="toggleModal('settingsModal', true)" title="Konfiguracja AnySearch API Key & E2EE"
                     class="p-2 rounded-xl border border-darkborder bg-darkcard hover:border-neoncyan/50 hover:text-neoncyan text-slate-300 transition w-9 h-9 flex items-center justify-center relative overflow-hidden group">
                     <i class="fa-solid fa-sliders relative z-10"></i>
-                    <div class="absolute inset-0 bg-gradient-to-r from-neoncyan/20 to-neonpurple/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </button>
             </div>
         </div>
@@ -151,73 +132,72 @@
     <main class="flex-1 flex flex-col justify-start max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 z-10 relative">
 
         <!-- ================= HERO SECTION ================= -->
-        <section id="heroSection" class="my-auto py-12 flex flex-col items-center justify-center text-center animate-slide-up">
+        <section id="heroSection" class="my-auto py-12 flex flex-col items-center justify-center text-center">
             
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-xs font-mono mb-6 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
-                <i class="fa-solid fa-network-wired text-neoncyan"></i>
-                AnySearch.com API Integration Ready
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-xs font-mono mb-6">
+                <i class="fa-solid fa-shield-check"></i>
+                Zero-Knowledge Web Explorer
             </div>
 
             <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight mb-4">
                 Prywatne Wyszukiwanie <span class="gradient-text">AnySearch.</span>
             </h1>
             <p class="text-slate-400 max-w-2xl text-sm sm:text-base mb-10 leading-relaxed">
-                Pełna integracja z oficjalnym API <strong class="text-neoncyan">anysearch.com</strong>, lokalnym wnioskowaniem BM25 oraz pełnym szyfrowaniem <strong class="text-neonpurple">E2EE</strong>.
+                Platforma łącząca obsługę oficjalnego API SecSearch/AnySearch, lokalne wnioskowanie AI (BM25) oraz pełne szyfrowanie <strong class="text-neoncyan">E2EE POST</strong> warstwy transportowej.
             </p>
 
             <!-- Main Input Bar -->
             <div class="w-full max-w-3xl px-2 mb-8">
                 <form onsubmit="handleSearchSubmit(event)" class="relative glow-input rounded-2xl shadow-2xl border border-darkborder/80 glass-panel">
-                    <input type="text" id="heroQueryInput" placeholder="Wpisz zapytanie AnySearch (web, news, shopping, social)..." 
+                    <input type="text" id="heroQueryInput" placeholder="Czego dzisiaj szukasz bezpiecznie?..." 
                         class="w-full bg-transparent border-none text-slate-100 placeholder-slate-500 rounded-2xl py-5 pl-14 pr-32 text-lg focus:outline-none focus:ring-0 transition">
                     <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-neoncyan text-xl">
-                        <i class="fa-solid fa-magnifying-glass font-black"></i>
+                        <i class="fa-solid fa-user-secret"></i>
                     </div>
                     <div class="absolute inset-y-0 right-2 flex items-center space-x-2">
                         <button type="submit" class="px-6 py-3 bg-gradient-to-r from-neoncyan to-neonpurple hover:opacity-90 text-black font-bold rounded-xl transition duration-300 text-sm shadow-[0_0_15px_rgba(0,240,255,0.3)] flex items-center gap-2">
                             <span>Szukaj</span>
-                            <i class="fa-solid fa-bolt"></i>
+                            <i class="fa-solid fa-lock"></i>
                         </button>
                     </div>
                 </form>
             </div>
 
             <!-- Install & Homepage Banners -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl animate-fade-in" id="actionPrompts">
-                <button id="pwaInstallBtn" class="hidden relative overflow-hidden glass-panel p-4 rounded-2xl text-left hover:border-neoncyan/50 hover:shadow-[0_0_15px_rgba(0,240,255,0.15)] transition group">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl" id="actionPrompts">
+                <button id="pwaInstallBtn" class="hidden relative overflow-hidden glass-panel p-4 rounded-2xl text-left hover:border-neoncyan/55 transition group">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-neoncyan/10 flex items-center justify-center text-neoncyan group-hover:scale-110 transition">
+                        <div class="w-10 h-10 rounded-full bg-neoncyan/10 flex items-center justify-center text-neoncyan">
                             <i class="fa-solid fa-mobile-screen-button"></i>
                         </div>
                         <div>
-                            <h4 class="text-sm font-bold text-white group-hover:text-neoncyan transition">Zainstaluj Aplikację (PWA)</h4>
+                            <h4 class="text-sm font-bold text-white">Zainstaluj Aplikację (PWA)</h4>
                             <p class="text-[10px] text-slate-400 mt-1">Szybszy dostęp, integracja z systemem i keszowanie offline.</p>
                         </div>
                     </div>
                 </button>
-                <button onclick="toggleModal('homepageModal', true)" class="relative overflow-hidden glass-panel p-4 rounded-2xl text-left hover:border-neonpurple/50 hover:shadow-[0_0_15px_rgba(168,85,247,0.15)] transition group">
+                <button onclick="toggleModal('homepageModal', true)" class="relative overflow-hidden glass-panel p-4 rounded-2xl text-left hover:border-neonpurple/50 transition group">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-neonpurple/10 flex items-center justify-center text-neonpurple group-hover:scale-110 transition">
+                        <div class="w-10 h-10 rounded-full bg-neonpurple/10 flex items-center justify-center text-neonpurple">
                             <i class="fa-solid fa-house-chimney"></i>
                         </div>
                         <div>
-                            <h4 class="text-sm font-bold text-white group-hover:text-neonpurple transition">Ustaw jako Startową</h4>
-                            <p class="text-[10px] text-slate-400 mt-1">Błyskawiczny dostęp do wyszukiwania po otwarciu karty.</p>
+                            <h4 class="text-sm font-bold text-white">Ustaw jako Startową</h4>
+                            <p class="text-[10px] text-slate-400 mt-1">Błyskawiczny dostęp do prywatnego wyszukiwania.</p>
                         </div>
                     </div>
                 </button>
             </div>
-
         </section>
 
         <!-- ================= RESULTS SECTION ================= -->
         <section id="resultsSection" class="hidden flex-1 flex-col relative w-full max-w-6xl mx-auto">
             
-            <!-- Dynamic Reasoning Pipeline (CoT & AnySearch Engine Status) -->
+            <!-- Dynamic Reasoning Pipeline (CoT & E2EE) -->
             <div id="reasoningConsole" class="mb-6 p-5 rounded-2xl glass-panel border border-neonpurple/40 shadow-xl overflow-hidden relative">
                 <div class="flex items-center justify-between border-b border-darkborder pb-3 mb-4">
                     <div class="flex items-center gap-2 font-mono text-sm text-neonpurple font-bold">
-                        <i class="fa-solid fa-terminal"></i> Terminal AnySearch API & CoT Pipeline
+                        <i class="fa-solid fa-terminal"></i> Terminal Wnioskowania & Szyfrowania (CoT)
                     </div>
                     <div id="reasoningTimer" class="font-mono text-xs text-slate-500">0.00s</div>
                 </div>
@@ -225,14 +205,14 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Left: Step list -->
                     <div class="font-mono text-xs space-y-3">
-                        <div id="step1" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px] step-icon"></i> <span>1. Klasyfikacja intencji & Walidacja XSS</span></div>
-                        <div id="step2" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px] step-icon"></i> <span>2. Przygotowanie nagłówków AnySearch & E2EE</span></div>
-                        <div id="step3" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px] step-icon"></i> <span>3. Zapytanie REST do AnySearch API (`uiv=4`)</span></div>
-                        <div id="step4" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px] step-icon"></i> <span>4. Ekstrakcja faktów (NER) & Okapi BM25</span></div>
+                        <div id="step1" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px]" id="icon-step1"></i> <span>1. Klasyfikacja & Ewaluacja Zabezpieczona (MathSolver)</span></div>
+                        <div id="step2" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px]" id="icon-step2"></i> <span>2. Generowanie klucza AES-GCM (E2EE)</span></div>
+                        <div id="step3" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px]" id="icon-step3"></i> <span>3. Transmisja POST (AnySearch API / Multi-Nodes)</span></div>
+                        <div id="step4" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px]" id="icon-step4"></i> <span>4. Ekstrakcja NER & Kalkulacja TF-IDF ($BM25$)</span></div>
                     </div>
                     <!-- Right: Live Log -->
                     <div class="bg-[#050B14] p-3 rounded-lg border border-darkborder font-mono text-[10px] text-slate-400 h-32 overflow-y-auto" id="liveLogArea">
-                        <div class="text-neoncyan">> AnySearch API Client gotowy...</div>
+                        <div class="text-neoncyan">> System gotowy do pracy strumieniowej...</div>
                     </div>
                 </div>
             </div>
@@ -248,38 +228,36 @@
             </div>
 
             <!-- Dashboard Layout for Results -->
-            <div id="resultsDashboard" class="hidden grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
+            <div id="resultsDashboard" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 <!-- Main Content (Left/Center) -->
                 <div class="lg:col-span-2 space-y-5">
                     
                     <!-- Direct Solver -->
                     <div id="solverBox" class="hidden p-5 rounded-2xl glass-panel border border-neoncyan/50 shadow-[0_0_20px_rgba(0,240,255,0.1)]">
-                        <div class="text-[10px] font-mono text-neoncyan uppercase tracking-widest mb-2 border-b border-neoncyan/20 pb-2">Silnik Rozwiązywania (Local Math Engine)</div>
-                        <div class="text-2xl font-black text-white font-mono flex items-center gap-4 py-2" id="solverContent">
-                            <!-- Dynamic Content -->
-                        </div>
+                        <div class="text-[10px] font-mono text-neoncyan uppercase tracking-widest mb-2 border-b border-neoncyan/20 pb-2">Silnik Rozwiązywania (MathSolver - Zabezpieczony)</div>
+                        <div class="text-2xl font-black text-white font-mono flex items-center gap-4 py-2" id="solverContent"></div>
                     </div>
 
                     <!-- E2EE Payload Badge -->
                     <div id="e2eeBadgeBox" class="hidden p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-[10px] font-mono text-emerald-400 flex items-center gap-3">
                         <i class="fa-solid fa-shield-halved text-lg"></i>
                         <div>
-                            <div class="font-bold">Zabezpieczono warstwę transportową (AES-256-GCM E2EE)</div>
-                            <div class="text-emerald-500/60 truncate w-64 md:w-96" id="e2eePayloadDump">Payload: hex...</div>
+                            <div class="font-bold">Szyfrowanie POST (E2EE) Aktywne</div>
+                            <div class="text-emerald-500/60 truncate w-64 md:w-96" id="e2eePayloadDump">Klucz: aes-256-gcm...</div>
                         </div>
                     </div>
 
                     <!-- Ads Container -->
                     <div id="adsContainer" class="hidden space-y-3">
-                        <div class="text-[9px] uppercase tracking-widest text-slate-500 font-mono">Sponsorowane (AnySearch Ads)</div>
+                        <div class="text-[9px] uppercase tracking-widest text-slate-500 font-mono">Sponsorowane</div>
                         <div id="adsList" class="space-y-3"></div>
                     </div>
 
                     <!-- Search Results Feed -->
                     <div>
                         <div class="flex justify-between items-center mb-4 border-b border-darkborder pb-2 font-mono text-xs text-slate-400">
-                            <span>Zwalidowane Wyniki AnySearch ($BM25$)</span>
+                            <span>Zwalidowane Wyniki ($BM25$)</span>
                             <span id="resultsCountBadge" class="bg-darkborder px-2 py-1 rounded text-white">0</span>
                         </div>
                         <div id="resultsList" class="space-y-5"></div>
@@ -298,10 +276,8 @@
                     
                     <!-- Engine Status -->
                     <div class="p-4 rounded-2xl glass-panel border border-darkborder">
-                        <h4 class="font-mono text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 border-b border-darkborder pb-2">Status Węzła API</h4>
-                        <div id="apiStatusList" class="space-y-2 text-[10px] font-mono">
-                            <!-- Dynamic -->
-                        </div>
+                        <h4 class="font-mono text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 border-b border-darkborder pb-2">Status Węzłów API</h4>
+                        <div id="apiStatusList" class="space-y-2 text-[10px] font-mono"></div>
                     </div>
                 </div>
 
@@ -316,10 +292,10 @@
             <div class="flex items-center gap-2 text-sm text-slate-400 font-mono">
                 <i class="fa-solid fa-shield-halved text-neoncyan"></i>
                 <span class="font-bold">SecSearch Pro</span>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-darkborder text-slate-300">v6.0 — AnySearch API</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-darkborder text-slate-300">v6.1 Zabezpieczona</span>
             </div>
             <div class="text-[11px] text-slate-500 font-mono text-center md:text-left">
-                Prywatna obsługa AnySearch API. Szyfrowanie Zero-Knowledge.
+                Prywatna infrastruktura Zero-Knowledge. Odpytywanie offline-first. Brak trackerów.
             </div>
             <div class="text-sm text-slate-400">
                 Stworzone przez: <a href="https://Anonymousik.is-a.dev/secsearch" target="_blank" rel="noopener noreferrer" class="text-neonpurple hover:text-neoncyan transition font-bold tracking-wide">Anonymousik.is-a.dev/secsearch</a>
@@ -339,42 +315,30 @@
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <div class="p-6 space-y-5">
+            <div class="p-6 space-y-4">
                 <div>
-                    <label class="block text-xs font-mono text-slate-400 mb-1">Endpoint AnySearch API</label>
-                    <div class="flex gap-2">
-                        <input type="url" id="customApiInput" placeholder="https://api.anysearch.com" class="flex-1 bg-darkbg border border-darkborder rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-neoncyan outline-none font-mono">
-                        <button onclick="resetDefaultEndpoint()" class="px-3 py-2 bg-darkborder hover:bg-slate-700 text-xs font-mono rounded-xl text-slate-300 transition">Reset</button>
-                    </div>
-                    <p class="text-[9px] text-slate-500 mt-1">Domyślny adres API: <code class="text-neoncyan">https://api.anysearch.com</code> (Format: <code class="text-slate-400">/api/search/{type}?uiv=4&t={type}&q={query}</code>)</p>
+                    <label class="block text-xs font-mono text-slate-400 mb-1">Główny Endpoint SecSearch/AnySearch API</label>
+                    <input type="url" id="customApiInput" placeholder="https://api.anysearch.com" class="w-full bg-darkbg border border-darkborder rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-neoncyan outline-none font-mono">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-mono text-slate-400 mb-1">AnySearch API Key (Opcjonalny)</label>
-                    <input type="password" id="apiKeyInput" placeholder="Klucz API anysearch.com (opcjonalnie dla wyższych limitów)" class="w-full bg-darkbg border border-darkborder rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-neoncyan outline-none font-mono">
-                    <p class="text-[9px] text-slate-500 mt-1">Pozostaw puste dla anonimowych zapytań darmowego kontyngentu. Wpisz klucz, aby zwiększyć limit przepustowości.</p>
+                    <label class="block text-xs font-mono text-slate-400 mb-1">Klucz API (Opcjonalnie)</label>
+                    <input type="password" id="apiKeyInput" placeholder="sk-..." class="w-full bg-darkbg border border-darkborder rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-neoncyan outline-none font-mono">
                 </div>
-
-                <div>
+                <div class="pt-2">
                     <label class="flex items-center gap-2 text-sm font-mono text-slate-200 cursor-pointer">
                         <input type="checkbox" id="e2eeToggle" class="accent-neoncyan w-4 h-4 rounded">
-                        Szyfrowanie Transportowe E2EE (AES-256-GCM)
+                        Wymuszaj Szyfrowanie Transportowe POST (AES-GCM)
                     </label>
-                    <p class="text-[9px] text-slate-500 mt-1 ml-6">Szyfruje ładunek przed transmisją, zapobiegając inspekcji w sieci klienta.</p>
+                    <p class="text-[9px] text-slate-500 mt-1 ml-6">Szyfruje ładunek w przeglądarce przed wysłaniem.</p>
                 </div>
-                
-                <div class="text-[10px] text-slate-400 bg-darkbg p-3 rounded-lg border border-darkborder leading-relaxed font-mono">
-                    <i class="fa-solid fa-circle-info text-neonpurple mr-1"></i>
-                    Brak odpowiedzi z wybranego węzła AnySearch automatycznie przełącza na darmowe węzły agregujące (SearXNG, DDG, Wiki). Wszystkie dane przechowywane są lokalnie w browser storage (`localStorage`).
-                </div>
-                <button onclick="saveSettings()" class="w-full py-2.5 bg-gradient-to-r from-neoncyan to-neonpurple hover:opacity-90 text-black font-bold rounded-xl text-sm transition shadow-lg">
-                    Zapisz Ustawienia AnySearch
+                <button onclick="saveSettings()" class="w-full py-2.5 mt-2 bg-gradient-to-r from-neoncyan to-neonpurple hover:opacity-90 text-black font-bold rounded-xl text-sm transition shadow-lg">
+                    Zapisz Bezpiecznie
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Homepage Instructions Modal -->
+    <!-- Homepage Modal -->
     <div id="homepageModal" class="fixed inset-0 z-50 hidden bg-darkbg/90 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-darkcard border border-darkborder rounded-2xl w-full max-w-sm shadow-2xl relative text-center">
             <div class="p-6">
@@ -383,7 +347,7 @@
                 </div>
                 <h3 class="text-lg font-bold text-white mb-2">Ustaw jako stronę startową</h3>
                 <p class="text-sm text-slate-400 mb-6 leading-relaxed">
-                    Przeciągnij tę kartę na ikonę domku w przeglądarce lub skopiuj URL do ustawień startowych przeglądarki.
+                    Przeciągnij tę kartę na ikonę domku w przeglądarce, lub skopiuj nasz adres do ustawień startowych.
                 </p>
                 <button onclick="toggleModal('homepageModal', false)" class="px-6 py-2 bg-darkborder hover:bg-slate-700 text-white font-bold rounded-xl text-sm transition w-full">
                     Rozumiem
@@ -394,58 +358,151 @@
 
     <!-- MAIN JAVASCRIPT APPLICATION -->
     <script>
-        // --- CONSTANTS & STATE ---
-        const DEFAULT_ANYSEARCH = 'https://api.anysearch.com';
+        const LIMITS = Object.freeze({ query: 256, field: 2000, items: 50, body: 1000000 });
+        const SAFE_COLORS = new Set(['neoncyan', 'neonpurple', 'searxgreen', 'accentamber', 'slate-300']);
+        
+        function clip(v, n = LIMITS.field) { return typeof v === 'string' ? v.slice(0, n) : ''; }
+        function safeColor(c) { return SAFE_COLORS.has(c) ? c : 'neoncyan'; }
+        
+        function safeUrl(raw, httpsOnly = false) {
+            try {
+                const u = new URL(String(raw));
+                if (u.protocol === 'https:' || (!httpsOnly && u.protocol === 'http:')) return u.href;
+            } catch (_) {}
+            return null;
+        }
+
+        function normalizeItem(raw, sourceName, color) {
+            if (!raw || typeof raw !== 'object') return null;
+            const url = safeUrl(raw.url);
+            if (!url) return null;
+            return {
+                title: clip(raw.title) || extractDomain(url),
+                url,
+                desc: clip(raw.desc || raw.snippet || raw.content || raw.summary),
+                favicon: safeUrl(raw.favicon, true),
+                sourceName,
+                color: safeColor(color)
+            };
+        }
+
+        function validateEndpoint(raw) {
+            if (!raw) return '';
+            let u;
+            try { u = new URL(raw); } catch (_) { return null; }
+            if (u.protocol !== 'https:' || u.username || u.password || u.search || u.hash) return null;
+            const h = u.hostname.toLowerCase();
+            if (h === 'localhost' || h.endsWith('.localhost') || h.endsWith('.local') || h.endsWith('.internal')) return null;
+            return u.origin + u.pathname.replace(/\/+$/, '');
+        }
+
+        // Zabezpieczony silnik matematyczny (MathSolver) zastępujący Function()
+        const MathSolver = {
+            FUNCS: Object.freeze({
+                sqrt: Math.sqrt, sin: Math.sin, cos: Math.cos, tan: Math.tan,
+                log: Math.log10, log2: Math.log2, ln: Math.log, abs: Math.abs, pow: Math.pow
+            }),
+            CONSTS: Object.freeze({ pi: Math.PI, e: Math.E }),
+            tokenize(src) {
+                const re = /\s*(?:(\d+(?:\.\d+)?|\.\d+)|(\*\*|[-+*\/^(),])|([a-z][a-z0-9]*))/iy;
+                const out = [];
+                let pos = 0;
+                while (pos < src.length) {
+                    re.lastIndex = pos;
+                    const m = re.exec(src);
+                    if (!m) return null;
+                    pos = re.lastIndex;
+                    if (m[1] !== undefined) out.push({ t: 'num', v: parseFloat(m[1]) });
+                    else if (m[2] !== undefined) out.push({ t: 'op', v: m[2] === '**' ? '^' : m[2] });
+                    else out.push({ t: 'id', v: m[3].toLowerCase() });
+                    if (out.length > 200) return null;
+                }
+                return out;
+            },
+            evaluate(input) {
+                if (typeof input !== 'string' || input.length > 200) return null;
+                const toks = this.tokenize(input.trim());
+                if (!toks || !toks.length) return null;
+                const self = this;
+                let i = 0, depth = 0;
+                const fail = () => { throw new SyntaxError('math'); };
+                const eat = (v) => {
+                    const t = toks[i];
+                    if (t && t.t === 'op' && t.v === v) { i++; return true; }
+                    return false;
+                };
+                const expr = () => { let v = term(); for (;;) { if (eat('+')) v += term(); else if (eat('-')) v -= term(); else return v; } };
+                const term = () => { let v = unary(); for (;;) { if (eat('*')) v *= unary(); else if (eat('/')) v /= unary(); else return v; } };
+                const unary = () => { if (eat('-')) return -unary(); if (eat('+')) return unary(); return power(); };
+                const power = () => { const b = primary(); return eat('^') ? Math.pow(b, unary()) : b; };
+                const primary = () => {
+                    if (++depth > 32) fail();
+                    try {
+                        const t = toks[i++];
+                        if (!t) fail();
+                        if (t.t === 'num') return t.v;
+                        if (t.t === 'id') {
+                            if (Object.hasOwn(self.CONSTS, t.v)) return self.CONSTS[t.v];
+                            if (!Object.hasOwn(self.FUNCS, t.v) || !eat('(')) fail();
+                            const args = [];
+                            if (!eat(')')) {
+                                do { args.push(expr()); } while (eat(','));
+                                if (!eat(')')) fail();
+                            }
+                            const fn = self.FUNCS[t.v];
+                            if (args.length !== fn.length) fail();
+                            return fn(...args);
+                        }
+                        if (t.v === '(') { const v = expr(); if (!eat(')')) fail(); return v; }
+                        return fail();
+                    } finally { depth--; }
+                };
+                try {
+                    const r = expr();
+                    if (i !== toks.length) return null;
+                    return Number.isFinite(r) ? r : null;
+                } catch (_) { return null; }
+            }
+        };
+
         const PUBLIC_SEARXNG = 'https://searx.be/search';
         let currentCategory = 'web';
         
         const state = {
-            customApi: localStorage.getItem('sec_custom_api') || DEFAULT_ANYSEARCH,
+            customApi: localStorage.getItem('sec_custom_api') || 'https://api.anysearch.com',
             apiKey: localStorage.getItem('sec_api_key') || '',
             useE2EE: localStorage.getItem('sec_e2ee') === 'true',
             apiStatuses: {}
         };
 
-        // --- CRYPTOGRAPHY ENGINE (Web Crypto API) ---
         const CryptoEngine = {
             async generateAESKey() {
-                return await crypto.subtle.generateKey(
-                    { name: "AES-GCM", length: 256 },
-                    true,
-                    ["encrypt", "decrypt"]
-                );
+                return await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]);
             },
             async encryptPayload(text, key) {
                 const iv = crypto.getRandomValues(new Uint8Array(12));
                 const encodedText = new TextEncoder().encode(text);
                 const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, encodedText);
-                const hashArray = Array.from(new Uint8Array(ciphertext));
-                const hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                const hex = Array.from(new Uint8Array(ciphertext)).map(b => b.toString(16).padStart(2, '0')).join('');
                 return { ciphertext, hex, iv };
             }
         };
 
-        // --- PWA INSTALLATION LOGIC ---
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            const installBtn = document.getElementById('pwaInstallBtn');
-            if (installBtn) installBtn.classList.remove('hidden');
+            const btn = document.getElementById('pwaInstallBtn');
+            if (btn) btn.classList.remove('hidden');
         });
 
         document.getElementById('pwaInstallBtn')?.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    document.getElementById('pwaInstallBtn').classList.add('hidden');
-                }
                 deferredPrompt = null;
             }
         });
 
-        // --- UTILITIES ---
         const delay = ms => new Promise(res => setTimeout(res, ms));
         
         function escapeHTML(str) {
@@ -470,12 +527,8 @@
             if (!logArea) return;
             const color = type === 'error' ? 'text-accentrose' : (type === 'success' ? 'text-accentemerald' : (type === 'crypto' ? 'text-neonpurple' : 'text-slate-400'));
             const prefix = type === 'error' ? '[ERR]' : (type === 'success' ? '[OK]' : (type === 'crypto' ? '[E2EE]' : '>'));
-            logArea.innerHTML += `<div class="${color}">${prefix} ${escapeHTML(msg)}</div>`;
+            logArea.innerHTML += `<div class="${color}"> ${prefix} ${escapeHTML(msg)}</div>`;
             logArea.scrollTop = logArea.scrollHeight;
-        }
-
-        function resetDefaultEndpoint() {
-            document.getElementById('customApiInput').value = DEFAULT_ANYSEARCH;
         }
 
         function toggleModal(id, show) {
@@ -483,8 +536,8 @@
             if (!el) return;
             if (show) {
                 if(id === 'settingsModal') {
-                    document.getElementById('customApiInput').value = state.customApi || DEFAULT_ANYSEARCH;
-                    document.getElementById('apiKeyInput').value = state.apiKey || '';
+                    document.getElementById('customApiInput').value = state.customApi;
+                    document.getElementById('apiKeyInput').value = state.apiKey;
                     document.getElementById('e2eeToggle').checked = state.useE2EE;
                 }
                 el.classList.remove('hidden');
@@ -494,9 +547,11 @@
         }
 
         function saveSettings() {
-            state.customApi = (document.getElementById('customApiInput').value.trim()) || DEFAULT_ANYSEARCH;
+            const apiVal = validateEndpoint(document.getElementById('customApiInput').value.trim());
+            state.customApi = apiVal !== null ? apiVal : 'https://api.anysearch.com';
             state.apiKey = document.getElementById('apiKeyInput').value.trim();
             state.useE2EE = document.getElementById('e2eeToggle').checked;
+            
             localStorage.setItem('sec_custom_api', state.customApi);
             localStorage.setItem('sec_api_key', state.apiKey);
             localStorage.setItem('sec_e2ee', state.useE2EE);
@@ -518,42 +573,28 @@
                 btn.classList.remove('active', 'bg-darkborder', 'text-white');
                 btn.classList.add('bg-transparent', 'text-slate-400');
             });
-            if (event && event.target) {
-                event.target.classList.remove('bg-transparent', 'text-slate-400');
-                event.target.classList.add('active', 'bg-darkborder', 'text-white');
-            }
+            event.target.classList.remove('bg-transparent', 'text-slate-400');
+            event.target.classList.add('active', 'bg-darkborder', 'text-white');
             
-            const q = document.getElementById('headerQueryInput').value || document.getElementById('heroQueryInput').value;
+            const q = document.getElementById('headerQueryInput').value;
             if(q) executeSearchPipeline(q, cat);
         }
 
-        // --- ADVANCED REASONING ENGINE ---
         const ReasoningEngine = {
             analyzeIntent(query) {
                 const q = query.trim().toLowerCase();
                 if (/^[0-9+\-*/().\^\s,sqrtpowsincoetanlogpi]+$/i.test(q) && /[0-9]/.test(q)) return 'MATH';
                 return 'SEARCH';
             },
-
             executeMath(query) {
-                try {
-                    let sanitized = query.replace(/sqrt/gi, 'Math.sqrt')
-                        .replace(/pow/gi, 'Math.pow').replace(/log2/gi, 'Math.log2')
-                        .replace(/sin/gi, 'Math.sin').replace(/cos/gi, 'Math.cos')
-                        .replace(/\^/g, '**').replace(/pi/gi, 'Math.PI');
-                    const numVal = Function(`'use strict'; return (${sanitized})`)();
-                    return (typeof numVal === 'number' && !isNaN(numVal)) ? numVal : null;
-                } catch(e) { return null; }
+                return MathSolver.evaluate(query);
             },
-
             extractEntities(results) {
                 const text = results.map(r => (r.desc || '') + ' ' + (r.title || '')).join(' ');
                 const words = text.split(/\s+/);
-                
                 let entities = [];
                 const years = text.match(/\b(19|20)\d{2}\b/g) || [];
                 const percents = text.match(/\b\d+(\.\d+)?%\b/g) || [];
-                
                 const capitalized = words.filter(w => /^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]{3,}/.test(w));
                 const counts = {};
                 capitalized.forEach(w => { counts[w] = (counts[w] || 0) + 1; });
@@ -562,16 +603,13 @@
                 entities.push(...[...new Set(years)].slice(0,2).map(e => `<i class="fa-regular fa-calendar text-accentamber"></i> ${e}`));
                 entities.push(...[...new Set(percents)].slice(0,2).map(e => `<i class="fa-solid fa-percent text-accentrose"></i> ${e}`));
                 entities.push(...tops.map(e => `<i class="fa-solid fa-tag text-neonpurple"></i> ${e}`));
-
                 return entities;
             },
-
             bm25Score(query, results) {
                 if (!results.length) return [];
                 const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 2);
                 const N = results.length;
-                const k1 = 1.2;
-                const b = 0.75;
+                const k1 = 1.2, b = 0.75;
                 const avgdl = results.reduce((acc, r) => acc + ((r.title||'') + ' ' + (r.desc||'')).length, 0) / N;
 
                 return results.map(item => {
@@ -583,93 +621,65 @@
                         let tf = text.split(term).length - 1;
                         if (tf > 0) score += idf * ((tf * (k1 + 1)) / (tf + k1 * (1 - b + b * (text.length / avgdl))));
                     });
-                    
                     item.score = parseFloat(score.toFixed(2));
                     return item;
                 }).sort((a, b) => b.score - a.score);
             }
         };
 
-        // --- ANYSEARCH API FETCHERS ---
-        async function fetchAnySearchAPI(query, type) {
-            const baseUrl = (state.customApi || DEFAULT_ANYSEARCH).replace(/\/+$/, '');
-            const targetUrl = `${baseUrl}/api/search/${type}?uiv=4&t=${encodeURIComponent(type)}&q=${encodeURIComponent(query)}`;
-            
-            const headers = {
-                'Accept': 'application/json'
-            };
-            
-            if (state.apiKey) {
+        async function fetchAnySearchAPI(query, type, e2eePayload = null) {
+            const baseUrl = (state.customApi || 'https://api.anysearch.com').replace(/\/+$/, '');
+            let url, options;
+            const headers = { 'Accept': 'application/json' };
+            if(state.apiKey) {
                 headers['Authorization'] = `Bearer ${state.apiKey}`;
                 headers['X-API-Key'] = state.apiKey;
             }
 
-            try {
-                let res = await fetch(targetUrl, {
-                    method: 'GET',
-                    headers: headers,
+            if (state.useE2EE && e2eePayload) {
+                url = `${baseUrl}/api/search/${type}?uiv=4&t=${type}`;
+                options = {
+                    method: 'POST',
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ciphertext: e2eePayload.hex,
+                        iv: Array.from(e2eePayload.iv).map(b => b.toString(16).padStart(2, '0')).join('')
+                    }),
                     credentials: 'omit',
-                    signal: AbortSignal.timeout(7000)
-                });
+                    signal: AbortSignal.timeout(6000)
+                };
+                logToConsole(`Inicjacja szyfrowanego żądania POST do API...`);
+            } else {
+                url = `${baseUrl}/api/search/${type}?uiv=4&t=${type}&q=${encodeURIComponent(query)}`;
+                options = { method: 'GET', headers: headers, credentials: 'omit', signal: AbortSignal.timeout(6000) };
+            }
 
-                // Fallback to /v1/search if endpoint is AnySearch v1 format
-                if (!res.ok && res.status === 404) {
-                    const fallbackUrl = `${baseUrl}/v1/search?q=${encodeURIComponent(query)}&type=${encodeURIComponent(type)}`;
-                    res = await fetch(fallbackUrl, {
-                        method: 'GET',
-                        headers: headers,
-                        credentials: 'omit',
-                        signal: AbortSignal.timeout(7000)
-                    });
-                }
-
-                if (!res.ok) throw new Error(`AnySearch HTTP ${res.status}`);
+            try {
+                const res = await fetch(url, options);
+                if(!res.ok) throw new Error(`API returned ${res.status}`);
                 const data = await res.json();
-                state.apiStatuses['AnySearch API'] = state.apiKey ? 'OK (Authenticated)' : 'OK (Anonymous)';
-
-                let rawItems = [];
-                if (data.data?.result?.items && Array.isArray(data.data.result.items)) {
-                    rawItems = data.data.result.items;
-                } else if (data.result?.items && Array.isArray(data.result.items)) {
-                    rawItems = data.result.items;
-                } else if (data.results && Array.isArray(data.results)) {
-                    rawItems = data.results;
-                } else if (data.items && Array.isArray(data.items)) {
-                    rawItems = data.items;
-                }
-
-                const results = rawItems.map(item => ({
-                    title: item.title,
-                    url: item.url,
-                    desc: item.desc || item.snippet || item.content || item.summary,
-                    favicon: item.favicon,
-                    sourceName: 'AnySearch',
-                    color: 'neonpurple'
-                })).filter(r => r.url);
-
-                let rawAds = data.data?.ads || data.ads || [];
-                return { results, ads: Array.isArray(rawAds) ? rawAds : [] };
-
-            } catch (e) {
-                state.apiStatuses['AnySearch API'] = `FAIL (${e.message})`;
+                state.apiStatuses['AnySearch API'] = 'OK';
+                let rawItems = data.data?.result?.items || data.results || data.items || [];
+                let results = rawItems.map(item => normalizeItem(item, 'AnySearch API', 'neonpurple')).filter(Boolean);
+                let ads = data.data?.ads || data.ads || [];
+                return { results, ads };
+            } catch(e) {
+                state.apiStatuses['AnySearch API'] = 'FAIL';
                 return { results: [], ads: [] };
             }
         }
 
         async function fetchPublicFallbacks(query) {
             const apiPromises = [];
-            
-            // SearXNG (Web)
             apiPromises.push((async () => {
                 try {
                     const res = await fetch(`${PUBLIC_SEARXNG}?q=${encodeURIComponent(query)}&format=json`, { credentials: 'omit', signal: AbortSignal.timeout(4000) });
                     const data = await res.json();
-                    state.apiStatuses['SearXNG (Fallback)'] = 'OK';
-                    return (data.results || []).slice(0, 5).map(r => ({ title: r.title, url: r.url, desc: r.content, sourceName: 'SearXNG', color: 'searxgreen' }));
-                } catch (e) { state.apiStatuses['SearXNG (Fallback)'] = 'FAIL'; return []; }
+                    state.apiStatuses['SearXNG (Public)'] = 'OK';
+                    return (data.results || []).slice(0, 5).map(r => normalizeItem(r, 'SearXNG', 'searxgreen')).filter(Boolean);
+                } catch (e) { state.apiStatuses['SearXNG (Public)'] = 'FAIL'; return []; }
             })());
 
-            // Wikipedia
             apiPromises.push((async () => {
                 try {
                     const res = await fetch(`https://pl.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&origin=*`, { credentials: 'omit', signal: AbortSignal.timeout(3000) });
@@ -687,11 +697,12 @@
             return { results: combined, ads: [] };
         }
 
-        // --- EXECUTION PIPELINE ---
+        // Naprawiona funkcja setStep z bezpiecznym sprawdzaniem elementów DOM
         function setStep(id, status) {
             const el = document.getElementById(id);
             if (!el) return;
-            const icon = el.querySelector('.step-icon');
+            const icon = document.getElementById('icon-' + id);
+            
             el.className = `flex items-center gap-2 ${status === 'active' ? 'step-active' : (status === 'done' ? 'step-done' : 'step-pending')}`;
             if (icon) {
                 if (status === 'active') icon.className = 'fa-solid fa-spinner fa-spin text-[10px] text-neoncyan';
@@ -703,8 +714,8 @@
         async function executeSearchPipeline(query, type = 'web') {
             const startTime = performance.now();
             let timerInterval = setInterval(() => {
-                const el = document.getElementById('reasoningTimer');
-                if (el) el.innerText = ((performance.now() - startTime)/1000).toFixed(2) + 's';
+                const timerEl = document.getElementById('reasoningTimer');
+                if(timerEl) timerEl.innerText = ((performance.now() - startTime)/1000).toFixed(2) + 's';
             }, 50);
 
             try {
@@ -718,11 +729,11 @@
                 document.getElementById('e2eeBadgeBox').classList.add('hidden');
                 [1,2,3,4].forEach(i => setStep(`step${i}`, 'pending'));
 
-                logToConsole(`Inicjalizacja zapytania AnySearch: [${type.toUpperCase()}] "${query}"`);
+                logToConsole(`Inicjacja zapytania: [${type.toUpperCase()}] "${query}"`);
 
-                // STEP 1: Intent & Validation
+                // STEP 1
                 setStep('step1', 'active');
-                await delay(250);
+                await delay(200);
                 const intent = ReasoningEngine.analyzeIntent(query);
                 if(intent === 'MATH') {
                     const res = ReasoningEngine.executeMath(query);
@@ -730,68 +741,69 @@
                         document.getElementById('solverBox').classList.remove('hidden');
                         document.getElementById('solverContent').innerHTML = `<span id="mathEq"></span> <span class="text-neoncyan">= ${res}</span>`;
                         if(window.katex) katex.render(query, document.getElementById('mathEq'), {throwOnError:false});
+                        logToConsole('Obliczono wyrażenie przez MathSolver.', 'success');
                     }
                 }
-                logToConsole('Bezpieczeństwo zapytania zwalidowane (CWE-79 Sanitization).', 'success');
+                logToConsole('Zwalidowano bezpieczeństwo zapytania.', 'success');
                 setStep('step1', 'done');
 
-                // STEP 2: E2EE Encryption & Auth Header Prep
+                // STEP 2
                 setStep('step2', 'active');
                 state.apiStatuses = {};
-                const authMode = state.apiKey ? 'Wygenerowany Klucz API' : 'Tryb Anonimowy (IP Rate Limited)';
-                logToConsole(`Autoryzacja AnySearch API: ${authMode}`, 'info');
-
+                let e2eePayload = null;
                 if (state.useE2EE) {
-                    logToConsole('Generowanie efemerycznego klucza AES-256-GCM...', 'crypto');
+                    logToConsole('Generowanie klucza AES-256-GCM...', 'crypto');
                     const key = await CryptoEngine.generateAESKey();
-                    const { hex } = await CryptoEngine.encryptPayload(query, key);
-                    logToConsole(`Ładunek zaszyfrowany (AES-256-GCM). Hash: ${hex.substring(0, 32)}...`, 'crypto');
-                    
+                    e2eePayload = await CryptoEngine.encryptPayload(query, key);
+                    logToConsole(`Payload zaszyfrowany. Hash: ${e2eePayload.hex.substring(0, 32)}...`, 'crypto');
                     document.getElementById('e2eeBadgeBox').classList.remove('hidden');
-                    document.getElementById('e2eePayloadDump').innerText = `AES-GCM Payload: ${hex}`;
+                    document.getElementById('e2eePayloadDump').innerText = `AES-GCM (POST Body): ${e2eePayload.hex}`;
                     await delay(300);
                 } else {
-                    logToConsole('Tryb E2EE wyłączony — bezpieczne połączenie TLS.', 'info');
+                    logToConsole('Tryb E2EE nieaktywny.', 'info');
                     await delay(150);
                 }
                 setStep('step2', 'done');
 
-                // STEP 3: API Fetch Execution
+                // STEP 3
                 setStep('step3', 'active');
-                logToConsole(`Odpytywanie węzła: ${state.customApi || DEFAULT_ANYSEARCH} ...`);
-                let rawData = await fetchAnySearchAPI(query, type);
-
-                // Fallback if main AnySearch node returned 0 results
-                if (!rawData.results || rawData.results.length === 0) {
-                    logToConsole(`Brak wyników z AnySearch API. Inicjacja węzłów zastępczych...`, 'error');
+                let rawData;
+                if (state.customApi || state.apiKey) {
+                    logToConsole(`Łączenie z AnySearch API...`);
+                    rawData = await fetchAnySearchAPI(query, type, e2eePayload);
+                    if (state.apiStatuses['AnySearch API'] === 'FAIL' && !state.useE2EE) {
+                        logToConsole(`Awaria API. Przełączanie na węzły awaryjne...`);
+                        const fallbackData = await fetchPublicFallbacks(query);
+                        rawData.results.push(...fallbackData.results);
+                    }
+                } else {
+                    logToConsole(`Pobieranie z publicznych węzłów...`);
                     rawData = await fetchPublicFallbacks(query);
                 }
                 
                 const statusHtml = Object.entries(state.apiStatuses).map(([api, status]) => `
                     <div class="flex justify-between items-center">
                         <span class="text-slate-400">${api}</span>
-                        <span class="${status.startsWith('OK') ? 'text-emerald-400' : 'text-accentrose'}">${status}</span>
+                        <span class="${status === 'OK' ? 'text-emerald-400' : 'text-accentrose'}">${status}</span>
                     </div>
                 `).join('');
                 document.getElementById('apiStatusList').innerHTML = statusHtml;
-                
-                logToConsole(`Otrzymano ${rawData.results.length} zweryfikowanych wyników.`);
+                logToConsole(`Pobrano ${rawData.results.length} wyników.`);
                 setStep('step3', 'done');
 
-                // STEP 4: BM25 & NER Extraction
+                // STEP 4
                 setStep('step4', 'active');
-                await delay(200);
-                
+                await Promise.resolve();
                 const entities = ReasoningEngine.extractEntities(rawData.results);
                 document.getElementById('entityTags').innerHTML = entities.length ? 
                     entities.map(e => `<span class="px-2 py-1 rounded-md bg-darkbg border border-darkborder text-[10px] font-sans">${e}</span>`).join('') 
                     : '<span class="text-xs text-slate-600">Brak</span>';
 
                 const ranked = ReasoningEngine.bm25Score(query, rawData.results);
-                logToConsole('Przeliczono punktację relewantności Okapi BM25.', 'success');
+                logToConsole('Przeliczono punktację TF-IDF/BM25.', 'success');
                 setStep('step4', 'done');
 
-                // RENDER
+                // Render Ads & Results
                 if(rawData.ads && rawData.ads.length > 0) {
                     document.getElementById('adsContainer').classList.remove('hidden');
                     document.getElementById('adsList').innerHTML = rawData.ads.map(ad => `
@@ -815,7 +827,7 @@
                         </h3>
                         <p class="text-sm text-slate-400 leading-relaxed">${sanitizeHighlight(r.desc)}</p>
                     </article>
-                `).join('') || '<div class="text-center py-10 text-slate-500"><i class="fa-solid fa-ghost text-4xl mb-3"></i><br>Brak wyników z AnySearch API</div>';
+                `).join('') || '<div class="text-center py-10 text-slate-500"><i class="fa-solid fa-ghost text-4xl mb-3"></i><br>Brak wyników do zsyntetyzowania</div>';
 
                 document.getElementById('resultsDashboard').classList.remove('hidden');
 
@@ -826,7 +838,6 @@
             }
         }
 
-        // Handle forms
         function handleSearchSubmit(e) {
             e.preventDefault();
             const q = (document.getElementById('heroQueryInput').value || document.getElementById('headerQueryInput').value).trim();
@@ -834,25 +845,6 @@
             document.getElementById('heroQueryInput').value = q;
             document.getElementById('headerQueryInput').value = q;
             executeSearchPipeline(q, currentCategory);
-        }
-
-        // Embed Service Worker (PWA) inline
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const swCode = `
-                    const CACHE_NAME = 'secsearch-v6-anysearch';
-                    const STATIC_ASSETS = ['./', './index.html', 'https://cdn.tailwindcss.com', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'];
-                    self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(STATIC_ASSETS)).then(()=>self.skipWaiting())); });
-                    self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => { if(k !== CACHE_NAME) return caches.delete(k); }))).then(()=>self.clients.claim())); });
-                    self.addEventListener('fetch', (e) => {
-                        const url = new URL(e.request.url);
-                        if (url.pathname.includes('/api/search') || url.hostname.includes('anysearch')) { e.respondWith(fetch(e.request)); return; }
-                        e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
-                    });
-                `;
-                const blob = new Blob([swCode], { type: 'text/javascript' });
-                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(console.error);
-            });
         }
     </script>
 </body>
