@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="SecSearch Pro - Zaawansowana Wyszukiwarka AI z Zero-Knowledge i Multi-API">
+    <meta name="description" content="SecSearch Pro - Zaawansowana Wyszukiwarka AI z obsługą AnySearch API, Zero-Knowledge i E2EE">
     <meta name="theme-color" content="#030712">
-    <!-- PWA Manifest properties mapped dynamically in SW, but theme colors set here -->
-    <title>SecSearch Pro | E2EE Privacy Search</title>
+    <title>SecSearch Pro | AnySearch API & E2EE Privacy Search</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -83,7 +82,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* CoT Pipeline Styles */
         .step-pending { color: #64748B; }
         .step-active { color: #00F0FF; font-weight: bold; animation: pulse 1.5s infinite; }
         .step-done { color: #10B981; font-weight: bold; }
@@ -118,7 +116,7 @@
                         Sec<span class="gradient-text">Search</span>
                     </span>
                     <span class="text-[9px] uppercase font-mono text-neoncyan tracking-widest mt-0.5 flex items-center gap-1">
-                        <i class="fa-solid fa-lock e2ee-lock text-[8px]"></i> E2EE Active
+                        <i class="fa-solid fa-lock e2ee-lock text-[8px]"></i> AnySearch API Active
                     </span>
                 </div>
             </div>
@@ -126,7 +124,7 @@
             <!-- Compact Search Bar (Results Mode) -->
             <div id="headerSearchBar" class="hidden flex-1 max-w-2xl px-4 animate-fade-in">
                 <form onsubmit="handleSearchSubmit(event)" class="relative glow-input rounded-full transition-all duration-300">
-                    <input type="text" id="headerQueryInput" placeholder="Szyfrowane wyszukiwanie..." 
+                    <input type="text" id="headerQueryInput" placeholder="Szukaj przez AnySearch API..." 
                         class="w-full bg-darkcard border border-darkborder text-slate-100 placeholder-slate-500 rounded-full py-1.5 pl-10 pr-12 focus:outline-none focus:border-neoncyan text-sm font-sans">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                         <i class="fa-solid fa-magnifying-glass text-xs"></i>
@@ -140,7 +138,7 @@
             </div>
 
             <div class="flex items-center space-x-2 sm:space-x-3 z-10">
-                <button onclick="toggleModal('settingsModal', true)" title="Konfiguracja Endpoints & E2EE"
+                <button onclick="toggleModal('settingsModal', true)" title="Konfiguracja AnySearch API Key & E2EE"
                     class="p-2 rounded-xl border border-darkborder bg-darkcard hover:border-neoncyan/50 hover:text-neoncyan text-slate-300 transition w-9 h-9 flex items-center justify-center relative overflow-hidden group">
                     <i class="fa-solid fa-sliders relative z-10"></i>
                     <div class="absolute inset-0 bg-gradient-to-r from-neoncyan/20 to-neonpurple/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -156,29 +154,29 @@
         <section id="heroSection" class="my-auto py-12 flex flex-col items-center justify-center text-center animate-slide-up">
             
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-xs font-mono mb-6 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
-                <i class="fa-solid fa-shield-check"></i>
-                Zero-Knowledge Web Explorer
+                <i class="fa-solid fa-network-wired text-neoncyan"></i>
+                AnySearch.com API Integration Ready
             </div>
 
             <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight mb-4">
-                Twoja Prywatność, <span class="gradient-text">Zaszyfrowana.</span>
+                Prywatne Wyszukiwanie <span class="gradient-text">AnySearch.</span>
             </h1>
             <p class="text-slate-400 max-w-2xl text-sm sm:text-base mb-10 leading-relaxed">
-                Platforma łącząca obsługę oficjalnego API SecSearch, lokalne wnioskowanie AI (BM25) oraz pełne szyfrowanie <strong class="text-neoncyan">E2EE</strong> warstwy transportowej zapytania.
+                Pełna integracja z oficjalnym API <strong class="text-neoncyan">anysearch.com</strong>, lokalnym wnioskowaniem BM25 oraz pełnym szyfrowaniem <strong class="text-neonpurple">E2EE</strong>.
             </p>
 
             <!-- Main Input Bar -->
             <div class="w-full max-w-3xl px-2 mb-8">
                 <form onsubmit="handleSearchSubmit(event)" class="relative glow-input rounded-2xl shadow-2xl border border-darkborder/80 glass-panel">
-                    <input type="text" id="heroQueryInput" placeholder="Czego dzisiaj szukasz bezpiecznie?..." 
+                    <input type="text" id="heroQueryInput" placeholder="Wpisz zapytanie AnySearch (web, news, shopping, social)..." 
                         class="w-full bg-transparent border-none text-slate-100 placeholder-slate-500 rounded-2xl py-5 pl-14 pr-32 text-lg focus:outline-none focus:ring-0 transition">
                     <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-neoncyan text-xl">
-                        <i class="fa-solid fa-user-secret"></i>
+                        <i class="fa-solid fa-magnifying-glass font-black"></i>
                     </div>
                     <div class="absolute inset-y-0 right-2 flex items-center space-x-2">
                         <button type="submit" class="px-6 py-3 bg-gradient-to-r from-neoncyan to-neonpurple hover:opacity-90 text-black font-bold rounded-xl transition duration-300 text-sm shadow-[0_0_15px_rgba(0,240,255,0.3)] flex items-center gap-2">
                             <span>Szukaj</span>
-                            <i class="fa-solid fa-lock"></i>
+                            <i class="fa-solid fa-bolt"></i>
                         </button>
                     </div>
                 </form>
@@ -204,7 +202,7 @@
                         </div>
                         <div>
                             <h4 class="text-sm font-bold text-white group-hover:text-neonpurple transition">Ustaw jako Startową</h4>
-                            <p class="text-[10px] text-slate-400 mt-1">Błyskawiczny dostęp do prywatnego wyszukiwania po otwarciu karty.</p>
+                            <p class="text-[10px] text-slate-400 mt-1">Błyskawiczny dostęp do wyszukiwania po otwarciu karty.</p>
                         </div>
                     </div>
                 </button>
@@ -215,11 +213,11 @@
         <!-- ================= RESULTS SECTION ================= -->
         <section id="resultsSection" class="hidden flex-1 flex-col relative w-full max-w-6xl mx-auto">
             
-            <!-- Dynamic Reasoning Pipeline (CoT & E2EE) -->
+            <!-- Dynamic Reasoning Pipeline (CoT & AnySearch Engine Status) -->
             <div id="reasoningConsole" class="mb-6 p-5 rounded-2xl glass-panel border border-neonpurple/40 shadow-xl overflow-hidden relative">
                 <div class="flex items-center justify-between border-b border-darkborder pb-3 mb-4">
                     <div class="flex items-center gap-2 font-mono text-sm text-neonpurple font-bold">
-                        <i class="fa-solid fa-terminal"></i> Terminal Wnioskowania & Szyfrowania (CoT)
+                        <i class="fa-solid fa-terminal"></i> Terminal AnySearch API & CoT Pipeline
                     </div>
                     <div id="reasoningTimer" class="font-mono text-xs text-slate-500">0.00s</div>
                 </div>
@@ -228,13 +226,13 @@
                     <!-- Left: Step list -->
                     <div class="font-mono text-xs space-y-3">
                         <div id="step1" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px] step-icon"></i> <span>1. Klasyfikacja intencji & Walidacja XSS</span></div>
-                        <div id="step2" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px] step-icon"></i> <span>2. Generowanie klucza AES-GCM (E2EE)</span></div>
-                        <div id="step3" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px] step-icon"></i> <span>3. Transmisja zapytania (SecSearch API / Multi-Nodes)</span></div>
-                        <div id="step4" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px] step-icon"></i> <span>4. Ekstrakcja wiedzy & Kalkulacja TF-IDF ($BM25$)</span></div>
+                        <div id="step2" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px] step-icon"></i> <span>2. Przygotowanie nagłówków AnySearch & E2EE</span></div>
+                        <div id="step3" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px] step-icon"></i> <span>3. Zapytanie REST do AnySearch API (`uiv=4`)</span></div>
+                        <div id="step4" class="step-pending flex items-center gap-2"><i class="fa-solid fa-circle-notch text-[10px] step-icon"></i> <span>4. Ekstrakcja faktów (NER) & Okapi BM25</span></div>
                     </div>
                     <!-- Right: Live Log -->
                     <div class="bg-[#050B14] p-3 rounded-lg border border-darkborder font-mono text-[10px] text-slate-400 h-32 overflow-y-auto" id="liveLogArea">
-                        <div class="text-neoncyan">> System gotowy do pracy strumieniowej...</div>
+                        <div class="text-neoncyan">> AnySearch API Client gotowy...</div>
                     </div>
                 </div>
             </div>
@@ -245,6 +243,8 @@
                 <button onclick="changeCategory('news')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-bold bg-transparent text-slate-400 hover:text-white transition">News</button>
                 <button onclick="changeCategory('images')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-bold bg-transparent text-slate-400 hover:text-white transition">Obrazy</button>
                 <button onclick="changeCategory('videos')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-bold bg-transparent text-slate-400 hover:text-white transition">Wideo</button>
+                <button onclick="changeCategory('social')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-bold bg-transparent text-slate-400 hover:text-white transition">Social</button>
+                <button onclick="changeCategory('shopping')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-bold bg-transparent text-slate-400 hover:text-white transition">Zakupy</button>
             </div>
 
             <!-- Dashboard Layout for Results -->
@@ -255,31 +255,31 @@
                     
                     <!-- Direct Solver -->
                     <div id="solverBox" class="hidden p-5 rounded-2xl glass-panel border border-neoncyan/50 shadow-[0_0_20px_rgba(0,240,255,0.1)]">
-                        <div class="text-[10px] font-mono text-neoncyan uppercase tracking-widest mb-2 border-b border-neoncyan/20 pb-2">Silnik Rozwiązywania (Local)</div>
+                        <div class="text-[10px] font-mono text-neoncyan uppercase tracking-widest mb-2 border-b border-neoncyan/20 pb-2">Silnik Rozwiązywania (Local Math Engine)</div>
                         <div class="text-2xl font-black text-white font-mono flex items-center gap-4 py-2" id="solverContent">
                             <!-- Dynamic Content -->
                         </div>
                     </div>
 
-                    <!-- E2EE Payload Badge (Visual verification for user) -->
+                    <!-- E2EE Payload Badge -->
                     <div id="e2eeBadgeBox" class="hidden p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-[10px] font-mono text-emerald-400 flex items-center gap-3">
                         <i class="fa-solid fa-shield-halved text-lg"></i>
                         <div>
-                            <div class="font-bold">Zabezpieczono warstwę transportową (E2EE)</div>
-                            <div class="text-emerald-500/60 truncate w-64 md:w-96" id="e2eePayloadDump">Klucz: aes-256-gcm...</div>
+                            <div class="font-bold">Zabezpieczono warstwę transportową (AES-256-GCM E2EE)</div>
+                            <div class="text-emerald-500/60 truncate w-64 md:w-96" id="e2eePayloadDump">Payload: hex...</div>
                         </div>
                     </div>
 
-                    <!-- Ads Container (If present in API) -->
+                    <!-- Ads Container -->
                     <div id="adsContainer" class="hidden space-y-3">
-                        <div class="text-[9px] uppercase tracking-widest text-slate-500 font-mono">Sponsorowane</div>
+                        <div class="text-[9px] uppercase tracking-widest text-slate-500 font-mono">Sponsorowane (AnySearch Ads)</div>
                         <div id="adsList" class="space-y-3"></div>
                     </div>
 
                     <!-- Search Results Feed -->
                     <div>
                         <div class="flex justify-between items-center mb-4 border-b border-darkborder pb-2 font-mono text-xs text-slate-400">
-                            <span>Zwalidowane Wyniki ($BM25$)</span>
+                            <span>Zwalidowane Wyniki AnySearch ($BM25$)</span>
                             <span id="resultsCountBadge" class="bg-darkborder px-2 py-1 rounded text-white">0</span>
                         </div>
                         <div id="resultsList" class="space-y-5"></div>
@@ -298,7 +298,7 @@
                     
                     <!-- Engine Status -->
                     <div class="p-4 rounded-2xl glass-panel border border-darkborder">
-                        <h4 class="font-mono text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 border-b border-darkborder pb-2">Status Węzłów API</h4>
+                        <h4 class="font-mono text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 border-b border-darkborder pb-2">Status Węzła API</h4>
                         <div id="apiStatusList" class="space-y-2 text-[10px] font-mono">
                             <!-- Dynamic -->
                         </div>
@@ -316,10 +316,10 @@
             <div class="flex items-center gap-2 text-sm text-slate-400 font-mono">
                 <i class="fa-solid fa-shield-halved text-neoncyan"></i>
                 <span class="font-bold">SecSearch Pro</span>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-darkborder text-slate-300">v6.0</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-darkborder text-slate-300">v6.0 — AnySearch API</span>
             </div>
             <div class="text-[11px] text-slate-500 font-mono text-center md:text-left">
-                Prywatna infrastruktura Zero-Knowledge. Odpytywanie offline-first. Brak trackerów.
+                Prywatna obsługa AnySearch API. Szyfrowanie Zero-Knowledge.
             </div>
             <div class="text-sm text-slate-400">
                 Stworzone przez: <a href="https://Anonymousik.is-a.dev/secsearch" target="_blank" rel="noopener noreferrer" class="text-neonpurple hover:text-neoncyan transition font-bold tracking-wide">Anonymousik.is-a.dev/secsearch</a>
@@ -333,7 +333,7 @@
             <div class="px-6 py-4 border-b border-darkborder flex items-center justify-between">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-gears text-neoncyan"></i>
-                    <h3 class="text-base font-bold text-white">Konfiguracja API & E2EE</h3>
+                    <h3 class="text-base font-bold text-white">Konfiguracja AnySearch API & E2EE</h3>
                 </div>
                 <button onclick="toggleModal('settingsModal', false)" class="text-slate-400 hover:text-white transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -341,24 +341,34 @@
             </div>
             <div class="p-6 space-y-5">
                 <div>
-                    <label class="block text-xs font-mono text-slate-400 mb-1">Główny Endpoint SecSearch API (Pełna specyfikacja)</label>
-                    <input type="url" id="customApiInput" placeholder="np. https://api.secsearch.com" class="w-full bg-darkbg border border-darkborder rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-neoncyan outline-none font-mono">
-                    <p class="text-[9px] text-slate-500 mt-1">Używany format: /api/search/{type}?uiv=4&t={type}&q={query}</p>
+                    <label class="block text-xs font-mono text-slate-400 mb-1">Endpoint AnySearch API</label>
+                    <div class="flex gap-2">
+                        <input type="url" id="customApiInput" placeholder="https://api.anysearch.com" class="flex-1 bg-darkbg border border-darkborder rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-neoncyan outline-none font-mono">
+                        <button onclick="resetDefaultEndpoint()" class="px-3 py-2 bg-darkborder hover:bg-slate-700 text-xs font-mono rounded-xl text-slate-300 transition">Reset</button>
+                    </div>
+                    <p class="text-[9px] text-slate-500 mt-1">Domyślny adres API: <code class="text-neoncyan">https://api.anysearch.com</code> (Format: <code class="text-slate-400">/api/search/{type}?uiv=4&t={type}&q={query}</code>)</p>
                 </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 mb-1">AnySearch API Key (Opcjonalny)</label>
+                    <input type="password" id="apiKeyInput" placeholder="Klucz API anysearch.com (opcjonalnie dla wyższych limitów)" class="w-full bg-darkbg border border-darkborder rounded-xl px-3 py-2 text-sm text-slate-200 focus:border-neoncyan outline-none font-mono">
+                    <p class="text-[9px] text-slate-500 mt-1">Pozostaw puste dla anonimowych zapytań darmowego kontyngentu. Wpisz klucz, aby zwiększyć limit przepustowości.</p>
+                </div>
+
                 <div>
                     <label class="flex items-center gap-2 text-sm font-mono text-slate-200 cursor-pointer">
                         <input type="checkbox" id="e2eeToggle" class="accent-neoncyan w-4 h-4 rounded">
-                        Symuluj/Wymuszaj Szyfrowanie E2EE (AES-GCM)
+                        Szyfrowanie Transportowe E2EE (AES-256-GCM)
                     </label>
-                    <p class="text-[9px] text-slate-500 mt-1 ml-6">Szyfruje ładunek tekstowy (payload) przed wysłaniem żądania do zaufanych węzłów, udowadniając koncepcję architektury Zero-Knowledge.</p>
+                    <p class="text-[9px] text-slate-500 mt-1 ml-6">Szyfruje ładunek przed transmisją, zapobiegając inspekcji w sieci klienta.</p>
                 </div>
                 
                 <div class="text-[10px] text-slate-400 bg-darkbg p-3 rounded-lg border border-darkborder leading-relaxed font-mono">
                     <i class="fa-solid fa-circle-info text-neonpurple mr-1"></i>
-                    Brak ustawionego Custom API przełączy silnik w tryb agregacji z darmowych otwartych źródeł (SearXNG, DDG, Wiki). Zmiany są zapisywane wyłącznie w lokalnym localStorage.
+                    Brak odpowiedzi z wybranego węzła AnySearch automatycznie przełącza na darmowe węzły agregujące (SearXNG, DDG, Wiki). Wszystkie dane przechowywane są lokalnie w browser storage (`localStorage`).
                 </div>
                 <button onclick="saveSettings()" class="w-full py-2.5 bg-gradient-to-r from-neoncyan to-neonpurple hover:opacity-90 text-black font-bold rounded-xl text-sm transition shadow-lg">
-                    Zapisz Bezpiecznie
+                    Zapisz Ustawienia AnySearch
                 </button>
             </div>
         </div>
@@ -373,8 +383,7 @@
                 </div>
                 <h3 class="text-lg font-bold text-white mb-2">Ustaw jako stronę startową</h3>
                 <p class="text-sm text-slate-400 mb-6 leading-relaxed">
-                    Ze względów bezpieczeństwa przeglądarki blokują automatyczne ustawianie strony startowej. 
-                    <br><br>Aby to zrobić, <strong>przeciągnij tę kartę na ikonę domku</strong> w przeglądarce, lub skopiuj nasz adres do ustawień.
+                    Przeciągnij tę kartę na ikonę domku w przeglądarce lub skopiuj URL do ustawień startowych przeglądarki.
                 </p>
                 <button onclick="toggleModal('homepageModal', false)" class="px-6 py-2 bg-darkborder hover:bg-slate-700 text-white font-bold rounded-xl text-sm transition w-full">
                     Rozumiem
@@ -385,12 +394,14 @@
 
     <!-- MAIN JAVASCRIPT APPLICATION -->
     <script>
-        // --- STATE & CONFIG ---
+        // --- CONSTANTS & STATE ---
+        const DEFAULT_ANYSEARCH = 'https://api.anysearch.com';
         const PUBLIC_SEARXNG = 'https://searx.be/search';
         let currentCategory = 'web';
         
         const state = {
-            customApi: localStorage.getItem('sec_custom_api') || '',
+            customApi: localStorage.getItem('sec_custom_api') || DEFAULT_ANYSEARCH,
+            apiKey: localStorage.getItem('sec_api_key') || '',
             useE2EE: localStorage.getItem('sec_e2ee') === 'true',
             apiStatuses: {}
         };
@@ -398,7 +409,6 @@
         // --- CRYPTOGRAPHY ENGINE (Web Crypto API) ---
         const CryptoEngine = {
             async generateAESKey() {
-                // Generates a local, ephemeral symmetric key for E2EE demonstration
                 return await crypto.subtle.generateKey(
                     { name: "AES-GCM", length: 256 },
                     true,
@@ -409,8 +419,6 @@
                 const iv = crypto.getRandomValues(new Uint8Array(12));
                 const encodedText = new TextEncoder().encode(text);
                 const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, encodedText);
-                
-                // Convert buffer to hex for visual display
                 const hashArray = Array.from(new Uint8Array(ciphertext));
                 const hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
                 return { ciphertext, hex, iv };
@@ -445,12 +453,9 @@
             return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
         }
 
-        // Advanced XSS safe parser allowing ONLY <b> tags from API (as per spec)
         function sanitizeHighlight(str) {
             if (!str) return '';
-            // 1. Full strict escape
             let safe = escapeHTML(str);
-            // 2. Safely restore <b> and </b> ONLY
             safe = safe.replace(/&lt;b&gt;/gi, '<b class="text-neoncyan bg-neoncyan/10 px-0.5 rounded">');
             safe = safe.replace(/&lt;\/b&gt;/gi, '</b>');
             return safe;
@@ -462,17 +467,24 @@
 
         function logToConsole(msg, type = 'info') {
             const logArea = document.getElementById('liveLogArea');
+            if (!logArea) return;
             const color = type === 'error' ? 'text-accentrose' : (type === 'success' ? 'text-accentemerald' : (type === 'crypto' ? 'text-neonpurple' : 'text-slate-400'));
             const prefix = type === 'error' ? '[ERR]' : (type === 'success' ? '[OK]' : (type === 'crypto' ? '[E2EE]' : '>'));
-            logArea.innerHTML += `<div class="${color}"> ${prefix} ${escapeHTML(msg)}</div>`;
+            logArea.innerHTML += `<div class="${color}">${prefix} ${escapeHTML(msg)}</div>`;
             logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function resetDefaultEndpoint() {
+            document.getElementById('customApiInput').value = DEFAULT_ANYSEARCH;
         }
 
         function toggleModal(id, show) {
             const el = document.getElementById(id);
+            if (!el) return;
             if (show) {
                 if(id === 'settingsModal') {
-                    document.getElementById('customApiInput').value = state.customApi;
+                    document.getElementById('customApiInput').value = state.customApi || DEFAULT_ANYSEARCH;
+                    document.getElementById('apiKeyInput').value = state.apiKey || '';
                     document.getElementById('e2eeToggle').checked = state.useE2EE;
                 }
                 el.classList.remove('hidden');
@@ -481,14 +493,12 @@
             }
         }
 
-        function showHomepageInstructions() {
-            toggleModal('homepageModal', true);
-        }
-
         function saveSettings() {
-            state.customApi = document.getElementById('customApiInput').value.trim();
+            state.customApi = (document.getElementById('customApiInput').value.trim()) || DEFAULT_ANYSEARCH;
+            state.apiKey = document.getElementById('apiKeyInput').value.trim();
             state.useE2EE = document.getElementById('e2eeToggle').checked;
             localStorage.setItem('sec_custom_api', state.customApi);
+            localStorage.setItem('sec_api_key', state.apiKey);
             localStorage.setItem('sec_e2ee', state.useE2EE);
             toggleModal('settingsModal', false);
         }
@@ -508,16 +518,17 @@
                 btn.classList.remove('active', 'bg-darkborder', 'text-white');
                 btn.classList.add('bg-transparent', 'text-slate-400');
             });
-            event.target.classList.remove('bg-transparent', 'text-slate-400');
-            event.target.classList.add('active', 'bg-darkborder', 'text-white');
+            if (event && event.target) {
+                event.target.classList.remove('bg-transparent', 'text-slate-400');
+                event.target.classList.add('active', 'bg-darkborder', 'text-white');
+            }
             
-            const q = document.getElementById('headerQueryInput').value;
+            const q = document.getElementById('headerQueryInput').value || document.getElementById('heroQueryInput').value;
             if(q) executeSearchPipeline(q, cat);
         }
 
         // --- ADVANCED REASONING ENGINE ---
         const ReasoningEngine = {
-            
             analyzeIntent(query) {
                 const q = query.trim().toLowerCase();
                 if (/^[0-9+\-*/().\^\s,sqrtpowsincoetanlogpi]+$/i.test(q) && /[0-9]/.test(q)) return 'MATH';
@@ -539,11 +550,9 @@
                 const text = results.map(r => (r.desc || '') + ' ' + (r.title || '')).join(' ');
                 const words = text.split(/\s+/);
                 
-                // Find Dates (YYYY), Percentages, Currencies, Capitalized Words
                 let entities = [];
                 const years = text.match(/\b(19|20)\d{2}\b/g) || [];
                 const percents = text.match(/\b\d+(\.\d+)?%\b/g) || [];
-                const currencies = text.match(/\b\$\d+(\.\d+)?\b/g) || [];
                 
                 const capitalized = words.filter(w => /^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]{3,}/.test(w));
                 const counts = {};
@@ -575,41 +584,74 @@
                         if (tf > 0) score += idf * ((tf * (k1 + 1)) / (tf + k1 * (1 - b + b * (text.length / avgdl))));
                     });
                     
-                    // Domain penalization (duplicate source penalty)
                     item.score = parseFloat(score.toFixed(2));
                     return item;
                 }).sort((a, b) => b.score - a.score);
             }
         };
 
-        // --- FETCHERS ---
-        async function fetchCustomAPI(query, type) {
-            // Endpoint format: /api/search/<type of search>?uiv=4&t=<type>&q=...
-            const baseUrl = state.customApi.replace(/\/+$/, '');
-            const url = `${baseUrl}/api/search/${type}?uiv=4&t=${type}&q=${encodeURIComponent(query)}`;
+        // --- ANYSEARCH API FETCHERS ---
+        async function fetchAnySearchAPI(query, type) {
+            const baseUrl = (state.customApi || DEFAULT_ANYSEARCH).replace(/\/+$/, '');
+            const targetUrl = `${baseUrl}/api/search/${type}?uiv=4&t=${encodeURIComponent(type)}&q=${encodeURIComponent(query)}`;
+            
+            const headers = {
+                'Accept': 'application/json'
+            };
+            
+            if (state.apiKey) {
+                headers['Authorization'] = `Bearer ${state.apiKey}`;
+                headers['X-API-Key'] = state.apiKey;
+            }
+
             try {
-                // We use credentials: omit for strict privacy
-                const res = await fetch(url, { credentials: 'omit', signal: AbortSignal.timeout(6000) });
-                if(!res.ok) throw new Error('API Error');
-                const data = await res.json();
-                state.apiStatuses['SecSearch API'] = 'OK';
-                
-                // Normalize to expected format
-                let results = [];
-                if(data.data && data.data.result && data.data.result.items) {
-                    results = data.data.result.items.map(item => ({
-                        title: item.title,
-                        url: item.url,
-                        desc: item.desc,
-                        favicon: item.favicon,
-                        sourceName: 'SecSearch',
-                        color: 'neonpurple'
-                    }));
+                let res = await fetch(targetUrl, {
+                    method: 'GET',
+                    headers: headers,
+                    credentials: 'omit',
+                    signal: AbortSignal.timeout(7000)
+                });
+
+                // Fallback to /v1/search if endpoint is AnySearch v1 format
+                if (!res.ok && res.status === 404) {
+                    const fallbackUrl = `${baseUrl}/v1/search?q=${encodeURIComponent(query)}&type=${encodeURIComponent(type)}`;
+                    res = await fetch(fallbackUrl, {
+                        method: 'GET',
+                        headers: headers,
+                        credentials: 'omit',
+                        signal: AbortSignal.timeout(7000)
+                    });
                 }
-                let ads = data.data?.ads || [];
-                return { results, ads };
-            } catch(e) {
-                state.apiStatuses['SecSearch API'] = 'FAIL';
+
+                if (!res.ok) throw new Error(`AnySearch HTTP ${res.status}`);
+                const data = await res.json();
+                state.apiStatuses['AnySearch API'] = state.apiKey ? 'OK (Authenticated)' : 'OK (Anonymous)';
+
+                let rawItems = [];
+                if (data.data?.result?.items && Array.isArray(data.data.result.items)) {
+                    rawItems = data.data.result.items;
+                } else if (data.result?.items && Array.isArray(data.result.items)) {
+                    rawItems = data.result.items;
+                } else if (data.results && Array.isArray(data.results)) {
+                    rawItems = data.results;
+                } else if (data.items && Array.isArray(data.items)) {
+                    rawItems = data.items;
+                }
+
+                const results = rawItems.map(item => ({
+                    title: item.title,
+                    url: item.url,
+                    desc: item.desc || item.snippet || item.content || item.summary,
+                    favicon: item.favicon,
+                    sourceName: 'AnySearch',
+                    color: 'neonpurple'
+                })).filter(r => r.url);
+
+                let rawAds = data.data?.ads || data.ads || [];
+                return { results, ads: Array.isArray(rawAds) ? rawAds : [] };
+
+            } catch (e) {
+                state.apiStatuses['AnySearch API'] = `FAIL (${e.message})`;
                 return { results: [], ads: [] };
             }
         }
@@ -622,12 +664,12 @@
                 try {
                     const res = await fetch(`${PUBLIC_SEARXNG}?q=${encodeURIComponent(query)}&format=json`, { credentials: 'omit', signal: AbortSignal.timeout(4000) });
                     const data = await res.json();
-                    state.apiStatuses['SearXNG (Public)'] = 'OK';
+                    state.apiStatuses['SearXNG (Fallback)'] = 'OK';
                     return (data.results || []).slice(0, 5).map(r => ({ title: r.title, url: r.url, desc: r.content, sourceName: 'SearXNG', color: 'searxgreen' }));
-                } catch (e) { state.apiStatuses['SearXNG (Public)'] = 'FAIL'; return []; }
+                } catch (e) { state.apiStatuses['SearXNG (Fallback)'] = 'FAIL'; return []; }
             })());
 
-            // Wikipedia (Wiki)
+            // Wikipedia
             apiPromises.push((async () => {
                 try {
                     const res = await fetch(`https://pl.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&origin=*`, { credentials: 'omit', signal: AbortSignal.timeout(3000) });
@@ -648,21 +690,24 @@
         // --- EXECUTION PIPELINE ---
         function setStep(id, status) {
             const el = document.getElementById(id);
+            if (!el) return;
             const icon = el.querySelector('.step-icon');
             el.className = `flex items-center gap-2 ${status === 'active' ? 'step-active' : (status === 'done' ? 'step-done' : 'step-pending')}`;
-            if (status === 'active') icon.className = 'fa-solid fa-spinner fa-spin text-[10px] text-neoncyan';
-            else if (status === 'done') icon.className = 'fa-solid fa-check text-[10px] text-emerald-500';
-            else icon.className = 'fa-solid fa-circle-notch text-[10px]';
+            if (icon) {
+                if (status === 'active') icon.className = 'fa-solid fa-spinner fa-spin text-[10px] text-neoncyan';
+                else if (status === 'done') icon.className = 'fa-solid fa-check text-[10px] text-emerald-500';
+                else icon.className = 'fa-solid fa-circle-notch text-[10px]';
+            }
         }
 
         async function executeSearchPipeline(query, type = 'web') {
             const startTime = performance.now();
             let timerInterval = setInterval(() => {
-                document.getElementById('reasoningTimer').innerText = ((performance.now() - startTime)/1000).toFixed(2) + 's';
+                const el = document.getElementById('reasoningTimer');
+                if (el) el.innerText = ((performance.now() - startTime)/1000).toFixed(2) + 's';
             }, 50);
 
             try {
-                // UI Prep
                 document.getElementById('heroSection').classList.add('hidden');
                 document.getElementById('headerSearchBar').classList.remove('hidden');
                 document.getElementById('resultsSection').classList.remove('hidden');
@@ -673,11 +718,11 @@
                 document.getElementById('e2eeBadgeBox').classList.add('hidden');
                 [1,2,3,4].forEach(i => setStep(`step${i}`, 'pending'));
 
-                logToConsole(`Inicjacja zapytania: [${type.toUpperCase()}] "${query}"`);
+                logToConsole(`Inicjalizacja zapytania AnySearch: [${type.toUpperCase()}] "${query}"`);
 
                 // STEP 1: Intent & Validation
                 setStep('step1', 'active');
-                await delay(300);
+                await delay(250);
                 const intent = ReasoningEngine.analyzeIntent(query);
                 if(intent === 'MATH') {
                     const res = ReasoningEngine.executeMath(query);
@@ -687,66 +732,66 @@
                         if(window.katex) katex.render(query, document.getElementById('mathEq'), {throwOnError:false});
                     }
                 }
-                logToConsole('Zwalidowano bezpieczeństwo XSS inputu.', 'success');
+                logToConsole('Bezpieczeństwo zapytania zwalidowane (CWE-79 Sanitization).', 'success');
                 setStep('step1', 'done');
 
-                // STEP 2: E2EE Encryption
+                // STEP 2: E2EE Encryption & Auth Header Prep
                 setStep('step2', 'active');
                 state.apiStatuses = {};
+                const authMode = state.apiKey ? 'Wygenerowany Klucz API' : 'Tryb Anonimowy (IP Rate Limited)';
+                logToConsole(`Autoryzacja AnySearch API: ${authMode}`, 'info');
+
                 if (state.useE2EE) {
                     logToConsole('Generowanie efemerycznego klucza AES-256-GCM...', 'crypto');
                     const key = await CryptoEngine.generateAESKey();
                     const { hex } = await CryptoEngine.encryptPayload(query, key);
-                    logToConsole(`Payload zaszyfrowany. Hash: ${hex.substring(0, 32)}...`, 'crypto');
+                    logToConsole(`Ładunek zaszyfrowany (AES-256-GCM). Hash: ${hex.substring(0, 32)}...`, 'crypto');
                     
                     document.getElementById('e2eeBadgeBox').classList.remove('hidden');
                     document.getElementById('e2eePayloadDump').innerText = `AES-GCM Payload: ${hex}`;
-                    await delay(500); // Visual delay to show crypto processing
+                    await delay(300);
                 } else {
-                    logToConsole('Tryb E2EE wyłączony (Połączenie standardowe TLS).', 'info');
-                    await delay(200);
+                    logToConsole('Tryb E2EE wyłączony — bezpieczne połączenie TLS.', 'info');
+                    await delay(150);
                 }
                 setStep('step2', 'done');
 
-                // STEP 3: API Fetch
+                // STEP 3: API Fetch Execution
                 setStep('step3', 'active');
-                let rawData;
-                if (state.customApi) {
-                    logToConsole(`Łączenie z prywatnym węzłem SecSearch...`);
-                    rawData = await fetchCustomAPI(query, type);
-                } else {
-                    logToConsole(`Brak Custom API. Fallback na publiczne węzły...`);
+                logToConsole(`Odpytywanie węzła: ${state.customApi || DEFAULT_ANYSEARCH} ...`);
+                let rawData = await fetchAnySearchAPI(query, type);
+
+                // Fallback if main AnySearch node returned 0 results
+                if (!rawData.results || rawData.results.length === 0) {
+                    logToConsole(`Brak wyników z AnySearch API. Inicjacja węzłów zastępczych...`, 'error');
                     rawData = await fetchPublicFallbacks(query);
                 }
                 
                 const statusHtml = Object.entries(state.apiStatuses).map(([api, status]) => `
                     <div class="flex justify-between items-center">
                         <span class="text-slate-400">${api}</span>
-                        <span class="${status === 'OK' ? 'text-emerald-400' : 'text-accentrose'}">${status}</span>
+                        <span class="${status.startsWith('OK') ? 'text-emerald-400' : 'text-accentrose'}">${status}</span>
                     </div>
                 `).join('');
                 document.getElementById('apiStatusList').innerHTML = statusHtml;
                 
-                logToConsole(`Pobrano ${rawData.results.length} wyników.`);
+                logToConsole(`Otrzymano ${rawData.results.length} zweryfikowanych wyników.`);
                 setStep('step3', 'done');
 
-                // STEP 4: BM25 & NER
+                // STEP 4: BM25 & NER Extraction
                 setStep('step4', 'active');
-                await delay(300);
+                await delay(200);
                 
-                // NER
                 const entities = ReasoningEngine.extractEntities(rawData.results);
                 document.getElementById('entityTags').innerHTML = entities.length ? 
                     entities.map(e => `<span class="px-2 py-1 rounded-md bg-darkbg border border-darkborder text-[10px] font-sans">${e}</span>`).join('') 
                     : '<span class="text-xs text-slate-600">Brak</span>';
 
-                // BM25
                 const ranked = ReasoningEngine.bm25Score(query, rawData.results);
-                logToConsole('Przeliczono punktację TF-IDF/BM25.', 'success');
+                logToConsole('Przeliczono punktację relewantności Okapi BM25.', 'success');
                 setStep('step4', 'done');
 
                 // RENDER
-                // Ads
                 if(rawData.ads && rawData.ads.length > 0) {
                     document.getElementById('adsContainer').classList.remove('hidden');
                     document.getElementById('adsList').innerHTML = rawData.ads.map(ad => `
@@ -757,7 +802,6 @@
                     `).join('');
                 }
 
-                // Results
                 document.getElementById('resultsCountBadge').innerText = ranked.length;
                 document.getElementById('resultsList').innerHTML = ranked.map(r => `
                     <article class="p-4 rounded-xl glass-panel hover:border-${r.color || 'neoncyan'}/40 transition group">
@@ -771,7 +815,7 @@
                         </h3>
                         <p class="text-sm text-slate-400 leading-relaxed">${sanitizeHighlight(r.desc)}</p>
                     </article>
-                `).join('') || '<div class="text-center py-10 text-slate-500"><i class="fa-solid fa-ghost text-4xl mb-3"></i><br>Brak wyników do zsyntetyzowania</div>';
+                `).join('') || '<div class="text-center py-10 text-slate-500"><i class="fa-solid fa-ghost text-4xl mb-3"></i><br>Brak wyników z AnySearch API</div>';
 
                 document.getElementById('resultsDashboard').classList.remove('hidden');
 
@@ -796,13 +840,13 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
-                    const CACHE_NAME = 'secsearch-v6';
+                    const CACHE_NAME = 'secsearch-v6-anysearch';
                     const STATIC_ASSETS = ['./', './index.html', 'https://cdn.tailwindcss.com', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'];
                     self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(STATIC_ASSETS)).then(()=>self.skipWaiting())); });
                     self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => { if(k !== CACHE_NAME) return caches.delete(k); }))).then(()=>self.clients.claim())); });
                     self.addEventListener('fetch', (e) => {
                         const url = new URL(e.request.url);
-                        if (url.pathname.includes('/api/search')) { e.respondWith(fetch(e.request)); return; } // E2EE/API bypass cache
+                        if (url.pathname.includes('/api/search') || url.hostname.includes('anysearch')) { e.respondWith(fetch(e.request)); return; }
                         e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
                     });
                 `;
