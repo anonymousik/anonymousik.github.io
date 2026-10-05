@@ -1,0 +1,9 @@
+node -v; npm -v
+sha256sum index.orig.html | cut -c1-12
+date -u +%FT%T.%6NZ
+npm init -y >/dev/null 2>&1
+npm install --silent tailwindcss@3 2>&1 | tail -2
+npm pack --silent katex@0.16.9 @fortawesome/fontawesome-free@6.5.1 2>&1 | tail -3
+mkdir -p k f && tar -xzf katex-0.16.9.tgz -C k && tar -xzf fortawesome-fontawesome-free-6.5.1.tgz -C f
+for p in k/package/dist/katex.min.css k/package/dist/katex.min.js f/package/css/all.min.css; do echo "$p sha384-$(openssl dgst -sha384 -binary $p | openssl base64 -A)"; done
+ls f/package/webfonts | head -3; ls k/package/dist/fonts | head -2; npx tailwindcss --help 2>&1 | head -2

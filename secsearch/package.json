@@ -1,0 +1,16 @@
+{
+  "name": "secsearch",
+  "version": "1.0.0",
+  "description": "**SecSearch Pro** is a modern, zero-knowledge, client-side privacy search engine. Built with a single-file architecture (`index.html`), it blends the minimalist privacy-first aesthetic of Qwant with the rich, widget-driven layout of modern search engines like Bing. The application operates on a **Zero-Knowledge Client** paradigm: all credentials, search tokens, and custom API endpoints are stored exclusively within the user's local browser environment (`localStorage`), ensuring zero server-side logging or telemetry.",
+  "main": "helpers.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}
