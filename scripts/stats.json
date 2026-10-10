@@ -1,9 +1,9 @@
 {
   "sources": {
     "cheelee": {
-      "platform": "Cheelee",
-      "followers": 50000,
-      "likes": 333400,
+      "platform": "Cheelee.us",
+      "followers": ,
+      "likes": ,
       "views": 0
     },
     "tiktok": {
@@ -20,9 +20,9 @@
     }
   },
   "summary": {
-    "aggregatedFollowers": 50000,
-    "aggregatedLikes": 333400,
+    "aggregatedFollowers": 0,
+    "aggregatedLikes": 0,
     "aggregatedViews": 0,
-    "timestamp": "2026-10-10T07:04:18.735Z"
+    "timestamp": "2026-10-10"
   }
 }
