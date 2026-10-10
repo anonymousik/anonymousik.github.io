@@ -6,9 +6,9 @@ on:
     - cron: '0 6 * * *'
 
 permissions:
-  contents: write      # Wymagane, jeśli skrypt audit.py modyfikuje/zapisuje coś w repozytorium
-  pages: write         # Kluczowe dla nowoczesnego, bezgałęziowego wdrażania Pages
-  id-token: write      # Wymagane do bezpiecznego uwierzytelniania wdrożeń Pages
+  contents: write      
+  pages: write         
+  id-token: write      
 
 concurrency:
   group: "pages-audit"
@@ -24,7 +24,7 @@ jobs:
       - name: "ANONYMOUSIK.IS-A.DEV / KONFIGURACJA PYTHON"
         uses: actions/setup-python@v5 # Podniesiono do v5 (wbudowany lepszy mechanizm cache)
         with:
-          python-version: '3.11'       # Zaktualizowano do stabilnego i bezpieczniejszego Pythona 3.11+
+          python-version: '3.11'       
           cache: 'pip'
 
       - name: "Instalacja zależności"
@@ -34,21 +34,18 @@ jobs:
 
       - name: "ANONYMOUSIK.IS-A.DEV / KONTROLA BEZPIECZEŃSTWA"
         run: python security_audit.py
-
       - name: "Uruchomienie Snyk CLI (Skanowanie podatności)"
-        uses: snyk/actions/python@master # Użycie dedykowanego środowiska dla Pythona
+        uses: snyk/actions/python@master
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} # Wymagany token (dodaj go w Settings -> Secrets)
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test
-
       - name: "Konfiguracja środowiska GitHub Pages"
         uses: actions/configure-pages@v6.0.0
-
       - name: "Pakowanie raportu i strony (Artefakt)"
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.' # Pakuje cały katalog główny (w tym wygenerowane raporty z audytu)
+          path: '.'
 
       - name: "ANONYMOUSIK.IS-A.DEV / WDRAŻANIE BEZPOŚREDNIE"
         id: deployment
