@@ -52,4 +52,5 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add scripts/stats.json
           git commit -m "🤖 Update stats.json" || echo "No changes"
+          git pull --rebase origin main || echo "Brak konfliktów lub rebase zakończony"
           git push origin main
