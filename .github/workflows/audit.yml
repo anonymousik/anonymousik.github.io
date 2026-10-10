@@ -3,7 +3,7 @@ name: ANONYMOUSIK.IS-A.DEV-CYBERSEC-AUDIT-HEADER
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 6 * * *'
+    cron: '0 6 * * *'
 
 permissions:
   contents: write
@@ -12,27 +12,27 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: ANONYMOUSIK.IS-A
+      name: ANONYMOUSIK.IS-A
 DEV/KONTROLA CHECKOUT
         uses: actions/checkout@v4
 
-      - name: ANONYMOUSIK.IS-A
+      name: ANONYMOUSIK.IS-A
 DEV/KONFIGURACJA PY
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Instalacja zależności
+      name: Instalacja zależności
         run: pip install requests
 
-      - name: ANONYMOUSIK.IS-A
+      name: ANONYMOUSIK.IS-A
 DEV/KONTROLA BEZPIECZEŃSTWA
         run: python security_audit.py
 
-      - name: Snyk
+      name: Snyk
         uses: snyk/actions@v1.0.0
 
-      - name: ANONYMOUSIK.IS-A
+      name: ANONYMOUSIK.IS-A
 DEV
         uses: peaceiris/actions-gh-pages@v3
         with:
