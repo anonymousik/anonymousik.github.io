@@ -1,4 +1,4 @@
-- name: FerroART-STATS-GRABBER(YT-Cheelee-Tiktok)
+name: FerroART-STATS-GRABBER(YT-Cheelee-Tiktok)
 
 on:
   push:
