@@ -1,4 +1,4 @@
-name: Setup Apache Flex SDK
+- name: Setup Apache Flex SDK
   uses: joshtynjala/setup-apache-flex-action@v2.1.0
   with:
     flex-version: 4.16.1
