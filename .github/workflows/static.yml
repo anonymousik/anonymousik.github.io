@@ -1,4 +1,4 @@
-name: "ANONYMOUSIK-WEB-ENV"
+name: "ANONYMOUSIK-WEB-ENV-RELOAD"
 
 on:
   push:
