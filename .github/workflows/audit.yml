@@ -1,36 +1,55 @@
-- name: ANONYMOUSIK.IS-A.DEV-CYBERSEC-AUDIT-HEADER
+name: "ANONYMOUSIK.IS-A.DEV-CYBERSEC-AUDIT-HEADER"
 
 on:
   workflow_dispatch:
   schedule:
-    cron: '0 6 * * *'
+    - cron: '0 6 * * *'
 
 permissions:
-  contents: write
+  contents: write      # Wymagane, jeśli skrypt audit.py modyfikuje/zapisuje coś w repozytorium
+  pages: write         # Kluczowe dla nowoczesnego, bezgałęziowego wdrażania Pages
+  id-token: write      # Wymagane do bezpiecznego uwierzytelniania wdrożeń Pages
+
+concurrency:
+  group: "pages-audit"
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:  
-- name: ANONYMOUSIK.IS-A
-DEV/KONTROLA CHECKOUT
+      - name: "ANONYMOUSIK.IS-A.DEV / KONTROLA CHECKOUT"
         uses: actions/checkout@v4
-- name: ANONYMOUSIK.IS-A
-DEV/KONFIGURACJA PY
-        uses: actions/setup-python@v4
+
+      - name: "ANONYMOUSIK.IS-A.DEV / KONFIGURACJA PYTHON"
+        uses: actions/setup-python@v5 # Podniesiono do v5 (wbudowany lepszy mechanizm cache)
         with:
-          python-version: '3.9'
-- name: Instalacja zależności
-        run: pip install requests
-- name: ANONYMOUSIK.IS-A
-DEV/KONTROLA BEZPIECZEŃSTWA
+          python-version: '3.11'       # Zaktualizowano do stabilnego i bezpieczniejszego Pythona 3.11+
+          cache: 'pip'
+
+      - name: "Instalacja zależności"
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: "ANONYMOUSIK.IS-A.DEV / KONTROLA BEZPIECZEŃSTWA"
         run: python security_audit.py
-- name: Snyk
-        uses: snyk/actions@v1.0.0
-- name: ANONYMOUSIK.IS-A
-DEV
-        uses: peaceiris/actions-gh-pages@v3
+
+      - name: "Uruchomienie Snyk CLI (Skanowanie podatności)"
+        uses: snyk/actions/python@master # Użycie dedykowanego środowiska dla Pythona
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} # Wymagany token (dodaj go w Settings -> Secrets)
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
-          keep_files: false
+          command: test
+
+      - name: "Konfiguracja środowiska GitHub Pages"
+        uses: actions/configure-pages@v6.0.0
+
+      - name: "Pakowanie raportu i strony (Artefakt)"
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # Pakuje cały katalog główny (w tym wygenerowane raporty z audytu)
+
+      - name: "ANONYMOUSIK.IS-A.DEV / WDRAŻANIE BEZPOŚREDNIE"
+        id: deployment
+        uses: actions/deploy-pages@v4
