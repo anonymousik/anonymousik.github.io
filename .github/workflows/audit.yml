@@ -1,9 +1,7 @@
-name: Security Header Audit
+name: ANONYMOUSIK.IS-A.DEV-CYBERSEC-AUDIT-HEADER
 
 on:
-  # Pozwala na ręczne uruchomienie przyciskiem w zakładce "Actions"
   workflow_dispatch:
-  # Opcjonalnie: Uruchamiaj codziennie o 6:00 rano
   schedule:
     - cron: '0 6 * * *'
 
@@ -14,10 +12,12 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Pobranie kodu (Checkout)
+      - name: ANONYMOUSIK.IS-A
+DEV/KONTROLA CHECKOUT
         uses: actions/checkout@v4
 
-      - name: Konfiguracja Python
+      - name: ANONYMOUSIK.IS-A
+DEV/KONFIGURACJA PY
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
@@ -25,17 +25,17 @@ jobs:
       - name: Instalacja zależności
         run: pip install requests
 
-      - name: Uruchomienie skanera bezpieczeństwa
+      - name: ANONYMOUSIK.IS-A
+DEV/KONTROLA BEZPIECZEŃSTWA
         run: python security_audit.py
 
       - name: Snyk
         uses: snyk/actions@v1.0.0
 
-      - name: Wdrożenie na GitHub Pages
+      - name: ANONYMOUSIK.IS-A
+DEV
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
-          # Publikuje tylko plik index.html wygenerowany przez skrypt
           keep_files: false
-          # UWAGA: To nadpisze zawartość brancha gh-pages!
