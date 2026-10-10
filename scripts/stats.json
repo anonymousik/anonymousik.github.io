@@ -14,15 +14,15 @@
     },
     "youtube": {
       "platform": "YouTube",
-      "followers": 1080,
-      "views": 158399,
-      "likes": 170
+      "followers": 0,
+      "views": 0,
+      "likes": 0
     }
   },
   "summary": {
-    "aggregatedFollowers": 51080,
-    "aggregatedLikes": 333570,
-    "aggregatedViews": 158399,
-    "timestamp": "2026-10-10T06:15:19.767Z"
+    "aggregatedFollowers": 50000,
+    "aggregatedLikes": 333400,
+    "aggregatedViews": 0,
+    "timestamp": "2026-10-10T07:00:43.954Z"
   }
 }
