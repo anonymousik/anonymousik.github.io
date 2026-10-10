@@ -4,7 +4,8 @@ on:
   push:
     branches: [ "main" ]
   schedule:
-    - cron: '0 * * * *' # Synchronizacja statystyk co 1 godzinę
+    - cron: '0 * * * *' 
+# Synchronizacja statystyk co 1 godzinę
   workflow_dispatch:
 
 permissions:
