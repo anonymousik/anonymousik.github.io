@@ -1,11 +1,11 @@
-name: SecFerro GitOps Telemetry Pipeline
+name: FerroART-STATS-GRABBER(YT-Cheelee-Tiktok)
 
 on:
   push:
     branches: [ "main" ]
   schedule:
-    - cron: '0 * * * *' 
-# Synchronizacja statystyk co 1 godzinę
+    - cron: '0 20 * * *' 
+# Synchronizacja statystyk codziennie o godz 20:00
   workflow_dispatch:
 
 permissions:
@@ -31,8 +31,6 @@ jobs:
         run: npx playwright install chromium --with-deps
 
       - name: Wykonanie skryptu zbierania statystyk (Scraper)
-        env:
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: node scripts/generate-stats.js
 
       - name: Kompilacja aplikacji statycznej (Vite)
@@ -45,7 +43,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: scripts
           commit_message: "Automatyczna synchronizacja statystyk SecFerro 🛡️"
 
       - name: Git commit & push
