@@ -19,13 +19,46 @@ const logger = winston.createLogger({
 class ProductionScraper {
     static parseNumber(text) {
         if (!text) return 0;
-        const clean = text.toString().toUpperCase().replace(/,/g, '').trim();
+        const clean = text.toString().toLowerCase().replace(/\s+/g, '').replace(/,/g, '.');
         let mult = 1;
-        if (clean.includes('K')) mult = 1000;
-        if (clean.includes('M')) mult = 1000000;
-        if (clean.includes('B')) mult = 1000000000;
-        const num = parseFloat(clean.replace(/[KMB]/g, ''));
+        if (clean.includes('k') || clean.includes('tys')) mult = 1000;
+        if (clean.includes('m') || clean.includes('mln')) mult = 1000000;
+        if (clean.includes('b') || clean.includes('mld')) mult = 1000000000;
+        
+        const numClean = clean.replace(/[kmb]|\btys\.?|\bmln\.?|\bmld\.?|\bsubskrybentów|\bsubscribers|\bwyświetleń|\blikes/g, '');
+        const num = parseFloat(numClean);
         return isNaN(num) ? 0 : Math.floor(num * mult);
+    }
+
+    static getWarsawTimestamp() {
+        try {
+            const now = new Date();
+            const formatter = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'Europe/Warsaw',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            const parts = formatter.formatToParts(now);
+            const p = {};
+            parts.forEach(part => { p[part.type] = part.value; });
+
+            const utcDate = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+            const tzDate = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Warsaw' }));
+            const offsetMinutes = Math.round((tzDate - utcDate) / (1000 * 60));
+            const sign = offsetMinutes >= 0 ? '+' : '-';
+            const absOffset = Math.abs(offsetMinutes);
+            const offHours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+            const offMins = String(absOffset % 60).padStart(2, '0');
+
+            return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}${sign}${offHours}:${offMins}`;
+        } catch (e) {
+            return new Date().toISOString();
+        }
     }
 
     static async fetchCheeleeStats(browser, url) {
@@ -60,7 +93,6 @@ class ProductionScraper {
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 40000 });
             await page.waitForTimeout(6000);
 
-            // Zamknięcie potencjalnych modali mobilnych
             await page.evaluate(async () => {
                 const modal = document.querySelector('ngx-smart-modal, cheelee-get-mobile-app-dialog, [class*="modal"]');
                 if (modal) {
@@ -78,7 +110,7 @@ class ProductionScraper {
 
                 allElements.forEach(el => {
                     const text = el.innerText ? el.innerText.trim() : '';
-                    if (/^\d+([.,]\d+)?[KMB]?$/i.test(text)) {
+                    if (/^\d+([.,]\d+)?[KMBtysmlnmld]?$/i.test(text)) {
                         const parentText = el.parentElement ? el.parentElement.innerText.toLowerCase() : '';
                         if (parentText.includes('follower') || parentText.includes('obserwujący') || parentText.includes('subskryb')) {
                             followers = text;
@@ -167,31 +199,60 @@ class ProductionScraper {
     }
 
     static async fetchYouTubeStats(browser, handle) {
-        const page = await browser.newPage();
+        // Użycie endpointu mobilnego m.youtube.com z nagłówkiem i obsługą ciasteczek/zgody (nocookie / consent bypass)
+        const context = await browser.newContext({
+            viewport: { width: 393, height: 851 },
+            isMobile: true,
+            userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36',
+            extraHTTPHeaders: {
+                'Accept-Language': 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
+                'Cookie': 'CONSENT=YES+cb.20230307-07-p0.en+FX+900'
+            }
+        });
+        const page = await context.newPage();
         try {
-            logger.info(`Pobieranie statystyk YouTube przez publiczny endpoint strony dla: @${handle}`);
-            await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
-            await page.goto(`https://www.youtube.com/@${handle}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
-            await page.waitForTimeout(5000);
+            logger.info(`Pobieranie statystyk YouTube (Mobile View) dla: @${handle}`);
+            await page.goto(`https://m.youtube.com/@${handle}`, { waitUntil: 'domcontentloaded', timeout: 35000 });
+            await page.waitForTimeout(6000);
+
+            // Próba zamknięcia potencjalnego banera zgody YouTube / Google Consent
+            await page.evaluate(async () => {
+                const buttons = Array.from(document.querySelectorAll('button, ytd-button-renderer'));
+                for (const btn of buttons) {
+                    const text = btn.innerText.toLowerCase();
+                    if (text.includes('zaakceptuj') || text.includes('accept') || text.includes('agree') || text.includes('przejdź')) {
+                        btn.click();
+                        break;
+                    }
+                }
+            }).catch(() => {});
+            await page.waitForTimeout(2000);
 
             const ytData = await page.evaluate(() => {
-                const subMeta = document.querySelector('meta[itemprop="interactionCount"]')?.content || 
-                                document.querySelector('#subscriber-count')?.innerText || '';
-                
-                if (!subMeta) {
-                    const scripts = Array.from(document.querySelectorAll('script'));
-                    for (const s of scripts) {
-                        const text = s.textContent || '';
-                        if (text.includes('subscriberCountText')) {
-                            const match = text.match(/"subscriberCountText":\s*{"simpleText":"([^"]+)"}/);
-                            if (match && match[1]) return { subMeta: match[1] };
+                // 1. Sprawdzenie ytInitialData w skryptach
+                const scripts = Array.from(document.querySelectorAll('script'));
+                for (const s of scripts) {
+                    const text = s.textContent || '';
+                    if (text.includes('subscriberCountText')) {
+                        const match = text.match(/"subscriberCountText":\s*\{[^}]*"simpleText":"([^"]+)"/);
+                        if (match && match[1]) {
+                            return { subMeta: match[1], source: 'ytInitialData' };
                         }
                     }
                 }
-                return { subMeta };
+
+                // 2. Awaryjnie selektory DOM dla m.youtube.com oraz youtube.com
+                const subMeta = document.querySelector('meta[itemprop="interactionCount"]')?.content || 
+                                document.querySelector('#subscriber-count')?.innerText ||
+                                document.querySelector('.subscriber-count')?.innerText ||
+                                document.querySelector('[class*="subscriber"]')?.innerText || '';
+
+                return { subMeta, source: 'DOM' };
             });
 
+            logger.info(`YouTube pobrano pomyślnie (${ytData.source}): "${ytData.subMeta}"`);
             const parsedSubs = this.parseNumber(ytData.subMeta);
+
             return {
                 platform: 'YouTube',
                 followers: parsedSubs,
@@ -202,7 +263,7 @@ class ProductionScraper {
             logger.error(`Błąd YouTube Scrapera: ${error.message}`);
             return { platform: 'YouTube', followers: 0, views: 0, likes: 0 };
         } finally {
-            await page.close();
+            await context.close();
         }
     }
 
@@ -228,7 +289,7 @@ class ProductionScraper {
                     aggregatedFollowers: totalFollowers,
                     aggregatedLikes: totalLikes,
                     aggregatedViews: totalViews,
-                    timestamp: new Date().toISOString()
+                    timestamp: this.getWarsawTimestamp()
                 }
             };
 
@@ -237,7 +298,7 @@ class ProductionScraper {
 
             const outPath = path.join(outDir, 'stats.json');
             fs.writeFileSync(outPath, JSON.stringify(payload, null, 2));
-            logger.info(`Zapisano pomyślnie plik telemetrii: ${outPath}`);
+            logger.info(`Zapisano pomyślnie plik telemetrii: ${outPath} z czasem strefy Europe/Warsaw.`);
         } finally {
             await browser.close();
         }
