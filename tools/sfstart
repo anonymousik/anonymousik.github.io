@@ -1,0 +1,194 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║  sfstart — SecFerro RouterOS VM launcher                                ║
+# ║                                                                          ║
+# ║  Poprawki vs stara wersja:                                              ║
+# ║  • Dodano guestfwd TCP 192.168.168.1:25 → 127.0.0.1:2526              ║
+# ║    (RouterOS może wysyłać maile przez 192.168.168.1:25 → host relay)   ║
+# ║  • QEMU monitor socket (socat /run/qemu-monitor.sock)                  ║
+# ║  • Warunek idempotentny — nie startuje jeśli już działa               ║
+# ║  • Wykrycie KVM vs TCG automatyczne z fallback                         ║
+# ║  • Sprawdzenie czy obraz dysku istnieje przed startem                  ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+set -euo pipefail
+
+# ── Ładowanie konfiguracji ────────────────────────────────────────────────────
+SF_HOME="${SF_HOME:-$HOME/secferro}"
+SF_CONF="${SF_HOME}/conf/secferro.conf"
+[[ -f "$SF_CONF" ]] && source "$SF_CONF"
+
+: "${VM_RAM:=256}"
+: "${VM_DISK:=${SF_HOME}/vm/routeros.img}"
+: "${PORT_SSH:=2222}"
+: "${PORT_SMTP_IN:=2525}"
+: "${PORT_SMTP_RELAY:=2526}"
+: "${PORT_WINBOX:=8291}"
+: "${PORT_API:=8728}"
+: "${NET_HOST_GW:=192.168.168.1}"
+: "${NET_VM_IP:=192.168.168.3}"
+: "${NET_SUBNET_CIDR:=24}"
+
+PID_FILE="${SF_HOME}/run/qemu.pid"
+LOG_FILE="${SF_HOME}/logs/qemu.log"
+MON_SOCK="${SF_HOME}/run/qemu-monitor.sock"
+
+# ── Kolory ────────────────────────────────────────────────────────────────────
+R='\033[0m'; B='\033[1m'
+GRN='\033[92m'; RED='\033[91m'; YLW='\033[93m'
+CYN='\033[96m'; D='\033[2m'
+
+ok()   { echo -e "${GRN}${B}[✓]${R} $*"; }
+err()  { echo -e "${RED}${B}[✗]${R} $*"; }
+warn() { echo -e "${YLW}${B}[!]${R} $*"; }
+info() { echo -e "${CYN}[i]${R} $*"; }
+
+# ── Guard: już działa? ────────────────────────────────────────────────────────
+_is_running() {
+    [[ -f "$PID_FILE" ]] || return 1
+    local pid; pid=$(cat "$PID_FILE" 2>/dev/null) || return 1
+    kill -0 "$pid" 2>/dev/null
+}
+
+if _is_running; then
+    pid=$(cat "$PID_FILE")
+    ok "VM już działa (PID: $pid)"
+    echo -e "  ${D}Zatrzymaj przez: sfstop${R}"
+    exit 0
+fi
+
+# ── Banner ─────────────────────────────────────────────────────────────────────
+echo -e "\n${CYN}${B}"
+echo "  ╔══════════════════════════════════════════════════╗"
+echo "  ║  SecFerro · RouterOS VM  ·  Start               ║"
+echo "  ╚══════════════════════════════════════════════════╝"
+echo -e "${R}"
+
+# ── Prereq: obraz VM ─────────────────────────────────────────────────────────
+if [[ ! -f "$VM_DISK" ]]; then
+    err "Brak obrazu VM: $VM_DISK"
+    echo -e "  ${D}Pobierz RouterOS CHR: https://mikrotik.com/download#chr${R}"
+    echo -e "  ${D}Umieść w: $VM_DISK${R}"
+    exit 1
+fi
+
+# ── Prereq: qemu ─────────────────────────────────────────────────────────────
+QEMU_BIN=""
+for q in qemu-system-x86_64 qemu-system-i386 qemu-x86_64; do
+    if command -v "$q" >/dev/null 2>&1; then QEMU_BIN="$q"; break; fi
+done
+if [[ -z "$QEMU_BIN" ]]; then
+    err "QEMU niedostępny. Zainstaluj: pkg install qemu-system-x86-64"
+    exit 1
+fi
+ok "QEMU: $QEMU_BIN"
+
+# ── Prereq: wolne porty ───────────────────────────────────────────────────────
+for p in "$PORT_SSH" "$PORT_SMTP_IN" "$PORT_WINBOX"; do
+    if nc -z 127.0.0.1 "$p" 2>/dev/null; then
+        warn "Port $p zajęty. Sprawdź: lsof -i :$p"
+    fi
+done
+
+# ── Katalogi ─────────────────────────────────────────────────────────────────
+mkdir -p "${SF_HOME}/run" "${SF_HOME}/logs"
+
+# ── KVM vs TCG ────────────────────────────────────────────────────────────────
+ACCEL=""
+if [[ -w /dev/kvm ]]; then
+    ACCEL="-enable-kvm -cpu host"
+    ok "KVM dostępny — tryb sprzętowy"
+else
+    warn "KVM niedostępny — tryb TCG (wolniejszy, normalny na Android)"
+    ACCEL="-cpu max"
+fi
+
+# ── Budowanie komendy QEMU ───────────────────────────────────────────────────
+#
+# KLUCZOWA ARCHITEKTURA SIECI (user/slirp):
+#
+#  Host Termux                      RouterOS VM
+#  127.0.0.1:2222  ←portfwd─  VM:22  (SSH Winbox/terminal)
+#  127.0.0.1:2525  ←portfwd─  VM:25  (SMTP — RouterOS odbiera, debug)
+#  127.0.0.1:8291  ←portfwd─  VM:8291 (Winbox GUI)
+#  127.0.0.1:8728  ←portfwd─  VM:8728 (RouterOS API)
+#
+#  guestfwd (VM→Host):
+#  VM wysyła na 192.168.168.1:25 → QEMU przekierowuje → 127.0.0.1:2526
+#  Na porcie 2526 nasłuchuje sfmail (msmtpd) → relay na Gmail/SMTP zewnętrzny
+#
+#  Dzięki guestfwd RouterOS może:
+#    /tool e-mail set address=192.168.168.1 port=25
+#    /tool e-mail send to=admin@gmail.com subject=Alert ...
+#
+NET_HOSTFWD="hostfwd=tcp::${PORT_SSH}-:22"
+NET_HOSTFWD+=",hostfwd=tcp::${PORT_SMTP_IN}-:25"
+NET_HOSTFWD+=",hostfwd=tcp::${PORT_WINBOX}-:8291"
+NET_HOSTFWD+=",hostfwd=tcp::${PORT_API}-:8728"
+
+# guestfwd: VM→Host SMTP relay (KLUCZOWE dla alertów email RouterOS)
+# Format: guestfwd=tcp:<VM_widzialny_IP>:<port>-<protocol>:127.0.0.1:<host_port>
+NET_GUESTFWD="guestfwd=tcp:${NET_HOST_GW}:25-tcp:127.0.0.1:${PORT_SMTP_RELAY}"
+
+QEMU_ARGS=(
+    "$QEMU_BIN"
+    -name "SecFerro-RouterOS"
+    -m "${VM_RAM}M"
+    $ACCEL
+    # Dysk — virtio szybszy niż IDE ale CHR obsługuje oba
+    -drive "file=${VM_DISK},if=ide,format=raw,cache=writeback"
+    # Sieć: user/slirp + portfwd + guestfwd dla SMTP relay
+    -netdev "user,id=net0,net=${NET_HOST_GW}/${NET_SUBNET_CIDR},dhcpstart=${NET_VM_IP},${NET_HOSTFWD},${NET_GUESTFWD}"
+    -device "virtio-net-pci,netdev=net0"
+    # Serial console zamiast VGA (RouterOS CHR = headless)
+    -nographic
+    -serial "file:${LOG_FILE}"
+    # QEMU monitor przez socket (socat do debugowania)
+    -monitor "unix:${MON_SOCK},server,nowait"
+    # Disable unnecessary hardware
+    -nodefaults
+    -no-reboot
+)
+
+# ── Start w tle ───────────────────────────────────────────────────────────────
+info "Uruchamiam VM..."
+info "  RAM:  ${VM_RAM}MB"
+info "  Disk: $VM_DISK"
+info "  Log:  $LOG_FILE"
+echo
+
+# Uruchom QEMU jako proces tła
+nohup "${QEMU_ARGS[@]}" </dev/null >>"${LOG_FILE}" 2>&1 &
+QEMU_PID=$!
+
+# Zapisz PID
+echo "$QEMU_PID" > "$PID_FILE"
+
+# Chwila na sprawdzenie czy QEMU w ogóle się uruchomił
+sleep 2
+if ! kill -0 "$QEMU_PID" 2>/dev/null; then
+    err "QEMU zakończył się natychmiast. Sprawdź log: $LOG_FILE"
+    rm -f "$PID_FILE"
+    tail -20 "$LOG_FILE" 2>/dev/null | sed 's/^/  /'
+    exit 1
+fi
+
+ok "VM uruchomiona (PID: $QEMU_PID)"
+echo
+
+echo -e "  ${B}Porty dostępowe (po ~30-60s boot RouterOS):${R}"
+echo -e "    SSH:    ${CYN}ssh -o StrictHostKeyChecking=no -p ${PORT_SSH} admin@127.0.0.1${R}"
+echo -e "    Winbox: ${CYN}127.0.0.1:${PORT_WINBOX}${R}"
+echo -e "    API:    ${CYN}127.0.0.1:${PORT_API}${R}"
+echo -e "    SMTP-relay OUT: ${CYN}sfmail start${R}  (uruchom relay na porcie ${PORT_SMTP_RELAY})"
+echo
+echo -e "  ${D}Log QEMU:  tail -f ${LOG_FILE}${R}"
+echo -e "  ${D}Monitor:   sflog live${R}"
+echo -e "  ${D}Status:    secferro status${R}"
+echo
+
+# ── Auto-uruchom relay SMTP jeśli skonfigurowany ─────────────────────────────
+MSMTPRC="$HOME/.msmtprc"
+if [[ -f "$MSMTPRC" ]] && grep -q "host" "$MSMTPRC" 2>/dev/null; then
+    info "Uruchamiam SMTP relay w tle (msmtpd na porcie $PORT_SMTP_RELAY)..."
+    sfmail start 2>/dev/null && ok "SMTP relay aktywny" || warn "SMTP relay nie uruchomił się (run: sfmail start)"
+fi

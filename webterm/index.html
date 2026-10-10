@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WebTerm — SSH terminal w przeglądarce, SecFerro Division Series.">
+  <title>WebTerm · SecFerro Division | ƑERRට</title>
+
+  <!--
+    Content-Security-Policy: script-src/connect-src ograniczone do znanych
+    hostów. Dodanie lokalnych assets/ferro-*.{css,js} nie rozszerza
+    powierzchni ataku — są 'self', tak jak config.js/app.js.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'none';
+    script-src 'self' https://cdn.jsdelivr.net;
+    style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
+    connect-src 'self' https://anonymousik-github-io-8mj1.onrender.com wss://anonymousik-github-io-8mj1.onrender.com;
+    img-src 'self';
+    base-uri 'none';
+    form-action 'none';
+  ">
+
+  <!--
+    SRI: wygeneruj i dodaj integrity="..." przed produkcyjnym deployem:
+      curl -s https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css | openssl dgst -sha384 -binary | openssl base64 -A
+    (analogicznie dla obu plików .js poniżej)
+  -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="assets/ferro-theme.css" />
+
+  <style>
+    html, body { height: 100%; }
+    #app { display: flex; flex-direction: column; min-height: 100%; }
+    #terminal-wrap { flex: 1; padding: 16px; max-width: 980px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+    #terminal { height: 60vh; min-height: 420px; padding: 12px; box-sizing: border-box; }
+    .xterm:focus-within { outline: 1px solid rgba(51, 209, 122, 0.4); outline-offset: 2px; }
+    noscript {
+      display: flex; height: 100%; align-items: center; justify-content: center;
+      color: var(--ferro-fg); font-family: sans-serif; text-align: center; padding: 2rem; box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <noscript>WebTerm wymaga włączonego JavaScript, aby połączyć się z sesją SSH.</noscript>
+
+  <div id="app">
+    <div id="terminal-wrap">
+      <div class="ferro-badge-row">
+        <span class="ferro-badge ferro-badge--gold">AUTH: ROOT_VERIFIED</span>
+        <span class="ferro-badge ferro-badge--green">ENV: PRODUCTION</span>
+        <span class="ferro-badge ferro-badge--purple">UPTIME: 99.8%</span>
+        <span class="ferro-badge ferro-badge--cyan">VIBE: GLITCH_GOLD</span>
+      </div>
+
+      <div class="ferro-window">
+        <div class="ferro-window__titlebar">
+          <span class="ferro-window__dot ferro-window__dot--red"></span>
+          <span class="ferro-window__dot ferro-window__dot--yellow"></span>
+          <span class="ferro-window__dot ferro-window__dot--green"></span>
+          <span>anonymousik@ferro:~/webterm</span>
+        </div>
+        <main id="terminal" aria-label="Emulator terminala" role="application"></main>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js" crossorigin="anonymous"></script>
+
+  <script src="assets/ferro-nav.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    // Mount shared site chrome — same header/drawer/status-bar as the
+    // rest of anonymousik.is-a.dev, with WebTerm marked as current.
+    window.FerroNav.mount({
+      currentId: "webterm",
+      breadcrumb: "ƑERRට / SCRIPTS / <strong>WEBTERM</strong>",
+    });
+  </script>
+</body>
+</html>

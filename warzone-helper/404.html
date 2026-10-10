@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<title>Warzone-Helper (NIE ZNALEZIONO STROMY!)</title>
+<script>
+  // GitHub Pages SPA redirect — zachowuje query string (config=...)
+  var l = window.location;
+  var path = l.pathname.slice(1);
+  var query = l.search ? '?' + l.search.slice(1).replace(/&/g,'&') : '';
+  var hash = l.hash ? '#' + l.hash.slice(1) : '';
+  l.replace(
+    l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+    '/' + (path ? '?p=/' + encodeURIComponent(path) : '') +
+    (query ? (path ? '&' : '?') + query.slice(1) : '') +
+    hash
+  );
+</script>
+</head>
+<body>
+  <p style="font-family:monospace;color:#c8ff4d;background:#0a0d0a;padding:2rem;">
+   Przekierowanie...na stronę główną projektu 
+  </p>
+</body>
+</html>

@@ -1,0 +1,698 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WARZ HQ | Tactical Configurator v5.2.0</title>
+    <meta name="description" content="Zaawansowany konfigurator i analizator statystyk dla Warzone.">
+    <meta name="author" content="Anonymousik (FerroART)">
+    
+    <!-- Typografia Black Ops (Teko, JetBrains Mono, Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700;800&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bo6: { bg: '#0a0d0a', panel: '#111611', border: '#1e281e', acid: '#a8ff3e', acidDim: 'rgba(168,255,62,0.15)' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        teko: ['Teko', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* CSS Reset & Scrollbar */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        body { background-color: #0a0d0a; color: #d4d4d8; overflow-x: hidden; }
+
+        /* BO6 Environment: Scanlines & Grid */
+        .ambient-scanlines {
+            position: fixed; inset: 0; pointer-events: none; z-index: 999;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%);
+            background-size: 100% 4px;
+            opacity: 0.6;
+        }
+        .tactical-grid {
+            position: fixed; inset: 0; pointer-events: none; z-index: -1;
+            background-image: linear-gradient(to right, rgba(168,255,62,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(168,255,62,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* BO6 Elements: Brackets, Clips, Skews */
+        .bo6-bracket {
+            position: relative; border: 1px solid #1e281e; background: #111611;
+        }
+        .bo6-bracket::before, .bo6-bracket::after {
+            content: ''; position: absolute; width: 12px; height: 12px; border-color: #a8ff3e; pointer-events: none; transition: all 0.3s;
+        }
+        .bo6-bracket::before { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; }
+        .bo6-bracket::after { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; }
+        .bo6-bracket:hover::before, .bo6-bracket:hover::after { width: 18px; height: 18px; }
+
+        .bo6-clip {
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+        }
+
+        .toggle-skew { transform: skewX(-15deg); }
+        .toggle-thumb { transform: skewX(15deg); transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Diamond Range Slider */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 18px; width: 18px;
+            background: #a8ff3e; cursor: pointer; margin-top: -7px;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            box-shadow: 0 0 15px rgba(168, 255, 62, 0.8);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: #1e281e;
+        }
+
+        /* SVG Rings */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: rotate(-90deg); transform-origin: 50% 50%;
+        }
+
+        /* Tooltip */
+        #global-tooltip {
+            position: absolute; z-index: 1000; pointer-events: none; opacity: 0;
+            transition: opacity 0.2s; transform: translate(-50%, -100%);
+        }
+
+        /* Animations */
+        @keyframes glitch { 0% { clip-path: inset(10% 0 80% 0); } 20% { clip-path: inset(80% 0 5% 0); } 40% { clip-path: inset(30% 0 40% 0); } 60% { clip-path: inset(50% 0 20% 0); } 80% { clip-path: inset(5% 0 80% 0); } 100% { clip-path: inset(40% 0 30% 0); } }
+        .glitch-hover:hover { animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- ENV LAYERS -->
+    <div class="ambient-scanlines"></div>
+    <div class="tactical-grid"></div>
+
+    <!-- TOOLTIP CONTAINER -->
+    <div id="global-tooltip" class="bg-bo6-panel border border-bo6-acid p-2 shadow-[0_0_15px_rgba(168,255,62,0.2)] text-white text-[10px] font-mono max-w-xs mt-[-10px]"></div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-container" class="fixed top-20 right-6 z-[100] p-4 bg-bo6-panel border border-bo6-acid text-bo6-acid font-mono text-xs font-bold bo6-clip shadow-[0_0_20px_rgba(168,255,62,0.2)] hidden flex items-center gap-3">
+        <i id="toast-icon" data-lucide="crosshair" class="w-4 h-4"></i><span id="toast-msg"></span>
+    </div>
+
+    <!-- TOP NAV (BO6 STYLE) -->
+    <nav class="w-full bg-bo6-panel border-b border-bo6-border px-4 py-2 flex flex-col md:flex-row justify-between items-center relative z-50">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-bo6-acid text-black flex items-center justify-center font-teko font-bold text-xl bo6-clip cursor-pointer glitch-hover" onclick="window.location.href='https://anonymousik.is-a.dev'">A</div>
+            <div>
+                <h1 class="font-teko text-2xl tracking-widest leading-none text-white">WARZ <span class="text-bo6-acid">HQ</span></h1>
+                <p class="font-mono text-[9px] text-zinc-500 tracking-[0.2em] -mt-1">SYS.VER.5.2.0 // ANONYMOUSIK</p>
+            </div>
+        </div>
+        
+        <!-- ROUTER TABS -->
+        <div class="flex gap-2 mt-4 md:mt-0 font-teko text-lg tracking-widest">
+            <button onclick="router('config')" id="tab-config" class="nav-tab px-6 py-1 text-bo6-acid border-b-2 border-bo6-acid bg-bo6-acidDim transition-all">KONFIGURATOR</button>
+            <button onclick="router('stats')" id="tab-stats" class="nav-tab px-6 py-1 text-zinc-500 border-b-2 border-transparent hover:text-white transition-all">STATYSTYKI (AI)</button>
+            <button onclick="router('changelog')" id="tab-changelog" class="nav-tab px-6 py-1 text-zinc-500 border-b-2 border-transparent hover:text-white transition-all">CHANGELOG</button>
+            <button onclick="router('support')" id="tab-support" class="nav-tab px-6 py-1 text-zinc-500 border-b-2 border-transparent hover:text-white transition-all">WSPARCIE</button>
+        </div>
+    </nav>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 py-8 relative z-10">
+
+        <!-- ==============================
+             WIDOK 1: KONFIGURATOR
+        =================================== -->
+        <section id="view-config" class="view-section animate-fadeIn block">
+            
+            <!-- PRESETS (BO6 CARDS) -->
+            <div class="mb-8 bo6-bracket p-6">
+                <div class="flex items-center gap-2 mb-4 font-teko text-xl tracking-wider text-bo6-acid">
+                    <i data-lucide="cpu" class="w-5 h-5"></i> METRYKI WYDAJNOŚCI & SZABLONY
+                </div>
+                <div id="presets-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- LEWA KOLUMNA: NAWIGACJA & QUICK TIPS -->
+                <aside class="lg:col-span-3 space-y-6">
+                    <!-- Dot Navigator (Diamonds) -->
+                    <div class="bo6-bracket p-4">
+                        <div class="flex flex-col gap-3 font-mono text-xs tracking-widest text-zinc-400" id="cat-navigator">
+                            <!-- JS Injected -->
+                        </div>
+                    </div>
+
+                    <!-- Platform Selector -->
+                    <div class="bo6-bracket p-4">
+                        <p class="font-teko text-lg text-bo6-acid mb-2 tracking-wider">PLATFORMA DOCELOWA</p>
+                        <div class="flex gap-2 font-mono text-[10px]" id="platform-selectors">
+                            <!-- JS Injected -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Tips Sidebar -->
+                    <div class="bo6-bracket p-4 bg-[#141b14]">
+                        <p class="font-teko text-lg text-white mb-2 tracking-wider flex items-center gap-2">
+                            <i data-lucide="lightbulb" class="w-4 h-4 text-bo6-acid"></i> RAPORT TAKTYCZNY
+                        </p>
+                        <div id="quick-tips-content" class="text-xs font-mono text-zinc-400 space-y-3 leading-relaxed">
+                            <!-- Dynamic Content -->
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- PRAWA KOLUMNA: SETTINGS GRID -->
+                <section class="lg:col-span-9">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 id="active-cat-title" class="font-teko text-3xl tracking-widest text-white uppercase">MODUŁ</h2>
+                        <div class="flex items-center gap-2 font-mono text-xs">
+                            <span class="text-zinc-500">TRYB OPISU:</span>
+                            <div class="flex bg-bo6-panel border border-bo6-border p-1">
+                                <button id="btn-mode-beg" class="px-3 py-1 bg-bo6-acid text-black font-bold">START</button>
+                                <button id="btn-mode-adv" class="px-3 py-1 text-zinc-500 hover:text-white">PRO</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="settings-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- JS Injected -->
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- ==============================
+             WIDOK 2: STATYSTYKI (AI)
+        =================================== -->
+        <section id="view-stats" class="view-section animate-fadeIn hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- OPERATOR IDENTITY -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bo6-bracket p-6">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-16 h-16 bg-bo6-border bo6-clip flex items-center justify-center">
+                                <i data-lucide="user" class="w-8 h-8 text-bo6-acid"></i>
+                            </div>
+                            <div>
+                                <input type="text" id="stat-callsign" value="GHOST_OP_01" class="bg-transparent font-teko text-3xl text-white outline-none w-full border-b border-zinc-800 focus:border-bo6-acid transition-colors">
+                                <p class="font-mono text-[10px] text-zinc-500 tracking-widest mt-1">OPERATOR CALLSIGN</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4 font-mono text-xs text-zinc-400">
+                            <div class="flex justify-between items-center border-b border-bo6-border pb-2">
+                                <span>Platforma Połączenia:</span>
+                                <select id="stat-platform" class="bg-transparent text-bo6-acid font-bold outline-none text-right appearance-none" onchange="generateAIAdvice()">
+                                    <option value="PSN">PSN Network</option>
+                                    <option value="XBOX">Xbox Live</option>
+                                    <option value="BATTLE">Battle.net</option>
+                                    <option value="STEAM">Steam</option>
+                                </select>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-bo6-border pb-2">
+                                <span>Ranga Sezonowa:</span>
+                                <input type="text" value="Iridescent" class="bg-transparent text-white font-bold text-right outline-none w-24">
+                            </div>
+                            <div class="flex justify-between items-center border-b border-bo6-border pb-2">
+                                <span>Czas Gry (H):</span>
+                                <input type="number" id="stat-playtime" value="450" class="bg-transparent text-white font-bold text-right outline-none w-20">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI TACTICAL ADVICE -->
+                    <div class="bo6-bracket p-6 border-bo6-acid relative overflow-hidden">
+                        <div class="absolute inset-0 bg-bo6-acid opacity-5 pointer-events-none"></div>
+                        <h3 class="font-teko text-2xl text-bo6-acid tracking-wider mb-4 flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-5 h-5"></i> ANALIZA AI (A.C.I.D)
+                        </h3>
+                        <div id="ai-advice-container" class="space-y-3 font-mono text-[11px] leading-relaxed text-zinc-300">
+                            <!-- JS Injected -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMBAT RECORD (METRICS) -->
+                <div class="lg:col-span-8">
+                    <div class="bo6-bracket p-6 h-full">
+                        <h2 class="font-teko text-3xl tracking-widest text-white uppercase mb-8 border-b border-bo6-border pb-2">COMBAT RECORD</h2>
+                        
+                        <!-- ArcRings Grid -->
+                        <div class="grid grid-cols-3 gap-6 mb-10 text-center">
+                            <!-- K/D Ratio -->
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-24 h-24 mb-3">
+                                    <svg class="w-24 h-24 transform -rotate-90">
+                                        <circle cx="48" cy="48" r="40" stroke="#1e281e" stroke-width="6" fill="none" />
+                                        <circle id="arc-kd" cx="48" cy="48" r="40" stroke="#a8ff3e" stroke-width="6" fill="none" stroke-dasharray="251.2" stroke-dashoffset="120" stroke-linecap="square" class="transition-all duration-700" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <input type="number" id="stat-kd" step="0.01" value="1.25" class="bg-transparent font-teko text-2xl text-white font-bold text-center w-16 outline-none" onchange="updateStatsUI()">
+                                    </div>
+                                </div>
+                                <span class="font-mono text-[10px] tracking-widest text-zinc-500">K/D RATIO</span>
+                            </div>
+
+                            <!-- Win Rate -->
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-24 h-24 mb-3">
+                                    <svg class="w-24 h-24 transform -rotate-90">
+                                        <circle cx="48" cy="48" r="40" stroke="#1e281e" stroke-width="6" fill="none" />
+                                        <circle id="arc-win" cx="48" cy="48" r="40" stroke="#fbbf24" stroke-width="6" fill="none" stroke-dasharray="251.2" stroke-dashoffset="180" stroke-linecap="square" class="transition-all duration-700" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center flex-col">
+                                        <div class="flex items-baseline">
+                                            <input type="number" id="stat-win" value="8" class="bg-transparent font-teko text-2xl text-white font-bold text-center w-8 outline-none" onchange="updateStatsUI()">
+                                            <span class="font-teko text-lg text-zinc-500">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="font-mono text-[10px] tracking-widest text-zinc-500">WIN RATE</span>
+                            </div>
+
+                            <!-- Gulag Win -->
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-24 h-24 mb-3">
+                                    <svg class="w-24 h-24 transform -rotate-90">
+                                        <circle cx="48" cy="48" r="40" stroke="#1e281e" stroke-width="6" fill="none" />
+                                        <circle id="arc-gulag" cx="48" cy="48" r="40" stroke="#f87171" stroke-width="6" fill="none" stroke-dasharray="251.2" stroke-dashoffset="60" stroke-linecap="square" class="transition-all duration-700" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center flex-col">
+                                        <div class="flex items-baseline">
+                                            <input type="number" id="stat-gulag" value="65" class="bg-transparent font-teko text-2xl text-white font-bold text-center w-10 outline-none" onchange="updateStatsUI()">
+                                            <span class="font-teko text-lg text-zinc-500">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="font-mono text-[10px] tracking-widest text-zinc-500">GULAG WIN</span>
+                            </div>
+                        </div>
+
+                        <!-- SegBars -->
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between items-end mb-2 font-mono text-[10px] tracking-widest text-zinc-400">
+                                    <span>HEADSHOT ACCURACY</span>
+                                    <div class="flex items-center gap-1"><input type="number" id="stat-hs" value="22" class="bg-transparent text-bo6-acid font-bold w-6 text-right outline-none" onchange="updateStatsUI()">%</div>
+                                </div>
+                                <div class="flex gap-1 h-3" id="seg-hs">
+                                    <!-- JS Injected 10 segments -->
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between items-end mb-2 font-mono text-[10px] tracking-widest text-zinc-400">
+                                    <span>AVERAGE DAMAGE (PER MATCH)</span>
+                                    <div class="flex items-center gap-1"><input type="number" id="stat-dmg" value="2450" class="bg-transparent text-amber-500 font-bold w-12 text-right outline-none" onchange="updateStatsUI()"> DMG</div>
+                                </div>
+                                <div class="flex gap-1 h-3" id="seg-dmg">
+                                    <!-- JS Injected 10 segments -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================
+             WIDOK 3: CHANGELOG
+        =================================== -->
+        <section id="view-changelog" class="view-section animate-fadeIn hidden">
+            <div class="max-w-4xl mx-auto bo6-bracket p-8">
+                <h2 class="font-teko text-4xl text-white tracking-widest mb-6">SYS.CHANGELOG</h2>
+                <div class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-zinc-800 before:to-transparent">
+                    
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border border-bo6-acid bg-bo6-panel text-bo6-acid shadow-[0_0_15px_rgba(168,255,62,0.3)] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 font-mono text-xs">v5.2</div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-bo6-border bg-bo6-panel">
+                            <time class="font-mono text-[10px] text-bo6-acid mb-1 block">CZERWIEC 2026</time>
+                            <h3 class="font-teko text-xl text-white tracking-wider mb-2">BO6 Tactical Overhaul</h3>
+                            <ul class="font-mono text-xs text-zinc-400 space-y-1 list-disc list-inside ml-4 marker:text-bo6-acid">
+                                <li>Kompletny redesign interfejsu w oparciu o silnik gry BO6.</li>
+                                <li>Dodano widok Statystyk z wbudowanym asystentem A.C.I.D. (AI).</li>
+                                <li>Wdrożono system podpowiedzi Tooltip.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border border-zinc-700 bg-bo6-panel text-zinc-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 font-mono text-xs">v5.1</div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-bo6-border bg-bo6-panel">
+                            <time class="font-mono text-[10px] text-zinc-500 mb-1 block">GRUDZIEŃ 2025</time>
+                            <h3 class="font-teko text-xl text-zinc-300 tracking-wider mb-2">Stabilizacja ZSSP</h3>
+                            <ul class="font-mono text-xs text-zinc-500 space-y-1 list-disc list-inside ml-4">
+                                <li>Naprawiono błędy Unicode Base64.</li>
+                                <li>Dodano obsługę iFrame Clipboard API.</li>
+                                <li>Specjalne pozdrowienia w stopce.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================
+             WIDOK 4: SUPPORT
+        =================================== -->
+        <section id="view-support" class="view-section animate-fadeIn hidden">
+            <div class="max-w-3xl mx-auto text-center space-y-6">
+                <i data-lucide="life-buoy" class="w-16 h-16 text-bo6-acid mx-auto"></i>
+                <h2 class="font-teko text-5xl text-white tracking-widest">WSPARCIE TECHNICZNE</h2>
+                <p class="font-mono text-xs text-zinc-400 max-w-xl mx-auto leading-relaxed">System WARZ HQ jest narzędziem Open-Source służącym do maksymalizacji wydajności rozgrywki. W przypadku znalezienia błędów konfiguracyjnych, prosimy o kontakt poprzez repozytorium GitHub.</p>
+                <div class="flex justify-center gap-4 pt-6">
+                    <a href="https://github.com/Anonymousik" target="_blank" rel="noopener noreferrer" class="bo6-clip bg-bo6-acid text-black font-teko text-xl px-8 py-2 tracking-widest flex items-center gap-2 hover:bg-white transition-colors">
+                        <i data-lucide="github" class="w-5 h-5"></i> ZGŁOŚ BŁĄD (ISSUE)
+                    </a>
+                    <a href="mailto:dev@is-a.dev" class="bo6-clip bg-zinc-800 text-white border border-zinc-700 font-teko text-xl px-8 py-2 tracking-widest flex items-center gap-2 hover:bg-zinc-700 transition-colors">
+                        <i data-lucide="mail" class="w-5 h-5"></i> KONTAKT E-MAIL
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================
+             WIDOK 5: 404
+        =================================== -->
+        <section id="view-404" class="view-section animate-fadeIn hidden">
+            <div class="max-w-2xl mx-auto text-center space-y-4 pt-20">
+                <h2 class="font-teko text-[150px] text-bo6-acid leading-none tracking-tighter opacity-80" style="text-shadow: 0 0 40px rgba(168,255,62,0.4);">404</h2>
+                <p class="font-mono text-sm text-zinc-400 tracking-widest">ERROR: DANE OPERACYJNE NIE ZOSTAŁY ODNALEZIONE W BAZIE.</p>
+                <button onclick="router('config')" class="mt-8 bo6-clip bg-bo6-border text-white border border-zinc-700 font-teko text-xl px-10 py-2 tracking-widest hover:text-bo6-acid transition-colors">
+                    POWRÓT DO CENTRALI
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-bo6-border bg-bo6-panel py-8 px-4 mt-auto relative z-10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div>
+                <h3 class="text-white font-teko text-xl tracking-widest flex items-center justify-center md:justify-start gap-2">
+                    <div class="w-5 h-5 bg-bo6-acid text-black flex items-center justify-center font-bold text-[10px] bo6-clip">A</div>
+                    ANONYMOUSIK
+                </h3>
+                <p class="text-bo6-acid text-[10px] font-mono mt-2 uppercase tracking-widest flex items-center justify-center md:justify-start gap-1.5 opacity-80">
+                    <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> Pozdrowienia dla Żbika - Pro Playera Warzone!
+                </p>
+            </div>
+            <div class="text-zinc-600 text-[10px] uppercase font-mono tracking-widest font-bold">© 2026 ANONYMOUSIK.IS-A.DEV // CLASSIFIED</div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- 1. CORE DATA ---
+        const INITIAL_VALUES = {
+            layout: 'Taktyczny', vib: false, trig: false, sens: 1.6, dz_l_min: 3, dz_l_max: 50, dz_r_max: 99, dz_trig: 0,
+            ads_low: 0.80, ads_high: 1.00, trans: 'Natychmiastowy', curve: 'Dynamiczny', assist: true,
+            sprint: 'Auto. Sprint Taktyczny', sprint_del: 0, slide: 'Hybrydowe', para: false, mantle: false, armor: 'Zastosuj wszystkie', interact: 'Priorytet interakcji',
+            fov: 110, ads_fov: 'Zależne (Affected)', w_fov: 'Szerokie (Wide)', cas: 90, blur: false, shake: 50,
+            filter: 'Filtr 2 (Oba)', hud: 'Minimalne (Środek)', cross: 'Większa / Żółta', radar: 'Kwadrat / Kontury Wł.', audio: 'Sucker Punch', mono: false
+        };
+
+        const METADATA = {
+            controller: { title: 'KONTROLER & RUCH', icon: 'gamepad-2', items: [
+                { id: 'layout', name: 'Układ przycisków', type: 'select', options: ['Domyślny', 'Taktyczny'], beg: 'Standardowy układ.', adv: 'Taktyczny przenosi wślizg pod R3.', tooltip: 'Zmienia fizyczne przypisanie przycisków skoku i kucania.' },
+                { id: 'vib', name: 'Wibracje pada', type: 'toggle', beg: 'Wyłącz dla celności.', adv: 'Niszczą pamięć mięśniową.', tooltip: 'Silniki wibracyjne wprowadzają sztuczne odchylenia celownika podczas ostrzału.' },
+                { id: 'sens', name: 'Czułość (Pion/Poziom)', type: 'slider', min: 0.5, max: 4.0, step: 0.1, beg: '1.6 to baza.', adv: 'Balans dla Rotational AA.', tooltip: 'Determinuje prędkość obrotu kamery przy maksymalnym wychyleniu gałki.' },
+                { id: 'dz_l_min', name: 'Min. strefa lewa', type: 'slider', min: 0, max: 20, step: 1, beg: 'Zabezpiecza przed driftem.', adv: 'Niższa wartość szybciej aktywuje strafe.', tooltip: 'Ilość ruchu gałki ignorowana przez grę w centrum osi.' }
+            ]},
+            aiming: { title: 'CELOWANIE', icon: 'crosshair', items: [
+                { id: 'ads_low', name: 'Mnożnik ADS (Low)', type: 'slider', min: 0.5, max: 1.5, step: 0.05, beg: 'Spowalnia celownik (0.80).', adv: 'Wybacza błędy w śledzeniu.', tooltip: 'Redukcja czułości bazowej podczas korzystania z przyrządów celowniczych.' },
+                { id: 'curve', name: 'Krzywa reakcji', type: 'select', options: ['Standardowa', 'Liniowa', 'Dynamiczna'], beg: 'Użyj Dynamicznej.', adv: 'S-Shape optymalizuje asystę.', tooltip: 'Algorytm przeliczania fizycznego wejścia analogu na ruch wirtualny.' },
+                { id: 'assist', name: 'Asysta celowania', type: 'toggle', beg: 'Włączone.', adv: 'Aim Assist jest włączony.', tooltip: 'Magnetyzm celownika aktywowany przy przechodzeniu przez hitbox wroga.' }
+            ]},
+            graphics: { title: 'GRAFIKA', icon: 'monitor', items: [
+                { id: 'fov', name: 'Pole widzenia (FOV)', type: 'slider', min: 80, max: 120, step: 5, beg: 'Zalecane 110.', adv: 'Zmniejsza visual recoil.', tooltip: 'Zwiększa kąt widzenia kosztem wydajności procesora graficznego.' },
+                { id: 'ads_fov', name: 'FOV Celownika', type: 'select', options: ['Niezależne', 'Zależne (Affected)'], beg: 'Affected (Zależne).', adv: 'Skaluje odrzut optyki do globalnego FOV.', tooltip: 'Zapobiega drastycznemu "skakaniu" broni na ekranie po przybliżeniu.' }
+            ]}
+        };
+
+        const PRESETS = {
+            performance: { id: 'performance', name: 'PRO PERFORMANCE', metrics: { fps: '120', lag: '2.8ms' }, overrides: { fov: 110, sens: 1.8, dz_l_min: 2, cas: 85 } },
+            balanced: { id: 'balanced', name: 'META BALANCED', metrics: { fps: '60+', lag: '4.2ms' }, overrides: { fov: 115, sens: 1.6, dz_l_min: 4, cas: 90 } },
+            movement: { id: 'movement', name: 'AGILE DEMON', metrics: { fps: '120', lag: '3.1ms' }, overrides: { fov: 120, sens: 2.2, dz_l_min: 3, cas: 95 } }
+        };
+
+        // --- 2. STATE ---
+        let appState = {
+            view: 'config', // config, stats, changelog, support, 404
+            config: { ...INITIAL_VALUES },
+            activeTab: 'controller',
+            activePreset: 'balanced',
+            activePlatform: 'PS5',
+            isAdvanced: false,
+            stats: { kd: 1.25, win: 8, gulag: 65, hs: 22, dmg: 2450 }
+        };
+
+        const DOM = {
+            tooltip: document.getElementById('global-tooltip')
+        };
+
+        let toastTimeout;
+
+        // --- 3. CORE LOGIC ---
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-container');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.remove('hidden');
+            if(toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        // Router
+        window.router = (viewId) => {
+            const views = ['config', 'stats', 'changelog', 'support', '404'];
+            if(!views.includes(viewId)) viewId = '404';
+            
+            appState.view = viewId;
+            
+            // Hide all, show targeted
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if(el) el.classList.toggle('hidden', v !== viewId);
+            });
+
+            // Update Nav Visuals
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                const isMatch = tab.id === `tab-${viewId}`;
+                tab.className = `nav-tab px-6 py-1 transition-all ${isMatch ? 'text-bo6-acid border-b-2 border-bo6-acid bg-bo6-acidDim' : 'text-zinc-500 border-b-2 border-transparent hover:text-white'}`;
+            });
+
+            if(viewId === 'stats') { updateStatsUI(); }
+        };
+
+        // Rendering Configurator
+        function renderConfigurator() {
+            // Category Nav
+            const catNav = document.getElementById('cat-navigator');
+            catNav.innerHTML = Object.keys(METADATA).map((key, idx) => `
+                <div onclick="switchTab('${key}')" class="flex items-center gap-3 cursor-pointer group">
+                    <svg width="10" height="10" viewBox="0 0 10 10" class="${appState.activeTab === key ? 'fill-bo6-acid' : 'fill-zinc-800 group-hover:fill-zinc-600'} transition-colors"><polygon points="5,0 10,5 5,10 0,5"/></svg>
+                    <span class="${appState.activeTab === key ? 'text-bo6-acid font-bold' : 'group-hover:text-zinc-300'} transition-colors">0${idx+1}. ${METADATA[key].title}</span>
+                </div>
+            `).join('');
+
+            // Platform Selector
+            document.getElementById('platform-selectors').innerHTML = ['PS4', 'PS5', 'PC'].map(p => `
+                <button onclick="setPlatform('${p}')" class="px-2 py-0.5 border ${appState.activePlatform === p ? 'border-bo6-acid text-bo6-acid bg-bo6-acidDim' : 'border-zinc-800 text-zinc-500 hover:text-white'} transition-all">${p}</button>
+            `).join('');
+
+            // Settings Grid
+            const cat = METADATA[appState.activeTab];
+            document.getElementById('active-cat-title').innerHTML = `<i data-lucide="${cat.icon}" class="inline w-6 h-6 text-bo6-acid mr-2 -mt-1"></i>${cat.title}`;
+
+            // Quick Tips dynamic update
+            document.getElementById('quick-tips-content').innerHTML = cat.items.map(item => `
+                <div class="border-l-2 border-bo6-border pl-3 py-1">
+                    <span class="text-bo6-acid block">${item.name}</span>
+                    <span class="text-[10px] text-zinc-500">${appState.isAdvanced ? item.adv : item.beg}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('settings-grid').innerHTML = cat.items.map(item => {
+                const val = appState.config[item.id];
+                const info = appState.isAdvanced ? item.adv : item.beg;
+                
+                let inputHTML = '';
+                if(item.type === 'slider') {
+                    inputHTML = `<input type="range" min="${item.min}" max="${item.max}" step="${item.step}" value="${val}" oninput="updateSetting('${item.id}', this.value)" class="w-full mt-2">
+                                 <div class="flex justify-between text-[9px] font-mono text-zinc-600 mt-1"><span>${item.min}</span><span>${item.max}</span></div>`;
+                } else if(item.type === 'toggle') {
+                    inputHTML = `<div onclick="updateSetting('${item.id}', ${!val})" class="w-12 h-5 bg-zinc-900 border border-zinc-700 toggle-skew cursor-pointer flex items-center p-0.5">
+                                    <div class="w-1/2 h-full bg-bo6-acid toggle-thumb" style="${val ? 'margin-left: 50%' : 'margin-left: 0; background: #3f3f46'}"></div>
+                                 </div>`;
+                } else if(item.type === 'select') {
+                    inputHTML = `<select onchange="updateSetting('${item.id}', this.value)" class="bg-zinc-900 border border-zinc-800 text-bo6-acid font-mono text-xs p-1 outline-none w-full mt-2">
+                                    ${item.options.map(o => `<option value="${o}" ${o === val ? 'selected' : ''}>${o}</option>`).join('')}
+                                 </select>`;
+                }
+
+                return `
+                    <div class="bo6-bracket p-4 bg-bo6-panel relative" data-tooltip="${item.tooltip}">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="font-teko text-lg text-white tracking-widest">${item.name}</span>
+                            <span class="font-mono text-[10px] text-bo6-acid font-bold border border-bo6-border px-2 py-0.5">${typeof val === 'boolean' ? (val?'WŁ':'WYŁ') : val}</span>
+                        </div>
+                        <p class="font-mono text-[10px] text-zinc-500 mb-3">${info}</p>
+                        ${inputHTML}
+                    </div>
+                `;
+            }).join('');
+            
+            lucide.createIcons();
+            renderPresets();
+        }
+
+        function renderPresets() {
+            document.getElementById('presets-container').innerHTML = Object.values(PRESETS).map(p => `
+                <div onclick="applyPreset('${p.id}')" class="border p-3 cursor-pointer transition-all ${appState.activePreset === p.id ? 'border-bo6-acid bg-bo6-acidDim' : 'border-zinc-800 bg-[#111611] hover:border-zinc-600'}">
+                    <div class="font-teko text-lg ${appState.activePreset === p.id ? 'text-bo6-acid' : 'text-zinc-400'}">${p.name}</div>
+                    <div class="flex gap-3 font-mono text-[9px] text-zinc-500 mt-1">
+                        <span>FPS: <span class="text-white">${p.metrics.fps}</span></span>
+                        <span>LAG: <span class="text-white">${p.metrics.lag}</span></span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Interakcje Globalne
+        window.switchTab = (tab) => { appState.activeTab = tab; renderConfigurator(); };
+        window.setPlatform = (p) => { appState.activePlatform = p; renderConfigurator(); showToast(`Platforma zmieniona na: ${p}`); };
+        window.updateSetting = (key, val) => { appState.config[key] = isNaN(val) || typeof val === 'boolean' ? val : parseFloat(val); appState.activePreset = 'custom'; renderConfigurator(); };
+        window.applyPreset = (id) => { appState.activePreset = id; appState.config = { ...INITIAL_VALUES, ...PRESETS[id].overrides }; renderConfigurator(); showToast('Szablon załadowany.'); };
+
+        // Tryby Start/Pro
+        document.getElementById('btn-mode-beg').addEventListener('click', () => { appState.isAdvanced = false; document.getElementById('btn-mode-beg').className='px-3 py-1 bg-bo6-acid text-black font-bold'; document.getElementById('btn-mode-adv').className='px-3 py-1 text-zinc-500 hover:text-white'; renderConfigurator(); });
+        document.getElementById('btn-mode-adv').addEventListener('click', () => { appState.isAdvanced = true; document.getElementById('btn-mode-adv').className='px-3 py-1 bg-bo6-acid text-black font-bold'; document.getElementById('btn-mode-beg').className='px-3 py-1 text-zinc-500 hover:text-white'; renderConfigurator(); });
+
+        // --- 4. STATS & AI LOGIC ---
+        
+        function setArcRing(id, value, max) {
+            const circle = document.getElementById(`arc-${id}`);
+            if(!circle) return;
+            const circ = 251.2; // 2 * pi * r (r=40)
+            const percent = Math.min(Math.max(value / max, 0), 1);
+            circle.style.strokeDashoffset = circ - (percent * circ);
+        }
+
+        function renderSegBar(id, value, max, colorClass) {
+            const container = document.getElementById(`seg-${id}`);
+            if(!container) return;
+            const segments = 10;
+            const activeSegs = Math.round((value / max) * segments);
+            let html = '';
+            for(let i=0; i<segments; i++) {
+                html += `<div class="flex-1 ${i < activeSegs ? colorClass : 'bg-zinc-900 border border-zinc-800'} skew-x-[-15deg] transition-all duration-500"></div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        window.updateStatsUI = () => {
+            // Read inputs
+            const kd = parseFloat(document.getElementById('stat-kd').value) || 0;
+            const win = parseFloat(document.getElementById('stat-win').value) || 0;
+            const gulag = parseFloat(document.getElementById('stat-gulag').value) || 0;
+            const hs = parseFloat(document.getElementById('stat-hs').value) || 0;
+            const dmg = parseFloat(document.getElementById('stat-dmg').value) || 0;
+
+            appState.stats = { kd, win, gulag, hs, dmg };
+
+            // Update Rings
+            setArcRing('kd', kd, 4.0); // max scale 4.0 KD
+            setArcRing('win', win, 30); // max scale 30% win rate
+            setArcRing('gulag', gulag, 100);
+
+            // Update SegBars
+            renderSegBar('hs', hs, 50, 'bg-bo6-acid shadow-[0_0_8px_rgba(168,255,62,0.5)]'); // max 50%
+            renderSegBar('dmg', dmg, 5000, 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'); // max 5000 dmg
+
+            generateAIAdvice();
+        };
+
+        window.generateAIAdvice = () => {
+            const s = appState.stats;
+            let advice = [];
+
+            if(s.kd < 1.0) advice.push("KD Poniżej 1.00: Zmniejsz Czułość drążków (np. do 1.2) i zwiększ Mnożnik ADS do precyzyjniejszego trackingu.");
+            else if(s.kd > 2.0) advice.push("KD Wysokie (Pro): Przyspiesz strefy martwe do 2-3 i włącz Hybrydowy Wślizg pod agresywny movement.");
+
+            if(s.hs < 15) advice.push("Niskie Headshot %: Używaj filtra kolorów 2 aby lepiej widzieć kontrasty głów postaci w cieniach.");
+            
+            if(s.dmg > 3000 && s.win < 5) advice.push("Damage High / Win Low: Dużo walczysz, mało wygrywasz. Ogranicz użycie sprintu taktycznego w ciasnych pomieszczeniach.");
+
+            if(advice.length === 0) advice.push("Statystyki zbalansowane. Utrzymuj obecny profil (Meta Balanced).");
+
+            const plat = document.getElementById('stat-platform').value;
+            if(plat === 'PSN' || plat === 'XBOX') advice.push("Konsola wykryta: Skalowanie FidelityFX CAS jest dla Ciebie krytyczne. Trzymaj wartość wokół 90.");
+
+            document.getElementById('ai-advice-container').innerHTML = advice.map(a => `
+                <div class="flex gap-2">
+                    <span class="text-bo6-acid">>></span>
+                    <span>${a}</span>
+                </div>
+            `).join('');
+        };
+
+        // --- TOOLTIP DELEGATION (O(1) Memory footprint) ---
+        document.addEventListener('mouseover', (e) => {
+            const target = e.target.closest('[data-tooltip]');
+            if(target) {
+                DOM.tooltip.textContent = target.getAttribute('data-tooltip');
+                DOM.tooltip.style.opacity = '1';
+                
+                // Track mouse position
+                const onMove = (me) => {
+                    DOM.tooltip.style.left = me.pageX + 'px';
+                    DOM.tooltip.style.top = (me.pageY - 15) + 'px';
+                };
+                document.addEventListener('mousemove', onMove);
+                
+                target.addEventListener('mouseleave', () => {
+                    DOM.tooltip.style.opacity = '0';
+                    document.removeEventListener('mousemove', onMove);
+                }, { once: true });
+            }
+        });
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderConfigurator();
+            router('config');
+            setTimeout(() => setArcRing('kd', 1.25, 4.0), 100); // Trigger initial ring animation
+        });
+
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,321 @@
+/**
+ * ferro-theme.css
+ * Shared design tokens + component styles matching anonymousik.is-a.dev
+ * (SecFerro Division visual language: dark terminal, green/gold accents).
+ *
+ * PROVENANCE NOTE (be honest about confidence level, per AVS convention):
+ * - Copy, section labels, nav structure, and status-bar format below are
+ *   pulled verbatim from a live fetch of https://anonymousik.is-a.dev/ —
+ *   these are exact.
+ * - Colors and font-family are APPROXIMATED from the phone screenshot, since
+ *   fetching the page returns text content, not the compiled stylesheet.
+ *   Every visual value lives in the :root block below as a single edit
+ *   point. If you paste the homepage's actual CSS (or its file path in the
+ *   repo), these get corrected to exact values in one pass.
+ */
+
+:root {
+  /* --- Approximated from screenshot — verify against real site CSS --- */
+  --ferro-bg: #06090a;
+  --ferro-bg-panel: #0b0f0e;
+  --ferro-border: #1c2b22;
+  --ferro-green: #33d17a;
+  --ferro-green-dim: #1f7a48;
+  --ferro-gold: #d4a017;
+  --ferro-purple: #a371f7;
+  --ferro-cyan: #39c5ff;
+  --ferro-red: #ff5f57;
+  --ferro-yellow: #ffbd2e;
+  --ferro-fg: #c9d1d9;
+  --ferro-fg-dim: #6e7a76;
+  --ferro-font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* --- Structural (safe to keep as-is) --- */
+  --ferro-radius: 6px;
+  --ferro-nav-height: 56px;
+}
+
+/* Progressive enhancement: smooth cross-page transitions on supporting
+   browsers (Chromium-based, 2024+). Unsupported browsers silently ignore
+   this at-rule and get a normal instant navigation — no fallback JS
+   router needed, no risk of breakage. This is what makes tab-switching
+   between site sections feel "dynamic" without building an SPA. */
+@view-transition {
+  navigation: auto;
+}
+
+* { box-sizing: border-box; }
+
+body.ferro-themed {
+  margin: 0;
+  background: var(--ferro-bg);
+  color: var(--ferro-fg);
+  font-family: var(--ferro-font-mono);
+}
+
+/* ---------------------------------------------------------------------
+   Top navigation bar
+   --------------------------------------------------------------------- */
+.ferro-nav {
+  view-transition-name: ferro-nav; /* persists smoothly across navigations */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--ferro-nav-height);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--ferro-border);
+  background: var(--ferro-bg);
+}
+
+.ferro-nav__brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--ferro-fg);
+}
+
+.ferro-nav__logo {
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.05em;
+  color: var(--ferro-fg);
+}
+
+.ferro-nav__site {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--ferro-fg-dim);
+  text-transform: uppercase;
+}
+
+.ferro-nav__menu-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ferro-green-dim);
+  border-radius: var(--ferro-radius);
+  background: rgba(51, 209, 122, 0.08);
+  color: var(--ferro-green);
+  cursor: pointer;
+}
+.ferro-nav__menu-btn:hover { background: rgba(51, 209, 122, 0.16); }
+.ferro-nav__menu-btn svg { width: 18px; height: 18px; }
+
+/* Slide-out drawer, mirrors the real site's Navigation / SecFerro Division
+   / External grouping */
+.ferro-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+}
+.ferro-drawer.is-open { display: block; }
+
+.ferro-drawer__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.ferro-drawer__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(300px, 85vw);
+  height: 100%;
+  background: var(--ferro-bg-panel);
+  border-left: 1px solid var(--ferro-border);
+  padding: 24px 20px;
+  overflow-y: auto;
+}
+
+.ferro-drawer__group-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ferro-fg-dim);
+  margin: 20px 0 8px;
+}
+.ferro-drawer__group-title:first-child { margin-top: 0; }
+
+.ferro-drawer__link {
+  display: block;
+  padding: 8px 0;
+  color: var(--ferro-fg);
+  text-decoration: none;
+  font-size: 0.95rem;
+  border-bottom: 1px solid transparent;
+}
+.ferro-drawer__link:hover { color: var(--ferro-green); }
+.ferro-drawer__link.is-current {
+  color: var(--ferro-green);
+  font-weight: 700;
+}
+.ferro-drawer__link.is-current::after {
+  content: " · current";
+  color: var(--ferro-fg-dim);
+  font-weight: 400;
+  font-size: 0.8em;
+}
+
+/* ---------------------------------------------------------------------
+   Status bar (SESSION / SYS_TIME / ENV) — same format as homepage
+   --------------------------------------------------------------------- */
+.ferro-statusbar {
+  text-align: center;
+  padding: 14px 12px 6px;
+  font-size: 0.8rem;
+  color: var(--ferro-fg-dim);
+  letter-spacing: 0.08em;
+}
+.ferro-statusbar strong { color: var(--ferro-fg); font-weight: 600; }
+
+.ferro-badge-online {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px auto 0;
+  padding: 6px 16px;
+  border: 1px solid var(--ferro-green-dim);
+  border-radius: var(--ferro-radius);
+  color: var(--ferro-green);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  width: fit-content;
+}
+.ferro-badge-online__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ferro-green);
+  box-shadow: 0 0 6px var(--ferro-green);
+}
+
+.ferro-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+.ferro-badge {
+  padding: 6px 14px;
+  border-radius: var(--ferro-radius);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  border: 1px solid;
+}
+.ferro-badge--gold   { color: var(--ferro-gold);   border-color: var(--ferro-gold); }
+.ferro-badge--green  { color: var(--ferro-green);  border-color: var(--ferro-green-dim); }
+.ferro-badge--purple { color: var(--ferro-purple); border-color: var(--ferro-purple); }
+.ferro-badge--cyan   { color: var(--ferro-cyan);   border-color: var(--ferro-cyan); }
+
+/* ---------------------------------------------------------------------
+   Breadcrumb (page identity, replaces homepage's giant hero on subpages)
+   --------------------------------------------------------------------- */
+.ferro-breadcrumb {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ferro-fg-dim);
+  padding: 4px 0 18px;
+}
+.ferro-breadcrumb strong { color: var(--ferro-green); }
+
+/* ---------------------------------------------------------------------
+   Terminal window chrome (matches homepage's embedded terminal panel)
+   --------------------------------------------------------------------- */
+.ferro-window {
+  border: 1px solid var(--ferro-border);
+  border-radius: var(--ferro-radius);
+  background: var(--ferro-bg-panel);
+  overflow: hidden;
+}
+.ferro-window__titlebar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ferro-border);
+  font-size: 0.8rem;
+  color: var(--ferro-fg-dim);
+}
+.ferro-window__dot { width: 11px; height: 11px; border-radius: 50%; }
+.ferro-window__dot--red { background: var(--ferro-red); }
+.ferro-window__dot--yellow { background: var(--ferro-yellow); }
+.ferro-window__dot--green { background: var(--ferro-green); }
+
+/* ---------------------------------------------------------------------
+   Login overlay (WebTerm-specific, themed to match)
+   --------------------------------------------------------------------- */
+.ferro-login-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 9, 10, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-family: var(--ferro-font-mono);
+}
+.ferro-login-form {
+  background: var(--ferro-bg-panel);
+  padding: 2rem;
+  border-radius: var(--ferro-radius);
+  border: 1px solid var(--ferro-border);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 300px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+.ferro-login-form h3 {
+  color: var(--ferro-green);
+  margin: 0 0 4px;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+}
+.ferro-login-form input {
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid var(--ferro-border);
+  background: var(--ferro-bg);
+  color: var(--ferro-fg);
+  outline: none;
+  font-family: var(--ferro-font-mono);
+}
+.ferro-login-form input:focus { border-color: var(--ferro-green); }
+.ferro-login-form button {
+  padding: 10px;
+  border-radius: 4px;
+  border: none;
+  background: var(--ferro-green-dim);
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 6px;
+  font-family: var(--ferro-font-mono);
+}
+.ferro-login-form button:hover { background: var(--ferro-green); }
+.ferro-login-form button:disabled { opacity: 0.6; cursor: default; }
+.ferro-login-error {
+  color: var(--ferro-red);
+  font-size: 0.85rem;
+  min-height: 1em;
+  display: none;
+}
+
+/* ---------------------------------------------------------------------
+   Footer (matches homepage footer copy)
+   --------------------------------------------------------------------- */
+.ferro-footer {
+  text-align: center;
+  padding: 20px 12px;
+  border-top: 1px solid var(--ferro-border);
+  font-size: 0.78rem;
+  color: var(--ferro-fg-dim);
+}
+.ferro-footer a { color: var(--ferro-fg-dim); text-decoration: none; }
+.ferro-footer a:hover { color: var(--ferro-green); }
