@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
   schedule:
     - cron: '0 20 * * *' 
-# Synchronizacja statystyk codziennie o godz 20:00
+# daily 20:00
   workflow_dispatch:
 
 permissions:
