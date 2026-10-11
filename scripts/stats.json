@@ -2,16 +2,16 @@
   "sources": {
     "cheelee": {
       "platform": "Cheelee",
-      "followers": 50000,
-      "likes": 333800,
+      "followers": 50100,
+      "likes": 334300,
       "views": 2013904,
       "shares": 0
     },
     "tiktok": {
       "platform": "TikTok",
       "followers": 43,
-      "likes": 322,
-      "views": 9
+      "likes": 326,
+      "views": 10
     },
     "youtube": {
       "platform": "YouTube",
@@ -21,9 +21,9 @@
     }
   },
   "summary": {
-    "aggregatedFollowers": 50043,
-    "aggregatedLikes": 334122,
-    "aggregatedViews": 2013913,
-    "timestamp": "2026-10-11T01:21:29+02:00"
+    "aggregatedFollowers": 50143,
+    "aggregatedLikes": 334626,
+    "aggregatedViews": 2013914,
+    "timestamp": "2026-10-12T01:31:33+02:00"
   }
 }
