@@ -2,8 +2,8 @@
   "sources": {
     "cheelee": {
       "platform": "Cheelee",
-      "followers": 50100,
-      "likes": 334300,
+      "followers": 50200,
+      "likes": 334900,
       "views": 2013904,
       "shares": 0
     },
@@ -21,9 +21,9 @@
     }
   },
   "summary": {
-    "aggregatedFollowers": 50143,
-    "aggregatedLikes": 334626,
+    "aggregatedFollowers": 50243,
+    "aggregatedLikes": 335226,
     "aggregatedViews": 2013914,
-    "timestamp": "2026-10-12T01:31:33+02:00"
+    "timestamp": "2026-10-13T03:55:16+02:00"
   }
 }
