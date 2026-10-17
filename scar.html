@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="pl" class="dark h-full bg-gray-950 text-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>|SC-AR| Screen-Calibrate-AR — Diagnostic & Calibration Engine</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#030712',
+                            panel: '#0b0f19',
+                            border: '#1f293d',
+                            cyan: '#06b6d4',
+                            green: '#10b981',
+                            red: '#ef4444',
+                            yellow: '#f59e0b',
+                            purple: '#a855f7'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Cast SDK -->
+    <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+    <style>
+        /* Custom Cyberpunk & Canvas Styles */
+        body {
+            background-color: #030712;
+            color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .cyber-border {
+            border: 1px solid #1f293d;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.05);
+        }
+        .cyber-border-active {
+            border-color: #06b6d4;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+        }
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(6, 182, 212, 0.08) 50%,
+                rgba(6, 182, 212, 0.08)
+            );
+            background-size: 100% 4px;
+        }
+        .glow-text-cyan {
+            text-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+        }
+        .glow-text-green {
+            text-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+        }
+        /* Custom scrollbar for cyberpunk look */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030712;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f293d;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col min-h-screen">
+
+    <!-- TOP HEADER: SYSTEM INDICATORS & PROFILES -->
+    <header class="bg-cyber-panel border-b border-cyber-border px-4 py-2 flex flex-wrap justify-between items-center gap-3 sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded bg-cyan-950/80 border border-cyber-cyan flex items-center justify-center text-cyber-cyan font-bold font-mono text-sm">
+                AR
+            </div>
+            <div>
+                <h1 class="text-base font-bold font-mono tracking-wider text-white flex items-center gap-2">
+                    |SC-AR| <span class="text-cyber-cyan text-xs font-normal border border-cyber-cyan/40 px-1.5 py-0.5 rounded">v2.5 PROD</span>
+                </h1>
+                <p class="text-[10px] text-gray-400 font-mono">SecFerro Engine • TV Verification System</p>
+            </div>
+        </div>
+
+        <!-- System Controls & Engine Status -->
+        <div class="flex items-center gap-2 sm:gap-4 text-xs font-mono">
+            <!-- Target Profile Selector -->
+            <div class="flex items-center gap-1.5 bg-gray-900 border border-cyber-border px-2 py-1 rounded">
+                <i class="fa-solid fa-tv text-cyber-cyan text-xs"></i>
+                <span class="text-gray-400 hidden sm:inline">Płyta:</span>
+                <select id="boardProfileSelect" class="bg-transparent text-gray-200 font-semibold focus:outline-none cursor-pointer text-xs">
+                    <option value="vestel_mb120">Vestel MB120 (Smart 4K / Edge-LED)</option>
+                    <option value="vestel_mb90">Vestel MB90/95 (Full-HD / CCFL)</option>
+                    <option value="vestel_mb100">Vestel MB100 (Direct-LED Smart)</option>
+                    <option value="toshiba_regza">Toshiba REGZA (Meta Brain Engine)</option>
+                    <option value="universal">Uniwersalny LCD/OLED/QLED</option>
+                </select>
+            </div>
+
+            <!-- Connection Status Badges -->
+            <div class="flex items-center gap-2">
+                <div id="adbBadge" class="flex items-center gap-1 px-2 py-1 rounded border border-yellow-500/40 bg-yellow-950/30 text-yellow-400 text-[11px]" title="Stan Direct ADB Engine">
+                    <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                    <span class="font-bold">ADB: READY</span>
+                </div>
+                <div id="castBadge" class="flex items-center gap-1 px-2 py-1 rounded border border-gray-700 bg-gray-900 text-gray-400 text-[11px]" title="Stan Google Cast SDK">
+                    <i class="fa-solid fa-chromecast text-xs"></i>
+                    <span class="hidden md:inline">CAST: IDLE</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP WRAPPER WITH NAVIGATION -->
+    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- SIDE NAVIGATION (Responsive Tabs) -->
+        <nav class="bg-cyber-panel border-r border-cyber-border md:w-64 flex-shrink-0 flex md:flex-col justify-around md:justify-start p-2 gap-1 z-40 border-b md:border-b-0">
+            <button onclick="switchTab('mod-ar')" id="tab-mod-ar" class="nav-tab active flex items-center gap-3 px-3 py-2.5 rounded text-left text-xs font-mono font-medium transition-all w-full text-cyber-cyan bg-cyber-cyan/10 border border-cyber-cyan/30">
+                <i class="fa-solid fa-camera text-base w-5 text-center"></i>
+                <span class="hidden md:inline">1. Analiza AR & Kamerą</span>
+            </button>
+            <button onclick="switchTab('mod-quiz')" id="tab-mod-quiz" class="nav-tab flex items-center gap-3 px-3 py-2.5 rounded text-left text-xs font-mono font-medium transition-all w-full text-gray-400 hover:text-gray-200 hover:bg-gray-900 border border-transparent">
+                <i class="fa-solid fa-[#06b6d4] fa-clipboard-check text-base w-5 text-center"></i>
+                <span class="hidden md:inline">2. Test Interaktywny</span>
+            </button>
+            <button onclick="switchTab('mod-patterns')" id="tab-mod-patterns" class="nav-tab flex items-center gap-3 px-3 py-2.5 rounded text-left text-xs font-mono font-medium transition-all w-full text-gray-400 hover:text-gray-200 hover:bg-gray-900 border border-transparent">
+                <i class="fa-solid fa-sliders text-base w-5 text-center"></i>
+                <span class="hidden md:inline">3. Generator Plansz / Cast</span>
+            </button>
+            <button onclick="switchTab('mod-report')" id="tab-mod-report" class="nav-tab flex items-center gap-3 px-3 py-2.5 rounded text-left text-xs font-mono font-medium transition-all w-full text-gray-400 hover:text-gray-200 hover:bg-gray-900 border border-transparent">
+                <i class="fa-solid fa-chart-pie text-base w-5 text-center"></i>
+                <span class="hidden md:inline">4. Raport & WWS (WWO)</span>
+            </button>
+
+            <!-- Quick Engine Stats Footnote -->
+            <div class="hidden md:block mt-auto p-3 bg-gray-950/60 rounded border border-cyber-border text-[11px] font-mono text-gray-400 space-y-2">
+                <div class="flex justify-between">
+                    <span>Tryb Sygnału:</span>
+                    <span class="text-cyber-green font-bold">RAW-HDMI</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Wskaźnik WWO:</span>
+                    <span id="sideMenuWWO" class="text-cyber-cyan font-bold">82.5%</span>
+                </div>
+                <div class="text-[10px] text-gray-500 pt-1 border-t border-gray-800 text-center">
+                    System Autoryzowany
+                </div>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT CONTAINER -->
+        <main class="flex-1 overflow-y-auto p-3 sm:p-5 space-y-6">
+
+            <!-- MODULE 1: AR & VISUAL CAMERA ANALYSIS -->
+            <section id="mod-ar" class="tab-content block space-y-4">
+                <div class="flex justify-between items-center border-b border-cyber-border pb-2">
+                    <div>
+                        <h2 class="text-lg font-bold font-mono text-cyber-cyan flex items-center gap-2">
+                            <i class="fa-solid fa-expand"></i> MODULE 1: Analiza Wizualna AR i Podgląd Kamery
+                        </h2>
+                        <p class="text-xs text-gray-400 font-mono">Real-time WebRTC Feed with Calibrated Matrix Alignment Grid</p>
+                    </div>
+                    <button onclick="toggleCamera()" id="camToggleBtn" class="px-3 py-1.5 bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan hover:bg-cyber-cyan hover:text-black font-mono text-xs rounded font-bold transition flex items-center gap-2">
+                        <i class="fa-solid fa-video"></i> <span>Uruchom Kamerę</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- AR Camera / Screen Simulation Viewport -->
+                    <div class="lg:col-span-2 relative bg-black rounded-lg border border-cyber-border overflow-hidden flex items-center justify-center min-h-[320px] sm:min-h-[420px]">
+                        <!-- Scanline Effect Overlay -->
+                        <div class="absolute inset-0 scanline pointer-events-none z-10"></div>
+                        
+                        <!-- Video Feed -->
+                        <video id="webcamFeed" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover hidden"></video>
+                        
+                        <!-- Fallback / Simulated Pattern View when Cam Off -->
+                        <div id="camFallback" class="flex flex-col items-center justify-center p-6 text-center z-0">
+                            <i class="fa-solid fa-camera-rotate text-4xl text-gray-600 mb-3 animate-pulse"></i>
+                            <p class="text-sm font-mono text-gray-400 mb-1">Kamera wyłączona lub brak dostępu</p>
+                            <p class="text-xs font-mono text-gray-600 max-w-md">Możesz symulować parametry matrycy (artefakty pierścieniowe, poświatę, temperaturę barwową) w poniższym silniku podglądu.</p>
+                        </div>
+
+                        <!-- AR Interactive Grid & Crosshair Canvas Overlay -->
+                        <canvas id="arCanvasOverlay" class="absolute inset-0 w-full h-full pointer-events-none z-20"></canvas>
+
+                        <!-- AR Live Metrics Watermark -->
+                        <div class="absolute top-3 left-3 bg-black/80 border border-cyber-border px-2.5 py-1.5 rounded font-mono text-[11px] z-30 space-y-0.5">
+                            <div class="text-cyber-green flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-cyber-green animate-ping"></span>
+                                AR MATRIX ALIGNMENT: <span id="arLockStatus">SEARCHING</span>
+                            </div>
+                            <div class="text-gray-400">FPS: <span id="arFpsVal">60.0</span> | PARALLAX: 0.02°</div>
+                        </div>
+                    </div>
+
+                    <!-- Live Simulation Filter Controls -->
+                    <div class="bg-cyber-panel border border-cyber-border rounded-lg p-4 space-y-4 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-sm font-mono font-bold text-white border-b border-cyber-border pb-2 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-cyber-cyan"></i> Symulator Błędów OSD
+                            </h3>
+                            
+                            <div class="space-y-3 font-mono text-xs">
+                                <!-- Brightness -->
+                                <div>
+                                    <div class="flex justify-between mb-1 text-gray-300">
+                                        <span>Jasność / Black Level:</span>
+                                        <span id="valBrightness" class="text-cyber-cyan">100%</span>
+                                    </div>
+                                    <input type="range" id="sliderBrightness" min="50" max="150" value="100" class="w-full accent-cyber-cyan bg-gray-900 rounded cursor-pointer" oninput="updateSimFilters()">
+                                </div>
+
+                                <!-- Contrast -->
+                                <div>
+                                    <div class="flex justify-between mb-1 text-gray-300">
+                                        <span>Kontrast / White Clip:</span>
+                                        <span id="valContrast" class="text-cyber-cyan">100%</span>
+                                    </div>
+                                    <input type="range" id="sliderContrast" min="50" max="150" value="100" class="w-full accent-cyber-cyan bg-gray-900 rounded cursor-pointer" oninput="updateSimFilters()">
+                                </div>
+
+                                <!-- Color Kelvin Temperature -->
+                                <div>
+                                    <div class="flex justify-between mb-1 text-gray-300">
+                                        <span>Temp. Barwowa (D50 - D93):</span>
+                                        <span id="valKelvin" class="text-cyber-cyan">6500K (D65)</span>
+                                    </div>
+                                    <input type="range" id="sliderKelvin" min="5000" max="9300" step="100" value="6500" class="w-full accent-cyber-cyan bg-gray-900 rounded cursor-pointer" oninput="updateSimFilters()">
+                                </div>
+
+                                <!-- Sharpness / Ringing Simulation -->
+                                <div>
+                                    <div class="flex justify-between mb-1 text-gray-300">
+                                        <span>Ostrość / Ringing (Halo):</span>
+                                        <span id="valSharpness" class="text-cyber-cyan">0%</span>
+                                    </div>
+                                    <input type="range" id="sliderSharpness" min="0" max="100" value="0" class="w-full accent-cyber-cyan bg-gray-900 rounded cursor-pointer" oninput="updateSimFilters()">
+                                </div>
+
+                                <!-- DNR Noise Reduction -->
+                                <div>
+                                    <div class="flex justify-between mb-1 text-gray-300">
+                                        <span>DNR (Cyfrowy Szum / Smearing):</span>
+                                        <span id="valDnr" class="text-cyber-cyan">WYŁ.</span>
+                                    </div>
+                                    <input type="range" id="sliderDnr" min="0" max="3" value="0" class="w-full accent-cyber-cyan bg-gray-900 rounded cursor-pointer" oninput="updateSimFilters()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-cyber-border">
+                            <button onclick="resetSimFilters()" class="w-full py-2 bg-gray-900 hover:bg-gray-800 text-gray-300 font-mono text-xs border border-gray-700 rounded transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-rotate-left"></i> Resetuj Symulator do Normy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE 2: PROACTIVE INTERACTIVE TEST & QUIZ -->
+            <section id="mod-quiz" class="tab-content hidden space-y-4">
+                <div class="border-b border-cyber-border pb-2">
+                    <h2 class="text-lg font-bold font-mono text-cyber-cyan flex items-center gap-2">
+                        <i class="fa-solid fa-[#06b6d4] fa-clipboard-check"></i> MODULE 2: Proaktywny Test Interaktywny i Diagnostyka Matrycy
+                    </h2>
+                    <p class="text-xs text-gray-400 font-mono">5-Krokowy Test Oceny Błędów OSD dla Płyt Vestel / Toshiba</p>
+                </div>
+
+                <!-- Quiz Container -->
+                <div class="bg-cyber-panel border border-cyber-border rounded-lg p-4 sm:p-6 space-y-6">
+                    
+                    <!-- Progress Bar -->
+                    <div>
+                        <div class="flex justify-between text-xs font-mono text-gray-400 mb-2">
+                            <span>Postęp Diagnostyki: Kroki <span id="quizStepNum">1</span> / 5</span>
+                            <span id="quizPercent">20%</span>
+                        </div>
+                        <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden border border-gray-800">
+                            <div id="quizProgressBar" class="bg-cyber-cyan h-full transition-all duration-300" style="width: 20%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Quiz Card -->
+                    <div id="quizCard" class="space-y-4">
+                        <!-- Loaded dynamically via JavaScript -->
+                    </div>
+
+                    <!-- Engineering Context Box -->
+                    <div class="p-3.5 bg-black/50 border-l-2 border-cyber-cyan rounded-r font-mono text-xs text-gray-300 space-y-1">
+                        <div class="text-cyber-cyan font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-microchip"></i> Kontekst Inżynieryjny Podzespołów (Vestel / Toshiba):
+                        </div>
+                        <p id="quizEngContext" class="text-gray-400 text-[11px] leading-relaxed">
+                            Procesory wizyjne MB90/MB120 w trybach "Żywy / Dynamiczny" stosują agresywną nieliniową krzywą gamy oraz przesterowanie krawędzi (overshoot), wywołując przyspieszone zużycie podświetlenia Edge-LED.
+                        </p>
+                    </div>
+
+                    <!-- Quiz Navigation Buttons -->
+                    <div class="flex justify-between pt-2 border-t border-cyber-border">
+                        <button onclick="prevQuizStep()" id="quizPrevBtn" class="px-4 py-2 bg-gray-900 border border-gray-700 text-gray-400 rounded font-mono text-xs hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                            <i class="fa-solid fa-arrow-left mr-1"></i> Wstecz
+                        </button>
+                        <button onclick="nextQuizStep()" id="quizNextBtn" class="px-5 py-2 bg-cyber-cyan text-black font-bold rounded font-mono text-xs hover:bg-cyan-400 transition">
+                            Dalej <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE 3: TEST PATTERN GENERATOR & DUAL CAST CONTROLLER -->
+            <section id="mod-patterns" class="tab-content hidden space-y-4">
+                <div class="border-b border-cyber-border pb-2">
+                    <h2 class="text-lg font-bold font-mono text-cyber-cyan flex items-center gap-2">
+                        <i class="fa-solid fa-sliders"></i> MODULE 3: Generator Plansz Referencyjnych i Sterownik ADB/Cast
+                    </h2>
+                    <p class="text-xs text-gray-400 font-mono">Reference HTML5 Canvas Test Patterns & Dual-Engine Transmission API</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    
+                    <!-- Pattern Viewer Canvas (2 Cols) -->
+                    <div class="lg:col-span-2 space-y-3">
+                        <div class="relative bg-black rounded-lg border border-cyber-border aspect-video flex items-center justify-center overflow-hidden">
+                            <canvas id="patternCanvas" class="w-full h-full object-contain"></canvas>
+                            
+                            <!-- Fullscreen Overlay Button -->
+                            <button onclick="goFullscreenPattern()" class="absolute top-3 right-3 bg-black/80 hover:bg-cyber-cyan hover:text-black text-cyber-cyan border border-cyber-cyan/50 px-2.5 py-1.5 rounded font-mono text-xs transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-expand"></i> Pełny Ekran
+                            </button>
+                        </div>
+
+                        <!-- Pattern Selector Buttons Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-xs">
+                            <button onclick="setPattern('gamma')" class="pattern-btn p-2.5 rounded bg-cyber-panel border border-cyber-border text-left hover:border-cyber-cyan transition text-gray-300">
+                                <div class="font-bold text-cyber-cyan text-[11px]">1. Gama 2.2 / 2.4</div>
+                                <div class="text-[10px] text-gray-500">Gradacja & Paski Blend</div>
+                            </button>
+                            <button onclick="setPattern('white_clip')" class="pattern-btn p-2.5 rounded bg-cyber-panel border border-cyber-border text-left hover:border-cyber-cyan transition text-gray-300">
+                                <div class="font-bold text-cyber-cyan text-[11px]">2. White Clipping</div>
+                                <div class="text-[10px] text-gray-500">RGB 235-255 (Kontrast)</div>
+                            </button>
+                            <button onclick="setPattern('black_pluge')" class="pattern-btn p-2.5 rounded bg-cyber-panel border border-cyber-border text-left hover:border-cyber-cyan transition text-gray-300">
+                                <div class="font-bold text-cyber-cyan text-[11px]">3. Black Pluge</div>
+                                <div class="text-[10px] text-gray-500">RGB 0-25 (Jasność/Cień)</div>
+                            </button>
+                            <button onclick="setPattern('sharpness')" class="pattern-btn p-2.5 rounded bg-cyber-panel border border-cyber-border text-left hover:border-cyber-cyan transition text-gray-300">
+                                <div class="font-bold text-cyber-cyan text-[11px]">4. Ostrość / Ringing</div>
+                                <div class="text-[10px] text-gray-500">Siatka Wysokiej Częst.</div>
+                            </button>
+                            <button onclick="setPattern('smpte')" class="pattern-btn p-2.5 rounded bg-cyber-panel border border-cyber-border text-left hover:border-cyber-cyan transition text-gray-300">
+                                <div class="font-bold text-cyber-cyan text-[11px]">5. Paski SMPTE</div>
+                                <div class="text-[10px] text-gray-500">Standard BT.709 Color</div>
+                            </button>
+                            <button onclick="setPattern('solid_grey')" class="pattern-btn p-2.5 rounded bg-cyber-panel border border-cyber-border text-left hover:border-cyber-cyan transition text-gray-300">
+                                <div class="font-bold text-cyber-cyan text-[11px]">6. Jednolita Szarość</div>
+                                <div class="text-[10px] text-gray-500">Uniformność Backlightu</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dual Transmission Engine Controller (ADB Shell & Cast) -->
+                    <div class="bg-cyber-panel border border-cyber-border rounded-lg p-4 space-y-4 font-mono text-xs flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-cyber-border pb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-terminal text-cyber-green"></i> Sterownik Transmisji Na TV
+                            </h3>
+
+                            <!-- Transmission Method Tabs -->
+                            <div class="grid grid-cols-2 gap-1 bg-gray-950 p-1 rounded border border-cyber-border">
+                                <button onclick="setEngineMode('adb')" id="btnEngineAdb" class="py-1.5 rounded font-bold text-cyber-cyan bg-cyber-cyan/20 border border-cyber-cyan/30 text-[11px]">
+                                    Silnik ADB Direct
+                                </button>
+                                <button onclick="setEngineMode('cast')" id="btnEngineCast" class="py-1.5 rounded font-bold text-gray-400 hover:text-gray-200 text-[11px]">
+                                    Google Cast / API
+                                </button>
+                            </div>
+
+                            <!-- ADB Controls Section -->
+                            <div id="sectionAdb" class="space-y-3">
+                                <div>
+                                    <label class="block text-gray-400 text-[10px] uppercase mb-1">Adres IP Telewizora (Port 5555):</label>
+                                    <input type="text" id="tvIpInput" value="192.168.1.150" class="w-full bg-gray-900 border border-cyber-border px-3 py-1.5 rounded text-cyber-cyan font-mono focus:border-cyber-cyan focus:outline-none">
+                                </div>
+
+                                <button onclick="triggerAdbCast()" class="w-full py-2 bg-cyber-green/20 border border-cyber-green text-cyber-green hover:bg-cyber-green hover:text-black font-bold rounded transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-bolt"></i> Wyślij Intencję ADB (Termux Local)
+                                </button>
+
+                                <!-- Generated ADB CLI Shell Command -->
+                                <div>
+                                    <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                                        <span>Generowana Komenda BASH / CLI:</span>
+                                        <button onclick="copyAdbCommand()" class="text-cyber-cyan hover:underline"><i class="fa-solid fa-copy"></i> Kopiuj</button>
+                                    </div>
+                                    <textarea id="adbCommandBox" readonly rows="3" class="w-full bg-black border border-cyber-border text-[10px] p-2 text-gray-300 font-mono rounded resize-none focus:outline-none">adb connect 192.168.1.150:5555 && adb shell am start -a android.intent.action.VIEW -d "https://anonymousik.is-a.dev/screen-calibrate-ar/?pattern=gamma"</textarea>
+                                </div>
+                            </div>
+
+                            <!-- Google Cast / Presentation Controls Section -->
+                            <div id="sectionCast" class="space-y-3 hidden">
+                                <p class="text-gray-400 text-[11px] leading-relaxed">
+                                    Natywna wysyłka strumienia planszy przez oficjalny Google Cast Receiver lub W3C Presentation API dla telewizorów w wspólnej podsieci Wi-Fi.
+                                </p>
+                                <button onclick="triggerGoogleCast()" class="w-full py-2 bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan hover:bg-cyber-cyan hover:text-black font-bold rounded transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-chromecast"></i> Połącz & Rzutuj (Google Cast)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Technical Footnote -->
+                        <div class="text-[10px] text-gray-500 pt-2 border-t border-cyber-border">
+                            * Integracja z lokalnym REST API pod adresem <code class="text-cyber-cyan">http://localhost:8080/api/adb-cast</code>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE 4: FINAL DIAGNOSTIC REPORT & DASHBOARD -->
+            <section id="mod-report" class="tab-content hidden space-y-4">
+                <div class="border-b border-cyber-border pb-2 flex justify-between items-center flex-wrap gap-2">
+                    <div>
+                        <h2 class="text-lg font-bold font-mono text-cyber-cyan flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie"></i> MODULE 4: Raport Diagnostyczny i Wskaźnik Wierszowy WWO
+                        </h2>
+                        <p class="text-xs text-gray-400 font-mono">Final Calibration Radar Matrix & OSD Recommended Parameters</p>
+                    </div>
+                    <div class="flex gap-2 font-mono text-xs">
+                        <button onclick="exportReportJSON()" class="px-3 py-1.5 bg-gray-900 border border-cyber-border hover:border-cyber-cyan text-gray-200 rounded transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-download"></i> Eksport JSON
+                        </button>
+                        <button onclick="window.print()" class="px-3 py-1.5 bg-cyber-cyan text-black font-bold rounded hover:bg-cyan-400 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-print"></i> Drukuj / PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Grid & Radar Chart -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    
+                    <!-- WWO Global Index Score Widget -->
+                    <div class="bg-cyber-panel border border-cyber-border rounded-lg p-5 flex flex-col justify-between items-center text-center space-y-4">
+                        <h3 class="text-xs font-mono uppercase text-gray-400 tracking-wider">Wskaźnik Wierszowy Obrazu (WWO)</h3>
+                        
+                        <div class="relative flex items-center justify-center">
+                            <svg class="w-40 h-40 transform -rotate-90">
+                                <circle cx="80" cy="80" r="70" stroke="#1f293d" stroke-width="12" fill="transparent" />
+                                <circle id="wwoCircle" cx="80" cy="80" r="70" stroke="#06b6d4" stroke-width="12" stroke-dasharray="440" stroke-dashoffset="80" stroke-linecap="round" fill="transparent" class="transition-all duration-1000" />
+                            </svg>
+                            <div class="absolute flex flex-col items-center">
+                                <span id="wwoScoreBig" class="text-4xl font-mono font-bold text-white glow-text-cyan">82.5%</span>
+                                <span id="wwoRatingLabel" class="text-[10px] font-mono text-cyber-green uppercase tracking-widest mt-1">DOBRY (OPT)</span>
+                            </div>
+                        </div>
+
+                        <p class="text-[11px] font-mono text-gray-400 leading-relaxed">
+                            Ocena wierszowa wyliczona z odpowiedzi testowych oraz symulacji parametru gamy, ostrości krawędzi i czystości matrycy.
+                        </p>
+                    </div>
+
+                    <!-- SVG 5-Axis Radar Chart -->
+                    <div class="lg:col-span-2 bg-cyber-panel border border-cyber-border rounded-lg p-4 flex flex-col justify-between">
+                        <div class="flex justify-between items-center border-b border-cyber-border pb-2">
+                            <h3 class="text-xs font-mono font-bold text-white uppercase tracking-wider">Wektorowy Wykres Cech Matrycy (Radar 5-Axis)</h3>
+                            <span class="text-[10px] font-mono text-cyber-cyan">Standard Rec.709</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-center p-2">
+                            <svg id="radarSvg" viewBox="0 0 300 260" class="w-full max-w-[320px] h-auto">
+                                <!-- Background Radar Grid Lines -->
+                                <polygon points="150,30 245,99 209,211 91,211 55,99" fill="none" stroke="#1f293d" stroke-width="1" />
+                                <polygon points="150,65 208,107 186,176 114,176 92,107" fill="none" stroke="#1f293d" stroke-width="1" />
+                                <polygon points="150,100 171,115 162,141 138,141 129,115" fill="none" stroke="#1f293d" stroke-width="1" />
+                                
+                                <!-- Axes -->
+                                <line x1="150" y1="135" x2="150" y2="30" stroke="#1f293d" stroke-width="1" />
+                                <line x1="150" y1="135" x2="245" y2="99" stroke="#1f293d" stroke-width="1" />
+                                <line x1="150" y1="135" x2="209" y2="211" stroke="#1f293d" stroke-width="1" />
+                                <line x1="150" y1="135" x2="91" y2="211" stroke="#1f293d" stroke-width="1" />
+                                <line x1="150" y1="135" x2="55" y2="99" stroke="#1f293d" stroke-width="1" />
+
+                                <!-- Radar Data Polygon -->
+                                <polygon id="radarPolygon" points="150,45 230,105 195,195 105,195 70,105" fill="rgba(6, 182, 212, 0.25)" stroke="#06b6d4" stroke-width="2" class="transition-all duration-700" />
+
+                                <!-- Axis Labels -->
+                                <text x="150" y="20" fill="#9ca3af" font-size="9" font-family="monospace" text-anchor="middle">Acuity/Ostrość</text>
+                                <text x="252" y="102" fill="#9ca3af" font-size="9" font-family="monospace" text-anchor="start">Głębia Kontrastu</text>
+                                <text x="215" y="225" fill="#9ca3af" font-size="9" font-family="monospace" text-anchor="start">Czerń/Pluge</text>
+                                <text x="85" y="225" fill="#9ca3af" font-size="9" font-family="monospace" text-anchor="end">Kolor D65</text>
+                                <text x="48" y="102" fill="#9ca3af" font-size="9" font-family="monospace" text-anchor="end">Redukcja DNR</text>
+                            </svg>
+                        </div>
+
+                        <div class="flex justify-around text-[10px] font-mono text-gray-400 border-t border-cyber-border pt-2">
+                            <span><i class="fa-solid fa-square text-cyber-cyan text-[8px]"></i> Stan Aktualny</span>
+                            <span><i class="fa-solid fa-square text-gray-700 text-[8px]"></i> Granica Normy Rec.709</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommended OSD Parameter Matrix (Day vs Night) -->
+                <div class="bg-cyber-panel border border-cyber-border rounded-lg p-4 space-y-3 font-mono text-xs">
+                    <h3 class="text-sm font-bold text-white border-b border-cyber-border pb-2 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-table text-cyber-green"></i> Zalecana Macierz Nastaw OSD (Płyta: <span id="osdProfileName" class="text-cyber-cyan">Vestel MB120</span>)</span>
+                        <span class="text-[10px] text-gray-500 font-normal">Tryb Referencyjny Kino / Film</span>
+                    </h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-cyber-border text-gray-400 text-[11px] uppercase">
+                                    <th class="py-2 px-3">Parametr OSD TV</th>
+                                    <th class="py-2 px-3">Nastawa Fabryczna (Błąd)</th>
+                                    <th class="py-2 px-3 text-cyber-cyan">Zalecana Dzień (ISF Day)</th>
+                                    <th class="py-2 px-3 text-cyber-green">Zalecana Noc (ISF Night)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="osdMatrixBody" class="divide-y divide-gray-900 text-[11px] text-gray-300">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- FOOTER COPYRIGHT & AUTHOR ATTRIBUTION -->
+    <footer class="bg-cyber-panel border-t border-cyber-border px-4 py-2 text-center text-[11px] font-mono text-gray-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div>
+            System Diagnostyki TV: <span class="text-gray-300">|SC-AR| Screen-Calibrate-AR</span>
+        </div>
+        <div>
+            © <a href="https://anonymousik.is-a.dev" target="_blank" class="text-cyber-cyan hover:underline font-bold">Anonymousik.is-a.dev</a> | SecFerro Division
+        </div>
+    </footer>
+
+    <!-- LOGIC APPLICATION ENGINE -->
+    <script>
+        /* ==============================================================================
+         * Global Application State
+         * ============================================================================== */
+        const state = {
+            currentTab: 'mod-ar',
+            activeProfile: 'vestel_mb120',
+            engineMode: 'adb', // 'adb' or 'cast'
+            cameraActive: false,
+            currentPattern: 'gamma',
+            quizIndex: 0,
+            quizAnswers: [1, 1, 1, 1, 1], // Default user choices (0=Bad, 1=Opt, 2=Worst)
+            simFilters: {
+                brightness: 100,
+                contrast: 100,
+                kelvin: 6500,
+                sharpness: 0,
+                dnr: 0
+            }
+        };
+
+        /* OSD Recommendation Database per TV Board */
+        const osdProfiles = {
+            vestel_mb120: [
+                { param: "Tryb Obrazu (Picture Mode)", factory: "Dynamiczny / Żywy", day: "Kino / Film", night: "Kino / Film" },
+                { param: "Podświetlenie (Backlight)", factory: "100 (Maksimum)", day: "65-70", night: "35-40" },
+                { param: "Ostrość (Sharpness)", factory: "12 - 15 (High Ringing)", day: "0 lub 1", night: "0" },
+                { param: "Temperatura Barwowa", factory: "Zimna (9300K)", day: "Ciepła (D65)", night: "Ciepła (D65)" },
+                { param: "Redukcja Szumów (DNR)", factory: "Wysoka (Blur)", day: "Wyłączona", night: "Wyłączona" },
+                { param: "Dynamiczny Kontrast", factory: "Włączony", day: "Wyłączony", night: "Wyłączony" }
+            ],
+            vestel_mb90: [
+                { param: "Tryb Obrazu (Picture Mode)", factory: "Gra / Jaskrawy", day: "Naturalny", night: "Kino" },
+                { param: "Podświetlenie CCFL", factory: "100%", day: "75%", night: "45%" },
+                { param: "Ostrość (Sharpness)", factory: "10", day: "0", night: "0" },
+                { param: "Temp. Barw (Color Temp)", factory: "Zimna", day: "Normalna/Ciepła", night: "Ciepła" },
+                { param: "MPEG NR", factory: "Średnia", day: "Wył.", night: "Wył." }
+            ],
+            vestel_mb100: [
+                { param: "Tryb Obrazu", factory: "Dynamiczny", day: "Kino", night: "Kino" },
+                { param: "Podświetlenie Direct-LED", factory: "90%", day: "60%", night: "30%" },
+                { param: "Ostrość", factory: "15", day: "2", night: "0" },
+                { param: "Barwa", factory: "Zimna", day: "Ciepła", night: "Ciepła" }
+            ],
+            toshiba_regza: [
+                { param: "Meta Brain Picture Mode", factory: "Autoview / Store", day: "Hollywood Day", night: "Hollywood Night" },
+                { param: "Resolution+ (Ostrość)", factory: "Włączony (Level 5)", day: "Level 1 / Wył", night: "Wył" },
+                { param: "Backlight Sensor", factory: "Włączony", day: "Wyłączony", night: "Wyłączony" },
+                { param: "3D Color Management", factory: "Wyłączony", day: "Włączony (D65)", night: "Włączony (D65)" }
+            ],
+            universal: [
+                { param: "Tryb Obrazu", factory: "Standard / Żywy", day: "Kino / Movie / ISF", night: "Kino / Movie / ISF" },
+                { param: "Ostrość", factory: "> 50%", day: "0% - 10%", night: "0%" },
+                { param: "Temperatura Barwowa", factory: "Zimna (8000K+)", day: "Ciepła 2 / D65", night: "Ciepła 2 / D65" }
+            ]
+        };
+
+        /* Quiz Question Set */
+        const quizQuestions = [
+            {
+                title: "1. Tryb Obrazu OSD (Picture Preset)",
+                question: "Jaki tryb obrazu jest obecnie ustawiony w menu głównym TV?",
+                options: [
+                    { label: "Dynamiczny / Żywy / Sklep (Vivid)", score: 0, bad: true },
+                    { label: "Standardowy / Gra", score: 1, bad: false },
+                    { label: "Kino / Film / ISF Day/Night / Ekspert", score: 2, bad: false }
+                ],
+                engContext: "Tryby Dynamiczne na płytach Vestel sztucznie obcinają odcienie w jasnych partiach (White Clipping) i wymuszają zimną biel 10000K."
+            },
+            {
+                title: "2. Ostrość Krawędzi i Poświata (Ringing/Halo)",
+                question: "Czy wokół czarnych liter lub czarnych linii na białym tle widać sztuczną białą poświatę (obwódkę)?",
+                options: [
+                    { label: "Tak, widać wyraźne białe obwódki wokół krawędzi", score: 0, bad: true },
+                    { label: "Subtelny cień widoczny tylko z bliska", score: 1, bad: false },
+                    { label: "Brak obwódek, linie są gładkie i czytelne", score: 2, bad: false }
+                ],
+                engContext: "Filtr ostrości (Sharpness) powyżej '0' generuje sztuczny szum cyfrowy i maskuje drobne detale w rozdzielczości HD/4K."
+            },
+            {
+                title: "3. Podświetlenie i Lokalny Wskaźnik Cerni",
+                question: "Czy podczas oglądania ciemnych scen w nocy, czerń przypomina ciemnoszary odcień, a krawędzie ekranu świecą?",
+                options: [
+                    { label: "Tak, czerń jest wyraźnie szara / świecąca", score: 0, bad: true },
+                    { label: "Umiarkowana czerń z lekkim uciekaniem światła", score: 1, bad: false },
+                    { label: "Głęboka, jednolicie wygaszona czerń", score: 2, bad: false }
+                ],
+                engContext: "Matryce Edge-LED w modelach MB120 wymagają obniżenia podświetlenia poniżej 40% w nocy, aby wyeliminować clouding."
+            },
+            {
+                title: "4. Odcień Bieli i Temperatura Barwowa",
+                question: "Jaki odcień ma czysta biel na planszy testowej?",
+                options: [
+                    { label: "Wyraźnie błękitny / mroźny odcień (Cool)", score: 0, bad: true },
+                    { label: "Neutralny czysty biały", score: 1, bad: false },
+                    { label: "Ciepły, lekko kremowy/papierowy (D65 Warm)", score: 2, bad: false }
+                ],
+                engContext: "Standard kinematograficzny D65 (6500K) odpowiada światłu słonecznemu. Zimne tryby wywołują zmęczenie wzroku."
+            },
+            {
+                title: "5. Cyfrowa Redukcja Szumów (DNR)",
+                question: "Czy w szybkich scenach ruchu widać efekty 'smużenia' lub utratę faktury skóry twarzy postaci?",
+                options: [
+                    { label: "Tak, twarze wyglądają plastelinowo / brak detali", score: 0, bad: true },
+                    { label: "Sporadyczne smużenie na słabym sygnale", score: 1, bad: false },
+                    { label: "Brak smużenia, zachowana pełna faktura obrazu", score: 2, bad: false }
+                ],
+                engContext: "Filtry DNR (Digital Noise Reduction) rozmywają klatki. Przy sygnale HDMI z dekodera/konsoli DNR powinien być bezwzględnie WYŁĄCZONY."
+            }
+        ];
+
+        /* ==============================================================================
+         * App Initialization & Event Listeners
+         * ============================================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            initProfileSelector();
+            renderQuizStep();
+            renderPattern();
+            updateOsdTable();
+            recalculateWWO();
+            initARCanvas();
+        });
+
+        function switchTab(tabId) {
+            state.currentTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('text-cyber-cyan', 'bg-cyber-cyan/10', 'border-cyber-cyan/30');
+                btn.classList.add('text-gray-400', 'border-transparent');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-400', 'border-transparent');
+                activeBtn.classList.add('text-cyber-cyan', 'bg-cyber-cyan/10', 'border-cyber-cyan/30');
+            }
+
+            if (tabId === 'mod-patterns') {
+                renderPattern();
+            }
+        }
+
+        function initProfileSelector() {
+            const select = document.getElementById('boardProfileSelect');
+            select.addEventListener('change', (e) => {
+                state.activeProfile = e.target.value;
+                updateOsdTable();
+                document.getElementById('osdProfileName').innerText = select.options[select.selectedIndex].text;
+            });
+        }
+
+        /* ==============================================================================
+         * MODULE 1: AR & WebRTC Camera Engine
+         * ============================================================================== */
+        async function toggleCamera() {
+            const video = document.getElementById('webcamFeed');
+            const fallback = document.getElementById('camFallback');
+            const btn = document.getElementById('camToggleBtn');
+            const lockStatus = document.getElementById('arLockStatus');
+
+            if (!state.cameraActive) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: { exact: "environment" } } 
+                    }).catch(() => {
+                        return navigator.mediaDevices.getUserMedia({ video: true });
+                    });
+                    
+                    video.srcObject = stream;
+                    video.classList.remove('hidden');
+                    fallback.classList.add('hidden');
+                    state.cameraActive = true;
+                    btn.innerHTML = `<i class="fa-solid fa-video-slash"></i> <span>Wyłącz Kamerę</span>`;
+                    lockStatus.innerText = "LOCKED (Rec.709)";
+                    lockStatus.className = "text-cyber-cyan font-bold";
+                } catch (err) {
+                    alert("Błąd dostępu do kamery: " + err.message + "\nUpewnij się, że przyznano uprawnienia WebRTC.");
+                }
+            } else {
+                if (video.srcObject) {
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                }
+                video.classList.add('hidden');
+                fallback.classList.remove('hidden');
+                state.cameraActive = false;
+                btn.innerHTML = `<i class="fa-solid fa-video"></i> <span>Uruchom Kamerę</span>`;
+                lockStatus.innerText = "SEARCHING";
+                lockStatus.className = "text-yellow-400 font-bold";
+            }
+        }
+
+        function initARCanvas() {
+            const canvas = document.getElementById('arCanvasOverlay');
+            const ctx = canvas.getContext('2d');
+
+            function drawOverlay() {
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const w = canvas.width;
+                const h = canvas.height;
+
+                // Draw AR Alignment TV Frame Crosshairs
+                ctx.strokeStyle = "rgba(6, 182, 212, 0.4)";
+                ctx.lineWidth = 1.5;
+
+                // Outer Framing Corner Guides
+                const margin = 30;
+                const len = 20;
+
+                // Top Left
+                ctx.beginPath(); ctx.moveTo(margin, margin + len); ctx.lineTo(margin, margin); ctx.lineTo(margin + len, margin); ctx.stroke();
+                // Top Right
+                ctx.beginPath(); ctx.moveTo(w - margin - len, margin); ctx.lineTo(w - margin, margin); ctx.lineTo(w - margin, margin + len); ctx.stroke();
+                // Bottom Left
+                ctx.beginPath(); ctx.moveTo(margin, h - margin - len); ctx.lineTo(margin, h - margin); ctx.lineTo(margin + len, h - margin); ctx.stroke();
+                // Bottom Right
+                ctx.beginPath(); ctx.moveTo(w - margin - len, h - margin); ctx.lineTo(w - margin, h - margin); ctx.lineTo(w - margin, h - margin - len); ctx.stroke();
+
+                // Center Reticle
+                const cx = w / 2;
+                const cy = h / 2;
+                ctx.strokeStyle = "rgba(16, 185, 129, 0.6)";
+                ctx.beginPath(); ctx.arc(cx, cy, 15, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx - 22, cy); ctx.lineTo(cx + 22, cy); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx, cy - 22); ctx.lineTo(cx, cy + 22); ctx.stroke();
+
+                requestAnimationFrame(drawOverlay);
+            }
+            drawOverlay();
+        }
+
+        function updateSimFilters() {
+            state.simFilters.brightness = document.getElementById('sliderBrightness').value;
+            state.simFilters.contrast = document.getElementById('sliderContrast').value;
+            state.simFilters.kelvin = document.getElementById('sliderKelvin').value;
+            state.simFilters.sharpness = document.getElementById('sliderSharpness').value;
+            state.simFilters.dnr = document.getElementById('sliderDnr').value;
+
+            document.getElementById('valBrightness').innerText = state.simFilters.brightness + "%";
+            document.getElementById('valContrast').innerText = state.simFilters.contrast + "%";
+            document.getElementById('valKelvin').innerText = state.simFilters.kelvin + "K";
+            document.getElementById('valSharpness').innerText = state.simFilters.sharpness + "%";
+            
+            const dnrLabels = ["WYŁ.", "NISKA", "ŚREDNIA", "WYSOKA (AGRESYWNA)"];
+            document.getElementById('valDnr').innerText = dnrLabels[state.simFilters.dnr];
+
+            // Apply CSS Filters to Video Feed
+            const video = document.getElementById('webcamFeed');
+            const blurVal = state.simFilters.dnr * 0.8;
+            const sepiaVal = state.simFilters.kelvin < 6000 ? 0.3 : 0;
+            const hueVal = state.simFilters.kelvin > 7500 ? 15 : 0;
+
+            video.style.filter = `brightness(${state.simFilters.brightness}%) contrast(${state.simFilters.contrast}%) blur(${blurVal}px) sepia(${sepiaVal}) hue-rotate(${hueVal}deg)`;
+            
+            recalculateWWO();
+        }
+
+        function resetSimFilters() {
+            document.getElementById('sliderBrightness').value = 100;
+            document.getElementById('sliderContrast').value = 100;
+            document.getElementById('sliderKelvin').value = 6500;
+            document.getElementById('sliderSharpness').value = 0;
+            document.getElementById('sliderDnr').value = 0;
+            updateSimFilters();
+        }
+
+        /* ==============================================================================
+         * MODULE 2: Quiz & Diagnostic Logic
+         * ============================================================================== */
+        function renderQuizStep() {
+            const q = quizQuestions[state.quizIndex];
+            document.getElementById('quizStepNum').innerText = state.quizIndex + 1;
+            document.getElementById('quizPercent').innerText = ((state.quizIndex + 1) * 20) + "%";
+            document.getElementById('quizProgressBar').style.width = ((state.quizIndex + 1) * 20) + "%";
+            document.getElementById('quizEngContext').innerText = q.engContext;
+
+            let html = `
+                <h3 class="text-sm font-mono font-bold text-cyber-cyan flex items-center gap-2">
+                    ${q.title}
+                </h3>
+                <p class="text-xs font-mono text-gray-200">${q.question}</p>
+                <div class="space-y-2 pt-2">
+            `;
+
+            q.options.forEach((opt, idx) => {
+                const isSelected = state.quizAnswers[state.quizIndex] === opt.score;
+                const borderClass = isSelected ? 'border-cyber-cyan bg-cyber-cyan/10 text-white' : 'border-cyber-border bg-gray-950 text-gray-400 hover:border-gray-700';
+
+                html += `
+                    <button onclick="selectQuizOption(${opt.score})" class="w-full text-left p-3 rounded border font-mono text-xs transition flex items-center justify-between ${borderClass}">
+                        <span>${opt.label}</span>
+                        ${isSelected ? '<i class="fa-solid fa-circle-check text-cyber-cyan"></i>' : '<i class="fa-regular fa-circle text-gray-600"></i>'}
+                    </button>
+                `;
+            });
+
+            html += `</div>`;
+            document.getElementById('quizCard').innerHTML = html;
+
+            document.getElementById('quizPrevBtn').disabled = state.quizIndex === 0;
+            document.getElementById('quizNextBtn').innerHTML = state.quizIndex === 4 ? `Zakończ & Generuj Raport <i class="fa-solid fa-check ml-1"></i>` : `Dalej <i class="fa-solid fa-arrow-right ml-1"></i>`;
+        }
+
+        function selectQuizOption(score) {
+            state.quizAnswers[state.quizIndex] = score;
+            renderQuizStep();
+            recalculateWWO();
+        }
+
+        function nextQuizStep() {
+            if (state.quizIndex < 4) {
+                state.quizIndex++;
+                renderQuizStep();
+            } else {
+                switchTab('mod-report');
+            }
+        }
+
+        function prevQuizStep() {
+            if (state.quizIndex > 0) {
+                state.quizIndex--;
+                renderQuizStep();
+            }
+        }
+
+        /* ==============================================================================
+         * MODULE 3: Test Pattern Canvas & Transmission API
+         * ============================================================================== */
+        function setPattern(patternName) {
+            state.currentPattern = patternName;
+            renderPattern();
+            updateAdbCommandBox();
+        }
+
+        function renderPattern() {
+            const canvas = document.getElementById('patternCanvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = 1280;
+            canvas.height = 720;
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            switch (state.currentPattern) {
+                case 'gamma':
+                    // Gamma Gradient & Stepped Blend Stripes
+                    ctx.fillStyle = "#000"; ctx.fillRect(0, 0, w, h);
+                    const steps = 16;
+                    const stepW = w / steps;
+                    for (let i = 0; i < steps; i++) {
+                        const val = Math.floor((i / (steps - 1)) * 255);
+                        ctx.fillStyle = `rgb(${val},${val},${val})`;
+                        ctx.fillRect(i * stepW, 0, stepW, h * 0.7);
+                    }
+                    // Smooth gradient at bottom
+                    const grad = ctx.createLinearGradient(0, 0, w, 0);
+                    grad.addColorStop(0, '#000');
+                    grad.addColorStop(1, '#fff');
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, h * 0.72, w, h * 0.28);
+                    break;
+
+                case 'white_clip':
+                    // White Clipping Pattern (RGB 235 - 255)
+                    ctx.fillStyle = "rgb(230,230,230)"; ctx.fillRect(0, 0, w, h);
+                    const wcSteps = 10;
+                    const wcW = w / wcSteps;
+                    for (let i = 0; i < wcSteps; i++) {
+                        const rgbVal = 235 + i * 2; // 235 to 253
+                        ctx.fillStyle = `rgb(${rgbVal},${rgbVal},${rgbVal})`;
+                        ctx.fillRect(i * wcW, h * 0.2, wcW, h * 0.6);
+                        ctx.fillStyle = "#000";
+                        ctx.font = "bold 16px monospace";
+                        ctx.fillText(`RGB ${rgbVal}`, i * wcW + 10, h * 0.5);
+                    }
+                    break;
+
+                case 'black_pluge':
+                    // Black Pluge Pattern (RGB 0 - 25)
+                    ctx.fillStyle = "rgb(0,0,0)"; ctx.fillRect(0, 0, w, h);
+                    const bpSteps = 10;
+                    const bpW = w / bpSteps;
+                    for (let i = 0; i < bpSteps; i++) {
+                        const rgbVal = i * 2.5; // 0 to 25
+                        ctx.fillStyle = `rgb(${rgbVal},${rgbVal},${rgbVal})`;
+                        ctx.fillRect(i * bpW, h * 0.2, bpW, h * 0.6);
+                        ctx.fillStyle = "#fff";
+                        ctx.font = "bold 14px monospace";
+                        ctx.fillText(`RGB ${Math.round(rgbVal)}`, i * bpW + 10, h * 0.5);
+                    }
+                    break;
+
+                case 'sharpness':
+                    // High-Frequency Sharpness & Ringing Grid
+                    ctx.fillStyle = "#7f7f7f"; ctx.fillRect(0, 0, w, h);
+                    ctx.strokeStyle = "#000"; ctx.lineWidth = 1;
+                    for (let x = 0; x < w; x += 10) {
+                        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+                    }
+                    ctx.strokeStyle = "#fff";
+                    for (let y = 0; y < h; y += 10) {
+                        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+                    }
+                    // Concentric circles
+                    ctx.strokeStyle = "#000"; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(w / 2, h / 2, 150, 0, Math.PI * 2); ctx.stroke();
+                    ctx.strokeStyle = "#fff";
+                    ctx.beginPath(); ctx.arc(w / 2, h / 2, 100, 0, Math.PI * 2); ctx.stroke();
+                    break;
+
+                case 'smpte':
+                    // SMPTE BT.709 Color Bars
+                    const colors = ["#c0c0c0", "#c0c000", "#00c0c0", "#00c000", "#c000c0", "#c00000", "#0000c0"];
+                    const barW = w / colors.length;
+                    colors.forEach((col, idx) => {
+                        ctx.fillStyle = col;
+                        ctx.fillRect(idx * barW, 0, barW, h * 0.75);
+                    });
+                    // Bottom Black/White blocks
+                    ctx.fillStyle = "#00214c"; ctx.fillRect(0, h * 0.75, barW * 2, h * 0.25);
+                    ctx.fillStyle = "#ffffff"; ctx.fillRect(barW * 2, h * 0.75, barW * 2, h * 0.25);
+                    ctx.fillStyle = "#000000"; ctx.fillRect(barW * 4, h * 0.75, barW * 3, h * 0.25);
+                    break;
+
+                case 'solid_grey':
+                    ctx.fillStyle = "#555555";
+                    ctx.fillRect(0, 0, w, h);
+                    break;
+            }
+        }
+
+        function goFullscreenPattern() {
+            const canvas = document.getElementById('patternCanvas');
+            if (canvas.requestFullscreen) {
+                canvas.requestFullscreen();
+            } else if (canvas.webkitRequestFullscreen) {
+                canvas.webkitRequestFullscreen();
+            }
+        }
+
+        function setEngineMode(mode) {
+            state.engineMode = mode;
+            if (mode === 'adb') {
+                document.getElementById('sectionAdb').classList.remove('hidden');
+                document.getElementById('sectionCast').classList.add('hidden');
+                document.getElementById('btnEngineAdb').className = "py-1.5 rounded font-bold text-cyber-cyan bg-cyber-cyan/20 border border-cyber-cyan/30 text-[11px]";
+                document.getElementById('btnEngineCast').className = "py-1.5 rounded font-bold text-gray-400 hover:text-gray-200 text-[11px]";
+            } else {
+                document.getElementById('sectionAdb').classList.add('hidden');
+                document.getElementById('sectionCast').classList.remove('hidden');
+                document.getElementById('btnEngineCast').className = "py-1.5 rounded font-bold text-cyber-cyan bg-cyber-cyan/20 border border-cyber-cyan/30 text-[11px]";
+                document.getElementById('btnEngineAdb').className = "py-1.5 rounded font-bold text-gray-400 hover:text-gray-200 text-[11px]";
+            }
+        }
+
+        function updateAdbCommandBox() {
+            const ip = document.getElementById('tvIpInput').value || "192.168.1.150";
+            const cmd = `adb connect ${ip}:5555 && adb shell am start -a android.intent.action.VIEW -d "https://anonymousik.is-a.dev/screen-calibrate-ar/?pattern=${state.currentPattern}"`;
+            document.getElementById('adbCommandBox').value = cmd;
+        }
+
+        function copyAdbCommand() {
+            const box = document.getElementById('adbCommandBox');
+            box.select();
+            document.execCommand('copy');
+            alert("Skopiowano komendę ADB Shell do schowka!");
+        }
+
+        async function triggerAdbCast() {
+            const ip = document.getElementById('tvIpInput').value;
+            try {
+                const response = await fetch('http://localhost:8080/api/adb-cast', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip: ip, pattern: state.currentPattern })
+                });
+                const data = await response.json();
+                alert(`[ADB API] Odpowiedź serwera Termux: ${data.message || 'Sukces wysłania intencji!'}`);
+            } catch (err) {
+                alert(`[ADB Local API] Błąd połączenia z http://localhost:8080/api/adb-cast.\n\nWykorzystaj wygenerowaną komendę BASH z okna poniżej bezpośrednio w konsoli Termux.`);
+            }
+        }
+
+        function triggerGoogleCast() {
+            if (window.chrome && window.chrome.cast) {
+                const sessionRequest = new chrome.cast.SessionRequest(chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID);
+                const apiConfig = new chrome.cast.ApiConfig(sessionRequest, () => {}, () => {});
+                chrome.cast.initialize(apiConfig, () => {
+                    chrome.cast.requestSession((session) => {
+                        alert("Połączono z sesją Google Cast!");
+                    }, (err) => alert("Błąd inicjalizacji Cast: " + err));
+                });
+            } else {
+                alert("Google Cast Sender SDK niedostępne w tej przeglądarce. Użyj silnika ADB Direct.");
+            }
+        }
+
+        /* ==============================================================================
+         * MODULE 4: WWO Calculation, Radar Chart & Export
+         * ============================================================================== */
+        function recalculateWWO() {
+            // Calculate base quiz total
+            const quizSum = state.quizAnswers.reduce((a, b) => a + b, 0); // 0 to 10
+            let wwoBase = (quizSum / 10) * 100;
+
+            // Apply penalties from simulator filters if altered
+            if (state.simFilters.sharpness > 20) wwoBase -= 10;
+            if (state.simFilters.dnr > 1) wwoBase -= 8;
+            if (state.simFilters.kelvin > 8000) wwoBase -= 7;
+
+            wwoBase = Math.max(15, Math.min(99.5, wwoBase));
+            const finalScore = wwoBase.toFixed(1);
+
+            document.getElementById('wwoScoreBig').innerText = finalScore + "%";
+            document.getElementById('sideMenuWWO').innerText = finalScore + "%";
+
+            // Circle Dashoffset animation (440 total circumference)
+            const offset = 440 - (440 * (wwoBase / 100));
+            document.getElementById('wwoCircle').style.strokeDashoffset = offset;
+
+            // Rating Label
+            const labelEl = document.getElementById('wwoRatingLabel');
+            if (wwoBase >= 80) {
+                labelEl.innerText = "EXCELLENT (ISF)";
+                labelEl.className = "text-[10px] font-mono text-cyber-green uppercase tracking-widest mt-1";
+            } else if (wwoBase >= 60) {
+                labelEl.innerText = "DOBRY (OPT)";
+                labelEl.className = "text-[10px] font-mono text-cyber-cyan uppercase tracking-widest mt-1";
+            } else {
+                labelEl.innerText = "WYMAGA KALIBRACJI";
+                labelEl.className = "text-[10px] font-mono text-cyber-red uppercase tracking-widest mt-1";
+            }
+
+            updateRadarChart();
+        }
+
+        function updateRadarChart() {
+            // Dynamic radar coordinates mapping based on quiz answers
+            const q = state.quizAnswers;
+            
+            // Scaled points around center (150, 135)
+            // Axis 1: Acuity (Top)
+            const p1 = 135 - (q[1] + 1) * 35;
+            // Axis 2: Contrast (Right Top)
+            const p2x = 150 + (q[0] + 1) * 32;
+            const p2y = 135 - (q[0] + 1) * 12;
+            // Axis 3: Black/Pluge (Right Bottom)
+            const p3x = 150 + (q[2] + 1) * 20;
+            const p3y = 135 + (q[2] + 1) * 25;
+            // Axis 4: Color D65 (Left Bottom)
+            const p4x = 150 - (q[3] + 1) * 20;
+            const p4y = 135 + (q[3] + 1) * 25;
+            // Axis 5: DNR (Left Top)
+            const p5x = 150 - (q[4] + 1) * 32;
+            const p5y = 135 - (q[4] + 1) * 12;
+
+            const polygonStr = `${150},${p1} ${p2x},${p2y} ${p3x},${p3y} ${p4x},${p4y} ${p5x},${p5y}`;
+            document.getElementById('radarPolygon').setAttribute('points', polygonStr);
+        }
+
+        function updateOsdTable() {
+            const list = osdProfiles[state.activeProfile] || osdProfiles.universal;
+            const tbody = document.getElementById('osdMatrixBody');
+            
+            let html = '';
+            list.forEach(item => {
+                html += `
+                    <tr>
+                        <td class="py-2 px-3 font-bold text-white">${item.param}</td>
+                        <td class="py-2 px-3 text-cyber-red font-mono">${item.factory}</td>
+                        <td class="py-2 px-3 text-cyber-cyan font-mono">${item.day}</td>
+                        <td class="py-2 px-3 text-cyber-green font-mono">${item.night}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function exportReportJSON() {
+            const reportData = {
+                system: "|SC-AR| Screen-Calibrate-AR",
+                timestamp: new Date().toISOString(),
+                boardProfile: state.activeProfile,
+                wwoScore: document.getElementById('wwoScoreBig').innerText,
+                quizAnswers: state.quizAnswers,
+                simFilters: state.simFilters,
+                attribution: "©Anonymousik.is-a.dev | SecFerro Division"
+            };
+
+            const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sc-ar-calibration-report-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
