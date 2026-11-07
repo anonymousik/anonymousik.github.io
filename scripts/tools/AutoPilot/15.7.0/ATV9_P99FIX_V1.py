@@ -408,7 +408,7 @@ class SagemcomOptimizer:
 
         Logger.log("Modyfikacja limitów pamięci RAM pod kątem 1.5 GB...")
         SystemShell.run("settings put global low_power_trigger_level 0", ignore_errors=True)
-        SystemShell.run("settings put global activity_manager_constants max_cached_processes=8", ignore_errors=True)
+        SystemShell.run("settings put global activity_manager_constants max_cached_processes=32,background_settle_time=60000,fgservice_min_shown_time=500,power_check_max_cpu_1=75,power_check_max_cpu_0=85", ignore_errors=True)
         SystemShell.run('settings put global power_manager_constants "no_cached_apps_until_foreground=true"', ignore_errors=True)
         SystemShell.run("settings put global sys_free_storage_log_interval 0", ignore_errors=True)
 
