@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-PLAYBOX TITANIUM v19.0 - ULTIMATE CPU PERFORMANCE & VISUAL SHARPNESS SUITE
+PLAYBOX TITANIUM v19.1 - ULTIMATE CPU PERFORMANCE & VISUAL SHARPNESS SUITE
 Target Device: Sagemcom DCTIW362 / Play NOW TV Box v1 (Broadcom BCM72604)
 Target Scope: Forces CPU Governor to 'performance' with frequency locking, 
               optimizes SkiaGL font antialiasing/sharpness, enforces Broadcom OMX 
@@ -16,14 +16,14 @@ import sys
 ADB_TARGET = "192.168.1.3:5555"
 
 TARGET_SMARTTUBE = "org.smarttube.stable"
-TARGET_LAUNCHER = "com.spocky.projlauncher"
+TARGET_LAUNCHER = "com.spocky.projengmenu"
 
 # Global System Settings for UI Fluidity and PCM Audio
 SETTINGS_GLOBAL = {
-    "window_animation_scale": "0.0",
-    "transition_animation_scale": "0.5",
-    "animator_duration_scale": "0.5",
-    "activity_manager_constants": "max_cached_processes=8,background_settle_time=60000,fgservice_min_shown_time=500",
+    "window_animation_scale": "0.1",
+    "transition_animation_scale": "0.25",
+    "animator_duration_scale": "0.25",
+    "activity_manager_constants": "max_cached_processes=10,background_settle_time=60000,fgservice_min_shown_time=500",
     "power_manager_constants": "no_cached_apps_until_foreground=true,maximum_screen_off_timeout=2147483647",
     "low_power_trigger_level": "0",
     "encoded_surround_output": "1",            # PCM Mode to avoid AudioFlinger underruns
@@ -47,7 +47,7 @@ SETTINGS_SYSTEM = {
 }
 
 SETTINGS_SECURE = {
-    "screensaver_enabled": "0",
+    "screensaver_enabled": "1",
     "sleep_timeout": "2147483647",
     "location_mode": "0",
     "wifi_watchdog_poor_link_detection": "0"
