@@ -1,9 +1,9 @@
 #!/system/bin/sh
 # ==============================================================================
 # Tytuł: Rish Smart Toolbox (Shizuku Manager)
-# Autor: Anonymousik.is-a.dev
-# Wersja: 3.1.0(beta)
-# Cel: Ekstrakcja, instalacja, diagnostyka i zarządzanie cyklem życia shizuku_server,launcher usługi,
+# Autor: Anonymousik
+# Wersja: 4.0.0
+# Cel: Ekstrakcja, instalacja, diagnostyka i zarządzanie cyklem życia shizuku_server,launcher
 # ==============================================================================
 
 # Zabezpieczenie przed wykonaniem jako root (Shizuku/rish operuje jako shell)
