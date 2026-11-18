@@ -10,8 +10,8 @@
     "tiktok": {
       "platform": "TikTok",
       "followers": 51,
-      "likes": 371,
-      "views": 14
+      "likes": 375,
+      "views": 15
     },
     "youtube": {
       "platform": "YouTube",
@@ -22,8 +22,8 @@
   },
   "summary": {
     "aggregatedFollowers": 33951,
-    "aggregatedLikes": 238971,
-    "aggregatedViews": 2013918,
-    "timestamp": "2026-11-17T03:50:13+01:00"
+    "aggregatedLikes": 238975,
+    "aggregatedViews": 2013919,
+    "timestamp": "2026-11-18T03:15:13+01:00"
   }
 }
