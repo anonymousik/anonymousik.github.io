@@ -1,0 +1,60 @@
+========================================================================
+PROSTA INSTRUKCJA OBSŁUGI I POSTĘPOWANIA — ŠKODA FABIA (2002, 1.4 MPI + LPG)
+Opracowanie: Anonymousik.is-a.dev | Data: 22.11.2026
+========================================================================
+
+1. RZECZY NAJWAŻNIEJSZE DLA BEZPIECZEŃSTWA (ZRÓB OD RAZU)
+------------------------------------------------------------------------
+- ŚWIATŁA STOPU: Auto obecnie nie ma świateł stopu (to przez to świeci
+  kontrolka EPC i auto może szarpać). Trzeba jak najszybciej sprawdzić
+  bezpiecznik stopu i żarówki z tyłu, a jeśli są dobre — wymienić
+  czujnik stopu nad pedałem hamulca (koszt ok. 30-50 zł).
+- WSPOMAGANIE I ŚWIATŁA: Jeśli światła przygasają, a wspomaganie
+  kierownicy znika w trakcie jazdy, to jest problem z prądem/ładowaniem.
+  Nie zwlekaj z wizytą u elektryka samochodowego.
+- OLEJ SILNIKOWY: Silnik bierze dużo oleju. Przed dłuższą jazdą zawsze
+  sprawdź bagnet i miej olej na dolewkę w bagażniku.
+
+2. PROSTY TEST DOMOWY NA PROBLEM Z ODPALANIEM (BEZ NARZĘDZI)
+------------------------------------------------------------------------
+1) Zakręć zawór gazu na butli LPG w bagażniku.
+2) Jedź autem, aż samo przełączy się na benzynę (wypali resztkę gazu).
+3) Pojeźdź 2-3 dni WYŁĄCZNIE na samej benzynie (nie odkręcaj gazu).
+   -> Jeśli auto zacznie normalnie odpalać i przestanie gasnąć,
+      winna jest instalacja gazowa LPG (trzeba jechać do gazownika).
+
+3. JAK WGRAĆ PROFIL DO APLIKACJI BORBACAR LABS W TELEFONIE
+------------------------------------------------------------------------
+1) Otwórz aplikację BorbaCar Labs.
+2) Wejdź w opcję przywracania kopii zapasowej (Backup / Restore).
+3) Wybierz plik: BorbaCar-backup_skoda-fabia.json
+4) Gotowe — dane auta (Fabia2002) wgrają się same.
+* Ważne: w plikach PDF z wcześniejszych prób były tylko przykładowe testy
+  programu (kody P0133 i P0301 to NIE są błędy Twojego samochodu).
+
+4. JAK PODŁĄCZYĆ KOSTKĘ OBD (V-LINK) DO AUTA
+------------------------------------------------------------------------
+1) Otwórz mały schowek po lewej stronie pod kierownicą i włóż kostkę.
+2) Przekręć kluczyk w stacyjce na ZAPŁON (kontrolki muszą świecić).
+3) WAŻNE: W tym aucie jest niefabryczne radio (Jie Rui), które może
+   blokować gniazdo diagnostyczne. Przed kliknięciem "Połącz" w telefonie
+   wyjmij bezpiecznik radia (albo odepnij radio) i wyłącz centralkę gazu.
+4) Jeśli telefon mimo to nie łączy się z silnikiem — NIE kupuj kolejnych
+   kostek Bluetooth. Ten rocznik z usterkami elektrycznymi trzeba podpiąć
+   u mechanika zwykłym kablem VAG KKL / VCDS.
+
+5. CO POWIEDZIEĆ MECHANIKOWI / ELEKTRYKOWI (MOŻESZ PRZECZYTAĆ Z KARTKI)
+------------------------------------------------------------------------
+1) "Przygasają światła i znika wspomaganie — proszę zmierzyć ładowanie
+   pod obciążeniem, sprawdzić blaszki bezpiecznikowe na akumulatorze,
+   masę pod akumulatorem oraz wiązkę na lewej podłużnicy."
+2) "Nie działają światła stopu i świeci EPC — proszę sprawdzić bezpiecznik,
+   żarówki i czujnik stopu przy pedale hamulca."
+3) "Kostka OBD2 nie może połączyć się z komputerem silnika — proszę
+   sprawdzić, czy radio lub gaz nie blokuje linii K-Line, i podpiąć
+   kabel VAG KKL / VCDS (silnik oraz wspomaganie)."
+4) "Bierze dużo oleju, kopci z wydechu przy gazowaniu i gaśnie na
+   wolnych obrotach — proszę sprawdzić odmę, wyczyścić i zaadaptować
+   przepustnicę, obejrzeć świece i zmierzyć kompresję."
+========================================================================
+Podpisano: Anonymousik.is-a.dev

@@ -1,0 +1,1893 @@
+
+[23:47:59:  [App.xaml.cs.CreateWindow()/306] [WINDOW] Created Window=1497922176, Shell=-485699145, Primary=True]
+
+[23:48:00:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=WelcomePage_Language; Attached=True; Size=0x0]
+
+[23:48:03:  [CarRepository.cs.EnsureCarsIntegrityAsync()/303] CarRepository.EnsureCarsIntegrityAsync added 1 missing cars]
+
+[23:48:39:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=WelcomePage_EULA; Attached=True; Size=0x0]
+
+[23:48:40:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=WelcomePage_AdapterInfo; Attached=True; Size=0x0]
+
+[23:48:42:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=WelcomePage_Interface; Attached=True; Size=0x0]
+
+[23:48:46:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=WelcomePage_Units; Attached=True; Size=0x0]
+
+[23:49:19:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=WelcomePage_FuelConsumption; Attached=True; Size=0x0]
+
+[23:50:42:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=SimpleMainPage; Attached=True; Size=0x0]
+
+[23:50:43:  [SimpleMainPage.xaml.cs.PageInitAsync()/204] [AUTO_START] Enabled=False; Dashboard=False; Status=Disconnected]
+
+[23:50:50:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=ConnectionPermissionsPage; Attached=True; Size=0x0]
+
+[23:51:41:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=FirstTimeConnectionPage; Attached=True; Size=0x0]
+
+[23:52:14:  [BTLEDeviceSelectorViewModel.cs.LogTestDeviceDiagnostic()/377] [BTLE_TEST][Thread=1] StopDiscovering: begin; IsScanning=True]
+
+[23:52:14:  [BTLEDeviceSelectorViewModel.cs.LogTestDeviceDiagnostic()/377] [BTLE_TEST][Thread=1] StopDiscovering: end]
+
+[23:52:18:  [BTLEDeviceSelectorViewModel.cs.LogTestDeviceDiagnostic()/377] [BTLE_TEST][Thread=1] StopDiscovering: begin; IsScanning=True]
+
+[23:52:18:  [BTLEDeviceSelectorViewModel.cs.LogTestDeviceDiagnostic()/377] [BTLE_TEST][Thread=1] StopDiscovering: end]
+
+[BTDeviceDiscovered: GP 344W | 03:25:06:24:27:0A]
+
+[BTDeviceDiscovered: Galaxy S23 FE | A4:A4:90:EF:43:17]
+
+[BTDeviceDiscovered: Jie Rui BT-5908 | D8:1A:23:93:0E:50]
+
+[BTDeviceDiscovered: Wireless Controller | 8C:41:F2:BB:81:35]
+
+[BTDeviceDiscovered: PlayStation(R)4 | A8:47:4A:BD:43:9A]
+
+[BTDeviceDiscovered: Galaxy Watch4 (9L8P) | 84:5F:04:AD:2C:36]
+
+[BTDeviceDiscovered: V-LINK | 00:1D:A5:21:46:01]
+
+[BTDeviceDiscovered: JBL GO | 78:44:05:D8:07:8E]
+
+[BTDeviceDiscovered: Roseland | 41:42:23:00:00:51]
+
+[BTDeviceDiscovered: MSI | 6C:F6:DA:84:B2:0E]
+
+[23:53:48:  [SimpleMainPage.xaml.cs.PreConnect()/1522] OBDReader.stopwatch.Restart//MainPage.PreConnect]
+
+===== LOG STARTED: 21.11.2026 23:53:50=====
+=====Version=2.2.52 Build=42002052 P=False NoDelayELM327Init=False
+====Connection profile=Skoda OBD-II / EOBD
+[Connection type: Bluetooth; DeviceName=V-LINK]
+
+[Connecting to 00:1D:A5:21:46:01]
+[BTConnectionStart, Method=1]
+[BTConnectionError, Method=1]
+Connection timeout (5s)
+[BTConnectionStart, Method=3]
+[BTConnectionError, Method=3]
+read failed, socket might closed or timeout, read ret: -1
+[BTConnectionStart, Method=4]
+[BTConnectionError, Method=4]
+Connection timeout (5s)
+
+Connection failed.
+
+===== DISCONNECTED AT: 21.11.2026 23:54:00
+===== LOG STARTED: 21.11.2026 23:54:01=====
+=====Version=2.2.52 Build=42002052 P=False NoDelayELM327Init=False
+====Connection profile=Skoda OBD-II / EOBD
+[Connection type: Bluetooth; DeviceName=V-LINK]
+
+[Connecting to 00:1D:A5:21:46:01]
+[BTConnectionStart, Method=1]
+[BTConnectionError, Method=1]
+Connection timeout (5s)
+[BTConnectionStart, Method=3]
+[BTConnectionError, Method=3]
+read failed, socket might closed or timeout, read ret: -1
+[BTConnectionStart, Method=4]
+[BTConnectionError, Method=4]
+Connection timeout (5s)
+
+Connection failed.
+
+===== DISCONNECTED AT: 21.11.2026 23:54:12
+===== LOG STARTED: 21.11.2026 23:54:13=====
+=====Version=2.2.52 Build=42002052 P=False NoDelayELM327Init=False
+====Connection profile=Skoda OBD-II / EOBD
+[Connection type: Bluetooth; DeviceName=V-LINK]
+
+[Connecting to 00:1D:A5:21:46:01]
+[BTConnectionStart, Method=1]
+[BTConnectionError, Method=1]
+Connection timeout (5s)
+[BTConnectionStart, Method=3]
+[BTConnectionError, Method=3]
+read failed, socket might closed or timeout, read ret: -1
+[BTConnectionStart, Method=4]
+[BTConnectionError, Method=4]
+Connection timeout (5s)
+
+Connection failed.
+
+===== DISCONNECTED AT: 21.11.2026 23:54:23
+[Connection attempts failed]
+
+[23:54:26:  [SimpleMainPage.xaml.cs.PreConnect()/1522] OBDReader.stopwatch.Restart//MainPage.PreConnect]
+
+===== LOG STARTED: 21.11.2026 23:54:26=====
+=====Version=2.2.52 Build=42002052 P=False NoDelayELM327Init=False
+====Connection profile=Skoda OBD-II / EOBD
+[Connection type: Bluetooth; DeviceName=V-LINK]
+
+[Connecting to 00:1D:A5:21:46:01]
+[BTConnectionStart, Method=1]
+[BTConnectionError, Method=1]
+Connection timeout (5s)
+[BTConnectionStart, Method=3]
+[BTConnectionError, Method=3]
+read failed, socket might closed or timeout, read ret: -1
+[BTConnectionStart, Method=4]
+[BTConnectionError, Method=4]
+Connection timeout (5s)
+
+Connection failed.
+
+===== DISCONNECTED AT: 21.11.2026 23:54:36
+===== LOG STARTED: 21.11.2026 23:54:37=====
+=====Version=2.2.52 Build=42002052 P=False NoDelayELM327Init=False
+====Connection profile=Skoda OBD-II / EOBD
+[Connection type: Bluetooth; DeviceName=V-LINK]
+
+[Connecting to 00:1D:A5:21:46:01]
+[BTConnectionStart, Method=1]
+[BTConnectionError, Method=1]
+Connection timeout (5s)
+[BTConnectionStart, Method=3]
+[BTConnectionError, Method=3]
+read failed, socket might closed or timeout, read ret: -1
+[BTConnectionStart, Method=4]
+
+[23:54:46:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=DataRecorderFilesListPage; Attached=True; Size=0x0]
+[BTConnectionError, Method=4]
+Connection timeout (5s)
+
+Connection failed.
+
+===== DISCONNECTED AT: 21.11.2026 23:54:48
+===== LOG STARTED: 21.11.2026 23:54:49=====
+=====Version=2.2.52 Build=42002052 P=False NoDelayELM327Init=False
+====Connection profile=Skoda OBD-II / EOBD
+[Connection type: Bluetooth; DeviceName=V-LINK]
+
+[Connecting to 00:1D:A5:21:46:01]
+[BTConnectionStart, Method=1]
+[BTConnectionError, Method=1]
+Connection timeout (5s)
+[BTConnectionStart, Method=3]
+[BTConnectionError, Method=3]
+read failed, socket might closed or timeout, read ret: -1
+[BTConnectionStart, Method=4]
+[BTConnectionError, Method=4]
+Connection timeout (5s)
+
+Connection failed.
+
+===== DISCONNECTED AT: 21.11.2026 23:54:59
+[Connection attempts failed]
+
+[23:55:04:  [App.xaml.cs.CreateWindow()/306] [WINDOW] Created Window=-965786414, Shell=-1112688706, Primary=True]
+
+[23:55:05:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=SimpleMainPage; Attached=True; Size=0x0]
+
+[23:55:06:  [CarRepository.cs.EnsureCarsIntegrityAsync()/303] CarRepository.EnsureCarsIntegrityAsync added 0 missing cars]
+
+[23:55:06:  [SimpleMainPage.xaml.cs.PageInitAsync()/204] [AUTO_START] Enabled=False; Dashboard=False; Status=Disconnected]
+
+[23:55:08:  [SimpleMainPage.xaml.cs.PreConnect()/1522] OBDReader.stopwatch.Restart//MainPage.PreConnect]
+
+===== LOG STARTED: 21.11.2026 23:55:08=====
+=====Version=2.2.52 Build=42002052 P=False NoDelayELM327Init=False
+====Connection profile=Skoda OBD-II / EOBD
+[Connection type: Bluetooth; DeviceName=V-LINK]
+
+[Connecting to 00:1D:A5:21:46:01]
+[BTConnectionStart, Method=1]
+[BTConnectionEstablished, Method=1]
+got streams from client
+
+[Connected to 00:1D:A5:21:46:01]
+ATZATE0
+[ELM RESET]
+ATZELM327 v2.2>
+Initialize(initMode=Default)
+
+
+InitializeDefaultInitString(ProtocolNumber=0,initMode=Default,useATST96=False)
+ATE0ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP0OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST64OK>0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+ATST64OK>0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=0,initMode=Default,useATST96=False)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP0OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST64OK>0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+ATST64OK>0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[Trying to decode:
+...>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=6,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP6OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=7,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP7OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN29bit]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN29bit]
+
+[DecodeResult=False]
+ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN29bit]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN29bit]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=4,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP4OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+ATST96OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=5,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP5OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+0100BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+ATST96OK>0100BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+0100BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=3,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP3OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+ATST96OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=1,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP1OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100NO DATA>
+[cmd_reply=] NO DATA>
+
+[Trying to decode:
+NO DATA>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+0100NO DATA>
+[cmd_reply=] NO DATA>
+
+[Trying to decode:
+NO DATA>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+ATST96OK>0100NO DATA>
+[cmd_reply=] NO DATA>
+
+[Trying to decode:
+NO DATA>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+0100NO DATA>
+[cmd_reply=] NO DATA>
+
+[Trying to decode:
+NO DATA>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=2,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP2OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100NO DATA>
+[cmd_reply=] NO DATA>
+
+[Trying to decode:
+NO DATA>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+0100NO DATA>
+[cmd_reply=] NO DATA>
+
+[Trying to decode:
+NO DATA>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+ATST96OK>0100NO DATA>
+[cmd_reply=] NO DATA>
+
+[Trying to decode:
+NO DATA>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+0100NO DATA>
+[cmd_reply=] NO DATA>
+
+[Trying to decode:
+NO DATA>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=8,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP8OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=9,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP9OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN29bit]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN29bit]
+
+[DecodeResult=False]
+ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN29bit]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN29bit]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=10,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSPAOK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=11,initMode=Default,useATST96=True)
+
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATSP5OK>ATALOK>ATIB10OK>ATSH8110FCOK>ATST20OK>ATSW05OK>2212010401BUS INIT: ERROR>2212010401BUS INIT: ERROR>221201BUS INIT: ERROR>ATSW05OK>ATWM221201OK>ATST96OK>221201BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+221201BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+ATST96OK>221201BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+221201BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=KWP]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=37,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP4OK>ATSH8113F1OK>ATIB96OK>ATIIA13OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+ATST96OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=33,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP4OK>ATSH8013F0OK>ATIB96OK>ATIIA13OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+ATST96OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[Trying to decode:
+BUS INIT: ...ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=43,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP6OK>ATSH7E0OK>10C0CAN ERROR>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>221201CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+221201CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+ATST96OK>221201CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+221201CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=CAN11bit]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=44,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP5OK>ATSH8110F1OK>ATIB10OK>ATST20OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+ATST96OK>0100BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100BUS INIT: ERROR>
+[cmd_reply=] BUS INIT: ERROR>
+
+[Trying to decode:
+BUS INIT: ERROR>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=45,initMode=Default,useATST96=True)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP6OK>ATFCSH7E0OK>ATFCSD30000000OK>ATFCSM1OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT1OK>ATALOK>ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+ATST96OK>0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+0100CAN ERROR>
+[cmd_reply=] CAN ERROR>
+
+[Trying to decode:
+>
+ELMFormat=Unknown]
+
+[DecodeResult=False]
+
+[SetRunning(True,From Start #2518)]
+
+Stop(Disconnect:OBDHelper->Disconnect)
+
+[SetRunning(False,From Stop #3640)]
+
+Stopped
+
+===== DISCONNECTED AT: 22.11.2026 00:05:37
+[00:05:38:  [SimpleMainPage.xaml.cs.PreConnect()/1522] OBDReader.stopwatch.Restart//MainPage.PreConnect]
+
+===== LOG STARTED: 22.11.2026 00:05:38=====
+=====Version=2.2.52 Build=42002052 P=False NoDelayELM327Init=False
+====Connection profile=Skoda OBD-II / EOBD
+[Connection type: Bluetooth; DeviceName=V-LINK]
+
+[Connecting to 00:1D:A5:21:46:01]
+[BTConnectionStart, Method=1]
+[BTConnectionEstablished, Method=1]
+got streams from client
+
+[Connected to 00:1D:A5:21:46:01]
+ATZATE0
+[ELM RESET]
+ELM327 v2.2>
+Initialize(initMode=Default)
+
+
+InitializeDefaultInitString(ProtocolNumber=3,initMode=Default,useATST96=False)
+ATE0ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP3OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT2OK>ATALOK>ATST64OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+ATST64OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=3,initMode=Default,useATST96=False)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP3OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT2OK>ATALOK>ATST64OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+ATST64OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+
+
+InitializeDefaultInitString(ProtocolNumber=0,initMode=Default,useATST96=False)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP0OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT2OK>ATALOK>ATST64OK>0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[DecodeResult=False]
+ATST64OK>0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[DecodeResult=False]
+0100SEARCHING...UNABLE TO CONNECT>
+[cmd_reply=] SEARCHING...UNABLE TO CONNECT>
+ATDPNA0>
+ProtocolFromATDPN=0
+
+[DecodeResult=False]
+
+[SetRunning(True,From Start #2518)]
+
+[00:08:06:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=TerminalPage; Attached=True; Size=0x0]
+
+[ELM RESET]
+ATZELM327 v2.2>ATE0ATE0OK>ATH1OK>ATL0OK>ATS0OK>ATSP3OK>ATIIA33OK>ATIB10OK>ATKW0OK>
+[00:10:34:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=TerminalPage; Attached=True; Size=0x0]
+ATSP3OK>ATSP4OK>
+[00:11:36:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=DataRecorderFilesListPage; Attached=True; Size=0x0]
+
+Stop(Disconnect:OBDHelper->Disconnect)
+
+[SetRunning(False,From Stop #3640)]
+
+Stopped
+
+===== DISCONNECTED AT: 22.11.2026 00:11:52
+[00:11:53:  [SimpleMainPage.xaml.cs.PreConnect()/1522] OBDReader.stopwatch.Restart//MainPage.PreConnect]
+
+===== LOG STARTED: 22.11.2026 00:11:54=====
+=====Version=2.2.52 Build=42002052 P=False NoDelayELM327Init=False
+====Connection profile=Skoda OBD-II / EOBD
+[Connection type: Bluetooth; DeviceName=V-LINK]
+
+[Connecting to 00:1D:A5:21:46:01]
+[BTConnectionStart, Method=1]
+[BTConnectionEstablished, Method=1]
+got streams from client
+
+[Connected to 00:1D:A5:21:46:01]
+ATZATE0
+[ELM RESET]
+ELM327 v2.2>
+Initialize(initMode=Default)
+
+
+InitializeDefaultInitString(ProtocolNumber=3,initMode=Default,useATST96=False)
+ATE0ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATDOK>ATD0ATD0OK>ATE0ATE0OK>ATH1OK>ATSP3OK>ATE0OK>ATH1OK>ATM0OK>ATS0OK>ATAT2OK>ATALOK>ATST64OK>0100BUS INIT: ...ERROR>
+[cmd_reply=] BUS INIT: ...ERROR>
+
+[DecodeResult=False]
+0100BUS INIT: 
+Stop(Disconnect:OBDHelper->Disconnect)
+
+[SetRunning(False,From Stop #3640)]
+
+Stopped
+.
+===== DISCONNECTED AT: 22.11.2026 00:12:00
+Init error!
+Data:
+OK>
+Exception:
+CarScannerMaui.OBD2.GeneralReadingException: General read exception
+ ---> System.NullReferenceException: Object reference not set to an instance of an object
+   at CarScannerMaui.OBD2.OBDDataReader.ReadData(Int32 timeout_ms, Action lengthTooBigHandler, Int32 maxLines, Int32 maxLengthBytes)
+   Exception_EndOfInnerExceptionStack
+   at CarScannerMaui.OBD2.OBDDataReader.ReadData(Int32 timeout_ms, Action lengthTooBigHandler, Int32 maxLines, Int32 maxLengthBytes)
+   at CarScannerMaui.OBD2.OBDDataReader.c(Int32 ProtocolNumber, InitModes initMode, Boolean useATST96, Boolean Decode, Int32 sendConnectCmdAttempts)
+
+[00:12:06:  [GarageModel.cs.Initialize()/42] GarageModel.Initialize: started, SharedSettings.CurrentCarId=639308980820093598]
+
+[00:12:06:  [CarRepository.cs.ExistsCarAsync()/240] CarRepository.ExistsCarAsync: id=639308980820093598, count=1]
+
+[00:12:06:  [GarageModel.cs.Initialize()/46] GarageModel.Initialize: ExistsCarAsync(CurrentCarId)=True]
+
+[00:12:06:  [CarRepository.cs.EnsureCarsIntegrityAsync()/303] CarRepository.EnsureCarsIntegrityAsync added 0 missing cars]
+
+[00:12:06:  [GarageModel.cs.Initialize()/51] GarageModel.Initialize: GetCarsLight returned count=1]
+
+[00:12:06:  [GarageModel.cs.Initialize()/81] GarageModel.Initialize: CurrentCar found in DB: Mój samochód (#8DF48217F7FAA9E) #639308980820093598]
+
+[00:12:06:  [CarRepository.cs.UpdateCar()/136] CarRepository.UpdateCar: id=639308980820093598, name=Mój samochód (#8DF48217F7FAA9E), year=2026, affected=1]
+
+[00:12:06:  [GarageModel.cs.Initialize()/118] GarageModel.Initialize: Cars list = Mój samochód (#8DF48217F7FAA9E) #639308980820093598]
+
+[00:12:06:  [GarageModel.cs.Initialize()/133] GarageModel.Initialize: CurrentCar == Mój samochód (#8DF48217F7FAA9E) #639308980820093598]
+
+[00:12:06:  [SettingsGarage.xaml.cs.ContentPage_Loaded()/218] SettingsGarage.ContentPage_Loaded: Cars.Count=1, CurrentCar=Mój samochód (#8DF48217F7FAA9E) #639308980820093598]
+
+[00:12:06:  [SettingsGarage.xaml.cs.ContentPage_Loaded()/230] SettingsGarage.ContentPage_Loaded: selected UI item id=639308980820093598, name=Mój samochód (#8DF48217F7FAA9E)]
+
+[00:12:08:  [SettingsGarage.xaml.cs.btnApply_Tapped()/78] SettingsGarage.btnApply_Tapped: selectedCarId=639308980820093598, selectedCarName=Mój samochód (#8DF48217F7FAA9E), currentSettingsCarId=639308980820093598]
+
+[00:12:08:  [SettingsGarage.xaml.cs.btnApply_Tapped()/84] SettingsGarage.btnApply_Tapped: selected car already current, pop to root]
+
+[00:12:15:  [SimpleMainPage.xaml.cs.PreConnect()/1522] OBDReader.stopwatch.Restart//MainPage.PreConnect]
+
+===== LOG STARTED: 22.11.2026 00:12:15=====
+=====Version=2.2.52 Build=42002052 P=False NoDelayELM327Init=False
+====Connection profile=Skoda OBD-II / EOBD
+[Connection type: Bluetooth; DeviceName=V-LINK]
+
+[Connecting to 00:1D:A5:21:46:01]
+[BTConnectionStart, Method=1]
+[BTConnectionEstablished, Method=1]
+got streams from client
+
+[Connected to 00:1D:A5:21:46:01]
+ATZATE0
+[ELM RESET]
+ELM327 v2.2>
+[SetRunning(True,From Start #2518)]
+
+[00:12:17:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=TerminalPage; Attached=True; Size=0x0]
+
+[ELM RESET]
+ATZATZELM327 v2.2>ATE0ATE0OK>ATS0OK>ATH1OK>ATE0OK>ATH1OK>ATL0OK>ATS0OK>ATSP3OK>ATIIA33OK>ATIB10OK>ATKW0OK>0100BUS INIT: ...ERROR>ATSP4OK>0100BUS INIT: ...ERROR>ATSP5OK>0100BUS INIT: ERROR>
+[FUELRATE: FuelRate;FuelRate=123:False:Zużycie paliwa;MAF=16:False:Masa powietrza wpływającego do silnika samochodu (MAF);MAP=11:False:Ciśnienie bezwzględne w kolektorze dolotowym (MAP);IAT=15:False:Temperatura powietrza zasysanego;RPM=12:False:Obroty silnika;AFR_LAMBDA=92:False:Żądany współczynnik równoważności mieszanki paliwowo-powietrznej;FSS=null;LOAD_ABS=91:False:Bezwzględna wartość obciążenia silnika;LOAD_PCT=4:False:Obliczona wartość obciążenia silnika;Economizer=229:False:Ekonomizer paliwa (na podstawie stanu układu paliwowego i pozycji przepustnicy);BARO=67:False:Ciśnienie barometryczne;AMBIENT_TEMP=94:False:Temp. pow. atmosf.;O2_V1=null;O2_V2=null;INJECTOR=122:False:Kąt wyprzedzenia wtrysku paliwa;CYCLE_CONSUMPTION=null;]
+
+[InstantFuelConsumption VSS=Id=13:Prędkość samochodu:False]
+
+Stop(Disconnect:OBDHelper->Disconnect)
+
+[SetRunning(False,From Stop #3640)]
+
+Stopped
+
+===== DISCONNECTED AT: 22.11.2026 00:23:41
+[00:23:49:  [SimpleMainPage.xaml.cs.PreConnect()/1522] OBDReader.stopwatch.Restart//MainPage.PreConnect]
+
+===== LOG STARTED: 22.11.2026 00:23:49=====
+=====Version=2.2.52 Build=42002052 P=False NoDelayELM327Init=False
+====Connection profile=Skoda OBD-II / EOBD
+[Connection type: Bluetooth; DeviceName=V-LINK]
+
+[Connecting to 00:1D:A5:21:46:01]
+[BTConnectionStart, Method=1]
+[BTConnectionEstablished, Method=1]
+got streams from client
+
+[Connected to 00:1D:A5:21:46:01]
+ATZATE0
+[ELM RESET]
+ELM327 v2.2>
+Initialize(initMode=Default)
+
+InitializeCustomInitString(initMode=Default)
+ATE0ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATZELM327 v2.2>ATE0ATE0OK>ATH1OK>ATL0OK>ATS0OK>ATSP4OK>ATIIA33OK>ATKW0OK>0100BUS INIT: ...ERROR>0100BUS INIT: ...ERROR>0100BUS INIT: ...ERROR>0100BUS INIT: ...ERROR>
+InitializeCustomInitString(initMode=Default)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATZELM327 v2.2>ATE0ATE0OK>ATH1OK>ATL0OK>ATS0OK>ATSP4OK>ATIIA33OK>ATKW0OK>0100BUS INIT: ...ERROR>0100BUS INIT: ...ERROR>0100BUS INIT: ...ERROR>0100BUS INIT: ...ERROR>
+InitializeCustomInitString(initMode=Default)
+ATE0OK>ATE0OK>STI?>
+[STSupported=False(ByResponse)]VTIIcarPro v2.2>
+[VTSupported=True(ByResponse)]
+[ELM RESET]
+ATZELM327 v2.2>ATE0ATE0OK>ATH1OK>ATL0OK>ATS0OK>ATSP4OK>ATIIA33OK>ATKW0OK>0100BUS INIT: ...ERROR>0100BUS INIT: ...ERROR>0100BUS INIT: ...ERROR>0100BUS INIT: ...ERROR>
+[SetRunning(True,From Start #2518)]
+
+[00:24:49:  [PlatformSpecificServiceImplementationDroid.cs.TryGetSafeAreaOverlap()/869] [SAFEAREA_TRY_FAIL] NativeView invalid; Page=DataRecorderFilesListPage; Attached=True; Size=0x0]
+
+[00:25:56:  [GarageModel.cs.Initialize()/42] GarageModel.Initialize: started, SharedSettings.CurrentCarId=639308980820093598]
+
+[00:25:56:  [CarRepository.cs.ExistsCarAsync()/240] CarRepository.ExistsCarAsync: id=639308980820093598, count=1]
+
+[00:25:56:  [GarageModel.cs.Initialize()/46] GarageModel.Initialize: ExistsCarAsync(CurrentCarId)=True]
+
+[00:25:56:  [CarRepository.cs.EnsureCarsIntegrityAsync()/303] CarRepository.EnsureCarsIntegrityAsync added 0 missing cars]
+
+[00:25:56:  [GarageModel.cs.Initialize()/51] GarageModel.Initialize: GetCarsLight returned count=1]
+
+[00:25:56:  [GarageModel.cs.Initialize()/81] GarageModel.Initialize: CurrentCar found in DB: Mój samochód (#8DF48217F7FAA9E) #639308980820093598]
+
+[00:25:56:  [CarRepository.cs.UpdateCar()/136] CarRepository.UpdateCar: id=639308980820093598, name=Mój samochód (#8DF48217F7FAA9E), year=2026, affected=1]
+
+[00:25:56:  [GarageModel.cs.Initialize()/118] GarageModel.Initialize: Cars list = Mój samochód (#8DF48217F7FAA9E) #639308980820093598]
+
+[00:25:56:  [GarageModel.cs.Initialize()/133] GarageModel.Initialize: CurrentCar == Mój samochód (#8DF48217F7FAA9E) #639308980820093598]
+
+[00:25:56:  [SettingsGarage.xaml.cs.ContentPage_Loaded()/218] SettingsGarage.ContentPage_Loaded: Cars.Count=1, CurrentCar=Mój samochód (#8DF48217F7FAA9E) #639308980820093598]
+
+[00:25:56:  [SettingsGarage.xaml.cs.ContentPage_Loaded()/230] SettingsGarage.ContentPage_Loaded: selected UI item id=639308980820093598, name=Mój samochód (#8DF48217F7FAA9E)]
+
+Stop(Disconnect:OBDHelper->Disconnect)
+
+[SetRunning(False,From Stop #3640)]
+
+Stopped
+
+===== DISCONNECTED AT: 22.11.2026 00:26:11
+[///**** CONTACT DEVELOPER REPORT:
+[Car Scanner settings:]
+
+Version=2.2.52/42002052
+PrVersion=2.2.53
+OS version=14
+Platform=Android
+Idiom=Phone
+DeviceModel=RMX3472
+DeviceManufacturer=realme
+
+OrigCulture=pl-PL
+OrigUICulture=pl-PL
+LocationPermission=True
+StoragePermission=True
+BluetoothPermission=True
+NearbyDevicesPermission=Granted
+Installing=com.android.vending, Initiating=com.android.vending, Originating=null (Google Play)
+#Gplay
+ATST=
+P=False
+FPGC=0
+CC=0
+SelectedBrand=Skoda
+SelectedProfileV2Name=OBD-II / EOBD
+ConnectionType=Bluetooth
+FuelFlowCalculationScheme=Auto
+FuelFlowCalculationSchemeIdx=0
+FuelType=Gasoline
+AbrpEnabled=False
+AbrpSendLocation=False
+AbrpVehicleToken=
+AccelerationItems=5
+AccelerationTestSpeedSourcePid=13
+AccelerationUseG=True
+AdapterConnectionAttempts=7
+AdapterConnections=5
+AdaptiveTimings=1
+AddNissanConsult3Pids=False
+AllowProfilesBackgroundUpdate=True
+AlwaysPingECU=True
+AlwaysRecordFuelConsumption=False
+AndroidBluetoothConnectionMethod=0
+AndroidChartRenderingSafeMode=True
+AndroidRecolorNavBar=False
+AndroidRecolorStatusBarInDarkTheme=True
+AndroidRequestedLocationPermission=False
+AndroidRequestedStoragePermission=False
+AndroidRequestWakeLock=False
+AndroidStartBackgroundService=True
+AndroidUseFullscreen=True
+AndroidWiFiMode=Auto
+ATCommandStateOptimization=True
+ATCRAOptimization=False
+ATSTIdx=0
+AutomaticallySwitchTheme=True
+AutomaticallySwitchThemeAvailable=True
+AutomaticReoptimization=True
+BadDeviceCAN29bitSafeMode=True
+BindSocketToFirstWiFiNetwork=True
+BindSocketToWiFiNetwork=True
+BluetoothConnectionTimeout=5
+BluetoothLocationWarningShowed=False
+BoostCalculationMethod=Auto
+BoostCalculationMethodIdx=0
+BrandForDTC=Skoda
+BTDeviceID=00:1D:A5:21:46:01
+BTDeviceName=V-LINK
+BTDeviceNameWithAddress=V-LINK
+00:1D:A5:21:46:01
+BTLEDeviceID=
+BTLEDeviceName=
+BTLEInputID=
+BTLEOutputID=
+BTLEServiceID=
+BTLEShowDevicesWithoutName=False
+CalibrationStartOdometer=0
+CalibrationStartTime=1.01.0001 00:00:00
+CANLongRequestATR0=True
+CANOptimizationWarningShowed=False
+CANOptimizeMaxInRequest=6
+CANOptimizeMode22=False
+CANOptimizeMode22MaxInRequest=3
+CANOptimizeMode22SelfLearningMode=True
+CANOptimizeRequests=False
+CANRequestSegmentationSTNLevel=True
+CANResponseSegmentationSTNLevel=False
+CarPlayDashboardMaxItemsOnPage=10
+CarPlayDashboardMaxItemsPerRow=4
+CarPlayDashboardSelectedIndex=0
+CarPlayUpdateInterval=500
+ChartDisplayStyle=Line
+ChartShowAverageValue=False
+ChartsView=0
+ChartsVisible=1
+CheckBluetoothTurnedOn=True
+CheckIsELMWhenConnecting=False
+CheckOnlyPositiveResponseMarker=True
+CodingLastPlatformSelected=
+ConnectOnLaunch=False
+Currency=$
+CurrentCarId=639308980820093598
+CurrentCarName=Mój samochód
+CurrentTimeShowSeconds=False
+CustomFuelAF=14,7
+CustomFuelDensity=0,73
+CustomInitString=ATZ
+ATE0
+ATH1
+ATL0
+ATS0
+ATSP4
+ATIIA33
+ATKW0
+CustomPidLastId=100000
+DaihatsuKLine=False
+DarkMode=False
+DashboardAlignItemsToGrid=True
+DashboardAnimation=False
+DashboardCircularGaugeAnimation=True
+DashboardHideTopControls=True
+DashboardHUDMode=False
+DashboardLastPage=0
+DashboardRearrangeOnRotation=True
+DashboardResizeHintDisplayed=False
+DashboardTheme=CarScanner
+DashboardUseFullscreen=False
+DataRecordChartItemHeight=200
+DataRecordLineSplitterTime=30
+DatasetUploadMaxBlockSize=4095
+DecodeMUT2Compatible=True
+DefaultFunctionalHeader=
+DelayBeforeReconnect=0
+DetectECUConnectionPID=0100
+DetectZeroFuelConsumption=True
+DisableOptimizationIfItFails=True
+DroidAskForBluetoothPermissions=True
+DroidAutoAdjustableContentPageEnabled=True
+DroidDisplayConnectionStatusInStatusBar=True
+DroidGPCheckCurrencyR=True
+DroidGpsService=Auto
+DroidGWMRemoveSideBar=False
+DroidTryTurnOnBluetooth=True
+DroidWriteUISizeToLog=False
+DTCMode=Auto
+DTCSearchEngine=Google
+ELM327ConnectionAttempts=0
+EnergyPricePerkWh=1,01
+EngineCylinders=4
+EngineDisplacement=1,6
+EV_Power_InvertValue=False
+ExpectedResponseCountOptimization=True
+ExpectedResponseCountOptimizationAlways1ForKWPMode01=False
+FilterRPM300=False
+FilterWrongAFValues=True
+FirstConnectionAttempted=True
+Flow_use_grams_sec=True
+FlowControlOverrideMode=Off
+FontAutoScalingDashboard=False
+FontSizePatch=0
+ForceOnlyOneProtocol=True
+ForceProfileUpdateScheduled=False
+ForceUseManualFlowControlForCodingOperations=True
+ForceUseManualFlowControlWhileReadingData=True
+FuelConsumptionUnit=LitersPer100km
+FuelFlowCorrectionFactor=1
+FuelFlowUseFixedAFR=False
+FuelHybridCar=True
+FuelPriceForLitre=1,01
+FuelTankCapacity=50
+FuelTypeIdx=0
+GpsMinHorizontalAccuracy=40
+GpsMinSpeedAccuracy=2
+GpsMinVerticalAccuracy=50
+HideArchiveDTC=False
+HideDTCWithUncomplitedTests=True
+Hstld4Apl=False
+IgnoreCodingErrors=True
+IgnoreProfilePidsTestScheduled=False
+IgnoreSupportedFlagForPIDs0166_0183=False
+InjectorFlow=250
+InjectorPid=122
+InterfaceTheme=Unspecified
+IOTimeout=10
+IsCalibrationStartTimeSet=False
+IsRuIPCached=False
+KWPConcatResponseLines=False
+Language=0
+LastCarAvailableSensors=
+LastSuccessfulProtocol=0
+LastTimeDBUpdateChecked=639309018555486227
+LastTimeLicenceChecked=0
+LastWiFiName=
+LatestVersion=2.2.52
+LiveDataListPageUpdateOnlyVisible=True
+LiveDataPIDId0=0
+LiveDataPIDId0_DoubleFormat=2
+LiveDataPIDId1=0
+LiveDataPIDId1_DoubleFormat=2
+LiveDataPIDId2=0
+LiveDataPIDId2_DoubleFormat=2
+LiveDataPIDId3=0
+LiveDataPIDId3_DoubleFormat=2
+LiveDataShowTime=15
+LogoTaps=0
+LongResponsesSafeMode=False
+MainPageButtonsConfiguration=
+ManageSubscriptionsVisible=False
+MergeDriveCyclesTime=20
+Mode01Prefix=01
+MultiChartPauseHidden=True
+MultiPidsSelected=
+NissanConsult3OpenCloseSession=True
+NoDataLimit=40
+NoDelayELM327Init=False
+NoWiFiWarning=True
+OBDonUDS=TryAddOrReplace
+OpenDashboardOnLaunch=False
+OptimizedRequestStuckCounter=0
+PerformSensorsScanByTesting=False
+PIDSelectorWithValuePreview=True
+PIDSortingMode=Id
+Pressure_use_kpa=True
+ProfileHasPids=False
+ProfileUpdateAlias=6065dd9d0e07476e811f27ef7d9d90f5
+ProtocolNumber=3
+ReadPartialErrorAction=Ignore
+RecentColors=
+RecordData=True
+RecordLocationData=False
+ReplaceATTAWithATCER=False
+RequestECUInfo=False
+ResponseMarkerLength=0
+RoundValuesInDataRecords=False
+RPMFixWarningShowed=False
+ScrollDelaysContentTouches=False
+SearchForBTLEIfConnectionFailed=True
+SelectedProfileName=
+SendATZATE=True
+SendDefaultFunctionalHeader=True
+SendDelay=20
+SendStatistics=True
+SendTesterPresentWhileLongUploadTimeMs=750
+SensorsSearchOrderDefault=True
+SetChartMinMaxOnlyVisibleArea=True
+ShouldCheckProfilePIDs=True
+ShowAirFuelBasedOnStoichiometric=True
+ShowBadELMWarning=False
+ShowCodingAndService=True
+ShowConnectionStatusOverlay=False
+ShowExperimental=True
+ShowHintsInProfileSelector=True
+ShowMinMaxValues=False
+ShowPing=False
+ShowUSGallonSelector=False
+SkipHeadersDTC=
+SpeedCalibrationTaskPending=False
+SpeedCorrectionFactor=1
+SpeedPID2Bytes=False
+StopConnectionAttemptsAfterFailsMinutes=0
+TesterPresentCommand=0100
+ToyotaJDMMode21=False
+TraceLogs=False
+TripsPageChartMode=Distance_AvgConsumption
+TripsPageLastPeriod=Last7Days
+TryConnectToLastWiFiNetwork=True
+TurnOffBluetoothIfWasTurnedOn=False
+UIAnimations=True
+USBPid=
+USBSpeed=38400
+USBVid=
+Use_celcium=True
+Use_km=True
+UseCustomPIDForZeroConsumption=False
+UseDefaultInit=False
+UseGPS=False
+UseGPSForFuelConsumption=False
+UseHoursePower=True
+UseL100ForFuel=True
+UseLitersForVolume=True
+UseNmForTorque=True
+UseOBD2=True
+UseRPMFix=False
+UseServiceResponseForPositiveResponseMarker=True
+UseUSGallon=True
+VE1000=70
+VE2000=75
+VE3000=80
+VE4000=85
+VE5000=85
+VE6000=85
+VE7000=80
+VE8000=75
+VWTP_ActiveConnectionTestTimeout=1000
+VWTP_ChannelSetupATST=0A
+VWTP_SendConnectionConfirmationPeriod=600
+VWTP20OpenSessionForDTCOperations=True
+WiFiPort=35000
+WiFiServer=192.168.0.10
+ZeroConsumptionPIDId=-1
+ZeroConsumptionWhenZero=False
+
+Override_roles=
+
+[***/// END OF CONTACT DEVELOPER REPORT]
+[///**** CONTACT DEVELOPER REPORT:
+[Car Scanner settings:]
+
+Version=2.2.52/42002052
+PrVersion=2.2.53
+OS version=14
+Platform=Android
+Idiom=Phone
+DeviceModel=RMX3472
+DeviceManufacturer=realme
+
+OrigCulture=pl-PL
+OrigUICulture=pl-PL
+LocationPermission=True
+StoragePermission=True
+BluetoothPermission=True
+NearbyDevicesPermission=Granted
+Installing=com.android.vending, Initiating=com.android.vending, Originating=null (Google Play)
+#Gplay
+ATST=
+P=False
+FPGC=0
+CC=0
+SelectedBrand=Skoda
+SelectedProfileV2Name=OBD-II / EOBD
+ConnectionType=Bluetooth
+FuelFlowCalculationScheme=Auto
+FuelFlowCalculationSchemeIdx=0
+FuelType=Gasoline
+AbrpEnabled=False
+AbrpSendLocation=False
+AbrpVehicleToken=
+AccelerationItems=5
+AccelerationTestSpeedSourcePid=13
+AccelerationUseG=True
+AdapterConnectionAttempts=7
+AdapterConnections=5
+AdaptiveTimings=1
+AddNissanConsult3Pids=False
+AllowProfilesBackgroundUpdate=True
+AlwaysPingECU=True
+AlwaysRecordFuelConsumption=False
+AndroidBluetoothConnectionMethod=0
+AndroidChartRenderingSafeMode=True
+AndroidRecolorNavBar=False
+AndroidRecolorStatusBarInDarkTheme=True
+AndroidRequestedLocationPermission=False
+AndroidRequestedStoragePermission=False
+AndroidRequestWakeLock=False
+AndroidStartBackgroundService=True
+AndroidUseFullscreen=True
+AndroidWiFiMode=Auto
+ATCommandStateOptimization=True
+ATCRAOptimization=False
+ATSTIdx=0
+AutomaticallySwitchTheme=True
+AutomaticallySwitchThemeAvailable=True
+AutomaticReoptimization=True
+BadDeviceCAN29bitSafeMode=True
+BindSocketToFirstWiFiNetwork=True
+BindSocketToWiFiNetwork=True
+BluetoothConnectionTimeout=5
+BluetoothLocationWarningShowed=False
+BoostCalculationMethod=Auto
+BoostCalculationMethodIdx=0
+BrandForDTC=Skoda
+BTDeviceID=00:1D:A5:21:46:01
+BTDeviceName=V-LINK
+BTDeviceNameWithAddress=V-LINK
+00:1D:A5:21:46:01
+BTLEDeviceID=
+BTLEDeviceName=
+BTLEInputID=
+BTLEOutputID=
+BTLEServiceID=
+BTLEShowDevicesWithoutName=False
+CalibrationStartOdometer=0
+CalibrationStartTime=1.01.0001 00:00:00
+CANLongRequestATR0=True
+CANOptimizationWarningShowed=False
+CANOptimizeMaxInRequest=6
+CANOptimizeMode22=False
+CANOptimizeMode22MaxInRequest=3
+CANOptimizeMode22SelfLearningMode=True
+CANOptimizeRequests=False
+CANRequestSegmentationSTNLevel=True
+CANResponseSegmentationSTNLevel=False
+CarPlayDashboardMaxItemsOnPage=10
+CarPlayDashboardMaxItemsPerRow=4
+CarPlayDashboardSelectedIndex=0
+CarPlayUpdateInterval=500
+ChartDisplayStyle=Line
+ChartShowAverageValue=False
+ChartsView=0
+ChartsVisible=1
+CheckBluetoothTurnedOn=True
+CheckIsELMWhenConnecting=False
+CheckOnlyPositiveResponseMarker=True
+CodingLastPlatformSelected=
+ConnectOnLaunch=False
+Currency=$
+CurrentCarId=639308980820093598
+CurrentCarName=Mój samochód
+CurrentTimeShowSeconds=False
+CustomFuelAF=14,7
+CustomFuelDensity=0,73
+CustomInitString=ATZ
+ATE0
+ATH1
+ATL0
+ATS0
+ATSP4
+ATIIA33
+ATKW0
+CustomPidLastId=100000
+DaihatsuKLine=False
+DarkMode=False
+DashboardAlignItemsToGrid=True
+DashboardAnimation=False
+DashboardCircularGaugeAnimation=True
+DashboardHideTopControls=True
+DashboardHUDMode=False
+DashboardLastPage=0
+DashboardRearrangeOnRotation=True
+DashboardResizeHintDisplayed=False
+DashboardTheme=CarScanner
+DashboardUseFullscreen=False
+DataRecordChartItemHeight=200
+DataRecordLineSplitterTime=30
+DatasetUploadMaxBlockSize=4095
+DecodeMUT2Compatible=True
+DefaultFunctionalHeader=
+DelayBeforeReconnect=0
+DetectECUConnectionPID=0100
+DetectZeroFuelConsumption=True
+DisableOptimizationIfItFails=True
+DroidAskForBluetoothPermissions=True
+DroidAutoAdjustableContentPageEnabled=True
+DroidDisplayConnectionStatusInStatusBar=True
+DroidGPCheckCurrencyR=True
+DroidGpsService=Auto
+DroidGWMRemoveSideBar=False
+DroidTryTurnOnBluetooth=True
+DroidWriteUISizeToLog=False
+DTCMode=Auto
+DTCSearchEngine=Google
+ELM327ConnectionAttempts=0
+EnergyPricePerkWh=1,01
+EngineCylinders=4
+EngineDisplacement=1,6
+EV_Power_InvertValue=False
+ExpectedResponseCountOptimization=True
+ExpectedResponseCountOptimizationAlways1ForKWPMode01=False
+FilterRPM300=False
+FilterWrongAFValues=True
+FirstConnectionAttempted=True
+Flow_use_grams_sec=True
+FlowControlOverrideMode=Off
+FontAutoScalingDashboard=False
+FontSizePatch=0
+ForceOnlyOneProtocol=True
+ForceProfileUpdateScheduled=False
+ForceUseManualFlowControlForCodingOperations=True
+ForceUseManualFlowControlWhileReadingData=True
+FuelConsumptionUnit=LitersPer100km
+FuelFlowCorrectionFactor=1
+FuelFlowUseFixedAFR=False
+FuelHybridCar=True
+FuelPriceForLitre=1,01
+FuelTankCapacity=50
+FuelTypeIdx=0
+GpsMinHorizontalAccuracy=40
+GpsMinSpeedAccuracy=2
+GpsMinVerticalAccuracy=50
+HideArchiveDTC=False
+HideDTCWithUncomplitedTests=True
+Hstld4Apl=False
+IgnoreCodingErrors=True
+IgnoreProfilePidsTestScheduled=False
+IgnoreSupportedFlagForPIDs0166_0183=False
+InjectorFlow=250
+InjectorPid=122
+InterfaceTheme=Unspecified
+IOTimeout=10
+IsCalibrationStartTimeSet=False
+IsRuIPCached=False
+KWPConcatResponseLines=False
+Language=0
+LastCarAvailableSensors=
+LastSuccessfulProtocol=0
+LastTimeDBUpdateChecked=639309018555486227
+LastTimeLicenceChecked=0
+LastWiFiName=
+LatestVersion=2.2.52
+LiveDataListPageUpdateOnlyVisible=True
+LiveDataPIDId0=0
+LiveDataPIDId0_DoubleFormat=2
+LiveDataPIDId1=0
+LiveDataPIDId1_DoubleFormat=2
+LiveDataPIDId2=0
+LiveDataPIDId2_DoubleFormat=2
+LiveDataPIDId3=0
+LiveDataPIDId3_DoubleFormat=2
+LiveDataShowTime=15
+LogoTaps=0
+LongResponsesSafeMode=False
+MainPageButtonsConfiguration=
+ManageSubscriptionsVisible=False
+MergeDriveCyclesTime=20
+Mode01Prefix=01
+MultiChartPauseHidden=True
+MultiPidsSelected=
+NissanConsult3OpenCloseSession=True
+NoDataLimit=40
+NoDelayELM327Init=False
+NoWiFiWarning=True
+OBDonUDS=TryAddOrReplace
+OpenDashboardOnLaunch=False
+OptimizedRequestStuckCounter=0
+PerformSensorsScanByTesting=False
+PIDSelectorWithValuePreview=True
+PIDSortingMode=Id
+Pressure_use_kpa=True
+ProfileHasPids=False
+ProfileUpdateAlias=6065dd9d0e07476e811f27ef7d9d90f5
+ProtocolNumber=3
+ReadPartialErrorAction=Ignore
+RecentColors=
+RecordData=True
+RecordLocationData=False
+ReplaceATTAWithATCER=False
+RequestECUInfo=False
+ResponseMarkerLength=0
+RoundValuesInDataRecords=False
+RPMFixWarningShowed=False
+ScrollDelaysContentTouches=False
+SearchForBTLEIfConnectionFailed=True
+SelectedProfileName=
+SendATZATE=True
+SendDefaultFunctionalHeader=True
+SendDelay=20
+SendStatistics=True
+SendTesterPresentWhileLongUploadTimeMs=750
+SensorsSearchOrderDefault=True
+SetChartMinMaxOnlyVisibleArea=True
+ShouldCheckProfilePIDs=True
+ShowAirFuelBasedOnStoichiometric=True
+ShowBadELMWarning=False
+ShowCodingAndService=True
+ShowConnectionStatusOverlay=False
+ShowExperimental=True
+ShowHintsInProfileSelector=True
+ShowMinMaxValues=False
+ShowPing=False
+ShowUSGallonSelector=False
+SkipHeadersDTC=
+SpeedCalibrationTaskPending=False
+SpeedCorrectionFactor=1
+SpeedPID2Bytes=False
+StopConnectionAttemptsAfterFailsMinutes=0
+TesterPresentCommand=0100
+ToyotaJDMMode21=False
+TraceLogs=False
+TripsPageChartMode=Distance_AvgConsumption
+TripsPageLastPeriod=Last7Days
+TryConnectToLastWiFiNetwork=True
+TurnOffBluetoothIfWasTurnedOn=False
+UIAnimations=True
+USBPid=
+USBSpeed=38400
+USBVid=
+Use_celcium=True
+Use_km=True
+UseCustomPIDForZeroConsumption=False
+UseDefaultInit=False
+UseGPS=False
+UseGPSForFuelConsumption=False
+UseHoursePower=True
+UseL100ForFuel=True
+UseLitersForVolume=True
+UseNmForTorque=True
+UseOBD2=True
+UseRPMFix=False
+UseServiceResponseForPositiveResponseMarker=True
+UseUSGallon=True
+VE1000=70
+VE2000=75
+VE3000=80
+VE4000=85
+VE5000=85
+VE6000=85
+VE7000=80
+VE8000=75
+VWTP_ActiveConnectionTestTimeout=1000
+VWTP_ChannelSetupATST=0A
+VWTP_SendConnectionConfirmationPeriod=600
+VWTP20OpenSessionForDTCOperations=True
+WiFiPort=35000
+WiFiServer=192.168.0.10
+ZeroConsumptionPIDId=-1
+ZeroConsumptionWhenZero=False
+
+Override_roles=
+
+[***/// END OF CONTACT DEVELOPER REPORT]
