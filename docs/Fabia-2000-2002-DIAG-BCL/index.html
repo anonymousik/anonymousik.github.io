@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Škoda Fabia I (2000–2002) · Przewodnik Diagnostyczny | Anonymousik.is-a.dev</title>
+  <style>
+    :root {
+      --bg: #0b101b;
+      --bg-elev: #121a2b;
+      --bg-soft: #182238;
+      --border: #26334d;
+      --text: #e6edf7;
+      --muted: #93a4c3;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --code-bg: #080c15;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      --radius: 14px;
+    }
+    [data-theme="light"] {
+      --bg: #f4f7fb;
+      --bg-elev: #ffffff;
+      --bg-soft: #eef3fa;
+      --border: #d5dfec;
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #0284c7;
+      --accent-2: #16a34a;
+      --warn: #d97706;
+      --danger: #dc2626;
+      --code-bg: #f1f5f9;
+      --shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88em;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Topbar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--bg-elev);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      backdrop-filter: blur(8px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .brand-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #06101a;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+    .brand-title {
+      font-weight: 700;
+      font-size: 0.98rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .brand-sub {
+      font-size: 0.74rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn {
+      border: 1px solid var(--border);
+      background: var(--bg-soft);
+      color: var(--text);
+      padding: 7px 11px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.15s ease;
+    }
+    .btn:hover { border-color: var(--accent); }
+    .btn-primary {
+      background: var(--accent);
+      color: #04131f;
+      border-color: transparent;
+    }
+    .btn-success {
+      background: var(--accent-2);
+      color: #041b0c;
+      border-color: transparent;
+    }
+    .menu-toggle { display: inline-flex; }
+
+    /* Layout */
+    .layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      gap: 24px;
+      padding: 18px 16px 64px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 72px;
+      align-self: start;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+    .nav-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 10px 8px 6px;
+      font-weight: 700;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 9px;
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: var(--bg-soft);
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .pill {
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* Controls bar */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: var(--radius);
+    }
+    .search-input {
+      flex: 1 1 220px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .mode-group {
+      display: inline-flex;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 3px;
+    }
+    .mode-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 6px 11px;
+      border-radius: 7px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .mode-btn.active {
+      background: var(--accent);
+      color: #04131f;
+    }
+
+    /* Cards & Sections */
+    .section {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section h2 {
+      margin: 0;
+      font-size: 1.18rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h3 { margin: 16px 0 8px; font-size: 1rem; color: var(--accent); }
+    p { margin: 8px 0; }
+    ul, ol { margin: 8px 0; padding-left: 20px; }
+    li { margin-bottom: 5px; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+    .stat-box {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 12px;
+    }
+    .stat-label { font-size: 0.74rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-val { font-weight: 700; font-size: 0.96rem; margin-top: 2px; word-break: break-word; }
+
+    /* Callouts */
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: var(--bg-soft);
+      padding: 12px 14px;
+      border-radius: 0 10px 10px 0;
+      margin: 12px 0;
+      font-size: 0.92rem;
+    }
+    .callout.warn { border-left-color: var(--warn); }
+    .callout.danger { border-left-color: var(--danger); }
+    .callout.ok { border-left-color: var(--accent-2); }
+
+    /* Code blocks */
+    .code-wrap {
+      position: relative;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+    .code-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--muted);
+      background: rgba(255,255,255,0.02);
+    }
+    pre {
+      margin: 0;
+      padding: 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 10px 0; border: 1px solid var(--border); border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { background: var(--bg-soft); font-weight: 700; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .b-ok { background: rgba(34,197,94,0.16); color: var(--accent-2); }
+    .b-warn { background: rgba(245,158,11,0.16); color: var(--warn); }
+    .b-bad { background: rgba(239,68,68,0.16); color: var(--danger); }
+
+    /* Checklist */
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .check-item input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--accent-2); flex-shrink: 0; }
+    .check-item.done { opacity: 0.65; text-decoration: line-through; }
+    .progress-track {
+      height: 8px;
+      background: var(--code-bg);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 8px 0 14px;
+      border: 1px solid var(--border);
+    }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 0.2s; }
+
+    /* File viewer */
+    .viewer-out {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 10px;
+      max-height: 420px;
+      overflow: auto;
+      display: none;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.84rem;
+      padding: 18px 10px;
+      border-top: 1px solid var(--border);
+      margin-top: 24px;
+    }
+
+    .hidden-by-mode, .hidden-by-search { display: none !important; }
+
+    @media (max-width: 920px) {
+      .layout { grid-template-columns: 1fr; padding-top: 12px; }
+      .sidebar {
+        display: none;
+        position: fixed;
+        inset: 60px 12px auto 12px;
+        z-index: 60;
+        max-height: 75vh;
+        overflow-y: auto;
+      }
+      .sidebar.open { display: block; }
+    }
+    @media (min-width: 921px) {
+      .menu-toggle { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">6Y</div>
+      <div style="min-width:0">
+        <div class="brand-title">Škoda Fabia I · Przewodnik Diagnostyczny</div>
+        <div class="brand-sub">VIN: TMBNB46Y12X023205 · 1.4 MPI 8V (2002) · Anonymousik.is-a.dev</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn" id="themeBtn" type="button" title="Zmień motyw">🌓 Motyw</button>
+      <button class="btn menu-toggle" id="menuBtn" type="button">☰ Spis</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="nav-label">Nawigacja dokumentacji</div>
+      <a class="nav-link" href="#start"><span>1. Start i Import kopii</span><span class="pill">JSON</span></a>
+      <a class="nav-link" href="#kierowca"><span>2. Instrukcja dla kierowcy</span><span class="pill">Prosty</span></a>
+      <a class="nav-link" href="#pojazd"><span>3. Karta pojazdu i pliki</span><span class="pill">VIN</span></a>
+      <a class="nav-link tech-only" href="#konfiguracja"><span>4. BorbaCar / Car Scanner / KKL</span><span class="pill">OBD</span></a>
+      <a class="nav-link tech-only" href="#ecu"><span>5. Matryca ECU 2000–2002</span><span class="pill">K-Line</span></a>
+      <a class="nav-link" href="#usterki"><span>6. Usterki i karta dla mechanika</span><span class="pill">Serwis</span></a>
+      <a class="nav-link" href="#checklist"><span>7. Lista kontrolna działań</span><span class="pill" id="checkCount">0/6</span></a>
+      <a class="nav-link" href="#czytnik"><span>8. Czytnik plików z folderu</span><span class="pill">.md/.csv</span></a>
+      <div class="nav-label">Lokalny folder kopii</div>
+      <div style="padding: 4px 8px; font-size: 0.78rem; color: var(--muted); word-break: break-all;">
+        <code>/Download/Fabia-2000-2002-DIAG-BCL/</code><br>
+        <a href="./KOPIĘ-FULL-SKODA/IMPORTUJ_MNIE" style="display:inline-block;margin-top:6px;">📂 Otwórz KOPIĘ-FULL-SKODA/IMPORTUJ_MNIE</a>
+      </div>
+    </aside>
+
+    <main>
+      <div class="controls">
+        <input type="search" id="searchInput" class="search-input" placeholder="Szukaj w dokumentacji (np. EPC, Simos, AQW, ATKW0, stop, K-Line)..." />
+        <div class="mode-group" role="group" aria-label="Tryb widoku">
+          <button type="button" class="mode-btn active" data-mode="all">Tryb Pełny</button>
+          <button type="button" class="mode-btn" data-mode="simple">Prosty (Kierowca)</button>
+        </div>
+      </div>
+
+      <!-- 1. START & IMPORT -->
+      <section class="section" id="start" data-tags="import kopia borbacar json fabia2002 start">
+        <div class="section-head">
+          <h2>1. Szybki Start i Import Kopii BorbaCar Labs</h2>
+          <span class="badge b-ok">Offline-Ready</span>
+        </div>
+        <div class="callout ok">
+          <strong>Gdzie jest profil do wgrania w BorbaCar Labs?</strong><br>
+          W folderze <code>KOPIĘ-FULL-SKODA/</code> (ścieżka: <a href="./KOPIĘ-FULL-SKODA/IMPORTUJ_MNIE"><code>./KOPIĘ-FULL-SKODA/IMPORTUJ_MNIE</code></a>).<br>
+          W aplikacji <strong>BorbaCar Labs</strong> użyj funkcji <em>Przywróć kopię zapasową (Restore)</em> i wskaż plik JSON (<code>BorbaCar-backup_skoda-fabia.json</code> / plik w <code>KOPIĘ-FULL-SKODA</code>).
+        </div>
+        <p style="font-size:0.88rem; color:var(--muted);">
+          <strong>Wskazówka Android:</strong> Jeśli picker plików w BorbaCar Labs nie widzi pliku <code>IMPORTUJ_MNIE</code> bez rozszerzenia, upewnij się, że ma on na końcu rozszerzenie <code>.json</code> (np. <code>BorbaCar-backup_skoda-fabia.json</code>). Pliki <code>.csv</code> oraz <code>.md</code> służą wyłącznie jako dokumentacja i nie wgrywa się ich przez Restore.
+        </p>
+      </section>
+
+      <!-- 2. INSTRUKCJA DLA OSOBY NIETECHNICZNEJ -->
+      <section class="section" id="kierowca" data-tags="instrukcja kierowca nietechniczna stop epc lpg radio v-link">
+        <div class="section-head">
+          <h2>2. Prosta Instrukcja dla Kierowcy (bez żargonu)</h2>
+          <button class="btn" type="button" onclick="copyById('driverText', this)">📋 Kopiuj instrukcję</button>
+        </div>
+        <div id="driverText">
+          <ol>
+            <li><strong>Bezpieczeństwo (od razu):</strong>
+              <ul>
+                <li><strong>Brak świateł stopu:</strong> to przez to świeci kontrolka <code>EPC</code> i auto może szarpać. Sprawdź bezpiecznik i żarówki stopu, a jeśli są dobre — do wymiany jest czujnik stopu nad pedałem hamulca (~30–50 zł).</li>
+                <li><strong>Przygasające światła i znikające wspomaganie:</strong> to usterka zasilania/ładowania. Nie zwlekaj z elektrykiem, bo wspomaganie może wyłączyć się podczas jazdy.</li>
+                <li><strong>Olej silnikowy:</strong> silnik spala dużo oleju — zawsze sprawdzaj bagnet przed wyjazdem i woź olej na dolewkę.</li>
+              </ul>
+            </li>
+            <li><strong>Domowy test na trudne odpalanie (2–3 dni):</strong> zakręć zawór na butli LPG w bagażniku, wypal resztkę gazu z przewodów i pojeźdź 2–3 dni <strong>tylko na benzynie</strong>. Jeśli auto zacznie dobrze odpalać i przestanie gasnąć — winna jest instalacja gazowa LPG.</li>
+            <li><strong>Podłączanie kostki OBD (V-LINK):</strong> włóż kostkę w mały schowek po lewej pod kierownicą, przekręć kluczyk na <strong>zapłon</strong> (kontrolki świecą). Przed kliknięciem „Połącz” <strong>wyłącz i odłącz bezpiecznik niefabrycznego radia (Jie Rui) oraz gazu</strong>. Jeśli mimo to telefon nie łączy się z silnikiem — nie kupuj innych kostek Bluetooth, tylko jedź do mechanika na zwykły kabel <strong>VAG KKL / VCDS</strong>.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- 3. KARTA POJAZDU -->
+      <section class="section" id="pojazd" data-tags="vin tmbnb46y12x023205 aqw amz atz poznan comfort 6y2 pliki">
+        <div class="section-head">
+          <h2>3. Karta Pojazdu i Higiena Plików</h2>
+          <span class="badge b-ok">VIN Zweryfikowany</span>
+        </div>
+        <div class="grid-2">
+          <div class="stat-box"><div class="stat-label">VIN (bez @ na końcu)</div><div class="stat-val">TMBNB46Y12X023205</div></div>
+          <div class="stat-box"><div class="stat-label">Model i wersja</div><div class="stat-val">Škoda Fabia I (6Y2) Comfort · 2002</div></div>
+          <div class="stat-box"><div class="stat-label">Silnik / Moc / Paliwo</div><div class="stat-val">1.4 MPI 8V · 50 kW (68 KM) · Benzyna + LPG</div></div>
+          <div class="stat-box"><div class="stat-label">Montaż / Skrzynia / ECU</div><div class="stat-val">Poznań (X) · Manual 5-bieg (M-5) · Simos 3PA/3PB</div></div>
+        </div>
+        <p style="margin-top:12px;"><strong>Możliwe kody silnika:</strong> <code>AQW</code> (najczęstszy w 2002, Euro 4, 2 sondy + EGR), <code>ATZ</code> (D4/EU4) lub <code>AME</code> (Euro 2/3, 1 sonda). Dokładny kod widnieje na białej wlepce w bagażniku przy kole zapasowym lub na osłonie rozrządu.</p>
+        <div class="callout warn">
+          <strong>Uwaga na stare pliki PDF:</strong> raporty <code>relatorio-rea-obd*.pdf</code> zawierające kody <code>P0133</code> i <code>P0301</code> pochodziły wyłącznie z <strong>symulatora demonstracyjnego</strong> aplikacji i nie są prawdziwymi błędami tego samochodu.
+        </div>
+      </section>
+
+      <!-- 4. KONFIGURACJA OBD -->
+      <section class="section tech-only" id="konfiguracja" data-tags="borbacar car scanner vgate icar pro v-link atkw0 atsp3 atsp4 vcds ftdi kkl">
+        <div class="section-head">
+          <h2>4. Konfiguracja BorbaCar Labs, Car Scanner i VAG KKL</h2>
+          <span class="badge b-warn">Techniczne</span>
+        </div>
+
+        <h3>A. BorbaCar Labs — co musisz wiedzieć</h3>
+        <ul>
+          <li>Katalog pojazdów w aplikacji pochodzi z brazylijskiego <em>Inmetro PBE Veicular (2012–2026)</em>, dlatego Fabia 2002 jest profilem ręcznym (<code>USER_INPUT</code>).</li>
+          <li>Aplikacja czyta wyłącznie generyczny standard <strong>EOBD silnika</strong> (nie czyta ABS, Airbag, wspomagania ani licznika). Słownik <code>generic-dtc-3</code> nie opisuje kodów producenta VAG <code>P1xxx</code> ani <code>P0141</code>, <code>P0161</code>, <code>P0180</code>, <code>P0553</code>.</li>
+        </ul>
+
+        <h3>B. Car Scanner ELM OBD2 (Vgate iCar Pro v2.2 · MAC 00:1D:A5:21:46:01)</h3>
+        <ul>
+          <li><strong>Poprawki ustawień wykryte w <code>log.txt</code>:</strong> zmień pojemność z <code>1,6</code> na <strong><code>1,4</code></strong> oraz <strong>WYŁĄCZ</strong> opcję <em>Pojazd hybrydowy</em> (<code>FuelHybridCar=False</code>).</li>
+          <li><strong>Połączenie:</strong> przetestuj <strong>Bluetooth LE (4.0+)</strong> lub klasyczny <strong>Bluetooth</strong> → <code>V-LINK</code>. Profil: <code>Škoda → OBD-II / EOBD</code>.</li>
+          <li><strong>Protokół ECU (kolejno):</strong> Tryb <strong>Domyślny</strong> + <code>3) ISO 9141-2</code> (odznacz „Wypróbuj inne protokoły”), następnie <code>4) ISO 14230-4 KWP (5 baud)</code>.</li>
+        </ul>
+
+        <div class="code-wrap">
+          <div class="code-bar">
+            <span>Tryb Niestandardowy (ISO 9141-2 bez ATKW — Simos 3)</span>
+            <button class="btn" type="button" onclick="copyById('atIso', this)">Kopiuj AT</button>
+          </div>
+          <pre id="atIso">ATZ
+ATE0
+ATH1
+ATL0
+ATS0
+ATSP3
+ATIIA33
+ATIB10
+ATKW0</pre>
+        </div>
+
+        <div class="code-wrap">
+          <div class="code-bar">
+            <span>Alternatywa Niestandardowa (KWP2000 5-baud)</span>
+            <button class="btn" type="button" onclick="copyById('atKwp', this)">Kopiuj AT</button>
+          </div>
+          <pre id="atKwp">ATZ
+ATE0
+ATH1
+ATL0
+ATS0
+ATSP4
+ATIIA33
+ATIB10
+ATKW0</pre>
+        </div>
+
+        <h3>C. Kabel VAG KKL 409.1 USB (FTDI) + VCDS-Lite</h3>
+        <ul>
+          <li><strong>Windows (Menedżer Urządzeń → Port COM → Zaawansowane):</strong> zmniejsz <strong>Latency Timer</strong> z <code>16 ms</code> na <strong><code>1–2 ms</code></strong>.</li>
+          <li><strong>VCDS-Lite → Options:</strong> <code>Start Baud = 9600</code> (lub <code>0</code>), <code>Blk Int = 55</code>, <code>Char Int = 1</code>, <code>KP2 Time = 25</code>.</li>
+        </ul>
+      </section>
+
+      <!-- 5. MATRYCA ECU 2000-2002 -->
+      <section class="section tech-only" id="ecu" data-tags="ecu simos marelli bosch edc15 me7.5 aua bby azl asy atd k-line jie rui bus init error">
+        <div class="section-head">
+          <h2>5. Matryca ECU (2000–2002) i Diagnoza K-Line z log.txt</h2>
+          <input type="search" id="ecuFilter" class="search-input" style="max-width:240px; padding:6px 10px;" placeholder="Filtruj kod silnika (np. AQW, BBY)..." />
+        </div>
+        <p>Wszystkie Fabie I (2000–2002) mają w gnieździe OBD2 (schowek po lewej pod kierownicą) wyłącznie <strong>Pin 7 (K-Line)</strong>, Pin 16 (+12V, bezp. nr 12) i Piny 4/5 (masa). Brak OBD CAN na pinach 6/14.</p>
+
+        <div class="table-wrap">
+          <table id="ecuTable">
+            <thead>
+              <tr>
+                <th>Silnik</th>
+                <th>Kody</th>
+                <th>ECU</th>
+                <th>ELM327 / BorbaCar (EOBD)</th>
+                <th>VAG KKL (KWP1281)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1.0 MPI 8V (37 kW)</td><td><code>AQV</code>, <code>ARV</code></td><td>Simos 3PA / 3PB</td><td><code>AQV</code>: ISO 9141-2 / KWP; <code>ARV</code> (EU2): brak EOBD</td><td><span class="badge b-ok">Pełne</span></td></tr>
+              <tr><td>1.2 6V (40 kW, 2002)</td><td><code>AWY</code></td><td>Simos 3PD</td><td>ISO 9141-2 / KWP2000</td><td><span class="badge b-ok">Pełne</span></td></tr>
+              <tr><td>1.4 MPI 8V (44 kW)</td><td><code>AZF</code>, <code>AZE</code></td><td>Simos 3PA / 3PB</td><td><code>AZF</code>: ISO 9141-2 / KWP; <code>AZE</code> (EU2): brak EOBD</td><td><span class="badge b-ok">Pełne</span></td></tr>
+              <tr><td><strong>1.4 MPI 8V (50 kW)</strong></td><td><strong><code>AQW</code>, <code>ATZ</code>, <code>AME</code></strong></td><td><strong>Simos 3PA / 3PB</strong></td><td><code>AQW/ATZ</code>: ISO 9141-2 / KWP; <code>AME</code> (EU2): często brak</td><td><span class="badge b-ok">Pełne</span></td></tr>
+              <tr><td>1.4 16V (55 / 74 kW)</td><td><code>AUA</code>, <code>AUB</code>, <code>BBY</code>, <code>BBZ</code></td><td>Marelli IAW 4LV / 4MV</td><td>Bardzo czuły (po błędzie zapłon OFF na 15 s!)</td><td><span class="badge b-ok">Pełne</span></td></tr>
+              <tr><td>2.0 MPI 8V (85 kW)</td><td><code>AZL</code></td><td>Bosch ME 7.5</td><td>Stabilny (KWP2000 / ISO 9141-2)</td><td><span class="badge b-ok">Pełne</span></td></tr>
+              <tr><td>1.9 SDI / TDI</td><td><code>ASY</code>, <code>ATD</code></td><td>Bosch EDC15V / P+</td><td><span class="badge b-bad">Zwykle brak EOBD</span> (Diesel &lt;2003)</td><td><span class="badge b-ok">Pełne</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout danger">
+          <strong>Co wykryto w Twoim <code>log.txt</code>:</strong> wszystkie próby K-Line dały <code>BUS INIT: ...ERROR</code>, a Bluetooth wykrył w aucie urządzenie <strong><code>Jie Rui BT-5908</code></strong> (<code>D8:1A:23:93:0E:50</code>). W Fabii I pin 3 kostki ISO radia to linia K-Line — niefabryczne radio często ją zwiera! Wyjmij bezpiecznik radia i bezpiecznik LPG przed kolejną próbą. Jeśli nadal nie łączy (np. kod <code>AME</code> Euro 2) — użyj kabla VAG KKL.
+        </div>
+      </section>
+
+      <!-- 6. USTERKI I KARTA DLA MECHANIKA -->
+      <section class="section" id="usterki" data-tags="mechanik wspomaganie stop epc olej odma przepustnica lpg klema alternator blaszki">
+        <div class="section-head">
+          <h2>6. Powiązanie Usterek i Karta dla Mechanika</h2>
+          <button class="btn btn-primary" type="button" onclick="copyById('mechText', this)">📋 Kopiuj dla mechanika</button>
+        </div>
+        <div class="grid-2">
+          <div class="stat-box">
+            <strong>1. Przygasanie świateł + zanik wspomagania</strong>
+            <p style="font-size:0.86rem;color:var(--muted);">Pompa TRW/Koyo wyłącza się przy spadku napięcia. Sprawdź: blaszki bezpiecznikowe na akumulatorze, alternator/regulator, masę pod aku i gnijącą wiązkę w korytku na lewej podłużnicy.</p>
+          </div>
+          <div class="stat-box">
+            <strong>2. Brak stopu + błąd EPC + szarpanie</strong>
+            <p style="font-size:0.86rem;color:var(--muted);">4-pinowy czujnik stopu przy pedale hamulca wysyła drugi sygnał do ECU — brak stopu lub uszkodzony czujnik bezpośrednio zapala <code>EPC</code> i ogranicza moc.</p>
+          </div>
+          <div class="stat-box">
+            <strong>3. Odpalanie wraca po zdjęciu klemy</strong>
+            <p style="font-size:0.86rem;color:var(--muted);">Zdjęcie klemy kasuje rozjechane korekty paliwowe <code>LTFT</code> (najczęściej przez mapę LPG lub puszczające wtryskiwacze/reduktor LPG na postoju) oraz resetuje błędy przepustnicy.</p>
+          </div>
+          <div class="stat-box">
+            <strong>4. Duży ubytek oleju + dym przy gazowaniu</strong>
+            <p style="font-size:0.86rem;color:var(--muted);">Zapchana odma, uszczelniacze zaworowe lub pierścienie tłokowe. Spalany olej zarzuca świece i sondę lambda, powodując szarpanie i gaśnięcie.</p>
+          </div>
+        </div>
+
+        <div class="code-wrap" style="margin-top:14px;">
+          <div class="code-bar"><span>Gotowa lista zlecenia dla warsztatu / elektryka</span></div>
+          <pre id="mechText">1. Układ ładowania i masy (PILNE): Proszę zmierzyć ładowanie pod obciążeniem (światła + wspomaganie), sprawdzić blaszki bezpiecznikowe na akumulatorze, punkt masowy pod akumulatorem oraz wiązkę w korytku na lewej podłużnicy.
+2. Światła stopu i EPC (PILNE): Brak świateł stopu i kontrolka EPC — proszę sprawdzić bezpiecznik, żarówki oraz 4-pinowy czujnik stopu nad pedałem hamulca.
+3. Brak komunikacji OBD2 (K-Line): Auto zwraca BUS INIT ERROR na ELM327 — proszę sprawdzić, czy niefabryczne radio (Jie Rui) lub centralka LPG nie zwiera pinu 7 gniazda OBD2, i odczytać błędy kablem VAG KKL / VCDS (silnik + moduł 44 wspomagania).
+4. Silnik, LPG i olej: Duży ubytek oleju, dym przy gazowaniu, gaśnięcie na wolnych i problemy z odpalaniem (ustępują po odłączeniu klemy). Proszę sprawdzić drożność odmy, wyczyścić przepustnicę (z adaptacją), obejrzeć świece i zrobić pomiar kompresji z próbą olejową + sprawdzić szczelność LPG.</pre>
+        </div>
+      </section>
+
+      <!-- 7. INTERAKTYWNA LISTA KONTROLNA -->
+      <section class="section" id="checklist" data-tags="checklist zadania kroki">
+        <div class="section-head">
+          <h2>7. Interaktywna Lista Kontrolna Działań</h2>
+          <button class="btn" type="button" id="resetChecksBtn">↺ Resetuj</button>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div id="checklistItems">
+          <label class="check-item"><input type="checkbox" data-id="c1"><span>Zmierzyć ładowanie akumulatora (norma 13,8–14,4 V pod obciążeniem) i obejrzeć blaszki na akumulatorze</span></label>
+          <label class="check-item"><input type="checkbox" data-id="c2"><span>Naprawić światła stopu (bezpiecznik / żarówki / czujnik pod pedałem hamulca → kontrolka EPC)</span></label>
+          <label class="check-item"><input type="checkbox" data-id="c3"><span>Zrobić 2–3 dniowy test jazdy na samej benzynie (zakręcona butla LPG w bagażniku)</span></label>
+          <label class="check-item"><input type="checkbox" data-id="c4"><span>Poprawić Car Scannera (1,4 l, Hybryda = OFF) i przetestować połączenie po wypięciu bezpiecznika radia i LPG</span></label>
+          <label class="check-item"><input type="checkbox" data-id="c5"><span>W razie dalszego braku połączenia (lub dla modułu 44-Wspomaganie) podłączyć kabel VAG KKL + VCDS-Lite</span></label>
+          <label class="check-item"><input type="checkbox" data-id="c6"><span>Sprawdzić u mechanika odmę, świece, przepustnicę (z adaptacją) oraz kompresję z próbą olejową</span></label>
+        </div>
+      </section>
+
+      <!-- 8. LOKALNY CZYTNIK PLIKÓW (BEZ CORS) -->
+      <section class="section" id="czytnik" data-tags="pliki md md5 csv json czytnik podglad folder">
+        <div class="section-head">
+          <h2>8. Podgląd Lokalnych Plików z Folderu (.md / .md5 / .csv / .json / .txt)</h2>
+          <label class="btn btn-success" for="filePicker">📂 Wczytaj plik z folderu</label>
+          <input type="file" id="filePicker" multiple accept=".md,.md5,.txt,.csv,.json" style="display:none;" />
+        </div>
+        <p style="font-size:0.88rem; color:var(--muted);">
+          Ze względu na blokady bezpieczeństwa Androida (<code>file://</code> CORS), kliknij przycisk powyżej, aby otworzyć i przeczytać dowolny swój plik <code>.md</code>, <code>.md5</code>, <code>.csv</code>, <code>.txt</code> lub <code>.json</code> bezpośrednio w tym oknie — bez internetu.
+        </p>
+        <div id="viewerMeta" style="font-size:0.8rem; color:var(--accent); margin-top:6px;"></div>
+        <div id="viewerOut" class="viewer-out"></div>
+      </section>
+
+      <footer class="footer">
+        <strong>Škoda Fabia I (2000–2002) · Przewodnik Diagnostyczny BorbaCar Labs &amp; OBD2</strong><br>
+        Opracowanie i podpis projektu: <strong>Anonymousik.is-a.dev</strong> · 22.11.2026
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      // Safe storage helper for Android file:// / content:// WebViews
+      var memStore = {};
+      function getStore(k) {
+        try { return window.localStorage.getItem(k); } catch (e) { return memStore[k] || null; }
+      }
+      function setStore(k, v) {
+        memStore[k] = v;
+        try { window.localStorage.setItem(k, v); } catch (e) {}
+      }
+
+      // Theme toggle
+      var savedTheme = getStore('fabia_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      document.getElementById('themeBtn').addEventListener('click', function () {
+        var cur = document.documentElement.getAttribute('data-theme');
+        var next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        setStore('fabia_theme', next);
+      });
+
+      // Mobile menu drawer
+      var sidebar = document.getElementById('sidebar');
+      document.getElementById('menuBtn').addEventListener('click', function () {
+        sidebar.classList.toggle('open');
+      });
+      sidebar.querySelectorAll('.nav-link').forEach(function (a) {
+        a.addEventListener('click', function () { sidebar.classList.remove('open'); });
+      });
+
+      // Mode switcher: all vs simple
+      var modeBtns = document.querySelectorAll('.mode-btn');
+      function applyMode(mode) {
+        modeBtns.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-mode') === mode); });
+        document.querySelectorAll('.tech-only').forEach(function (el) {
+          el.classList.toggle('hidden-by-mode', mode === 'simple');
+        });
+      }
+      modeBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () { applyMode(btn.getAttribute('data-mode')); });
+      });
+
+      // Global search across sections
+      document.getElementById('searchInput').addEventListener('input', function (e) {
+        var q = e.target.value.trim().toLowerCase();
+        document.querySelectorAll('main .section').forEach(function (sec) {
+          if (!q) { sec.classList.remove('hidden-by-search'); return; }
+          var text = (sec.innerText + ' ' + (sec.getAttribute('data-tags') || '')).toLowerCase();
+          sec.classList.toggle('hidden-by-search', text.indexOf(q) === -1);
+        });
+      });
+
+      // ECU Table filter
+      document.getElementById('ecuFilter').addEventListener('input', function (e) {
+        var q = e.target.value.trim().toLowerCase();
+        document.querySelectorAll('#ecuTable tbody tr').forEach(function (row) {
+          row.style.display = (!q || row.innerText.toLowerCase().indexOf(q) !== -1) ? '' : 'none';
+        });
+      });
+
+      // Checklist with safe persistence
+      var boxes = document.querySelectorAll('#checklistItems input[type="checkbox"]');
+      function updateChecklistUI() {
+        var done = 0;
+        boxes.forEach(function (cb) {
+          cb.closest('.check-item').classList.toggle('done', cb.checked);
+          if (cb.checked) done++;
+        });
+        document.getElementById('checkCount').textContent = done + '/' + boxes.length;
+        document.getElementById('progressFill').style.width = Math.round((done / boxes.length) * 100) + '%';
+      }
+      boxes.forEach(function (cb) {
+        if (getStore('fabia_' + cb.getAttribute('data-id')) === '1') cb.checked = true;
+        cb.addEventListener('change', function () {
+          setStore('fabia_' + cb.getAttribute('data-id'), cb.checked ? '1' : '0');
+          updateChecklistUI();
+        });
+      });
+      document.getElementById('resetChecksBtn').addEventListener('click', function () {
+        boxes.forEach(function (cb) {
+          cb.checked = false;
+          setStore('fabia_' + cb.getAttribute('data-id'), '0');
+        });
+        updateChecklistUI();
+      });
+      updateChecklistUI();
+
+      // Copy helper with Android file:// fallback
+      window.copyById = function (id, btn) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var text = el.innerText.trim();
+        function done() {
+          var orig = btn.textContent;
+          btn.textContent = '✓ Skopiowano';
+          setTimeout(function () { btn.textContent = orig; }, 1600);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(fallbackCopy);
+        } else {
+          fallbackCopy();
+        }
+        function fallbackCopy() {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          try { document.execCommand('copy'); done(); } catch (err) { alert('Skopiuj ręcznie zaznaczony tekst.'); }
+          document.body.removeChild(ta);
+        }
+      };
+
+      // Local File Picker (reads .md, .md5, .txt, .csv, .json offline)
+      function esc(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      function renderCsv(raw) {
+        var rows = raw.trim().split(/\r?\n/);
+        var html = '<div class="table-wrap"><table>';
+        rows.forEach(function (line, idx) {
+          var cells = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
+          html += '<tr>';
+          cells.forEach(function (c) {
+            var clean = esc(c.replace(/^"|"$/g, ''));
+            html += (idx === 0 ? '<th>' + clean + '</th>' : '<td>' + clean + '</td>');
+          });
+          html += '</tr>';
+        });
+        return html + '</table></div>';
+      }
+      document.getElementById('filePicker').addEventListener('change', function (e) {
+        var files = Array.prototype.slice.call(e.target.files || []);
+        if (!files.length) return;
+        var out = document.getElementById('viewerOut');
+        var meta = document.getElementById('viewerMeta');
+        out.style.display = 'block';
+        out.innerHTML = '';
+        meta.textContent = 'Wczytano plików: ' + files.length;
+        files.forEach(function (f) {
+          var reader = new FileReader();
+          reader.onload = function () {
+            var content = String(reader.result || '');
+            var block = document.createElement('div');
+            block.style.marginBottom = '16px';
+            var title = '<div style="font-weight:700;margin-bottom:6px;">📄 ' + esc(f.name) + ' (' + f.size + ' B)</div>';
+            if (f.name.toLowerCase().endsWith('.csv')) {
+              block.innerHTML = title + renderCsv(content);
+            } else if (f.name.toLowerCase().endsWith('.json')) {
+              try {
+                var parsed = JSON.parse(content);
+                block.innerHTML = title + '<pre>' + esc(JSON.stringify(parsed, null, 2).slice(0, 6000)) + (content.length > 6000 ? '\n... [skrócono podgląd]' : '') + '</pre>';
+              } catch (err) {
+                block.innerHTML = title + '<pre>' + esc(content) + '</pre>';
+              }
+            } else {
+              block.innerHTML = title + '<pre>' + esc(content) + '</pre>';
+            }
+            out.appendChild(block);
+          };
+          reader.readAsText(f, 'UTF-8');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
