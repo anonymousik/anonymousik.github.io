@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analiza Cenowa: PlayStation 5 Slim (1TB + 2x DualSense)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4F7FA;
+            color: #1E293B;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 750px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 340px;
+            max-height: 420px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 390px;
+            }
+        }
+
+        .chart-container-sm {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 280px;
+            max-height: 340px;
+        }
+
+        .material-card {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .material-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        }
+
+        .gradient-header {
+            background: linear-gradient(135deg, #003791 0%, #0070D1 60%, #00A8E8 100%);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="gradient-header text-white py-12 px-4 sm:px-6 lg:px-8 shadow-lg">
+        <div class="max-w-6xl mx-auto">
+            <div class="inline-block bg-white/20 backdrop-blur-sm text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4">
+                Raport Rynkowy • Listopad 2026
+            </div>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
+                PlayStation 5 Slim z 2 padami DualSense:<br class="hidden sm:inline"> Gdzie kupić najtaniej i na co uważać?
+            </h1>
+            <p class="text-lg sm:text-xl text-blue-100 max-w-3xl font-light leading-relaxed">
+                Szczegółowa analiza porównawcza ofert z Ceneo (Sferis, Primepc.pl) względem oficjalnego sklepu PlayStation Direct (DE/UK) oraz największych polskich sieci handlowych.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+
+        <section>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-[#003791] flex items-center gap-2">
+                    <span>📊</span> Kluczowe wnioski w liczbach
+                </h2>
+                <p class="text-slate-600 mt-1">
+                    Zestawienie pokazuje ogromną rozpiętość cenową między ofertami z agregatora Ceneo a cenami u producenta oraz w oficjalnej polskiej dystrybucji stacjonarnej i internetowej.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="material-card p-6 border-t-4 border-[#0070D1]">
+                    <div class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Najtańsza opcja w UE</div>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-4xl font-extrabold text-[#003791]">2 719,49 zł</span>
+                        <span class="text-sm font-medium text-slate-500">(609,99 €)</span>
+                    </div>
+                    <p class="mt-3 text-sm text-slate-600">
+                        Wariant Slim z 2 padami na <strong>PlayStation Direct DE</strong> (z rabatem PS Plus nawet 2 583,51 zł). Wymaga adresu w Niemczech.
+                    </p>
+                </div>
+
+                <div class="material-card p-6 border-t-4 border-[#00A8E8]">
+                    <div class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Najlepsza oferta w Polsce</div>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-4xl font-extrabold text-[#0070D1]">3 499,00 zł</span>
+                        <span class="text-sm font-medium text-emerald-600 font-semibold">RTV EURO AGD</span>
+                    </div>
+                    <p class="mt-3 text-sm text-slate-600">
+                        Zestaw PS5 Slim E-Chassis 1TB z napędem i 2 padami w polskiej dystrybucji. Aż o <strong>500 zł taniej</strong> niż w ofercie Sferis na Ceneo.
+                    </p>
+                </div>
+
+                <div class="material-card p-6 border-t-4 border-[#FF5A5F]">
+                    <div class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Przepłata w Ceneo (Primepc)</div>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-4xl font-extrabold text-[#FF5A5F]">+1 210,87 zł</span>
+                        <span class="text-sm font-medium text-[#FF5A5F] font-semibold">(+38,8%)</span>
+                    </div>
+                    <p class="mt-3 text-sm text-slate-600">
+                        Tyle więcej kosztuje oferta Primepc.pl (4 331,60 zł) względem zestawu 1TB na PlayStation Direct DE (3 120,73 zł).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="material-card p-6 sm:p-8">
+            <div class="mb-6">
+                <span class="text-xs font-bold uppercase tracking-wider text-[#0070D1]">Ranking Cenowy</span>
+                <h2 class="text-2xl font-bold text-slate-900 mt-1">Porównanie cen zestawu PS5 Slim 1TB + 2x DualSense</h2>
+                <p class="text-slate-600 mt-2 text-sm sm:text-base">
+                    Wykres zestawia ceny brutto przeliczone na PLN (kursy z 20.11.2026: 4,45825 zł/EUR oraz 5,31943 zł/GBP). Wskazane przez Ciebie oferty ze Sferis oraz Primepc.pl zamykają stawkę jako najdroższe na rynku.
+                </p>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="priceComparisonChart"></canvas>
+            </div>
+
+            <div class="mt-6 bg-blue-50/80 border border-blue-100 rounded-lg p-4 text-sm text-slate-700 flex items-start gap-3">
+                <span class="text-xl">💡</span>
+                <div>
+                    <strong>Kluczowy wniosek:</strong> Kupując samą konsolę w <strong>Sony Centre (3 299 zł)</strong> i dokupując osobno biały kontroler DualSense w <strong>Sferis (279 zł)</strong>, zapłacisz łącznie <strong>3 578,00 zł</strong>. To aż o <strong>421 zł taniej</strong> niż gotowy zestaw oferowany przez ten sam sklep Sferis w listingu Ceneo (3 999 zł).
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="material-card p-6 sm:p-8 flex flex-col justify-between">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#00A8E8]">Analiza Zakupu Rozbitego</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-1">Zestaw z Ceneo vs Zakup Oddzielny w Polsce</h2>
+                    <p class="text-slate-600 mt-2 text-sm">
+                        Porównanie struktury kosztów przy zakupie gotowych pakietów ze Sferis i Primepc.pl wobec samodzielnego skompletowania zestawu z oficjalnej dystrybucji.
+                    </p>
+                </div>
+
+                <div class="chart-container-sm my-6">
+                    <canvas id="bundleBreakdownChart"></canvas>
+                </div>
+
+                <div class="text-xs text-slate-500 border-t pt-3">
+                    *Wariant samodzielny: Konsola PS5 Slim 1TB z napędem CFI-2116 w Sony Centre (3 299 zł) + Biały pad DualSense w Sferis (279 zł).
+                </div>
+            </div>
+
+            <div class="material-card p-6 sm:p-8 flex flex-col justify-between">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#FF5A5F]">Ograniczenia Terytorialne</span>
+                    <h2 class="text-xl font-bold text-slate-900 mt-1">Dlaczego PlayStation Direct nie wysyła do Polski?</h2>
+                    <p class="text-slate-600 mt-2 text-sm">
+                        Oficjalny sklep Sony działa wyłącznie na 11 wybranych rynkach. Bezpośrednie zamówienie na polski adres jest zablokowane, co wymusza korzystanie z pośredników lub adresu za granicą.
+                    </p>
+                </div>
+
+                <div class="my-6 space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">🇩🇪</span>
+                            <div>
+                                <div class="font-bold text-sm text-emerald-950">PlayStation Direct Niemcy (DE)</div>
+                                <div class="text-xs text-emerald-700">699,99 € (3 120,73 zł) • Z PS Plus: 2 964,69 zł</div>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold bg-emerald-600 text-white px-2.5 py-1 rounded">Wewnątrz UE</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">🇬🇧</span>
+                            <div>
+                                <div class="font-bold text-sm text-amber-950">PlayStation Direct Wielka Brytania (UK)</div>
+                                <div class="text-xs text-amber-700">609,99 £ (3 244,80 zł) • Z PS Plus: 3 082,56 zł</div>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold bg-amber-600 text-white px-2.5 py-1 rounded">Poza UE (Cło/VAT)</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-rose-50 border border-rose-200 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">🇵🇱</span>
+                            <div>
+                                <div class="font-bold text-sm text-rose-950">Polska (Brak bezpośredniej obsługi)</div>
+                                <div class="text-xs text-rose-700">Konieczność użycia wirtualnego adresu (np. Bodycar) lub zakupu w sieciach PL</div>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold bg-[#FF5A5F] text-white px-2.5 py-1 rounded">Brak wysyłki</span>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-500 border-t pt-3">
+                    Obsługiwane kraje PS Direct: USA, UK, DE, FR, AT, BE, NL, LU, IT, ES (oraz częściowo PT).
+                </div>
+            </div>
+        </section>
+
+        <section class="material-card p-6 sm:p-8 border-l-8 border-[#FFB400]">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-2.5 py-1 rounded mb-2">
+                        <span>⚠️</span> Uwaga na pułapki katalogowe
+                    </span>
+                    <h2 class="text-2xl font-bold text-slate-900">Kod PS719022602 oraz różnice: 825 GB vs 1 TB</h2>
+                </div>
+            </div>
+
+            <p class="text-slate-600 text-sm sm:text-base mb-6">
+                W porównywarkach cenowych (Ceneo, Allegro, Kaufland) wokół numeru katalogowego <strong>PS719022602 (EAN: 711719022602)</strong> panuje bałagan informacyjny. Część sprzedawców podpina pod ten kod tańszą wersję bez napędu lub starszą rewizję dysku. Przed kliknięciem „Kup” sprawdź dwa kluczowe parametry:
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="font-bold text-[#003791] text-lg">Wersja z napędem (Standard)</span>
+                        <span class="bg-[#0070D1] text-white text-xs font-bold px-2.5 py-1 rounded">Dysk 1 TB SSD</span>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Wbudowany napęd 4K UHD Blu-ray</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Kod modelu: <strong>CFI-2116</strong> (E-Chassis)</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Uczciwa cena w PL (z 2 padami): <strong>3 499 – 3 699 zł</strong></li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="font-bold text-slate-700 text-lg">Wersja Digital Edition</span>
+                        <span class="bg-slate-600 text-white text-xs font-bold px-2.5 py-1 rounded">Dysk 825 GB SSD</span>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li class="flex items-center gap-2"><span class="text-rose-500 font-bold">✕</span> Brak napędu płyt (tylko gry cyfrowe)</li>
+                        <li class="flex items-center gap-2"><span class="text-amber-600 font-bold">!</span> Mniejsza pojemność dysku w rewizji E-Chassis</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span> Cena rynkowa w PL (z 2 padami): <strong>3 199 – 3 299 zł</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-4 text-xs text-slate-500">
+                *Uważaj także na opis w Media Expert: pozycja <em>„PS5 Slim E-chassis 1TB + Kontroler DualSense Biały”</em> za 3 499,99 zł zawiera tylko <strong>jeden</strong> pad (ten z pudełka konsoli). Zestawy z drugim padem kosztują tam 3 799,98 – 3 849,98 zł.
+            </div>
+        </section>
+
+        <section>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-[#003791] flex items-center gap-2">
+                    <span>🧭</span> Rekomendowany plan zakupu krok po kroku
+                </h2>
+                <p class="text-slate-600 mt-1">
+                    Zrezygnuj z ofert Sferis (3 999 zł) i Primepc.pl (4 331,60 zł) na Ceneo. Skorzystaj z poniższej ścieżki, aby zaoszczędzić od 300 do ponad 1 300 zł.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="material-card p-5 relative border-t-4 border-[#003791]">
+                    <div class="w-8 h-8 rounded-full bg-[#003791] text-white font-bold flex items-center justify-center text-sm mb-3">1</div>
+                    <h3 class="font-bold text-slate-900 mb-1">Opcja DE (Najtaniej)</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Jeśli masz adres odbioru w Niemczech, zamów na <strong>PlayStation Direct DE</strong> (2 719 – 3 121 zł, z PS Plus jeszcze 5% taniej).
+                    </p>
+                </div>
+
+                <div class="material-card p-5 relative border-t-4 border-[#0070D1]">
+                    <div class="w-8 h-8 rounded-full bg-[#0070D1] text-white font-bold flex items-center justify-center text-sm mb-3">2</div>
+                    <h3 class="font-bold text-slate-900 mb-1">Sklepy stacjonarne PL</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Sprawdź dostępność gotowego zestawu w lokalnym <strong>RTV EURO AGD (3 499 zł)</strong> lub zamów w <strong>MediaMarkt (3 599 zł)</strong>.
+                    </p>
+                </div>
+
+                <div class="material-card p-5 relative border-t-4 border-[#00A8E8]">
+                    <div class="w-8 h-8 rounded-full bg-[#00A8E8] text-white font-bold flex items-center justify-center text-sm mb-3">3</div>
+                    <h3 class="font-bold text-slate-900 mb-1">Zakup rozbity w PL</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Kup samą konsolę w <strong>Sony Centre (3 299 zł)</strong> i dokup drugi pad osobno od <strong>279 zł</strong> (razem <strong>3 578 zł</strong> z pełną gwarancją PL).
+                    </p>
+                </div>
+
+                <div class="material-card p-5 relative border-t-4 border-[#FF5A5F] bg-rose-50/30">
+                    <div class="w-8 h-8 rounded-full bg-[#FF5A5F] text-white font-bold flex items-center justify-center text-sm mb-3">✕</div>
+                    <h3 class="font-bold text-rose-900 mb-1">Unikaj ofert z Ceneo</h3>
+                    <p class="text-xs text-rose-800 leading-relaxed">
+                        Oferty Sferis (3 999 zł) i Primepc.pl (4 331,60 zł) są zawyżone o <strong>420–830 zł</strong> względem normalnych cen rynkowych w Polsce.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="material-card overflow-hidden">
+            <div class="p-6 border-b border-slate-100">
+                <h2 class="text-xl font-bold text-slate-900">Szczegółowa tabela porównawcza ofert</h2>
+                <p class="text-sm text-slate-500 mt-1">Wszystkie zestawione warianty dotyczą konsoli PS5 z napędem i dwoma kontrolerami DualSense.</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
+                            <th class="py-3.5 px-4 font-bold">Sklep / Kanał</th>
+                            <th class="py-3.5 px-4 font-bold">Wariant zestawu</th>
+                            <th class="py-3.5 px-4 font-bold text-right">Cena (PLN)</th>
+                            <th class="py-3.5 px-4 font-bold text-right">Różnica vs Sferis</th>
+                            <th class="py-3.5 px-4 font-bold">Uwagi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-sm">
+                        <tr class="hover:bg-blue-50/40">
+                            <td class="py-3 px-4 font-semibold text-[#003791]">PlayStation Direct DE</td>
+                            <td class="py-3 px-4">PS5 Slim + 2x DualSense (609,99 €)</td>
+                            <td class="py-3 px-4 text-right font-bold text-emerald-600">2 719,49 zł</td>
+                            <td class="py-3 px-4 text-right text-emerald-600 font-medium">-1 279,51 zł</td>
+                            <td class="py-3 px-4 text-xs text-slate-500">Wysyłka tylko w DE (z PS Plus: 2 583,51 zł)</td>
+                        </tr>
+                        <tr class="hover:bg-blue-50/40">
+                            <td class="py-3 px-4 font-semibold text-[#003791]">PlayStation Direct DE</td>
+                            <td class="py-3 px-4">PS5 1TB + 2x DualSense (699,99 €)</td>
+                            <td class="py-3 px-4 text-right font-bold text-emerald-600">3 120,73 zł</td>
+                            <td class="py-3 px-4 text-right text-emerald-600 font-medium">-878,27 zł</td>
+                            <td class="py-3 px-4 text-xs text-slate-500">Wysyłka tylko w DE (z PS Plus: 2 964,69 zł)</td>
+                        </tr>
+                        <tr class="hover:bg-blue-50/40">
+                            <td class="py-3 px-4 font-semibold text-[#003791]">PlayStation Direct UK</td>
+                            <td class="py-3 px-4">PS5 1TB + 2x DualSense (609,99 £)</td>
+                            <td class="py-3 px-4 text-right font-bold text-emerald-600">3 244,80 zł</td>
+                            <td class="py-3 px-4 text-right text-emerald-600 font-medium">-754,20 zł</td>
+                            <td class="py-3 px-4 text-xs text-slate-500">Wysyłka tylko w UK (poza UE)</td>
+                        </tr>
+                        <tr class="hover:bg-blue-50/40 bg-emerald-50/30">
+                            <td class="py-3 px-4 font-semibold text-slate-900">RTV EURO AGD</td>
+                            <td class="py-3 px-4">PS5 Slim E-Chassis 1TB + 2x DualSense</td>
+                            <td class="py-3 px-4 text-right font-bold text-[#0070D1]">3 499,00 zł</td>
+                            <td class="py-3 px-4 text-right text-emerald-600 font-medium">-500,00 zł</td>
+                            <td class="py-3 px-4 text-xs text-slate-600">Polska dystrybucja (sklepy stacjonarne)</td>
+                        </tr>
+                        <tr class="hover:bg-blue-50/40">
+                            <td class="py-3 px-4 font-semibold text-slate-900">Sony Centre + Sferis</td>
+                            <td class="py-3 px-4">Konsola CFI-2116 (3299 zł) + Pad (279 zł)</td>
+                            <td class="py-3 px-4 text-right font-bold text-[#0070D1]">3 578,00 zł</td>
+                            <td class="py-3 px-4 text-right text-emerald-600 font-medium">-421,00 zł</td>
+                            <td class="py-3 px-4 text-xs text-slate-600">Zakup 2 osobnych produktów w PL</td>
+                        </tr>
+                        <tr class="hover:bg-blue-50/40">
+                            <td class="py-3 px-4 font-semibold text-slate-900">MediaMarkt</td>
+                            <td class="py-3 px-4">PS5 Slim 1TB E-Chassis + dodatkowy pad</td>
+                            <td class="py-3 px-4 text-right font-bold text-[#0070D1]">3 599,00 zł</td>
+                            <td class="py-3 px-4 text-right text-emerald-600 font-medium">-400,00 zł</td>
+                            <td class="py-3 px-4 text-xs text-slate-600">Polska dystrybucja (wg Priceman)</td>
+                        </tr>
+                        <tr class="hover:bg-blue-50/40">
+                            <td class="py-3 px-4 font-semibold text-slate-900">Komputronik</td>
+                            <td class="py-3 px-4">PS5 Slim Chassis E + 2x DualSense 1TB</td>
+                            <td class="py-3 px-4 text-right font-bold text-[#0070D1]">3 699,00 zł</td>
+                            <td class="py-3 px-4 text-right text-emerald-600 font-medium">-300,00 zł</td>
+                            <td class="py-3 px-4 text-xs text-slate-600">Polska dystrybucja</td>
+                        </tr>
+                        <tr class="hover:bg-blue-50/40">
+                            <td class="py-3 px-4 font-semibold text-slate-900">Media Expert</td>
+                            <td class="py-3 px-4">PS5 Slim 1TB + Biały + Fioletowy pad</td>
+                            <td class="py-3 px-4 text-right font-bold text-slate-700">3 799,98 zł</td>
+                            <td class="py-3 px-4 text-right text-emerald-600 font-medium">-199,02 zł</td>
+                            <td class="py-3 px-4 text-xs text-slate-600">Wariant z czarnym/błękitnym padem: 3 849,98 zł</td>
+                        </tr>
+                        <tr class="bg-rose-50/50">
+                            <td class="py-3 px-4 font-bold text-rose-900">Sferis (Ceneo)</td>
+                            <td class="py-3 px-4">PS5 Slim 1TB + 2 kontrolery DualSense</td>
+                            <td class="py-3 px-4 text-right font-bold text-[#FF5A5F]">3 999,00 zł</td>
+                            <td class="py-3 px-4 text-right text-slate-500">0,00 zł</td>
+                            <td class="py-3 px-4 text-xs text-rose-700">Oferta z zapytania (zawyżona)</td>
+                        </tr>
+                        <tr class="bg-rose-50/80">
+                            <td class="py-3 px-4 font-bold text-rose-900">Primepc.pl (Ceneo)</td>
+                            <td class="py-3 px-4">PS719022602 (1TB + dodatkowy pad)</td>
+                            <td class="py-3 px-4 text-right font-bold text-[#FF5A5F]">4 331,60 zł</td>
+                            <td class="py-3 px-4 text-right text-rose-600 font-bold">+332,60 zł</td>
+                            <td class="py-3 px-4 text-xs text-rose-700">Najdroższa oferta, mała liczba opinii (4)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 px-4 text-center text-xs">
+        <div class="max-w-4xl mx-auto space-y-2">
+            <p>Opracowanie na podstawie danych rynkowych z listopada 2026 r. (PlayStation Direct DE/UK, Ceneo, RTV EURO AGD, MediaMarkt, Komputronik, Media Expert, Sony Centre).</p>
+            <p>Kursy walut przyjęte do przeliczeń: 1 EUR = 4,45825 PLN | 1 GBP = 5,31943 PLN.</p>
+        </div>
+    </footer>
+
+    <script>
+        function wrapLabel(label, maxChars = 16) {
+            if (typeof label !== 'string' || label.length <= maxChars) return label;
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + (currentLine ? ' ' : '') + word).length <= maxChars) {
+                    currentLine += (currentLine ? ' ' : '') + word;
+                } else {
+                    if (currentLine) lines.push(currentLine);
+                    currentLine = word;
+                }
+            });
+            if (currentLine) lines.push(currentLine);
+            return lines;
+        }
+
+        const rawLabels = [
+            'PS Direct DE (Slim 2 pady)',
+            'PS Direct DE (1TB 2 pady)',
+            'PS Direct UK (1TB 2 pady)',
+            'RTV EURO AGD (Stacjonarnie)',
+            'Sony Centre + Sferis (Osobno)',
+            'MediaMarkt (Zestaw 1TB)',
+            'Komputronik (Zestaw 1TB)',
+            'Media Expert (2 pady)',
+            'Sferis (Oferta z Ceneo)',
+            'Primepc.pl (Oferta z Ceneo)'
+        ];
+
+        const wrappedLabels = rawLabels.map(l => wrapLabel(l, 16));
+
+        const pricesPLN = [
+            2719.49,
+            3120.73,
+            3244.80,
+            3499.00,
+            3578.00,
+            3599.00,
+            3699.00,
+            3799.98,
+            3999.00,
+            4331.60
+        ];
+
+        const barColors = [
+            '#00A8E8',
+            '#00A8E8',
+            '#00A8E8',
+            '#0070D1',
+            '#0070D1',
+            '#0070D1',
+            '#0070D1',
+            '#3B82F6',
+            '#FF5A5F',
+            '#D90429'
+        ];
+
+        const ctx1 = document.getElementById('priceComparisonChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: wrappedLabels,
+                datasets: [{
+                    label: 'Cena zestawu (PLN)',
+                    data: pricesPLN,
+                    backgroundColor: barColors,
+                    borderRadius: 6,
+                    barPercentage: 0.7
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                    return label.join(' ');
+                                } else {
+                                    return label;
+                                }
+                            },
+                            label: function(context) {
+                                return ' Cena: ' + context.parsed.x.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' zł';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        min: 2000,
+                        max: 4600,
+                        grid: {
+                            color: '#E2E8F0'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + ' zł';
+                            },
+                            font: {
+                                family: 'Inter',
+                                size: 11
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Inter',
+                                size: 11,
+                                weight: '600'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const rawBreakdownLabels = [
+            'Zakup rozbity (Sony Centre + Pad)',
+            'RTV EURO AGD (Gotowy pakiet)',
+            'Sferis (Oferta Ceneo)',
+            'Primepc.pl (Oferta Ceneo)'
+        ];
+
+        const ctx2 = document.getElementById('bundleBreakdownChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: rawBreakdownLabels.map(l => wrapLabel(l, 16)),
+                datasets: [
+                    {
+                        label: 'Koszt bazowy (Konsola + 2. pad)',
+                        data: [3299, 3499, 3578, 3578],
+                        backgroundColor: '#003791',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Dodatkowy pad (osobno)',
+                        data: [279, 0, 0, 0],
+                        backgroundColor: '#00A8E8',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Nadpłata względem zakupu osobnego',
+                        data: [0, 0, 421, 753.60],
+                        backgroundColor: '#FF5A5F',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            font: {
+                                family: 'Inter',
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                    return label.join(' ');
+                                } else {
+                                    return label;
+                                }
+                            },
+                            label: function(context) {
+                                return ' ' + context.dataset.label + ': ' + context.parsed.y.toLocaleString('pl-PL', { minimumFractionDigits: 2 }) + ' zł';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { display: false },
+                        ticks: {
+                            font: { family: 'Inter', size: 11, weight: '600' }
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        max: 4600,
+                        grid: { color: '#E2E8F0' },
+                        ticks: {
+                            callback: function(value) { return value + ' zł'; },
+                            font: { family: 'Inter', size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
