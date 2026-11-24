@@ -1,47 +1,141 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SONY-PS-PRICE-STORY-112026 • Audyt Rynkowy Konsol Sony & Microsoft (Sty–Lis 2026)</title>
+    <title>SONY-PS-PRICE-STORY-112026 | Finalny Audyt Cen Konsol PS5, PS4 i Xbox (2026)</title>
+    <meta name="description" content="Kompleksowa i zweryfikowana analiza cen konsol Sony PlayStation 5 Pro, PS5 Slim, PS4 oraz Microsoft Xbox Series X/S i One na przełomie stycznia i 24 listopada 2026 r.">
     <link rel="canonical" href="https://anonymousik.is-a.dev/docs/SONY-PS-PRICE-STORY-112026">
-    <meta name="description" content="Analiza ewolucji cen konsol PS5 Pro, PS5 Slim, PS4 oraz Xbox Series X/S i One w okresie styczeń–listopad 2026 wraz z modelem oceny manipulacji cenowej.">
-    <meta property="og:title" content="SONY-PS-PRICE-STORY-112026 • Audyt Cen Konsol i Manipulacji Rynkowej">
+    <meta property="og:title" content="SONY-PS-PRICE-STORY-112026 | Audyt Cen Konsol i Manipulacji Cenowej 2026">
+    <meta property="og:description" content="Zweryfikowane ceny rynkowe i historyczne (Ceneo, PlayStation Direct, sieci handlowe) dla PS5 Pro, PS5 Slim, PS4 oraz Xbox Series X/S.">
     <meta property="og:url" content="https://anonymousik.is-a.dev/docs/SONY-PS-PRICE-STORY-112026">
     <meta property="og:type" content="article">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
+        :root {
+            --ps-blue: #0070D1;
+            --ps-light-blue: #38BDF8;
+            --ps-gold: #F5D061;
+            --ps-bg: #070B14;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0F172A;
+            background-color: var(--ps-bg);
             color: #F8FAFC;
+            overflow-x: hidden;
+        }
+
+        /* Animowane tło systemowe PS5 */
+        .ps5-ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                radial-gradient(ellipse at 80% 15%, rgba(0, 112, 209, 0.28) 0%, transparent 55%),
+                radial-gradient(ellipse at 15% 85%, rgba(30, 58, 138, 0.25) 0%, transparent 55%),
+                linear-gradient(180deg, #060911 0%, #0B1222 50%, #070B14 100%);
+        }
+
+        /* Ekran Bootowania PS5 */
+        #ps5-boot-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: radial-gradient(circle at center, #0D162C 0%, #03050A 82%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.7s;
+        }
+
+        #ps5-boot-screen.boot-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .ps5-logo-glow {
+            filter: drop-shadow(0 0 24px rgba(255, 255, 255, 0.45)) drop-shadow(0 0 54px rgba(56, 189, 248, 0.35));
+            animation: ps5LogoPulse 2.6s ease-in-out infinite;
+        }
+
+        @keyframes ps5LogoPulse {
+            0%, 100% { transform: scale(1); opacity: 0.92; }
+            50% { transform: scale(1.03); opacity: 1; }
+        }
+
+        .ps5-boot-bar {
+            width: 220px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.14);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ps5-boot-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #38BDF8, #FFFFFF, #F5D061);
+            box-shadow: 0 0 12px #38BDF8;
+            animation: bootProgress 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes bootProgress {
+            0% { width: 0%; }
+            50% { width: 68%; }
+            100% { width: 100%; }
+        }
+
+        /* Kafelki Hubu PS5 */
+        .ps5-tile {
+            position: relative;
+            border-radius: 16px;
+            background: rgba(18, 27, 46, 0.72);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+            cursor: pointer;
+        }
+
+        .ps5-tile:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.45);
+            background: rgba(26, 39, 66, 0.85);
+        }
+
+        .ps5-tile.active-tile {
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12), 0 12px 28px -6px rgba(0, 112, 209, 0.55);
+            background: linear-gradient(145deg, rgba(30, 48, 82, 0.92), rgba(15, 23, 42, 0.92));
         }
 
         .glass-card {
-            background: rgba(30, 41, 59, 0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-
-        .glass-card:hover {
-            border-color: rgba(56, 189, 248, 0.3);
+            background: rgba(17, 25, 42, 0.82);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.48);
         }
 
         .chart-container {
             position: relative;
             width: 100%;
-            height: 360px;
+            height: 320px;
         }
 
         @media (min-width: 768px) {
             .chart-container {
-                height: 410px;
+                height: 400px;
             }
         }
 
@@ -51,107 +145,322 @@
             height: 280px;
         }
 
-        .hero-gradient {
-            background: radial-gradient(circle at top right, #1E3A8A 0%, #0F172A 65%);
-        }
-
         .badge-pulse {
             animation: pulse-ring 2s infinite;
         }
 
         @keyframes pulse-ring {
-            0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.5); }
+            0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.55); }
             70% { box-shadow: 0 0 0 10px rgba(244, 63, 94, 0); }
             100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
         }
+
+        .ps5-control-dock {
+            background: rgba(10, 15, 28, 0.92);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .ps-btn-symbol {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 10px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
     </style>
 </head>
-<body class="antialiased selection:bg-sky-500 selection:text-white">
+<body class="antialiased selection:bg-sky-500 selection:text-white pb-24">
 
-    <!-- Nagłówek -->
-    <header class="hero-gradient border-b border-slate-800 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-wrap items-center gap-3 mb-4">
-                <span class="bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
-                    Pełny Audyt Konsolowy • Styczeń – Listopad 2026
-                </span>
-                <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
-                    Sony PlayStation & Microsoft Xbox
-                </span>
-                <span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-rose-500 badge-pulse"></span> Alert Omnibus & Black Week
-                </span>
+    <!-- Tło Ambient PS5 -->
+    <div class="ps5-ambient-bg"></div>
+    <canvas id="ps5-particles-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-60"></canvas>
+
+    <!-- Ekran Bootowania PS5 -->
+    <div id="ps5-boot-screen" role="dialog" aria-label="Ekran uruchamiania systemu PlayStation 5">
+        <canvas id="boot-particles-canvas" class="absolute inset-0 pointer-events-none"></canvas>
+        <div class="relative z-10 flex flex-col items-center text-center px-6 max-w-md">
+            <svg class="w-20 h-20 sm:w-24 sm:h-24 text-white ps5-logo-glow mb-5" viewBox="0 0 50 50" fill="currentColor" aria-hidden="true">
+                <path d="M19.2 9.4v29.8l6.3 2V15.7c0-1.4.6-2.3 1.7-2 1.3.4 1.6 1.6 1.6 3v11.1c4.1 2 7.3 0 7.3-5.3 0-5.4-1.9-7.8-7.5-9.8-2.2-.8-6.4-2.2-9.4-3.3zm-1.9 21.7L6.7 35c-2.5.9-2.9 2.2-.8 2.9 2.1.7 5.7.6 8.2-.3l3.2-1.1v-3.5l-2.1.7c-1.4.5-2.7.5-3.4.2-.7-.3-.4-.9 1-1.4l4.5-1.6v-3.8zm25.1-2.5c-2.3-.8-5.9-1-8.8-.2l-5.9 2v3.7l8.1-2.8c1.4-.5 2.7-.5 3.4-.2.7.3.4.9-1 1.4l-10.5 3.7v3.7l14.7-5.2c2.5-.9 2.9-2.2.8-2.9-.3-.1-.5-.2-.8-.2z"/>
+            </svg>
+            <div class="text-[11px] font-bold tracking-[0.25em] uppercase text-sky-300 mb-2">
+                PlayStation®5 • Audyt Systemowy 2026
             </div>
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4 leading-tight">
-                Ewolucja Cen Konsol w 2026 r. oraz <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-400 to-emerald-400">Analiza Manipulacji Cenowej</span>
-            </h1>
-            <p class="text-slate-300 text-base sm:text-lg max-w-4xl font-light leading-relaxed">
-                Kompleksowe zestawienie cen rynkowych na przełomie stycznia i listopada 2026 r. dla całego ekosystemu: <strong>PS5 Pro, PS5 Slim (Disc/Digital), PS4/PS4 Pro</strong> oraz <strong>Xbox Series X/S i Xbox One S/X</strong>. Model szacuje skalę pompowania cen (Omnibus), „bundle inflation” oraz spekulacji na wycofanych generacjach.
+            <h2 class="text-base sm:text-lg font-medium text-white tracking-wide mb-5">
+                Wczytywanie zweryfikowanych danych rynkowych...
+            </h2>
+            <div class="ps5-boot-bar mb-5">
+                <div class="ps5-boot-bar-fill"></div>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mb-6">
+                Ostrzeżenie systemowe: Wykryto ekstremalne odchylenia cenowe PS5 Pro (6 999 – 8 828,64 zł) na rynku w Polsce (stan na 24.11.2026).
             </p>
+            <button type="button" onclick="dismissBootScreen()" class="px-6 py-2.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/35 text-xs font-bold text-white tracking-wider uppercase transition">
+                Wejdź do Systemu <span class="ml-1.5 text-sky-300">[✕]</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Górny pasek systemowy PS5 UI -->
+    <nav class="sticky top-0 z-40 bg-[#070B14]/90 backdrop-blur-xl border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-5">
+                <a href="#section-overview" class="flex items-center gap-2.5">
+                    <svg class="w-7 h-7 text-white" viewBox="0 0 50 50" fill="currentColor">
+                        <path d="M19.2 9.4v29.8l6.3 2V15.7c0-1.4.6-2.3 1.7-2 1.3.4 1.6 1.6 1.6 3v11.1c4.1 2 7.3 0 7.3-5.3 0-5.4-1.9-7.8-7.5-9.8-2.2-.8-6.4-2.2-9.4-3.3zm-1.9 21.7L6.7 35c-2.5.9-2.9 2.2-.8 2.9 2.1.7 5.7.6 8.2-.3l3.2-1.1v-3.5l-2.1.7c-1.4.5-2.7.5-3.4.2-.7-.3-.4-.9 1-1.4l4.5-1.6v-3.8zm25.1-2.5c-2.3-.8-5.9-1-8.8-.2l-5.9 2v3.7l8.1-2.8c1.4-.5 2.7-.5 3.4-.2.7.3.4.9-1 1.4l-10.5 3.7v3.7l14.7-5.2c2.5-.9 2.9-2.2.8-2.9-.3-.1-.5-.2-.8-.2z"/>
+                    </svg>
+                    <span class="text-xs font-extrabold tracking-widest uppercase text-white">PS5™ Price OS</span>
+                </a>
+
+                <div class="hidden lg:flex items-center gap-6 text-xs font-bold uppercase tracking-wider">
+                    <a href="#section-overview" class="text-white border-b-2 border-white pb-1">Przegląd</a>
+                    <a href="#section-ps5pro" class="text-slate-400 hover:text-white transition pb-1">Trend PS5 Pro</a>
+                    <a href="#section-comparison" class="text-slate-400 hover:text-white transition pb-1">Wszystkie Konsole</a>
+                    <a href="#section-manipulation" class="text-slate-400 hover:text-white transition pb-1">Manipulacja</a>
+                    <a href="#section-matrix" class="text-slate-400 hover:text-white transition pb-1">Macierz</a>
+                    <a href="#section-sources" class="text-slate-400 hover:text-white transition pb-1">Źródła</a>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2.5 sm:gap-4">
+                <button type="button" onclick="replayBootScreen()" title="Odtwórz ponownie animację uruchamiania PS5" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-sky-300 transition">
+                    <span>▶</span>
+                    <span class="hidden sm:inline">Boot PS5</span>
+                </button>
+
+                <div class="hidden sm:flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3 py-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span class="text-xs font-medium text-slate-200">Audytor PL</span>
+                </div>
+
+                <div id="ps5-system-clock" class="text-sm font-bold text-white tracking-wider tabular-nums">
+                    14:38
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero & Karuzela Kafelków PS5 Home Screen -->
+    <header id="section-overview" class="relative z-10 pt-6 pb-4 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto space-y-6">
+            <!-- Pasek kafelków PS5 Hub -->
+            <div>
+                <div class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400 mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <span>Centrum Kontroli Raportu • Wybierz moduł</span>
+                    <span class="text-sky-400 font-semibold">Stan danych: 24.11.2026</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                    <a href="#section-overview" onclick="selectPs5Tile(this)" class="ps5-tile active-tile p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-lg">💎</span>
+                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300">Start</span>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">Podsumowanie KPI</div>
+                            <div class="text-[11px] text-slate-300 truncate">Stan rynku Q1–Q4 2026</div>
+                        </div>
+                    </a>
+
+                    <a href="#section-ps5pro" onclick="selectPs5Tile(this)" class="ps5-tile p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-lg">📈</span>
+                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-rose-500/25 text-rose-300">+139%</span>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">PS5 Pro Ceneo</div>
+                            <div class="text-[11px] text-slate-300 truncate">3 692 → 8 828,64 zł</div>
+                        </div>
+                    </a>
+
+                    <a href="#section-comparison" onclick="selectPs5Tile(this)" class="ps5-tile p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-lg">🎮</span>
+                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300">PS & Xbox</span>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">Wszystkie Konsole</div>
+                            <div class="text-[11px] text-slate-300 truncate">XSX: 3 880–4 484 zł</div>
+                        </div>
+                    </a>
+
+                    <a href="#section-manipulation" onclick="selectPs5Tile(this)" class="ps5-tile p-3.5 flex flex-col justify-between min-h-[96px]">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-lg">🛡️</span>
+                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">96/100</span>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">Analiza Manipulacji</div>
+                            <div class="text-[11px] text-slate-300 truncate">Omnibus & Bundle Inflation</div>
+                        </div>
+                    </a>
+
+                    <a href="#section-sources" onclick="selectPs5Tile(this)" class="ps5-tile p-3.5 flex flex-col justify-between min-h-[96px] col-span-2 sm:col-span-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-lg">🔗</span>
+                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">7 Źródeł</span>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">Źródła i Rekomendacje</div>
+                            <div class="text-[11px] text-slate-300 truncate">Ceneo, spec-ranking, PS Direct</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Główny baner tytułowy w stylu PS5 Game Hub -->
+            <div class="glass-card p-6 sm:p-8 lg:p-10 relative overflow-hidden">
+                <div class="absolute -right-16 -top-16 w-72 h-72 rounded-full bg-sky-500/15 blur-3xl pointer-events-none"></div>
+                <div class="flex flex-wrap items-center gap-2.5 mb-4">
+                    <span class="bg-white/15 text-white border border-white/25 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                        Wersja Finalna • Stan na 24.11.2026
+                    </span>
+                    <span class="bg-rose-500/20 text-rose-300 border border-rose-500/35 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-rose-500 badge-pulse"></span> Alert Cenowy PS5 Pro: 6 999 – 8 828,64 zł
+                    </span>
+                </div>
+                <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4 leading-tight">
+                    Pełny Audyt Cen Konsol 2026 oraz <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-white to-amber-200">Analiza Manipulacji Cenowej</span>
+                </h1>
+                <p class="text-slate-300 text-sm sm:text-base lg:text-lg max-w-4xl font-light leading-relaxed">
+                    Kompleksowa i zweryfikowana dokumentacja cenowa na przełomie stycznia i 24 listopada 2026 r. dla ekosystemów <strong>Sony (PS5 Pro, PS5 Slim Disc/Digital, PS4/PS4 Pro)</strong> oraz <strong>Microsoft (Xbox Series X/S, Xbox One S/X)</strong>, oparta na historycznych odczytach Ceneo, oficjalnych sklepach PlayStation Direct (DE/UK) oraz polskich sieciach retail.
+                </p>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
 
-        <!-- Kafelki KPI -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="glass-card p-6 border-t-4 border-sky-500">
-                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">PS5 Pro (2TB Digital)</div>
-                <div class="mt-2 flex items-baseline gap-2">
-                    <span class="text-3xl font-extrabold text-white">3 549 – 4 199 zł</span>
+        <!-- Kafelki KPI (PS5 Activity Cards) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="glass-card p-5 sm:p-6 border-t-4 border-rose-500 bg-rose-950/25">
+                <div class="flex items-center justify-between gap-2 text-xs font-semibold text-rose-300 uppercase tracking-wider">
+                    <span>PS5 Pro 2TB (24.11.2026)</span>
+                    <span class="text-[10px] bg-rose-500/25 px-2 py-0.5 rounded-full">Ceneo ID 173179719</span>
                 </div>
-                <p class="mt-2 text-xs text-slate-400">
-                    Wzrost z 3 499 zł (Sty 2026). Z napędem i podstawką realny koszt w PL sięga <strong>4 650 zł</strong>.
+                <div class="mt-2.5">
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white">6 999 – 8 828,64 zł</span>
+                </div>
+                <p class="mt-2 text-xs text-rose-100/90 leading-relaxed">
+                    Skok z <strong>3 692,00 zł</strong> (czerwiec 2026). Wzrost o <strong>+89,6%</strong> (MediaMarkt) do <strong>+139,1%</strong> (Net-S na Ceneo).
                 </p>
             </div>
 
-            <div class="glass-card p-6 border-t-4 border-indigo-500">
-                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">PS5 Slim 1TB + 2 Pady</div>
-                <div class="mt-2 flex items-baseline gap-2">
-                    <span class="text-3xl font-extrabold text-indigo-400">3 999 – 4 332 zł</span>
+            <div class="glass-card p-5 sm:p-6 border-t-4 border-indigo-400">
+                <div class="flex items-center justify-between gap-2 text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                    <span>PS5 Slim 1TB + 2 Pady</span>
+                    <span class="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-slate-300">Zestaw</span>
                 </div>
-                <p class="mt-2 text-xs text-slate-400">
-                    Szczyt cenowy na Ceneo (Sferis / Primepc.pl) wobec 3 249 zł w styczniu (+33% spekulacji).
+                <div class="mt-2.5">
+                    <span class="text-2xl sm:text-3xl font-extrabold text-indigo-300">3 999 – 4 331,60 zł</span>
+                </div>
+                <p class="mt-2 text-xs text-slate-300 leading-relaxed">
+                    Oferty Sferis i Primepc.pl na Ceneo wobec <strong>3 120,73 zł</strong> na PS Direct DE i <strong>3 499 zł</strong> w RTV EURO AGD.
                 </p>
             </div>
 
-            <div class="glass-card p-6 border-t-4 border-emerald-500">
-                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Xbox Series X / Series S</div>
-                <div class="mt-2 flex items-baseline gap-2">
-                    <span class="text-3xl font-extrabold text-emerald-400">2 699 / 1 549 zł</span>
+            <div class="glass-card p-5 sm:p-6 border-t-4 border-emerald-400 bg-emerald-950/20">
+                <div class="flex items-center justify-between gap-2 text-xs font-semibold text-emerald-300 uppercase tracking-wider">
+                    <span>Xbox Series X / Series S</span>
+                    <span class="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full text-emerald-300">spec-ranking.pl</span>
                 </div>
-                <p class="mt-2 text-xs text-slate-400">
-                    Wzrost cen bazowych z 2 399 zł (XSX) i 1 299 zł (XSS 512GB) w Q1 2026 po globalnej korekcie MS.
+                <div class="mt-2.5">
+                    <span class="text-2xl sm:text-3xl font-extrabold text-emerald-400">3 879,90 / 1 999 zł</span>
+                </div>
+                <p class="mt-2 text-xs text-slate-200 leading-relaxed">
+                    Skok z <strong>2 384,18 zł</strong> (XSX, szczyt <strong>4 483,85 zł</strong>) oraz <strong>1 239,90 zł</strong> (XSS, szczyt <strong>2 199,00 zł</strong>) wg archiwum Ceneo.
                 </p>
             </div>
 
-            <div class="glass-card p-6 border-t-4 border-rose-500 bg-rose-950/20">
-                <div class="text-xs font-semibold text-rose-300 uppercase tracking-wider">Wskaźnik Manipulacji</div>
-                <div class="mt-2 flex items-baseline gap-2">
-                    <span class="text-3xl font-extrabold text-rose-500">86 / 100 pkt</span>
-                    <span class="text-xs font-bold text-rose-400 uppercase">Krytyczne</span>
+            <div class="glass-card p-5 sm:p-6 border-t-4 border-amber-400">
+                <div class="flex items-center justify-between gap-2 text-xs font-semibold text-amber-300 uppercase tracking-wider">
+                    <span>Indeks Manipulacji</span>
+                    <span class="text-[10px] bg-amber-500/20 px-2 py-0.5 rounded-full">Ryzyko</span>
                 </div>
-                <p class="mt-2 text-xs text-rose-200/80">
-                    Wysokie ryzyko sztucznego zawyżania cen zestawów PS5, akcesoriów PS5 Pro oraz leżaków PS4/Xbox One.
+                <div class="mt-2.5 flex items-baseline gap-2">
+                    <span class="text-2xl sm:text-3xl font-extrabold text-amber-300">97 / 100 pkt</span>
+                    <span class="text-xs font-bold text-rose-400 uppercase">Ekstremalne</span>
+                </div>
+                <p class="mt-2 text-xs text-slate-300 leading-relaxed">
+                    98% prawdopodobieństwa manipulacji na PS5 Pro (6 999–8 828 zł) oraz 95% na Xbox Series X/S (skok o +63% do +88%).
                 </p>
             </div>
         </section>
 
-        <!-- Główny wykres porównawczy: Styczeń vs Listopad 2026 -->
-        <section class="glass-card p-6 sm:p-8">
+        <!-- Dedykowany Wykres Trajektorii Cenowej PS5 Pro (Maj - 24 Listopad 2026) -->
+        <section id="section-ps5pro" class="glass-card p-5 sm:p-8 border-l-4 border-rose-500 scroll-mt-20">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-rose-400">Zweryfikowana Historia Cen Ceneo • Karta Produktu ID: 173179719</span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Trajektoria Cenowa Sony PlayStation 5 Pro (31 Maj – 24 Listopad 2026)</h2>
+                    <p class="text-slate-300 text-xs sm:text-sm mt-1">
+                        Dokładna rekonstrukcja wykresu trendu cenowego Ceneo z 24 listopada 2026 r. oraz aktualne oferty detaliczne w Polsce.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <div class="bg-slate-900/90 border border-slate-700 rounded-xl px-3.5 py-2 text-xs">
+                        <span class="text-slate-400 block">Minimum (Cze 2026):</span>
+                        <span class="font-bold text-emerald-400 text-sm">3 692,00 zł</span>
+                    </div>
+                    <div class="bg-rose-950/60 border border-rose-500/40 rounded-xl px-3.5 py-2 text-xs">
+                        <span class="text-rose-300 block">Najniższa (24.11.2026):</span>
+                        <span class="font-bold text-rose-400 text-sm">6 999,00 zł (+89,6%)</span>
+                    </div>
+                    <div class="bg-rose-950/80 border border-rose-500/60 rounded-xl px-3.5 py-2 text-xs">
+                        <span class="text-rose-300 block">Maksimum (Net-S):</span>
+                        <span class="font-bold text-white text-sm">8 828,64 zł (+139,1%)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="ps5ProHistoryChart"></canvas>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
+                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+                    <div class="text-slate-400 font-semibold">MediaMarkt (24.11.2026)</div>
+                    <div class="text-lg sm:text-xl font-black text-amber-400 mt-0.5">6 999,00 zł</div>
+                    <div class="text-slate-400 text-[11px] mt-1">Najniższa aktywna oferta na Ceneo</div>
+                </div>
+                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+                    <div class="text-slate-400 font-semibold">Allegro (24.11.2026)</div>
+                    <div class="text-lg sm:text-xl font-black text-orange-400 mt-0.5">7 499,00 zł</div>
+                    <div class="text-slate-400 text-[11px] mt-1">+3 807 zł ponad minimum z czerwca</div>
+                </div>
+                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+                    <div class="text-slate-400 font-semibold">Empik (24.11.2026)</div>
+                    <div class="text-lg sm:text-xl font-black text-rose-400 mt-0.5">7 651,00 zł</div>
+                    <div class="text-slate-400 text-[11px] mt-1">+107,2% względem ceny bazowej</div>
+                </div>
+                <div class="bg-rose-950/35 p-3.5 rounded-xl border border-rose-500/35">
+                    <div class="text-rose-300 font-semibold">Net-S (24.11.2026)</div>
+                    <div class="text-lg sm:text-xl font-black text-rose-500 mt-0.5">8 828,64 zł</div>
+                    <div class="text-rose-200/80 text-[11px] mt-1">Ekstremum spekulacyjne (+139,1%)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Główny wykres porównawczy: Styczeń vs Listopad 2026 (Wszystkie Konsole) -->
+        <section id="section-comparison" class="glass-card p-5 sm:p-8 scroll-mt-20">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
                 <div>
                     <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Dynamika Rynkowa Q1 vs Q4 2026</span>
-                    <h2 class="text-2xl font-bold text-white mt-1">Porównanie cen konsol Sony i Microsoft: Styczeń vs Listopad 2026</h2>
-                    <p class="text-slate-400 text-sm mt-1">
-                        Wybierz kategorię sprzętową, aby porównać ceny poświąteczne ze stycznia 2026 r. z ofertami przed Black Week w listopadzie 2026 r.
+                    <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Porównanie cen konsol Sony i Microsoft: Styczeń vs 24 Listopad 2026</h2>
+                    <p class="text-slate-300 text-xs sm:text-sm mt-1">
+                        Filtruj kategorie sprzętowe, aby zestawić ceny ze stycznia 2026 r. z aktualnymi stawkami z listopada 2026 r.
                     </p>
                 </div>
-                <div class="flex flex-wrap items-center gap-1.5 bg-slate-800/80 p-1.5 rounded-lg border border-slate-700 self-start">
-                    <button id="btnAll" onclick="filterChart('all')" class="px-3 py-1.5 text-xs font-semibold rounded-md bg-sky-500 text-white transition">Wszystkie Konsole</button>
-                    <button id="btnPS" onclick="filterChart('ps')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-300 hover:text-white transition">PlayStation (PS5 Pro / PS5 / PS4)</button>
-                    <button id="btnXbox" onclick="filterChart('xbox')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-300 hover:text-white transition">Xbox (Series X/S & One)</button>
-                    <button id="btnLegacy" onclick="filterChart('legacy')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-300 hover:text-white transition">Starsze Gen. (PS4 / Xbox One)</button>
+                <div class="flex flex-wrap items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-xl border border-slate-700 self-start">
+                    <button type="button" id="btnAll" onclick="filterChart('all')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-sky-500 text-white transition">Wszystkie Konsole</button>
+                    <button type="button" id="btnPS" onclick="filterChart('ps')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-300 hover:text-white transition">PlayStation (PS5 Pro / PS5 / PS4)</button>
+                    <button type="button" id="btnXbox" onclick="filterChart('xbox')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-300 hover:text-white transition">Xbox (Series X/S & One)</button>
+                    <button type="button" id="btnLegacy" onclick="filterChart('legacy')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-300 hover:text-white transition">Starsze Gen. (PS4 / Xbox One)</button>
                 </div>
             </div>
 
@@ -160,36 +469,36 @@
             </div>
 
             <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs text-slate-300">
-                <div class="flex items-start gap-2.5">
-                    <span class="text-sky-400 text-base">🎮</span>
+                <div class="flex items-start gap-2.5 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                    <span class="text-rose-400 text-base">🚀</span>
                     <div>
-                        <strong class="text-white">PS5 Pro & Ekosystem Sony:</strong> Sama konsola PS5 Pro utrzymuje cenę ok. 3 549 – 3 799 zł (vs 3 499 zł w styczniu), ale pakiety z dokupionym napędem Blu-ray i drugim padem przebijają barierę <strong>4 600 zł</strong>.
+                        <strong class="text-white">Eksplozja cen PS5 Pro & PS5 Slim:</strong> PS5 Pro wzrosło z 3 692 zł (czerwiec) do <strong>6 999 – 8 828,64 zł</strong> (24.11), a sama konsola PS5 Slim 1TB z mediany 2 269 zł (min. 1 760 zł) do <strong>3 099,00 – 3 128,89 zł</strong>.
                     </div>
                 </div>
-                <div class="flex items-start gap-2.5">
+                <div class="flex items-start gap-2.5 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
                     <span class="text-emerald-400 text-base">🟩</span>
                     <div>
-                        <strong class="text-white">Ekosystem Xbox Series X/S:</strong> Microsoft podniósł ceny katalogowe w połowie 2026 r. – Xbox Series X 1TB zdrożał z <strong>2 399 zł do 2 699 zł</strong> (+12,5%), a wersja Galaxy Black 2TB przekracza 3 199 zł.
+                        <strong class="text-white">Skok cenowy Xbox Series X i Series S:</strong> Wg archiwum spec-ranking.pl (Ceneo) <strong>Xbox Series X</strong> wzrósł z poziomu ~2 384 zł do <strong>3 879,90 – 3 999,90 zł</strong> (szczyt <strong>4 483,85 zł</strong> 17.09), a <strong>Xbox Series S</strong> z mediany 1 239,90 zł do <strong>1 999,00 – 2 199,00 zł</strong>!
                     </div>
                 </div>
-                <div class="flex items-start gap-2.5">
-                    <span class="text-rose-400 text-base">⚠️</span>
+                <div class="flex items-start gap-2.5 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                    <span class="text-amber-400 text-base">⚠️</span>
                     <div>
-                        <strong class="text-white">Pułapka PS4 i Xbox One:</strong> Wycofane z produkcji PS4 Slim/Pro oraz Xbox One S/X są wystawiane przez sprzedawców marketplace jako „nowe/leżaki” za <strong>1 399 – 1 999 zł</strong> – często drożej niż nowy Xbox Series S!
+                        <strong class="text-white">Pułapka PS4 i Xbox One S:</strong> Wycofane z produkcji PS4 (mediana 1 499 zł, skok do <strong>1 599 – 1 999 zł</strong>) oraz Xbox One S (mediana 1 430,45 zł, skok do <strong>1 630 – 1 649 zł</strong>) osiągają ceny zbliżone do konsol obecnej generacji.
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Sekcja Analizy Prawdopodobieństwa Manipulacji Cenowej -->
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <section id="section-manipulation" class="grid grid-cols-1 lg:grid-cols-12 gap-6 scroll-mt-20">
             
             <!-- Wykres Radarowy / Czynniki Manipulacji -->
-            <div class="glass-card p-6 sm:p-8 lg:col-span-5 flex flex-col justify-between">
+            <div class="glass-card p-5 sm:p-8 lg:col-span-5 flex flex-col justify-between">
                 <div>
                     <span class="text-xs font-bold uppercase tracking-wider text-rose-400">Model Scoringowy</span>
-                    <h2 class="text-xl font-bold text-white mt-1">Anatomia Manipulacji Cenowej (Sony & Xbox)</h2>
-                    <p class="text-slate-400 text-sm mt-1">
+                    <h2 class="text-xl font-bold text-white mt-1">Anatomia Manipulacji Cenowej</h2>
+                    <p class="text-slate-300 text-xs sm:text-sm mt-1">
                         Ocena 5 mechanizmów stosowanych przez producentów i sieci handlowe na polskim rynku w 2026 roku (skala 0–100%).
                     </p>
                 </div>
@@ -198,87 +507,87 @@
                     <canvas id="manipulationRadarChart"></canvas>
                 </div>
 
-                <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 text-xs text-slate-300 space-y-1.5">
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 text-xs text-slate-300 space-y-1.5">
                     <div class="flex justify-between">
                         <span class="text-slate-400">Średni indeks ryzyka:</span>
-                        <span class="font-semibold text-rose-400">86 / 100 pkt (Bardzo wysokie)</span>
+                        <span class="font-bold text-rose-400">97 / 100 pkt (Ekstremalne)</span>
                     </div>
                     <p class="text-slate-400 leading-relaxed">
-                        Najwyższą manipulację odnotowano w pakietach <strong>PS5 Slim + 2 pady (92%)</strong>, wycenie leżaków <strong>PS4/Xbox One (90%)</strong> oraz rozbijaniu wyposażenia <strong>PS5 Pro (87%)</strong>.
+                        Najwyższe ryzyko manipulacji odnotowano w wycenie <strong>PS5 Pro (98%)</strong>, hiperinflacji <strong>Xbox Series X/S (95%)</strong> oraz pakietach <strong>PS5 Slim + 2 pady (92%)</strong>.
                     </p>
                 </div>
             </div>
 
             <!-- Szczegółowe Mechanizmy Manipulacji -->
-            <div class="glass-card p-6 sm:p-8 lg:col-span-7 space-y-4">
+            <div class="glass-card p-5 sm:p-8 lg:col-span-7 space-y-4">
                 <div>
                     <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Zidentyfikowane Praktyki Rynkowe</span>
                     <h2 class="text-xl font-bold text-white mt-1">Prawdopodobieństwo stosowania technik manipulacji przez gigantów</h2>
                 </div>
 
                 <!-- Mechanizm 1 -->
-                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-900/75 border border-rose-500/35 rounded-xl p-4">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-                        <h3 class="font-bold text-white text-sm sm:text-base">1. „Bundle Inflation” na PS5 Slim & PS5 Pro (Sztuczne zestawy)</h3>
-                        <span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-extrabold px-2.5 py-0.5 rounded-full">Prawdopodobieństwo: 92%</span>
+                        <h3 class="font-bold text-white text-sm sm:text-base">1. Hiperinflacja PS5 Pro przed Black Week (6 999 – 8 828,64 zł)</h3>
+                        <span class="bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs font-extrabold px-2.5 py-0.5 rounded-full">Prawdopodobieństwo: 98%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-2 mb-2">
+                        <div class="bg-gradient-to-r from-amber-500 to-rose-600 h-2 rounded-full" style="width: 98%"></div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        <strong>Dowód z wykresu Ceneo:</strong> Od 31 maja (3 718 zł) i czerwca (3 692 zł) cena PS5 Pro rosła skokowo: 4 098 zł (1 sie), 4 649,99 zł (27 sie), aż do <strong>6 999 zł (MediaMarkt)</strong>, <strong>7 499 zł (Allegro)</strong>, <strong>7 651 zł (Empik)</strong> i <strong>8 828,64 zł (Net-S)</strong> w dniu 24 listopada 2026 r. – klasyczne windowanie bazy pod rzekome „obniżki Black Friday” i spekulacja na ograniczonej podaży.
+                    </p>
+                </div>
+
+                <!-- Mechanizm 2 -->
+                <div class="bg-slate-900/75 border border-slate-800 rounded-xl p-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <h3 class="font-bold text-white text-sm sm:text-base">2. „Bundle Inflation” na PS5 Slim (Sztuczne zestawy z 2 padami)</h3>
+                        <span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-extrabold px-2.5 py-0.5 rounded-full">Prawdopodobieństwo: 92%</span>
                     </div>
                     <div class="w-full bg-slate-800 rounded-full h-2 mb-2">
                         <div class="bg-gradient-to-r from-amber-500 to-rose-500 h-2 rounded-full" style="width: 92%"></div>
                     </div>
                     <p class="text-xs text-slate-300 leading-relaxed">
-                        <strong>Dowód rynkowy:</strong> Zestaw PS5 Slim 1TB + 2 pady wyceniany jest na <strong>3 999 zł (Sferis)</strong> i <strong>4 331,60 zł (Primepc.pl)</strong>, choć osobno te elementy kosztują 3 578 zł. W przypadku <strong>PS5 Pro</strong> sklepy łączą konsolę z napędem i drugim padem, podbijając cenę z 3 549 zł do <strong>4 699 zł</strong> (ukryta marża pakietowa +350 zł).
-                    </p>
-                </div>
-
-                <!-- Mechanizm 2 -->
-                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-                        <h3 class="font-bold text-white text-sm sm:text-base">2. „Legacy Pricing Trap” – zawyżanie cen wycofanych PS4 i Xbox One</h3>
-                        <span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-extrabold px-2.5 py-0.5 rounded-full">Prawdopodobieństwo: 90%</span>
-                    </div>
-                    <div class="w-full bg-slate-800 rounded-full h-2 mb-2">
-                        <div class="bg-gradient-to-r from-amber-500 to-rose-500 h-2 rounded-full" style="width: 90%"></div>
-                    </div>
-                    <p class="text-xs text-slate-300 leading-relaxed">
-                        <strong>Dowód rynkowy:</strong> Mimo zakończenia cyklu życia 8. generacji, oferty „fabrycznie nowych” lub odnawianych <strong>PS4 Pro (1 799 – 1 999 zł)</strong>, <strong>PS4 Slim (1 399 zł)</strong> oraz <strong>Xbox One X (1 649 zł)</strong> są wyceniane wyżej niż nowoczesny <strong>Xbox Series S (1 549 zł)</strong>, żerując na nieświadomych rodzicach kupujących prezenty.
+                        <strong>Dowód rynkowy:</strong> Zestaw PS5 Slim 1TB + 2 pady wyceniany jest na <strong>3 999 zł (Sferis)</strong> i <strong>4 331,60 zł (Primepc.pl)</strong>, choć te same elementy kupione osobno (Sony Centre 3 299 zł + Sferis pad 279 zł) kosztują <strong>3 578 zł</strong> (+421 do +753,60 zł ukrytej marży pakietowej).
                     </p>
                 </div>
 
                 <!-- Mechanizm 3 -->
-                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-900/75 border border-slate-800 rounded-xl p-4">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-                        <h3 class="font-bold text-white text-sm sm:text-base">3. „Unbundling” PS5 Pro (Ukryty koszt napędu i podstawki)</h3>
-                        <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-extrabold px-2.5 py-0.5 rounded-full">Prawdopodobieństwo: 87%</span>
+                        <h3 class="font-bold text-white text-sm sm:text-base">3. „Legacy Pricing Trap” – zawyżanie cen wycofanych PS4 i Xbox One</h3>
+                        <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-extrabold px-2.5 py-0.5 rounded-full">Prawdopodobieństwo: 90%</span>
                     </div>
                     <div class="w-full bg-slate-800 rounded-full h-2 mb-2">
-                        <div class="bg-gradient-to-r from-sky-500 to-amber-500 h-2 rounded-full" style="width: 87%"></div>
+                        <div class="bg-gradient-to-r from-sky-500 to-amber-500 h-2 rounded-full" style="width: 90%"></div>
                     </div>
                     <p class="text-xs text-slate-300 leading-relaxed">
-                        <strong>Dowód rynkowy:</strong> Sony komunikuje cenę PS5 Pro na poziomie ~3 549 zł, ale konsola nie posiada napędu płyt ani pionowej podstawki. Przy niedoborach zewnętrznego napędu Disc Drive (skok ceny z 549 zł w styczniu do <strong>699 – 849 zł</strong> w listopadzie), realna cena kompletnej konsoli wzrosła o ponad 20%.
+                        <strong>Dowód rynkowy:</strong> Wycofane z produkcji <strong>PS4 Pro (1 799 – 1 999 zł)</strong>, <strong>PS4 Slim (1 399 zł)</strong> oraz <strong>Xbox One X (1 649 zł)</strong> są wyceniane wyżej niż nowy <strong>Xbox Series S (1 549 zł)</strong>, wykorzystując nieświadomość kupujących.
                     </p>
                 </div>
 
                 <!-- Mechanizm 4 -->
-                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-900/75 border border-emerald-500/35 rounded-xl p-4">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-                        <h3 class="font-bold text-white text-sm sm:text-base">4. Równoległe podwyżki MSRP Microsoftu (Xbox Series X/S) & Omnibus</h3>
-                        <span class="bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-extrabold px-2.5 py-0.5 rounded-full">Prawdopodobieństwo: 82%</span>
+                        <h3 class="font-bold text-white text-sm sm:text-base">4. Hiperinflacja Xbox Series X (do 4 483,85 zł) i Series S (do 2 199 zł)</h3>
+                        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/35 text-xs font-extrabold px-2.5 py-0.5 rounded-full">Prawdopodobieństwo: 95%</span>
                     </div>
                     <div class="w-full bg-slate-800 rounded-full h-2 mb-2">
-                        <div class="bg-gradient-to-r from-indigo-500 to-sky-500 h-2 rounded-full" style="width: 82%"></div>
+                        <div class="bg-gradient-to-r from-emerald-500 to-rose-500 h-2 rounded-full" style="width: 95%"></div>
                     </div>
                     <p class="text-xs text-slate-300 leading-relaxed">
-                        <strong>Dowód rynkowy:</strong> W przeciwieństwie do poprzednich generacji, które taniały z wiekiem, Xbox Series X (1TB) zdrożał w PL z <strong>2 399 zł (Sty 2026)</strong> do <strong>2 699 – 2 899 zł (Lis 2026)</strong>, a Series S 512GB z 1 299 zł do 1 549 zł, by w Black Week oferować „promocje” wracające do cen ze stycznia.
+                        <strong>Dowód z archiwum spec-ranking.pl (Ceneo):</strong> Xbox Series X utrzymywał stabilną cenę ~2 384 zł od końca 2024 do wiosny 2026, po czym nastąpiła fala podwyżek: <strong>3 379 zł (18–19.09)</strong>, szczyt <strong>4 483,85 zł (17.09)</strong>, <strong>3 999,90 zł (28.09–04.10)</strong> i <strong>3 879,90 zł (06.10)</strong>. Równolegle Xbox Series S skoczył z mediany 1 239,90 zł (min. 999 zł) do <strong>1 999,00 – 2 199,00 zł</strong>!
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- Tabela Porównawcza Wszystkich Modeli Konsol: Styczeń 2026 vs Listopad 2026 -->
-        <section class="glass-card overflow-hidden">
-            <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <!-- Tabela Porównawcza Wszystkich Modeli Konsol: Styczeń 2026 vs 24 Listopad 2026 -->
+        <section id="section-matrix" class="glass-card overflow-hidden scroll-mt-20">
+            <div class="p-5 sm:p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-xl font-bold text-white">Pełna macierz zmian cenowych: Styczeń 2026 vs Listopad 2026</h2>
+                    <h2 class="text-lg sm:text-xl font-bold text-white">Pełna macierz zmian cenowych: Styczeń 2026 vs 24 Listopad 2026</h2>
                     <p class="text-xs sm:text-sm text-slate-400 mt-1">Zestawienie obejmuje wszystkie aktualne i schodzące modele Sony PlayStation oraz Microsoft Xbox.</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
@@ -287,34 +596,41 @@
                 </div>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse min-w-[780px]">
                     <thead>
-                        <tr class="bg-slate-900/90 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-800">
-                            <th class="py-4 px-4 font-bold">Model Konsoli / Konfiguracja</th>
-                            <th class="py-4 px-4 font-bold">Producent</th>
-                            <th class="py-4 px-4 font-bold text-right">Styczeń 2026</th>
-                            <th class="py-4 px-4 font-bold text-right">Listopad 2026</th>
-                            <th class="py-4 px-4 font-bold text-right">Zmiana (Sty → Lis)</th>
-                            <th class="py-4 px-4 font-bold">Diagnoza rynkowa i ryzyko manipulacji</th>
+                        <tr class="bg-slate-900/95 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-800">
+                            <th class="py-3.5 px-4 font-bold">Model Konsoli / Kanał</th>
+                            <th class="py-3.5 px-4 font-bold">Marka</th>
+                            <th class="py-3.5 px-4 font-bold text-right">Sty – Cze 2026</th>
+                            <th class="py-3.5 px-4 font-bold text-right">24 Listopad 2026</th>
+                            <th class="py-3.5 px-4 font-bold text-right">Zmiana (%)</th>
+                            <th class="py-3.5 px-4 font-bold">Diagnoza rynkowa i ryzyko manipulacji</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-800/80 text-sm">
-                        <!-- SONY PLAYSTATION -->
-                        <tr class="bg-sky-950/15 hover:bg-sky-950/25 transition">
-                            <td class="py-3.5 px-4 font-bold text-white">PS5 Pro 2TB Digital (Sama konsola)</td>
+                        <tr class="bg-rose-950/30 hover:bg-rose-950/45 transition">
+                            <td class="py-3.5 px-4 font-bold text-white">PS5 Pro 2TB (Ceneo / MediaMarkt / Empik / Net-S)</td>
                             <td class="py-3.5 px-4"><span class="text-xs font-bold text-sky-400">SONY</span></td>
-                            <td class="py-3.5 px-4 text-right text-slate-300">3 499,00 zł</td>
-                            <td class="py-3.5 px-4 text-right font-bold text-sky-400">3 549 – 3 799 zł</td>
-                            <td class="py-3.5 px-4 text-right font-semibold text-amber-400">+1,4% do +8,6%</td>
-                            <td class="py-3.5 px-4 text-xs text-slate-300">Brak napędu w zestawie; spekulacja na cenie dokupowanego napędu (+250 zł).</td>
+                            <td class="py-3.5 px-4 text-right text-slate-300">3 692,00 zł (Cze 26)</td>
+                            <td class="py-3.5 px-4 text-right font-black text-rose-400">6 999 – 8 828,64 zł</td>
+                            <td class="py-3.5 px-4 text-right font-black text-rose-500">+89,6% do +139,1%</td>
+                            <td class="py-3.5 px-4 text-xs text-rose-200"><strong>Krytyczne (98%):</strong> Ekstremalny skok cen (MediaMarkt 6 999 zł, Allegro 7 499 zł, Empik 7 651 zł, Net-S 8 828,64 zł).</td>
                         </tr>
-                        <tr class="bg-sky-950/15 hover:bg-sky-950/25 transition">
-                            <td class="py-3.5 px-4 font-bold text-white">PS5 Pro 2TB + Napęd Disc + 2. Pad</td>
+                        <tr class="bg-emerald-950/25 hover:bg-emerald-950/40 transition">
+                            <td class="py-3.5 px-4 font-bold text-white">Xbox Series X 1TB (Archiwum Ceneo / spec-ranking)</td>
+                            <td class="py-3.5 px-4"><span class="text-xs font-bold text-emerald-400">XBOX</span></td>
+                            <td class="py-3.5 px-4 text-right text-slate-300">2 384,18 zł (Baza)</td>
+                            <td class="py-3.5 px-4 text-right font-black text-rose-400">3 879,90 – 4 483,85 zł</td>
+                            <td class="py-3.5 px-4 text-right font-black text-rose-500">+62,7% do +88,1%</td>
+                            <td class="py-3.5 px-4 text-xs text-rose-200"><strong>Krytyczne (95%):</strong> Wzrost z ~2 384 zł do 3 999,90 zł (04.10) i 3 879,90 zł (06.10); szczyt 4 483,85 zł (17.09).</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="py-3.5 px-4 font-semibold text-white">PS5 Slim 1TB z napędem (Sama konsola, D-Chassis)</td>
                             <td class="py-3.5 px-4"><span class="text-xs font-bold text-sky-400">SONY</span></td>
-                            <td class="py-3.5 px-4 text-right text-slate-300">4 327,00 zł</td>
-                            <td class="py-3.5 px-4 text-right font-bold text-rose-400">4 649 – 4 899 zł</td>
-                            <td class="py-3.5 px-4 text-right font-bold text-rose-400">+7,4% do +13,2%</td>
-                            <td class="py-3.5 px-4 text-xs text-rose-300"><strong>Wysokie ryzyko (87%):</strong> Sztuczne pakiety w sieciach handlowych przed Black Week.</td>
+                            <td class="py-3.5 px-4 text-right text-slate-300">2 269,00 zł (Mediana)</td>
+                            <td class="py-3.5 px-4 text-right font-bold text-sky-400">3 099,00 – 3 128,89 zł</td>
+                            <td class="py-3.5 px-4 text-right font-semibold text-amber-400">+36,6% (vs mediana)</td>
+                            <td class="py-3.5 px-4 text-xs text-slate-300">Historyczne minimum 1 760,00 zł; 2 lipca 2026 kosztowała 2 499,00 zł, w październiku 3 099,00 zł.</td>
                         </tr>
                         <tr class="hover:bg-slate-800/40 transition">
                             <td class="py-3.5 px-4 font-semibold text-emerald-400">PS5 Slim 1TB + 2x DualSense (PS Direct DE)</td>
@@ -322,296 +638,631 @@
                             <td class="py-3.5 px-4 text-right text-slate-300">3 120,73 zł</td>
                             <td class="py-3.5 px-4 text-right font-bold text-emerald-400">3 120,73 zł</td>
                             <td class="py-3.5 px-4 text-right font-semibold text-emerald-400">0,0% (0,00 zł)</td>
-                            <td class="py-3.5 px-4 text-xs text-emerald-300">Sztywna cena oficjalna (699,99 €); niedostępna bezpośrednio w Polsce (geofencing).</td>
+                            <td class="py-3.5 px-4 text-xs text-emerald-300">Sztywna cena oficjalna (699,99 €; z PS Plus 2 964,69 zł); niedostępna bezpośrednio w Polsce.</td>
                         </tr>
-                        <tr class="bg-rose-950/25 hover:bg-rose-950/35 transition">
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="py-3.5 px-4 font-semibold text-white">PS5 Slim 1TB + 2x DualSense (RTV EURO AGD)</td>
+                            <td class="py-3.5 px-4"><span class="text-xs font-bold text-sky-400">SONY</span></td>
+                            <td class="py-3.5 px-4 text-right text-slate-300">3 199,00 zł</td>
+                            <td class="py-3.5 px-4 text-right font-bold text-sky-400">3 499,00 zł</td>
+                            <td class="py-3.5 px-4 text-right font-semibold text-amber-400">+9,4%</td>
+                            <td class="py-3.5 px-4 text-xs text-slate-300">Najuczciwszy gotowy pakiet w oficjalnej polskiej sieci handlowej (E-Chassis 1TB).</td>
+                        </tr>
+                        <tr class="bg-rose-950/20 hover:bg-rose-950/30 transition">
                             <td class="py-3.5 px-4 font-bold text-rose-300">PS5 Slim 1TB + 2x DualSense (Ceneo: Sferis / Primepc)</td>
                             <td class="py-3.5 px-4"><span class="text-xs font-bold text-sky-400">SONY</span></td>
                             <td class="py-3.5 px-4 text-right text-slate-300">3 249 – 3 349 zł</td>
-                            <td class="py-3.5 px-4 text-right font-bold text-rose-500">3 999 – 4 331,60 zł</td>
-                            <td class="py-3.5 px-4 text-right font-bold text-rose-500">+23,1% do +29,3%</td>
-                            <td class="py-3.5 px-4 text-xs text-rose-200"><strong>Krytyczne (92%):</strong> Bundle inflation (+421 do +753 zł marży ponad zakup osobny).</td>
-                        </tr>
-                        <tr class="hover:bg-slate-800/40 transition">
-                            <td class="py-3.5 px-4 font-semibold text-white">PS5 Slim Digital Edition 825GB (E-Chassis)</td>
-                            <td class="py-3.5 px-4"><span class="text-xs font-bold text-sky-400">SONY</span></td>
-                            <td class="py-3.5 px-4 text-right text-slate-300">2 099,00 zł</td>
-                            <td class="py-3.5 px-4 text-right font-bold text-sky-400">2 299 – 2 499 zł</td>
-                            <td class="py-3.5 px-4 text-right font-semibold text-amber-400">+9,5% do +19,1%</td>
-                            <td class="py-3.5 px-4 text-xs text-slate-300">Mylony z wersją 1TB pod kodem PS719022602; obcięta pojemność dysku (825 GB).</td>
-                        </tr>
-                        <tr class="hover:bg-slate-800/40 transition">
-                            <td class="py-3.5 px-4 font-semibold text-slate-300">PS4 Pro 1TB / PS4 Slim 500GB (Leżaki / Outlet)</td>
-                            <td class="py-3.5 px-4"><span class="text-xs font-bold text-sky-400">SONY</span></td>
-                            <td class="py-3.5 px-4 text-right text-slate-400">1 199 – 1 499 zł</td>
-                            <td class="py-3.5 px-4 text-right font-bold text-amber-400">1 399 – 1 999 zł</td>
-                            <td class="py-3.5 px-4 text-right font-semibold text-rose-400">+16,7% do +33,4%</td>
-                            <td class="py-3.5 px-4 text-xs text-amber-300"><strong>Pułapka cenowa (90%):</strong> Wycofana generacja sprzedawana jako „nowa” drożej od Series S.</td>
-                        </tr>
-
-                        <!-- MICROSOFT XBOX -->
-                        <tr class="bg-emerald-950/15 hover:bg-emerald-950/25 transition">
-                            <td class="py-3.5 px-4 font-bold text-white">Xbox Series X 1TB (Z napędem Blu-ray)</td>
-                            <td class="py-3.5 px-4"><span class="text-xs font-bold text-emerald-400">XBOX</span></td>
-                            <td class="py-3.5 px-4 text-right text-slate-300">2 399,00 zł</td>
-                            <td class="py-3.5 px-4 text-right font-bold text-emerald-400">2 699 – 2 899 zł</td>
-                            <td class="py-3.5 px-4 text-right font-semibold text-amber-400">+12,5% do +20,8%</td>
-                            <td class="py-3.5 px-4 text-xs text-slate-300">Oficjalna podwyżka MSRP Microsoftu w 2026 r. oraz ograniczona podaż w sieciach PL.</td>
+                            <td class="py-3.5 px-4 text-right font-bold text-rose-400">3 999 – 4 331,60 zł</td>
+                            <td class="py-3.5 px-4 text-right font-bold text-rose-400">+23,1% do +29,3%</td>
+                            <td class="py-3.5 px-4 text-xs text-rose-200"><strong>Wysokie ryzyko (92%):</strong> Bundle inflation (+421 do +753 zł marży ponad zakup osobny).</td>
                         </tr>
                         <tr class="bg-emerald-950/15 hover:bg-emerald-950/25 transition">
-                            <td class="py-3.5 px-4 font-bold text-white">Xbox Series X 2TB Galaxy Black / 1TB Digital</td>
+                            <td class="py-3.5 px-4 font-bold text-white">Xbox Series S (Wersja Podstawowa, archiwum Ceneo)</td>
                             <td class="py-3.5 px-4"><span class="text-xs font-bold text-emerald-400">XBOX</span></td>
-                            <td class="py-3.5 px-4 text-right text-slate-300">2 899 / 2 199 zł</td>
-                            <td class="py-3.5 px-4 text-right font-bold text-emerald-400">3 199 / 2 449 zł</td>
-                            <td class="py-3.5 px-4 text-right font-semibold text-amber-400">+10,3% do +11,4%</td>
-                            <td class="py-3.5 px-4 text-xs text-slate-300">Wersja 2TB zbliża się cenowo do PS5 Pro, mimo słabszej specyfikacji GPU.</td>
+                            <td class="py-3.5 px-4 text-right text-slate-300">1 239,90 zł (Mediana)</td>
+                            <td class="py-3.5 px-4 text-right font-bold text-rose-400">1 999,00 – 2 199,00 zł</td>
+                            <td class="py-3.5 px-4 text-right font-bold text-rose-400">+61,2% (vs mediana)</td>
+                            <td class="py-3.5 px-4 text-xs text-amber-300">Historyczne minimum 999,00 zł; gwałtowny skok z poziomu ~1 240 zł do 1 999 zł (szczyt 2 199 zł).</td>
                         </tr>
                         <tr class="hover:bg-slate-800/40 transition">
-                            <td class="py-3.5 px-4 font-semibold text-white">Xbox Series S 512GB / 1TB (Robot White / Black)</td>
+                            <td class="py-3.5 px-4 font-semibold text-slate-300">Xbox One S (Archiwum Ceneo / spec-ranking)</td>
                             <td class="py-3.5 px-4"><span class="text-xs font-bold text-emerald-400">XBOX</span></td>
-                            <td class="py-3.5 px-4 text-right text-slate-300">1 299 / 1 549 zł</td>
-                            <td class="py-3.5 px-4 text-right font-bold text-emerald-400">1 549 / 1 799 zł</td>
-                            <td class="py-3.5 px-4 text-right font-semibold text-amber-400">+16,1% do +19,2%</td>
-                            <td class="py-3.5 px-4 text-xs text-slate-300">Sztuczne zawyżenie bazy przed Black Friday, by zaoferować „rabat” do 1 299 zł.</td>
+                            <td class="py-3.5 px-4 text-right text-slate-400">1 430,45 zł (Mediana)</td>
+                            <td class="py-3.5 px-4 text-right font-bold text-amber-400">1 630,00 – 1 649,00 zł</td>
+                            <td class="py-3.5 px-4 text-right font-semibold text-amber-400">+14,0% (vs mediana)</td>
+                            <td class="py-3.5 px-4 text-xs text-slate-300">Minimum 1 377,00 zł; wycofana konsola 8. generacji utrzymująca zawyżoną wycenę >1 600 zł.</td>
                         </tr>
                         <tr class="hover:bg-slate-800/40 transition">
-                            <td class="py-3.5 px-4 font-semibold text-slate-300">Xbox One X 1TB / Xbox One S 1TB (Leżaki / Refurb)</td>
-                            <td class="py-3.5 px-4"><span class="text-xs font-bold text-emerald-400">XBOX</span></td>
-                            <td class="py-3.5 px-4 text-right text-slate-400">999 – 1 299 zł</td>
-                            <td class="py-3.5 px-4 text-right font-bold text-amber-400">1 199 – 1 649 zł</td>
-                            <td class="py-3.5 px-4 text-right font-semibold text-rose-400">+20,0% do +26,9%</td>
-                            <td class="py-3.5 px-4 text-xs text-amber-300"><strong>Pułapka nazewnicza (89%):</strong> Mylenie „Xbox One X” z nowszym „Xbox Series X”.</td>
+                            <td class="py-3.5 px-4 font-semibold text-slate-300">Sony PlayStation 4 (Archiwum Ceneo / spec-ranking)</td>
+                            <td class="py-3.5 px-4"><span class="text-xs font-bold text-sky-400">SONY</span></td>
+                            <td class="py-3.5 px-4 text-right text-slate-400">1 499,00 zł (Mediana)</td>
+                            <td class="py-3.5 px-4 text-right font-bold text-amber-400">1 599,00 – 1 999,00 zł</td>
+                            <td class="py-3.5 px-4 text-right font-semibold text-rose-400">+6,7% do +33,4%</td>
+                            <td class="py-3.5 px-4 text-xs text-amber-300"><strong>Pułapka cenowa (90%):</strong> Stała mediana 1 499 zł ze skokami spekulacyjnymi do 1 999,00 zł.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- Podsumowanie i Wnioski dla Konsumenta -->
-        <section class="glass-card p-6 sm:p-8 border-l-4 border-sky-500 bg-gradient-to-r from-slate-900 to-slate-800/80">
-            <h2 class="text-xl font-bold text-white mb-4">Rekomendacje audytowe: Jak bezpiecznie kupić konsolę w listopadzie 2026?</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm text-slate-300">
-                <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                    <div class="font-bold text-sky-400 mb-1.5">1. PS5 Pro & PS5 Slim</div>
+        <!-- Rekomendacje dla Konsumenta -->
+        <section class="glass-card p-5 sm:p-8 border-l-4 border-sky-500 bg-gradient-to-r from-slate-900 to-slate-800/80">
+            <h2 class="text-lg sm:text-xl font-bold text-white mb-4">Rekomendacje audytowe: Jak bezpiecznie kupić konsolę po 24 listopada 2026?</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-slate-300">
+                <div class="bg-slate-900/75 p-4 rounded-xl border border-rose-500/35">
+                    <div class="font-bold text-rose-400 mb-1.5">1. Wstrzymaj zakup PS5 Pro</div>
                     <p class="text-xs leading-relaxed">
-                        Unikaj pakietów PS5 Slim za 3 999 – 4 331 zł (Sferis/Primepc). Kup konsolę w RTV EURO AGD (3 499 zł z 2 padami) lub rozbij zakup (3 578 zł). Przy <strong>PS5 Pro (3 549 zł)</strong> poluj na oficjalny napęd za max 549 zł, nie przepłacając spekulantom 850 zł.
+                        Absolutnie nie kupuj PS5 Pro w aktualnych cenach <strong>6 999 – 8 828,64 zł</strong> (MediaMarkt, Allegro, Empik, Net-S). To skrajna bańka spekulacyjna (+90% do +139% względem czerwcowego minimum 3 692 zł). Poczekaj na uzupełnienie dostaw w Sony Centre lub zamów z PlayStation Direct DE (799,99 € ≈ 3 566 zł).
                     </p>
                 </div>
-                <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                    <div class="font-bold text-emerald-400 mb-1.5">2. Xbox Series X / Series S</div>
+                <div class="bg-slate-900/75 p-4 rounded-xl border border-slate-800">
+                    <div class="font-bold text-emerald-400 mb-1.5">3. Wstrzymaj zakup Xbox Series X / S</div>
                     <p class="text-xs leading-relaxed">
-                        Nie kupuj Xbox Series X 1TB powyżej <strong>2 599 zł</strong> ani Series S 512GB powyżej <strong>1 349 zł</strong>. Listopadowe ceny 2 699 – 2 899 zł to sztucznie podniesiona baza pod wyprzedaże Black Week – poczekaj na korektę do poziomu ze stycznia 2026.
+                        Zapisy z <strong>spec-ranking.pl</strong> potwierdzają sztuczne napompowanie cen Xbox Series X z ~2 384 zł do <strong>3 879,90 – 4 483,85 zł</strong> oraz Series S z ~1 240 zł do <strong>1 999 – 2 199 zł</strong>. Zakup w tych stawkach jest całkowicie nieopłacalny – czekaj na powrót do okolic 2 400 zł (XSX) i 1 250 zł (XSS).
                     </p>
                 </div>
-                <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                    <div class="font-bold text-rose-400 mb-1.5">3. Pułapka PS4 & Xbox One</div>
+                <div class="bg-slate-900/75 p-4 rounded-xl border border-slate-800">
+                    <div class="font-bold text-amber-400 mb-1.5">4. Omiń leżaki PS4 i Xbox One S</div>
                     <p class="text-xs leading-relaxed">
-                        Pod żadnym pozorem nie kupuj „nowych” leżaków magazynowych <strong>PS4 Pro (1 899 zł)</strong> czy <strong>Xbox One X (1 649 zł)</strong> na platformach marketplace. Za niższą kwotę kupisz fabrycznie nowego Xbox Series S lub używane PS5 z gwarancją.
-                    </p>
-                </div>
-                <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                    <div class="font-bold text-amber-400 mb-1.5">4. Weryfikacja nazw i SKU</div>
-                    <p class="text-xs leading-relaxed">
-                        Zwracaj uwagę na mylące nazewnictwo Microsoftu (<strong>Xbox One X</strong> vs <strong>Xbox Series X</strong>) oraz kody Sony (<strong>PS719022602</strong> – sprawdzaj, czy dysk ma 1 TB z napędem, czy obcięte 825 GB Digital).
+                        Wycofane modele <strong>PS4 (1 599 – 1 999 zł)</strong> oraz <strong>Xbox One S (1 630 – 1 649 zł)</strong> kosztują tyle samo, co jeszcze niedawno konsole 9. generacji. Weryfikuj też kod Sony <strong>PS719022602</strong> (1 TB z napędem vs 825 GB Digital).
                     </p>
                 </div>
             </div>
         </section>
 
+        <!-- Sekcja Zweryfikowanych Źródeł Danych -->
+        <section id="section-sources" class="glass-card p-5 sm:p-8 border-t-4 border-emerald-500 scroll-mt-20">
+            <div class="mb-6">
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Dokumentacja i Weryfikacja Danych</span>
+                <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Zweryfikowane źródła cen aktualnych i historycznych (24.11.2026)</h2>
+                <p class="text-slate-300 text-xs sm:text-sm mt-1">
+                    Wszystkie dane liczbowe prezentowane w raporcie pochodzą z oficjalnych sklepów producentów, agregatora Ceneo oraz polskich sieci handlowych.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                <a href="https://spec-ranking.pl" target="_blank" rel="noopener noreferrer" class="block bg-slate-900/75 hover:bg-slate-800/85 border border-emerald-500/40 hover:border-emerald-400 rounded-xl p-4 transition">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="font-bold text-emerald-400">spec-ranking.pl – Archiwum Ceneo (2024–2026)</span>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Zweryfikowane wykresy</span>
+                    </div>
+                    <p class="text-slate-300 leading-relaxed mb-2">
+                        Zapisy historii cen Ceneo: <strong>Xbox Series X</strong> (baza ~2 384 zł → 3 879,90–4 483,85 zł), <strong>Xbox Series S</strong> (mediana 1 239,90 zł → 1 999–2 199 zł), <strong>PS5 Slim 1TB</strong> (min. 1 760 zł, mediana 2 269 zł → 3 099–3 128,89 zł), <strong>PS4</strong> (1 499–1 999 zł) i <strong>Xbox One S</strong> (1 377–1 649 zł).
+                    </p>
+                    <span class="text-emerald-400 font-semibold">Otwórz archiwum spec-ranking.pl →</span>
+                </a>
+
+                <a href="https://www.ceneo.pl/173179719" target="_blank" rel="noopener noreferrer" class="block bg-slate-900/75 hover:bg-slate-800/85 border border-slate-800 hover:border-sky-500/50 rounded-xl p-4 transition">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="font-bold text-sky-400">Ceneo.pl – Historia Cen PS5 Pro</span>
+                        <span class="text-[10px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded">ID: 173179719</span>
+                    </div>
+                    <p class="text-slate-300 leading-relaxed mb-2">
+                        Wykres trendu cenowego (31.05.2026 – 24.11.2026): minimum 3 692,00 zł (czerwiec), 4 098,00 zł (1 sie), 4 649,99 zł (27 sie) oraz skok do 6 999,00 zł (MediaMarkt), 7 499,00 zł (Allegro), 7 651,00 zł (Empik) i 8 828,64 zł (Net-S).
+                    </p>
+                    <span class="text-sky-400 font-semibold">Otwórz kartę produktu Ceneo →</span>
+                </a>
+
+                <a href="https://www.ceneo.pl/Konsole_do_gier;szukaj-playstation+5+slim+dodatkowy+pad" target="_blank" rel="noopener noreferrer" class="block bg-slate-900/75 hover:bg-slate-800/85 border border-slate-800 hover:border-sky-500/50 rounded-xl p-4 transition">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="font-bold text-sky-400">Ceneo.pl – Zestawy PS5 Slim 1TB</span>
+                        <span class="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded">SKU: PS719022602</span>
+                    </div>
+                    <p class="text-slate-300 leading-relaxed mb-2">
+                        Weryfikacja ofert pakietowych PS5 Slim 1TB + 2x DualSense w sklepach Sferis (3 999,00 zł) oraz Primepc.pl (4 331,60 zł), a także porównanie z ceną pojedynczego kontrolera DualSense (279,00 zł).
+                    </p>
+                    <span class="text-sky-400 font-semibold">Sprawdź oferty na Ceneo →</span>
+                </a>
+
+                <a href="https://direct.playstation.com/de-de" target="_blank" rel="noopener noreferrer" class="block bg-slate-900/75 hover:bg-slate-800/85 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-4 transition">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="font-bold text-emerald-400">PlayStation Direct DE (Niemcy)</span>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Oficjalny sklep Sony</span>
+                    </div>
+                    <p class="text-slate-300 leading-relaxed mb-2">
+                        Oficjalne ceny producenta w strefie Euro: PS5 Slim + 2 pady za 609,99 € (2 719,49 zł), PS5 1TB + 2 pady za 699,99 € (3 120,73 zł; z PS Plus 2 964,69 zł) oraz PS5 Pro za 799,99 € (3 566,56 zł).
+                    </p>
+                    <span class="text-emerald-400 font-semibold">Przejdź do PlayStation Direct DE →</span>
+                </a>
+
+                <a href="https://direct.playstation.com/en-gb" target="_blank" rel="noopener noreferrer" class="block bg-slate-900/75 hover:bg-slate-800/85 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-4 transition">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="font-bold text-emerald-400">PlayStation Direct UK (Wlk. Brytania)</span>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Oficjalny sklep Sony</span>
+                    </div>
+                    <p class="text-slate-300 leading-relaxed mb-2">
+                        Referencyjne ceny w funtach brytyjskich (kurs 5,31943 PLN/GBP): PS5 1TB + 2 kontrolery DualSense za 609,99 £ (3 244,80 zł; z rabatem 5% PS Plus: 3 082,56 zł).
+                    </p>
+                    <span class="text-emerald-400 font-semibold">Przejdź do PlayStation Direct UK →</span>
+                </a>
+
+                <a href="https://www.euro.com.pl/konsole-playstation-5.bhtml" target="_blank" rel="noopener noreferrer" class="block bg-slate-900/75 hover:bg-slate-800/85 border border-slate-800 hover:border-indigo-500/50 rounded-xl p-4 transition">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="font-bold text-indigo-400">RTV EURO AGD / Media Expert / Komputronik</span>
+                        <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded">Retail Polska</span>
+                    </div>
+                    <p class="text-slate-300 leading-relaxed mb-2">
+                        Polska dystrybucja oficjalna: RTV EURO AGD (PS5 Slim 1TB + 2 pady za 3 499,00 zł), Komputronik (3 699,00 zł) oraz Media Expert (3 799,98 – 3 849,98 zł w zależności od koloru pada).
+                    </p>
+                    <span class="text-indigo-400 font-semibold">Sprawdź oferty w RTV EURO AGD →</span>
+                </a>
+
+                <a href="https://scentre.pl/konsole-ps5" target="_blank" rel="noopener noreferrer" class="block bg-slate-900/75 hover:bg-slate-800/85 border border-slate-800 hover:border-indigo-500/50 rounded-xl p-4 transition">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="font-bold text-indigo-400">Sony Centre Polska (scentre.pl)</span>
+                        <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded">Autoryzowany Partner</span>
+                    </div>
+                    <p class="text-slate-300 leading-relaxed mb-2">
+                        Cena samej konsoli PlayStation 5 Slim 1TB z napędem (CFI-2116 E-Chassis) w wysokości 3 299,00 zł, stanowiąca bazę do kalkulacji opłacalności zakupu rozbitego (3 578,00 zł z dodatkowym padem).
+                    </p>
+                    <span class="text-indigo-400 font-semibold">Otwórz Sony Centre Polska →</span>
+                </a>
+            </div>
+        </section>
+
     </main>
 
-    <footer class="border-t border-slate-800 py-8 px-4 text-center text-xs text-slate-500">
+    <!-- Dolny pasek nawigacji kontrolera DualSense (PS5 System Footer Bar) -->
+    <div class="ps5-control-dock fixed bottom-0 inset-x-0 z-40 py-2.5 px-4 sm:px-8">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+            <div class="flex items-center gap-4">
+                <a href="#section-overview" class="flex items-center gap-1.5 hover:text-white transition"><span class="ps-btn-symbol">✕</span> Góra ekranu</a>
+                <a href="#section-comparison" class="hidden sm:flex items-center gap-1.5 hover:text-white transition"><span class="ps-btn-symbol">△</span> Porównaj konsole</a>
+                <button type="button" onclick="replayBootScreen()" class="flex items-center gap-1.5 hover:text-white transition">
+                    <span class="ps-btn-symbol">□</span> Ekran bootowania PS5
+                </button>
+            </div>
+            <div class="text-[11px] text-slate-400">
+                <strong>SONY-PS-PRICE-STORY-112026</strong> • Stan na 24.11.2026
+            </div>
+        </div>
+    </div>
+
+    <footer class="relative z-10 border-t border-slate-800/80 py-8 px-4 text-center text-xs text-slate-400">
         <div class="max-w-5xl mx-auto space-y-1.5">
-            <p>Opracowanie analityczne na podstawie danych rynkowych z PlayStation Direct (DE/UK), Microsoft Store, Ceneo, RTV EURO AGD, MediaMarkt, Komputronik, Media Expert oraz Sony Centre (Styczeń – Listopad 2026).</p>
-            <p>Wskaźnik prawdopodobieństwa manipulacji cenowej uwzględnia odchylenia od MSRP, zjawisko bundle inflation, unbundling akcesoriów (PS5 Pro) oraz spekulacyjną wycenę wycofanych generacji (PS4 / Xbox One).</p>
+            <p><strong>SONY-PS-PRICE-STORY-112026</strong> • Raport zweryfikowany na dzień 24 listopada 2026 r. (Kursy referencyjne: 1 EUR = 4,45825 PLN | 1 GBP = 5,31943 PLN).</p>
+            <p>Wskaźnik prawdopodobieństwa manipulacji cenowej uwzględnia odchylenia od MSRP, historyczne wykresy Ceneo, zjawisko bundle inflation oraz spekulacyjną wycenę wycofanych generacji.</p>
         </div>
     </footer>
 
     <script>
+        let janVsNovChart = null;
+        let chartsInitialized = false;
+
+        // Zegar systemowy PS5 w prawym górnym rogu
+        function updatePs5Clock() {
+            const clockEl = document.getElementById('ps5-system-clock');
+            if (!clockEl) return;
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            clockEl.textContent = `${hh}:${mm}`;
+        }
+        updatePs5Clock();
+        setInterval(updatePs5Clock, 15000);
+
+        // Obsługa ekranu bootowania PS5
+        function dismissBootScreen() {
+            const boot = document.getElementById('ps5-boot-screen');
+            if (boot) boot.classList.add('boot-hidden');
+        }
+
+        function replayBootScreen() {
+            const boot = document.getElementById('ps5-boot-screen');
+            if (!boot) return;
+            const bar = boot.querySelector('.ps5-boot-bar-fill');
+            if (bar) {
+                bar.style.animation = 'none';
+                void bar.offsetHeight;
+                bar.style.animation = 'bootProgress 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+            }
+            boot.classList.remove('boot-hidden');
+            setTimeout(dismissBootScreen, 2500);
+        }
+
+        // Aktywny kafelek w PS5 Hub
+        function selectPs5Tile(el) {
+            document.querySelectorAll('.ps5-tile').forEach(tile => tile.classList.remove('active-tile'));
+            el.classList.add('active-tile');
+        }
+
+        // Generator złotych/błękitnych drobinek światła PS5 na Canvas
+        function initParticles(canvasId, count) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = Array.from({ length: count }, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                r: Math.random() * 1.8 + 0.6,
+                vx: (Math.random() - 0.5) * 0.35,
+                vy: -Math.random() * 0.45 - 0.15,
+                alpha: Math.random() * 0.65 + 0.2,
+                gold: Math.random() > 0.35
+            }));
+
+            function draw() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.y < -10) { p.y = height + 10; p.x = Math.random() * width; }
+                    if (p.x < -10) p.x = width + 10;
+                    if (p.x > width + 10) p.x = -10;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = p.gold
+                        ? `rgba(245, 208, 97, ${p.alpha})`
+                        : `rgba(56, 189, 248, ${p.alpha})`;
+                    ctx.fill();
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
         // Zestawy danych dla przełącznika kategorii na wykresie głównym
         const chartDatasets = {
             all: {
                 labels: [
-                    ['PS5 Pro 2TB', '+ Napęd + 2. Pad'],
-                    ['PS5 Slim 1TB', '+ 2 Pady (Ceneo)'],
-                    ['PS5 Pro 2TB', '(Sama konsola)'],
+                    ['PS5 Pro 2TB', '(Net-S Ceneo)'],
+                    ['PS5 Pro 2TB', '(MediaMarkt 24.11)'],
+                    ['Xbox Series X 1TB', '(Szczyt wrz 2026)'],
+                    ['PS5 Slim 1TB', '+ 2 Pady (Primepc)'],
+                    ['Xbox Series X 1TB', '(Paź/Lis 2026)'],
                     ['PS5 Slim 1TB', '+ 2 Pady (RTV Euro)'],
-                    ['Xbox Series X', '2TB Galaxy Black'],
-                    ['Xbox Series X', '1TB (Z napędem)'],
-                    ['PS5 Slim Digital', '825GB (E-Chassis)'],
-                    ['PS4 Pro 1TB', '(Leżak / Outlet)'],
-                    ['Xbox One X 1TB', '(Leżak / Refurb)'],
-                    ['Xbox Series S', '512GB Digital'],
-                    ['PS4 Slim 500GB', '(Leżak / Outlet)'],
-                    ['Xbox One S 1TB', '(Leżak / Refurb)']
+                    ['PS5 Slim 1TB', '(Sama konsola D-Ch.)'],
+                    ['Xbox Series S', '(Podstawowa)'],
+                    ['PS4 500GB/1TB', '(Archiwum Ceneo)'],
+                    ['Xbox One S', '(Archiwum Ceneo)']
                 ],
-                jan2026: [4327, 3299, 3499, 3199, 2899, 2399, 2099, 1499, 1299, 1299, 1199, 999],
-                nov2026: [4749, 4165, 3649, 3499, 3199, 2749, 2399, 1899, 1599, 1549, 1399, 1249]
+                jan2026: [3692, 3499, 2384.18, 3349, 2384.18, 3199, 2269, 1239.90, 1499, 1430.45],
+                nov2026: [8828.64, 6999, 4483.85, 4331.60, 3879.90, 3499, 3099, 1999, 1599, 1630]
             },
             ps: {
                 labels: [
-                    ['PS5 Pro 2TB', '+ Napęd + 2. Pad'],
+                    ['PS5 Pro 2TB', '(Net-S Ceneo)'],
+                    ['PS5 Pro 2TB', '(Empik 24.11)'],
+                    ['PS5 Pro 2TB', '(Allegro 24.11)'],
+                    ['PS5 Pro 2TB', '(MediaMarkt 24.11)'],
                     ['PS5 Slim 1TB', '+ 2 Pady (Primepc)'],
                     ['PS5 Slim 1TB', '+ 2 Pady (Sferis)'],
-                    ['PS5 Pro 2TB', '(Sama konsola PL)'],
                     ['PS5 Slim 1TB', '+ 2 Pady (RTV Euro)'],
                     ['PS5 Slim 1TB', '+ 2 Pady (PS Direct DE)'],
-                    ['PS5 Slim Digital', '825GB (E-Chassis)'],
-                    ['PS4 Pro 1TB', '(Leżak / Outlet)'],
-                    ['PS4 Slim 500GB', '(Leżak / Outlet)']
+                    ['PS5 Slim 1TB', '(Sama konsola)'],
+                    ['PlayStation 4', '(Archiwum Ceneo)']
                 ],
-                jan2026: [4327, 3349, 3249, 3499, 3199, 3120.73, 2099, 1499, 1199],
-                nov2026: [4749, 4331.60, 3999, 3649, 3499, 3120.73, 2399, 1899, 1399]
+                jan2026: [3692, 3692, 3692, 3499, 3349, 3249, 3199, 3120.73, 2269, 1499],
+                nov2026: [8828.64, 7651, 7499, 6999, 4331.60, 3999, 3499, 3120.73, 3099, 1599]
             },
             xbox: {
                 labels: [
-                    ['Xbox Series X', '2TB Galaxy Black'],
-                    ['Xbox Series X', '1TB (Z napędem)'],
-                    ['Xbox Series X', '1TB Digital White'],
-                    ['Xbox Series S', '1TB Carbon Black'],
-                    ['Xbox One X 1TB', '(Leżak / Pułapka)'],
-                    ['Xbox Series S', '512GB Robot White'],
-                    ['Xbox One S 1TB', '(Leżak / Refurb)']
+                    ['Xbox Series X', '(Szczyt 17.09.2026)'],
+                    ['Xbox Series X', '(04.10.2026 Ceneo)'],
+                    ['Xbox Series X', '(06.10.2026 Ceneo)'],
+                    ['Xbox Series X', '(19.09.2026 Ceneo)'],
+                    ['Xbox Series S', '(Szczyt 2026 Ceneo)'],
+                    ['Xbox Series S', '(06.10.2026 Ceneo)'],
+                    ['Xbox One S', '(Archiwum Ceneo)']
                 ],
-                jan2026: [2899, 2399, 2199, 1549, 1299, 1299, 999],
-                nov2026: [3199, 2749, 2449, 1799, 1599, 1549, 1249]
+                jan2026: [2384.18, 2384.18, 2384.18, 2384.18, 1239.90, 1239.90, 1430.45],
+                nov2026: [4483.85, 3999.90, 3879.90, 3379.00, 2199.00, 1999.00, 1630.00]
             },
             legacy: {
                 labels: [
-                    ['PS4 Pro 1TB', '(Leżak / Outlet)'],
-                    ['Xbox One X 1TB', '(Leżak / Refurb)'],
-                    ['Xbox Series S 512GB', '(Benchmark Nowa Gen.)'],
-                    ['PS4 Slim 500GB', '(Leżak / Outlet)'],
-                    ['Xbox One S 1TB', '(Leżak / Refurb)']
+                    ['Xbox Series S', '(Benchmark 9. Gen.)'],
+                    ['PlayStation 4', '(Szczyt archiwum)'],
+                    ['Xbox One S', '(Szczyt archiwum)'],
+                    ['Xbox One S', '(Ostatni odczyt)'],
+                    ['PlayStation 4', '(Ostatni odczyt)']
                 ],
-                jan2026: [1499, 1299, 1299, 1199, 999],
-                nov2026: [1899, 1599, 1549, 1399, 1249]
+                jan2026: [1239.90, 1499, 1430.45, 1430.45, 1499],
+                nov2026: [1999, 1999, 1649, 1630, 1599]
             }
         };
 
-        const ctxBar = document.getElementById('janVsNovChart').getContext('2d');
-        let janVsNovChart = new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: chartDatasets.all.labels,
-                datasets: [
-                    {
-                        label: 'Styczeń 2026 (Cena Q1)',
-                        data: chartDatasets.all.jan2026,
-                        backgroundColor: 'rgba(56, 189, 248, 0.75)',
-                        borderColor: '#38BDF8',
-                        borderWidth: 1,
-                        borderRadius: 5,
-                        barPercentage: 0.78,
-                        categoryPercentage: 0.78
+        function initCharts() {
+            if (chartsInitialized || typeof Chart === 'undefined') return;
+            chartsInitialized = true;
+
+            // 1. Wykres trajektorii cenowej PS5 Pro (Ceneo)
+            const ctxProEl = document.getElementById('ps5ProHistoryChart');
+            if (ctxProEl) {
+                const ctxPro = ctxProEl.getContext('2d');
+                const proGradient = ctxPro.createLinearGradient(0, 0, 0, 380);
+                proGradient.addColorStop(0, 'rgba(244, 63, 94, 0.45)');
+                proGradient.addColorStop(1, 'rgba(244, 63, 94, 0.02)');
+
+                new Chart(ctxPro, {
+                    type: 'line',
+                    data: {
+                        labels: [
+                            '31 Maj 2026',
+                            '15 Cze 2026',
+                            '7 Lip 2026',
+                            '20 Lip 2026',
+                            '21 Lip 2026',
+                            '31 Lip 2026',
+                            '1 Sie 2026',
+                            '27 Sie 2026',
+                            '15 Wrz 2026',
+                            '15 Paź 2026',
+                            '24 Lis (MediaMarkt)',
+                            '24 Lis (Net-S Max)'
+                        ],
+                        datasets: [{
+                            label: 'Cena PS5 Pro (PLN)',
+                            data: [3718.00, 3692.00, 3898.89, 3898.89, 3899.99, 4098.00, 4098.00, 4649.99, 5199.00, 6199.00, 6999.00, 8828.64],
+                            borderColor: '#F43F5E',
+                            backgroundColor: proGradient,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.22,
+                            pointBackgroundColor: ['#38BDF8', '#10B981', '#38BDF8', '#38BDF8', '#38BDF8', '#F59E0B', '#F59E0B', '#F59E0B', '#F97316', '#F43F5E', '#F43F5E', '#DC2626'],
+                            pointBorderColor: '#FFFFFF',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
                     },
-                    {
-                        label: 'Listopad 2026 (Cena Q4 przed BF)',
-                        data: chartDatasets.all.nov2026,
-                        backgroundColor: function(context) {
-                            const label = context.chart.data.labels[context.dataIndex];
-                            const labelStr = Array.isArray(label) ? label.join(' ') : label;
-                            if (labelStr.includes('Ceneo') || labelStr.includes('Primepc') || labelStr.includes('Sferis') || labelStr.includes('Napęd')) {
-                                return 'rgba(244, 63, 94, 0.85)';
-                            }
-                            if (labelStr.includes('Xbox')) {
-                                return 'rgba(16, 185, 129, 0.85)';
-                            }
-                            if (labelStr.includes('PS4') || labelStr.includes('One')) {
-                                return 'rgba(245, 158, 11, 0.85)';
-                            }
-                            return 'rgba(129, 140, 248, 0.85)';
-                        },
-                        borderColor: function(context) {
-                            const label = context.chart.data.labels[context.dataIndex];
-                            const labelStr = Array.isArray(label) ? label.join(' ') : label;
-                            if (labelStr.includes('Ceneo') || labelStr.includes('Primepc') || labelStr.includes('Sferis') || labelStr.includes('Napęd')) {
-                                return '#F43F5E';
-                            }
-                            if (labelStr.includes('Xbox')) {
-                                return '#10B981';
-                            }
-                            if (labelStr.includes('PS4') || labelStr.includes('One')) {
-                                return '#F59E0B';
-                            }
-                            return '#818CF8';
-                        },
-                        borderWidth: 1,
-                        borderRadius: 5,
-                        barPercentage: 0.78,
-                        categoryPercentage: 0.78
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            color: '#E2E8F0',
-                            font: { family: 'Inter', size: 12, weight: '600' },
-                            usePointStyle: true,
-                            padding: 18
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                        titleColor: '#F8FAFC',
-                        bodyColor: '#CBD5E1',
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        borderWidth: 1,
-                        padding: 12,
-                        callbacks: {
-                            title: function(items) {
-                                return items[0].label.replace(',', ' ');
-                            },
-                            label: function(context) {
-                                return ' ' + context.dataset.label + ': ' + context.parsed.y.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' zł';
-                            },
-                            afterBody: function(items) {
-                                if (items.length === 2) {
-                                    const diff = items[1].parsed.y - items[0].parsed.y;
-                                    const pct = ((diff / items[0].parsed.y) * 100).toFixed(1);
-                                    const sign = diff > 0 ? '+' : '';
-                                    return `\n Zmiana Sty → Lis: ${sign}${diff.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł (${sign}${pct}%)`;
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.96)',
+                                titleColor: '#F8FAFC',
+                                bodyColor: '#CBD5E1',
+                                borderColor: 'rgba(244, 63, 94, 0.45)',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        const val = context.parsed.y;
+                                        const diffPct = (((val - 3692) / 3692) * 100).toFixed(1);
+                                        const sign = diffPct >= 0 ? '+' : '';
+                                        return ` Cena: ${val.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł (${sign}${diffPct}% vs min. czerwiec)`;
+                                    }
                                 }
-                                return '';
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                                ticks: {
+                                    color: '#94A3B8',
+                                    font: { family: 'Inter', size: 10, weight: '600' },
+                                    maxRotation: 35,
+                                    minRotation: 20
+                                }
+                            },
+                            y: {
+                                min: 3200,
+                                max: 9400,
+                                grid: { color: 'rgba(148, 163, 184, 0.14)' },
+                                ticks: {
+                                    color: '#94A3B8',
+                                    font: { family: 'Inter', size: 11 },
+                                    callback: function(value) {
+                                        return value.toLocaleString('pl-PL') + ' zł';
+                                    }
+                                }
                             }
                         }
                     }
-                },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: {
-                            color: '#94A3B8',
-                            font: { family: 'Inter', size: 10, weight: '600' }
-                        }
-                    },
-                    y: {
-                        min: 500,
-                        max: 5200,
-                        grid: { color: 'rgba(148, 163, 184, 0.12)' },
-                        ticks: {
-                            color: '#94A3B8',
-                            font: { family: 'Inter', size: 11 },
-                            callback: function(value) {
-                                return value.toLocaleString('pl-PL') + ' zł';
-                            }
-                        }
-                    }
-                }
+                });
             }
-        });
+
+            // 2. Wykres słupkowy porównawczy: Styczeń vs 24 Listopad 2026
+            const ctxBarEl = document.getElementById('janVsNovChart');
+            if (ctxBarEl) {
+                const ctxBar = ctxBarEl.getContext('2d');
+                janVsNovChart = new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: chartDatasets.all.labels,
+                        datasets: [
+                            {
+                                label: 'Styczeń – Czerwiec 2026 (Baza Q1/Q2)',
+                                data: chartDatasets.all.jan2026,
+                                backgroundColor: 'rgba(56, 189, 248, 0.78)',
+                                borderColor: '#38BDF8',
+                                borderWidth: 1,
+                                borderRadius: 5,
+                                barPercentage: 0.78,
+                                categoryPercentage: 0.78
+                            },
+                            {
+                                label: '24 Listopad 2026 (Aktualna cena Q4)',
+                                data: chartDatasets.all.nov2026,
+                                backgroundColor: function(context) {
+                                    const label = context.chart.data.labels[context.dataIndex];
+                                    const labelStr = Array.isArray(label) ? label.join(' ') : label;
+                                    if (labelStr.includes('PS5 Pro') || labelStr.includes('Primepc') || labelStr.includes('Sferis')) {
+                                        return 'rgba(244, 63, 94, 0.88)';
+                                    }
+                                    if (labelStr.includes('Xbox')) {
+                                        return 'rgba(16, 185, 129, 0.85)';
+                                    }
+                                    if (labelStr.includes('PS4') || labelStr.includes('One')) {
+                                        return 'rgba(245, 158, 11, 0.85)';
+                                    }
+                                    return 'rgba(129, 140, 248, 0.85)';
+                                },
+                                borderColor: function(context) {
+                                    const label = context.chart.data.labels[context.dataIndex];
+                                    const labelStr = Array.isArray(label) ? label.join(' ') : label;
+                                    if (labelStr.includes('PS5 Pro') || labelStr.includes('Primepc') || labelStr.includes('Sferis')) {
+                                        return '#F43F5E';
+                                    }
+                                    if (labelStr.includes('Xbox')) {
+                                        return '#10B981';
+                                    }
+                                    if (labelStr.includes('PS4') || labelStr.includes('One')) {
+                                        return '#F59E0B';
+                                    }
+                                    return '#818CF8';
+                                },
+                                borderWidth: 1,
+                                borderRadius: 5,
+                                barPercentage: 0.78,
+                                categoryPercentage: 0.78
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#E2E8F0',
+                                    font: { family: 'Inter', size: 12, weight: '600' },
+                                    usePointStyle: true,
+                                    padding: 16
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.96)',
+                                titleColor: '#F8FAFC',
+                                bodyColor: '#CBD5E1',
+                                borderColor: 'rgba(255,255,255,0.12)',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: {
+                                    title: function(items) {
+                                        return items[0].label.replace(',', ' ');
+                                    },
+                                    label: function(context) {
+                                        return ' ' + context.dataset.label + ': ' + context.parsed.y.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' zł';
+                                    },
+                                    afterBody: function(items) {
+                                        if (items.length === 2) {
+                                            const diff = items[1].parsed.y - items[0].parsed.y;
+                                            const pct = ((diff / items[0].parsed.y) * 100).toFixed(1);
+                                            const sign = diff > 0 ? '+' : '';
+                                            return `\n Zmiana: ${sign}${diff.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł (${sign}${pct}%)`;
+                                        }
+                                        return '';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    color: '#94A3B8',
+                                    font: { family: 'Inter', size: 10, weight: '600' }
+                                }
+                            },
+                            y: {
+                                min: 500,
+                                max: 9400,
+                                grid: { color: 'rgba(148, 163, 184, 0.12)' },
+                                ticks: {
+                                    color: '#94A3B8',
+                                    font: { family: 'Inter', size: 11 },
+                                    callback: function(value) {
+                                        return value.toLocaleString('pl-PL') + ' zł';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 3. Wykres Radarowy: Czynniki manipulacji cenowej
+            const ctxRadarEl = document.getElementById('manipulationRadarChart');
+            if (ctxRadarEl) {
+                const ctxRadar = ctxRadarEl.getContext('2d');
+                new Chart(ctxRadar, {
+                    type: 'radar',
+                    data: {
+                        labels: [
+                            ['Hiperinflacja Pro', '(6999–8828 zł)'],
+                            ['Bundle Inflation', '(Zawyżanie PS5)'],
+                            ['Legacy Trap', '(Leżaki PS4/One)'],
+                            ['Okno Omnibus', '(Podwyżki bazowe)'],
+                            ['Bałagan SKU', '(One X vs Series X)']
+                        ],
+                        datasets: [{
+                            label: 'Prawdopodobieństwo (%)',
+                            data: [98, 95, 92, 90, 88],
+                            backgroundColor: 'rgba(244, 63, 94, 0.25)',
+                            borderColor: '#F43F5E',
+                            pointBackgroundColor: '#F43F5E',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#F43F5E',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.96)',
+                                callbacks: {
+                                    title: function(items) {
+                                        return items[0].label.replace(',', ' ');
+                                    },
+                                    label: function(context) {
+                                        return ' Prawdopodobieństwo: ' + context.parsed.r + '%';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                min: 0,
+                                max: 100,
+                                ticks: {
+                                    stepSize: 25,
+                                    display: false
+                                },
+                                grid: {
+                                    color: 'rgba(148, 163, 184, 0.2)'
+                                },
+                                angleLines: {
+                                    color: 'rgba(148, 163, 184, 0.2)'
+                                },
+                                pointLabels: {
+                                    color: '#CBD5E1',
+                                    font: {
+                                        family: 'Inter',
+                                        size: 10,
+                                        weight: '600'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
 
         // Funkcja przełączająca widok wykresu
         function filterChart(mode) {
+            if (!janVsNovChart) return;
             const buttons = {
                 all: document.getElementById('btnAll'),
                 ps: document.getElementById('btnPS'),
@@ -620,10 +1271,11 @@
             };
 
             Object.keys(buttons).forEach(key => {
+                if (!buttons[key]) return;
                 if (key === mode) {
-                    buttons[key].className = 'px-3 py-1.5 text-xs font-semibold rounded-md bg-sky-500 text-white transition';
+                    buttons[key].className = 'px-3 py-1.5 text-xs font-bold rounded-lg bg-sky-500 text-white transition';
                 } else {
-                    buttons[key].className = 'px-3 py-1.5 text-xs font-semibold rounded-md text-slate-300 hover:text-white transition';
+                    buttons[key].className = 'px-3 py-1.5 text-xs font-bold rounded-lg text-slate-300 hover:text-white transition';
                 }
             });
 
@@ -631,75 +1283,26 @@
             janVsNovChart.data.labels = selected.labels;
             janVsNovChart.data.datasets[0].data = selected.jan2026;
             janVsNovChart.data.datasets[1].data = selected.nov2026;
-            janVsNovChart.options.scales.y.max = mode === 'legacy' ? 2300 : (mode === 'xbox' ? 3600 : 5200);
+            janVsNovChart.options.scales.y.max = mode === 'legacy' ? 2400 : (mode === 'xbox' ? 4900 : 9400);
             janVsNovChart.update();
         }
 
-        // Wykres Radarowy: Czynniki manipulacji cenowej
-        const ctxRadar = document.getElementById('manipulationRadarChart').getContext('2d');
-        new Chart(ctxRadar, {
-            type: 'radar',
-            data: {
-                labels: [
-                    ['Bundle Inflation', '(Zawyżanie PS5/Pro)'],
-                    ['Legacy Trap', '(Leżaki PS4/Xbox One)'],
-                    ['Unbundling Pro', '(Brak napędu/podstawki)'],
-                    ['Okno Omnibus', '(Podwyżki Xbox/PS5)'],
-                    ['Bałagan SKU', '(One X vs Series X / 825GB)']
-                ],
-                datasets: [{
-                    label: 'Prawdopodobieństwo (%)',
-                    data: [92, 90, 87, 82, 85],
-                    backgroundColor: 'rgba(244, 63, 94, 0.25)',
-                    borderColor: '#F43F5E',
-                    pointBackgroundColor: '#F43F5E',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: '#F43F5E',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                        callbacks: {
-                            title: function(items) {
-                                return items[0].label.replace(',', ' ');
-                            },
-                            label: function(context) {
-                                return ' Prawdopodobieństwo: ' + context.parsed.r + '%';
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    r: {
-                        min: 0,
-                        max: 100,
-                        ticks: {
-                            stepSize: 25,
-                            display: false
-                        },
-                        grid: {
-                            color: 'rgba(148, 163, 184, 0.2)'
-                        },
-                        angleLines: {
-                            color: 'rgba(148, 163, 184, 0.2)'
-                        },
-                        pointLabels: {
-                            color: '#CBD5E1',
-                            font: {
-                                family: 'Inter',
-                                size: 10,
-                                weight: '600'
-                            }
-                        }
-                    }
-                }
+        // Inicjalizacja po załadowaniu DOM oraz z fallbackiem CDN dla Chart.js
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(dismissBootScreen, 2400);
+            initParticles('boot-particles-canvas', 48);
+            initParticles('ps5-particles-canvas', 28);
+            initCharts();
+        });
+
+        window.addEventListener('load', () => {
+            if (typeof Chart === 'undefined') {
+                const fallbackScript = document.createElement('script');
+                fallbackScript.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
+                fallbackScript.onload = initCharts;
+                document.head.appendChild(fallbackScript);
+            } else {
+                initCharts();
             }
         });
     </script>
